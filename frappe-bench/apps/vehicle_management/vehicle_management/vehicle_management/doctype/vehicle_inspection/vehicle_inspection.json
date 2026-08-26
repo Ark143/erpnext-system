@@ -1,0 +1,140 @@
+{
+ "doctype": "DocType",
+ "name": "Vehicle Inspection",
+ "module": "Vehicle Management",
+ "custom": 0,
+ "is_submittable": 1,
+ "istable": 0,
+ "editable_grid": 0,
+ "track_changes": 1,
+ "engine": "InnoDB",
+ "autoname": "naming_series:",
+ "naming_rule": null,
+ "search_fields": "vehicle,plate_no,customer,customer_name",
+ "title_field": "plate_no",
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "options": "INSP-.YYYY.-.#####",
+   "default": "INSP-.YYYY.-.#####",
+   "label": "Series"
+  },
+  {
+   "fieldname": "sec_header",
+   "fieldtype": "Section Break",
+   "label": "Inspection Header"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "options": "Company",
+   "label": "Company / Branch",
+   "default": "ULTRA MRF",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "inspection_date",
+   "fieldtype": "Date",
+   "label": "Inspection Date",
+   "default": "Today",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "vehicle",
+   "fieldtype": "Link",
+   "options": "Customer Vehicle",
+   "label": "Vehicle",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "plate_no",
+   "fieldtype": "Data",
+   "label": "Plate No",
+   "fetch_from": "vehicle.plate_no",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "options": "Customer",
+   "label": "Customer",
+   "fetch_from": "vehicle.customer",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "label": "Customer Name",
+   "fetch_from": "vehicle.customer_name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "col_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "inspection_template",
+   "fieldtype": "Link",
+   "options": "Inspection Template",
+   "label": "Template",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "mechanic",
+   "fieldtype": "Data",
+   "label": "Inspected By (Mechanic)",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "mileage",
+   "fieldtype": "Float",
+   "label": "Current Odometer Reading"
+  },
+  {
+   "fieldname": "overall_status",
+   "fieldtype": "Select",
+   "options": "Passed\nMinor Issues\nCritical Action Required",
+   "default": "Passed",
+   "label": "Overall Result"
+  },
+  {
+   "fieldname": "sec_remarks",
+   "fieldtype": "Section Break",
+   "label": "Diagnostic Findings & Remarks"
+  },
+  {
+   "fieldname": "general_remarks",
+   "fieldtype": "Small Text",
+   "label": "General Findings & Recommendations"
+  },
+  {
+   "fieldname": "sec_items",
+   "fieldtype": "Section Break",
+   "label": "Inspection Checklist"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "options": "Vehicle Inspection Item",
+   "label": "Checklist Items"
+  }
+ ],
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "submit": 1,
+   "cancel": 1,
+   "delete": 1
+  }
+ ]
+}

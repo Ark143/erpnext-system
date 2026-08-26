@@ -1,0 +1,80 @@
+{
+ "doctype": "DocType",
+ "name": "Job Order Part Item",
+ "module": "Vehicle Management",
+ "custom": 0,
+ "is_submittable": 0,
+ "istable": 1,
+ "editable_grid": 1,
+ "track_changes": 1,
+ "engine": "InnoDB",
+ "autoname": null,
+ "naming_rule": null,
+ "search_fields": null,
+ "title_field": null,
+ "fields": [
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "options": "Item",
+   "label": "Part Item Code",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "label": "Part Name",
+   "fetch_from": "item_code.item_name",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "part_no",
+   "fieldtype": "Data",
+   "label": "OEM Part No",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "issued_time",
+   "fieldtype": "Datetime",
+   "label": "Issued Timestamp",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "qty",
+   "fieldtype": "Float",
+   "label": "Qty",
+   "default": "1.0",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "uom",
+   "fieldtype": "Link",
+   "options": "UOM",
+   "label": "UOM",
+   "default": "PC",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "rate",
+   "fieldtype": "Currency",
+   "label": "Unit Price",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "discount_amount",
+   "fieldtype": "Currency",
+   "label": "Discount",
+   "default": "0"
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "label": "Amount",
+   "read_only": 1,
+   "in_list_view": 1
+  }
+ ],
+ "permissions": []
+}

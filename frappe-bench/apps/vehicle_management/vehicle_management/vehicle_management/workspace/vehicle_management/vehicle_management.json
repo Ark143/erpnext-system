@@ -1,0 +1,523 @@
+{
+ "charts": [
+  {
+   "chart_name": "VM Job Orders by Company",
+   "label": "Job Orders & Sales by Branch"
+  }
+ ],
+ "content": "[{\"id\":\"header\",\"type\":\"header\",\"data\":{\"text\":\"Vehicle Management Performance\",\"level\":3}},{\"id\":\"nc_1\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"VM Total Revenue\",\"col\":3}},{\"id\":\"nc_2\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"VM Total Labor Revenue\",\"col\":3}},{\"id\":\"nc_3\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"VM Total Parts Revenue\",\"col\":3}},{\"id\":\"nc_4\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"VM Total Job Orders\",\"col\":3}},{\"id\":\"chart_1\",\"type\":\"chart\",\"data\":{\"chart_name\":\"VM Job Orders by Company\",\"col\":12}},{\"id\":\"header_actions\",\"type\":\"header\",\"data\":{\"text\":\"Quick Shortcuts\",\"level\":4}},{\"id\":\"shortcuts_analytics\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Vehicle Analytics\"}},{\"id\":\"shortcuts\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Customer Vehicles\"}},{\"id\":\"shortcuts_est\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Vehicle Estimates\"}},{\"id\":\"shortcuts_2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Vehicle Job Orders\"}},{\"id\":\"shortcuts_3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Vehicle Inspections\"}},{\"id\":\"shortcuts_bins\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Bin Locations\"}},{\"id\":\"cards_header\",\"type\":\"header\",\"data\":{\"text\":\"Modules & Masters\",\"level\":4}},{\"id\":\"card_1\",\"type\":\"card\",\"data\":{\"card_name\":\"Vehicles & Customers\"}},{\"id\":\"card_2\",\"type\":\"card\",\"data\":{\"card_name\":\"Services & Inspections\"}},{\"id\":\"card_3\",\"type\":\"card\",\"data\":{\"card_name\":\"Inventory & Storage\"}},{\"id\":\"header_reports\",\"type\":\"header\",\"data\":{\"text\":\"Reports & Analytics\",\"level\":4}},{\"id\":\"card_reports_sales\",\"type\":\"card\",\"data\":{\"card_name\":\"Sales Reports\"}},{\"id\":\"card_reports_ops\",\"type\":\"card\",\"data\":{\"card_name\":\"Operations Reports\"}},{\"id\":\"card_reports_top\",\"type\":\"card\",\"data\":{\"card_name\":\"Top Analytics\"}},{\"id\":\"card_reports_acct\",\"type\":\"card\",\"data\":{\"card_name\":\"Accounting & Purchasing Reports\"}}]",
+ "creation": "2026-08-24 00:00:00.000000",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "car",
+ "idx": 1,
+ "indicator_color": "blue",
+ "is_hidden": 0,
+ "label": "Vehicle Management",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Vehicles & Customers",
+   "links": [
+    {
+     "dependencies": "",
+     "hidden": 0,
+     "is_query_report": 0,
+     "label": "Customer Vehicles",
+     "link_count": 0,
+     "link_to": "Customer Vehicle",
+     "link_type": "DocType",
+     "onboard": 1,
+     "type": "Link"
+    },
+    {
+     "dependencies": "",
+     "hidden": 0,
+     "is_query_report": 0,
+     "label": "Vehicle Makes",
+     "link_count": 0,
+     "link_to": "Vehicle Make",
+     "link_type": "DocType",
+     "onboard": 0,
+     "type": "Link"
+    },
+    {
+     "dependencies": "",
+     "hidden": 0,
+     "is_query_report": 0,
+     "label": "Vehicle Models",
+     "link_count": 0,
+     "link_to": "Vehicle Model",
+     "link_type": "DocType",
+     "onboard": 0,
+     "type": "Link"
+    },
+    {
+     "dependencies": "",
+     "hidden": 0,
+     "is_query_report": 0,
+     "label": "Customers",
+     "link_count": 0,
+     "link_to": "Customer",
+     "link_type": "DocType",
+     "onboard": 0,
+     "type": "Link"
+    }
+   ],
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Services & Inspections",
+   "links": [
+    {
+     "dependencies": "",
+     "hidden": 0,
+     "is_query_report": 0,
+     "label": "Estimates / Quotations",
+     "link_count": 0,
+     "link_to": "Vehicle Estimate",
+     "link_type": "DocType",
+     "onboard": 1,
+     "type": "Link"
+    },
+    {
+     "dependencies": "",
+     "hidden": 0,
+     "is_query_report": 0,
+     "label": "Job Orders",
+     "link_count": 0,
+     "link_to": "Vehicle Job Order",
+     "link_type": "DocType",
+     "onboard": 1,
+     "type": "Link"
+    },
+    {
+     "dependencies": "",
+     "hidden": 0,
+     "is_query_report": 0,
+     "label": "Vehicle Inspections",
+     "link_count": 0,
+     "link_to": "Vehicle Inspection",
+     "link_type": "DocType",
+     "onboard": 1,
+     "type": "Link"
+    },
+    {
+     "dependencies": "",
+     "hidden": 0,
+     "is_query_report": 0,
+     "label": "Inspection Templates",
+     "link_count": 0,
+     "link_to": "Inspection Template",
+     "link_type": "DocType",
+     "onboard": 0,
+     "type": "Link"
+    },
+    {
+     "dependencies": "",
+     "hidden": 0,
+     "is_query_report": 0,
+     "label": "Service Reminders",
+     "link_count": 0,
+     "link_to": "Vehicle Service Reminder",
+     "link_type": "DocType",
+     "onboard": 0,
+     "type": "Link"
+    }
+   ],
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Inventory & Storage",
+   "links": [
+    {
+     "dependencies": "",
+     "hidden": 0,
+     "is_query_report": 0,
+     "label": "Bin Locations",
+     "link_count": 0,
+     "link_to": "Bin Location",
+     "link_type": "DocType",
+     "onboard": 1,
+     "type": "Link"
+    },
+    {
+     "dependencies": "",
+     "hidden": 0,
+     "is_query_report": 0,
+     "label": "Item Master (Parts & Tires)",
+     "link_count": 0,
+     "link_to": "Item",
+     "link_type": "DocType",
+     "onboard": 0,
+     "type": "Link"
+    },
+    {
+     "dependencies": "",
+     "hidden": 0,
+     "is_query_report": 0,
+     "label": "Stock Balance",
+     "link_count": 0,
+     "link_to": "Stock Balance",
+     "link_type": "Report",
+     "onboard": 0,
+     "type": "Link"
+    }
+   ],
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Sales Reports",
+   "links": [
+    {
+     "dependencies": "",
+     "hidden": 0,
+     "is_query_report": 1,
+     "label": "Monthly Sales Report",
+     "link_count": 0,
+     "link_to": "Monthly Sales Report",
+     "link_type": "Report",
+     "onboard": 1,
+     "type": "Link"
+    },
+    {
+     "dependencies": "",
+     "hidden": 0,
+     "is_query_report": 1,
+     "label": "Detailed Sales Report",
+     "link_count": 0,
+     "link_to": "Detailed Sales Report",
+     "link_type": "Report",
+     "onboard": 1,
+     "type": "Link"
+    },
+    {
+     "dependencies": "",
+     "hidden": 0,
+     "is_query_report": 1,
+     "label": "Sales by Product",
+     "link_count": 0,
+     "link_to": "Sales by Product",
+     "link_type": "Report",
+     "onboard": 0,
+     "type": "Link"
+    },
+    {
+     "dependencies": "",
+     "hidden": 0,
+     "is_query_report": 1,
+     "label": "Daily Collection Report",
+     "link_count": 0,
+     "link_to": "Daily Collection Report",
+     "link_type": "Report",
+     "onboard": 0,
+     "type": "Link"
+    },
+    {
+     "dependencies": "",
+     "hidden": 0,
+     "is_query_report": 1,
+     "label": "Sales Incentives",
+     "link_count": 0,
+     "link_to": "Sales Incentives",
+     "link_type": "Report",
+     "onboard": 0,
+     "type": "Link"
+    }
+   ],
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Operations Reports",
+   "links": [
+    {
+     "dependencies": "",
+     "hidden": 0,
+     "is_query_report": 1,
+     "label": "Monthly Job Orders",
+     "link_count": 0,
+     "link_to": "Monthly Job Orders",
+     "link_type": "Report",
+     "onboard": 1,
+     "type": "Link"
+    },
+    {
+     "dependencies": "",
+     "hidden": 0,
+     "is_query_report": 1,
+     "label": "Detailed Job Orders",
+     "link_count": 0,
+     "link_to": "Detailed Job Orders",
+     "link_type": "Report",
+     "onboard": 1,
+     "type": "Link"
+    },
+    {
+     "dependencies": "",
+     "hidden": 0,
+     "is_query_report": 1,
+     "label": "Mechanic Jobs",
+     "link_count": 0,
+     "link_to": "Mechanic Jobs",
+     "link_type": "Report",
+     "onboard": 0,
+     "type": "Link"
+    },
+    {
+     "dependencies": "",
+     "hidden": 0,
+     "is_query_report": 1,
+     "label": "Mechanic Clock In/Out",
+     "link_count": 0,
+     "link_to": "Mechanic Clock In/Out",
+     "link_type": "Report",
+     "onboard": 0,
+     "type": "Link"
+    },
+    {
+     "dependencies": "",
+     "hidden": 0,
+     "is_query_report": 1,
+     "label": "Due for Service",
+     "link_count": 0,
+     "link_to": "Due for Service",
+     "link_type": "Report",
+     "onboard": 0,
+     "type": "Link"
+    },
+    {
+     "dependencies": "",
+     "hidden": 0,
+     "is_query_report": 1,
+     "label": "Vehicle Transactions",
+     "link_count": 0,
+     "link_to": "Vehicle Transactions",
+     "link_type": "Report",
+     "onboard": 0,
+     "type": "Link"
+    }
+   ],
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Top Analytics",
+   "links": [
+    {
+     "dependencies": "",
+     "hidden": 0,
+     "is_query_report": 1,
+     "label": "Top Customers",
+     "link_count": 0,
+     "link_to": "Top Customers",
+     "link_type": "Report",
+     "onboard": 1,
+     "type": "Link"
+    },
+    {
+     "dependencies": "",
+     "hidden": 0,
+     "is_query_report": 1,
+     "label": "Top Selling Services",
+     "link_count": 0,
+     "link_to": "Top Selling Services",
+     "link_type": "Report",
+     "onboard": 1,
+     "type": "Link"
+    },
+    {
+     "dependencies": "",
+     "hidden": 0,
+     "is_query_report": 1,
+     "label": "Top Selling Products",
+     "link_count": 0,
+     "link_to": "Top Selling Products",
+     "link_type": "Report",
+     "onboard": 0,
+     "type": "Link"
+    },
+    {
+     "dependencies": "",
+     "hidden": 0,
+     "is_query_report": 1,
+     "label": "Top Vehicles Served",
+     "link_count": 0,
+     "link_to": "Top Vehicles Served",
+     "link_type": "Report",
+     "onboard": 0,
+     "type": "Link"
+    },
+    {
+     "dependencies": "",
+     "hidden": 0,
+     "is_query_report": 1,
+     "label": "Top Suppliers",
+     "link_count": 0,
+     "link_to": "Top Suppliers",
+     "link_type": "Report",
+     "onboard": 0,
+     "type": "Link"
+    }
+   ],
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Accounting & Purchasing Reports",
+   "links": [
+    {
+     "dependencies": "",
+     "hidden": 0,
+     "is_query_report": 1,
+     "label": "Statement of Account",
+     "link_count": 0,
+     "link_to": "Statement of Account",
+     "link_type": "Report",
+     "onboard": 1,
+     "type": "Link"
+    },
+    {
+     "dependencies": "",
+     "hidden": 0,
+     "is_query_report": 1,
+     "label": "Check Register",
+     "link_count": 0,
+     "link_to": "Check Register",
+     "link_type": "Report",
+     "onboard": 0,
+     "type": "Link"
+    },
+    {
+     "dependencies": "",
+     "hidden": 0,
+     "is_query_report": 1,
+     "label": "Purchase Order Report",
+     "link_count": 0,
+     "link_to": "Purchase Order Report",
+     "link_type": "Report",
+     "onboard": 0,
+     "type": "Link"
+    },
+    {
+     "dependencies": "",
+     "hidden": 0,
+     "is_query_report": 1,
+     "label": "Product Purchases",
+     "link_count": 0,
+     "link_to": "Product Purchases",
+     "link_type": "Report",
+     "onboard": 0,
+     "type": "Link"
+    },
+    {
+     "dependencies": "",
+     "hidden": 0,
+     "is_query_report": 1,
+     "label": "Loyalty Points",
+     "link_count": 0,
+     "link_to": "Loyalty Points",
+     "link_type": "Report",
+     "onboard": 0,
+     "type": "Link"
+    },
+    {
+     "dependencies": "",
+     "hidden": 0,
+     "is_query_report": 1,
+     "label": "Inventory Summary",
+     "link_count": 0,
+     "link_to": "Inventory Summary",
+     "link_type": "Report",
+     "onboard": 0,
+     "type": "Link"
+    }
+   ],
+   "type": "Card Break"
+  }
+ ],
+ "module": "Vehicle Management",
+ "name": "Vehicle Management",
+ "number_cards": [
+  {
+   "number_card_name": "VM Total Revenue",
+   "label": "Lifetime Total Revenue (PHP)"
+  },
+  {
+   "number_card_name": "VM Total Labor Revenue",
+   "label": "Total Labor Revenue (PHP)"
+  },
+  {
+   "number_card_name": "VM Total Parts Revenue",
+   "label": "Total Parts & Tires Sales (PHP)"
+  },
+  {
+   "number_card_name": "VM Total Job Orders",
+   "label": "Total Job Orders"
+  }
+ ],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 1.0,
+ "shortcuts": [
+  {
+   "color": "Blue",
+   "doc_view": "",
+   "label": "Vehicle Analytics",
+   "link_to": "vehicle_analytics",
+   "type": "Page"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Customer Vehicles",
+   "link_to": "Customer Vehicle",
+   "type": "DocType"
+  },
+  {
+   "color": "Purple",
+   "doc_view": "List",
+   "label": "Vehicle Estimates",
+   "link_to": "Vehicle Estimate",
+   "type": "DocType"
+  },
+  {
+   "color": "Blue",
+   "doc_view": "List",
+   "label": "Vehicle Job Orders",
+   "link_to": "Vehicle Job Order",
+   "type": "DocType"
+  },
+  {
+   "color": "Green",
+   "doc_view": "List",
+   "label": "Vehicle Inspections",
+   "link_to": "Vehicle Inspection",
+   "type": "DocType"
+  },
+  {
+   "color": "Orange",
+   "doc_view": "List",
+   "label": "Bin Locations",
+   "link_to": "Bin Location",
+   "type": "DocType"
+  }
+ ],
+ "title": "Vehicle Management"
+}

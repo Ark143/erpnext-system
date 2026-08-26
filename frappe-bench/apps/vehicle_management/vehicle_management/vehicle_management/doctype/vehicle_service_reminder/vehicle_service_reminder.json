@@ -1,0 +1,135 @@
+{
+ "doctype": "DocType",
+ "name": "Vehicle Service Reminder",
+ "module": "Vehicle Management",
+ "custom": 0,
+ "is_submittable": 0,
+ "istable": 0,
+ "editable_grid": 0,
+ "track_changes": 1,
+ "engine": "InnoDB",
+ "autoname": "naming_series:",
+ "naming_rule": null,
+ "search_fields": "vehicle,plate_no,customer,service_type",
+ "title_field": "plate_no",
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "options": "REM-.YYYY.-.#####",
+   "default": "REM-.YYYY.-.#####",
+   "label": "Series"
+  },
+  {
+   "fieldname": "sec_info",
+   "fieldtype": "Section Break",
+   "label": "Reminder Details"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "options": "Company",
+   "label": "Company / Branch",
+   "default": "ULTRA MRF",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "vehicle",
+   "fieldtype": "Link",
+   "options": "Customer Vehicle",
+   "label": "Vehicle",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "plate_no",
+   "fieldtype": "Data",
+   "label": "Plate No",
+   "fetch_from": "vehicle.plate_no",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "options": "Customer",
+   "label": "Customer",
+   "fetch_from": "vehicle.customer",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "label": "Customer Name",
+   "fetch_from": "vehicle.customer_name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "contact_no",
+   "fieldtype": "Data",
+   "label": "Mobile No",
+   "fetch_from": "vehicle.contact_no",
+   "read_only": 1
+  },
+  {
+   "fieldname": "col_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "service_type",
+   "fieldtype": "Data",
+   "label": "Service Due",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "due_date",
+   "fieldtype": "Date",
+   "label": "Due Date",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "due_mileage",
+   "fieldtype": "Float",
+   "label": "Target Mileage Due"
+  },
+  {
+   "fieldname": "lead_days",
+   "fieldtype": "Int",
+   "default": "7",
+   "label": "Lead Time (Days)"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "options": "Pending\nSent\nBooked\nOverdue\nCancelled",
+   "default": "Pending",
+   "label": "Status",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "sec_msg",
+   "fieldtype": "Section Break",
+   "label": "Message Content"
+  },
+  {
+   "fieldname": "reminder_message",
+   "fieldtype": "Small Text",
+   "label": "SMS / Email Message"
+  }
+ ],
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1
+  }
+ ]
+}

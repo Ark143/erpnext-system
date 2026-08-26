@@ -1,0 +1,124 @@
+{
+ "doctype": "DocType",
+ "name": "Bin Location",
+ "module": "Vehicle Management",
+ "custom": 0,
+ "is_submittable": 0,
+ "istable": 0,
+ "editable_grid": 1,
+ "track_changes": 1,
+ "engine": "InnoDB",
+ "autoname": "field:bin_location_name",
+ "naming_rule": "By fieldname",
+ "search_fields": "bin_location_name,warehouse,company,zone,rack,shelf",
+ "title_field": "bin_location_name",
+ "fields": [
+  {
+   "fieldname": "bin_location_name",
+   "fieldtype": "Data",
+   "label": "Bin Location ID / Code",
+   "reqd": 1,
+   "unique": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "warehouse",
+   "fieldtype": "Link",
+   "options": "Warehouse",
+   "label": "Warehouse",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "options": "Company",
+   "label": "Company",
+   "fetch_from": "warehouse.company",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "col_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "zone",
+   "fieldtype": "Data",
+   "label": "Zone / Aisle / Category",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "rack",
+   "fieldtype": "Data",
+   "label": "Rack / Section",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "shelf",
+   "fieldtype": "Data",
+   "label": "Shelf / Tier / Level",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "bin_no",
+   "fieldtype": "Data",
+   "label": "Bin / Slot Number"
+  },
+  {
+   "fieldname": "sec_details",
+   "fieldtype": "Section Break",
+   "label": "Additional Information"
+  },
+  {
+   "fieldname": "barcode",
+   "fieldtype": "Data",
+   "label": "Barcode / QR Tag"
+  },
+  {
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "label": "Is Active",
+   "default": "1",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "col_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description / Stored Item Types"
+  }
+ ],
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1
+  },
+  {
+   "role": "Stock Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1
+  },
+  {
+   "role": "Stock User",
+   "read": 1,
+   "write": 1,
+   "create": 1
+  },
+  {
+   "role": "Maintenance User",
+   "read": 1
+  }
+ ]
+}

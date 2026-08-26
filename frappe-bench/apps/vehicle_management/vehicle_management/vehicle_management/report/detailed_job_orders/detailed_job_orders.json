@@ -1,0 +1,19 @@
+{
+ "add_total_row": 1,
+ "columns": [],
+ "creation": "2026-08-25 00:00:00.000000",
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [],
+ "idx": 0,
+ "is_standard": "Yes",
+ "letter_head": "",
+ "module": "Vehicle Management",
+ "name": "Detailed Job Orders",
+ "prepared_report": 0,
+ "ref_doctype": "Vehicle Job Order",
+ "report_name": "Detailed Job Orders",
+ "report_type": "Script Report",
+ "roles": []
+}

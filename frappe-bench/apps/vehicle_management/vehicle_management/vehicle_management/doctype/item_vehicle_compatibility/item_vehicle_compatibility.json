@@ -1,0 +1,74 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-08-24 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "make",
+  "model",
+  "year_from",
+  "year_to",
+  "engine",
+  "transmission",
+  "fitment_notes"
+ ],
+ "fields": [
+  {
+   "fieldname": "make",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Make",
+   "options": "Vehicle Make",
+   "reqd": 1
+  },
+  {
+   "fieldname": "model",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Model",
+   "options": "Vehicle Model",
+   "reqd": 1
+  },
+  {
+   "fieldname": "year_from",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Year From"
+  },
+  {
+   "fieldname": "year_to",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Year To"
+  },
+  {
+   "fieldname": "engine",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Engine / Trim"
+  },
+  {
+   "default": "All",
+   "fieldname": "transmission",
+   "fieldtype": "Select",
+   "label": "Transmission",
+   "options": "All\nAutomatic\nManual\nCVT\nDual Clutch\nEV"
+  },
+  {
+   "fieldname": "fitment_notes",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Fitment Notes / Position"
+  }
+ ],
+ "istable": 1,
+ "module": "Vehicle Management",
+ "name": "Item Vehicle Compatibility",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

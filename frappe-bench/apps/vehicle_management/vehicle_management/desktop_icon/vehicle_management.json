@@ -1,0 +1,19 @@
+{
+ "app": "vehicle_management",
+ "bg_color": "blue",
+ "creation": "2026-08-24 00:00:00.000000",
+ "docstatus": 0,
+ "doctype": "Desktop Icon",
+ "hidden": 0,
+ "icon": "car",
+ "icon_type": "Link",
+ "idx": 1,
+ "label": "Vehicle Management",
+ "link_to": "Vehicle Management",
+ "link_type": "Workspace Sidebar",
+ "modified": "2026-08-24 00:00:00.000000",
+ "modified_by": "Administrator",
+ "name": "Vehicle Management",
+ "owner": "Administrator",
+ "standard": 1
+}

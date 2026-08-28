@@ -20,14 +20,17 @@
 .vpos-li-code{width:100%;height:40px;border:1.5px solid var(--line);border-radius:11px;padding:0 13px;font-size:13px;margin-top:8px;font-family:'Inter'}
 .vpos-prof-code{margin-top:8px;font-size:11px;color:var(--muted);background:#eef7f3;border-radius:8px;padding:6px 8px;word-break:break-all}
 /* APP */
-.vpos-app{display:grid;grid-template-columns:74px 1fr 400px;height:calc(100vh - 56px);min-height:540px}
-.vpos-rail{background:var(--ink);display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 0}
+.vpos-app{display:grid;grid-template-columns:74px 1fr 400px;grid-template-areas:"rail main ticket";height:calc(100vh - 56px);min-height:540px}
+.vpos-rail{grid-area:rail;background:var(--ink);display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 0}
 .vpos-logo{width:42px;height:42px;border-radius:12px;background:var(--mint);color:#04201a;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:22px;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
 .vpos-rail-ic{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#9fc3b8;font-size:20px;cursor:pointer;transition:.15s}
 .vpos-rail-ic.active{background:#16302b;color:#fff}
 .vpos-rail-ic:hover{color:#fff}
-.vpos-rail-foot{margin-top:auto;color:#5d7a72;font-size:10px;text-align:center;line-height:1.3}
-.vpos-main{display:flex;flex-direction:column;min-width:0;padding:14px 16px;gap:12px}
+.vpos-rail-ic.logout{color:#e98a8a}
+.vpos-rail-ic.logout:hover{background:#3a1c1c;color:#fff}
+.vpos-rail-foot{margin-top:auto;color:#5d7a72;font-size:10px;text-align:center;line-height:1.3;max-width:64px;word-break:break-word}
+.vpos-main{grid-area:main;display:flex;flex-direction:column;min-width:0;padding:14px 16px;gap:12px}
+.vpos-ticket{grid-area:ticket;background:var(--card);border-left:1px solid var(--line);display:flex;flex-direction:column;padding:14px;gap:12px}
 .vpos-bar{display:flex;gap:10px;align-items:center}
 .vpos-scan{flex:1;display:flex;align-items:center;gap:8px;background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:0 14px;height:46px}
 .vpos-scan:focus-within{border-color:var(--mint)}
@@ -118,8 +121,38 @@
 .vpos-prof-print{border:none;background:var(--mint);color:#04201a;font-weight:800;padding:12px 20px;border-radius:12px;cursor:pointer;font-family:'Space Grotesk',sans-serif}
 .vpos-tip{position:fixed;z-index:999;max-width:320px;background:var(--ink);color:#eafff6;font-size:11px;line-height:1.5;border:1px solid var(--mint-d);border-radius:10px;padding:9px 12px;box-shadow:0 10px 26px rgba(0,0,0,.35);pointer-events:none;opacity:0;transition:opacity .1s;display:none;white-space:pre-line;font-family:'Inter'}
 .vpos-tip b{color:var(--mint)}
+.vpos-li-ok{background:#e7f6f0;color:var(--mint-d);font-size:12px;font-weight:600;padding:8px 10px;border-radius:10px;margin-bottom:6px}
+/* RESPONSIVE: tablet (<=1100px) rail becomes top bar, main + ticket side by side */
+@media (max-width:1100px){
+  .vpos-app{grid-template-columns:1fr 360px;grid-template-areas:"rail rail" "main ticket";height:auto}
+  .vpos-rail{flex-direction:row;width:100%;padding:10px 12px;justify-content:flex-start;gap:10px}
+  .vpos-logo{margin-bottom:0;margin-right:8px}
+  .vpos-rail-ic{width:44px;height:44px}
+  .vpos-rail-foot{margin-top:0;margin-left:auto;max-width:160px;text-align:right}
+  .vpos-ticket{border-left:none;border-top:none}
+}
+/* RESPONSIVE: phone (<=680px) single column, ticket stacks, products 2-col */
+@media (max-width:680px){
+  .vpos-app{grid-template-columns:1fr;grid-template-areas:"rail" "main" "ticket";height:auto}
+  .vpos-rail{padding:8px 10px;gap:8px;overflow-x:auto}
+  .vpos-logo{width:34px;height:34px;font-size:18px;margin-right:4px}
+  .vpos-rail-ic{width:40px;height:40px;font-size:18px}
+  .vpos-rail-foot{font-size:9px;max-width:120px}
+  .vpos-main{padding:10px 12px;gap:10px}
+  .vpos-bar{flex-wrap:wrap}
+  .vpos-scan{flex:1 1 100%}
+  .vpos-branch,.vpos-stock-toggle{flex:1 1 auto}
+  .vpos-stock-toggle{white-space:normal;height:auto;min-height:44px}
+  .vpos-grid{grid-template-columns:repeat(2,1fr);gap:10px}
+  .vpos-card-name{font-size:12px;min-height:2.2em}
+  .vpos-ticket{border-top:1px solid var(--line);padding:12px}
+  .vpos-paid{font-size:16px}
+  .vpos-charge{font-size:14px;padding:11px}
+  .vpos-clear{padding:11px}
+  .vpos-keypad .vpos-kp-box{width:100%}
+  .vpos-kp-keys button{height:48px;font-size:16px}
+}
 @media print{.vpos-login,.vpos-app,.vpos-keypad{display:none!important}#vpos-root{display:block!important}.vpos-prof-card{box-shadow:none;border:2px solid #000}}
-@media (max-width:1100px){.vpos-app{grid-template-columns:1fr;height:auto}.vpos-rail{flex-direction:row;width:100%}.vpos-rail-foot{display:none}.vpos-ticket{border-left:none;border-top:1px solid var(--line)}}
 </style>
 
 <script id="vpos-libs"></script>
@@ -143,7 +176,7 @@ async function frappeLogin(usr,pwd){
 const POS={
   cart:[],customer:null,vehicle:null,company:null,payment_method:"Cash",category:null,total:0,_vt:null,
   PROD_LIMIT:10,showAll:false,STOCK:{},onlyStock:false,loggedIn:false,user:null,cashier:null,
-  history:[],discount:0,
+  history:[],discount:0,loggedOutMsg:null,
   async init(){
     this.hideChrome();
     this.buildLogin();
@@ -160,6 +193,14 @@ const POS={
     window.addEventListener("load",hide);
     setTimeout(hide,400);
   },
+  logout(){
+    // end the Frappe session server-side, then show the close / sign-in screen
+    try{fetch("/api/method/logout",{method:"POST",headers:{"X-Requested-With":"XMLHttpRequest"}});}catch(e){}
+    window.__vposPwd=null;
+    this.loggedIn=false;this.cart=[];this.customer=null;this.vehicle=null;this.company=null;
+    this.cashier=null;this.email=null;this.employee=null;this.loggedOutMsg="You have been logged out. Sign in again to continue.";
+    this.buildLogin();
+  },
   buildLogin(){
     const r=document.getElementById("vpos-root");
     r.innerHTML=`<div class="vpos-login" id="vpos-login">
@@ -167,6 +208,7 @@ const POS={
         <div class="vpos-login-logo">V</div>
         <div class="vpos-login-title">Vehicle POS</div>
         <div class="vpos-login-sub">Cashier Sign-In</div>
+        ${this.loggedOutMsg?('<div class="vpos-li-ok">'+this.loggedOutMsg+'</div>'):''}
         <input class="vpos-li vpos-li-user" placeholder="User ID / Email">
         <input class="vpos-li vpos-li-pass" type="password" placeholder="Password">
         <button class="vpos-li-btn" id="vpos-li-go">Sign In</button>
@@ -268,6 +310,7 @@ const POS={
         <div class="vpos-rail-ic active" data-view="pos" title="Point of Sale">&#128722;</div>
         <div class="vpos-rail-ic" data-view="history" title="History">&#128202;</div>
         <div class="vpos-rail-ic" data-view="profile" title="Cashier Profile">&#128100;</div>
+        <div class="vpos-rail-ic logout" data-action="logout" title="Log out / Close">&#9211;</div>
         <div class="vpos-rail-foot" id="vpos-co">${this.company||""}<br>${this.cashier||""}</div>
       </aside>
       <section class="vpos-main" id="vpos-main">
@@ -307,7 +350,11 @@ const POS={
       </div>
     </div>`;
     const self=this;
-    r.querySelectorAll(".vpos-rail-ic").forEach(b=>b.onclick=()=>self.switchView(b.getAttribute("data-view")));
+    r.querySelectorAll(".vpos-rail-ic").forEach(b=>b.onclick=()=>{
+      const act=b.getAttribute("data-action");
+      if(act==="logout"){self.logout();return;}
+      self.switchView(b.getAttribute("data-view"));
+    });
     r.querySelector(".vpos-search").addEventListener("keydown",e=>{if(e.key==="Enter")self.search();});
     const comp=r.querySelector(".vpos-company");comp.value=this.company||"";
     const st=r.querySelector("#vpos-stock-toggle");

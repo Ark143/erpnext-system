@@ -119,6 +119,20 @@
 .vpos-prof-qr svg{width:200px;height:200px}
 .vpos-prof-hint{color:var(--muted);font-size:11px}
 .vpos-prof-print{border:none;background:var(--mint);color:#04201a;font-weight:800;padding:12px 20px;border-radius:12px;cursor:pointer;font-family:'Space Grotesk',sans-serif}
+/* ID CARD (CR80: 85.6 x 54 mm) — on-screen preview + print target */
+.vpos-idcard{width:85.6mm;height:54mm;background:#fff;border:1px solid var(--line);border-radius:6px;box-shadow:0 8px 22px rgba(0,0,0,.10);overflow:hidden;display:flex;flex-direction:column;box-sizing:border-box;font-family:'Inter',sans-serif;color:#0c1a18;margin-top:14px}
+.vpos-id-head{display:flex;align-items:center;gap:8px;background:linear-gradient(160deg,#0c1a18,#123b33);color:#fff;padding:6px 10px}
+.vpos-id-logo{width:26px;height:26px;border-radius:7px;background:var(--mint);color:#04201a;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center}
+.vpos-id-co{flex:1;font-size:10px;font-weight:700;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vpos-id-title{font-size:9px;font-weight:800;letter-spacing:1px;opacity:.85}
+.vpos-id-body{flex:1;display:flex;gap:8px;padding:7px 10px;align-items:center}
+.vpos-id-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:1.5px}
+.vpos-id-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13px;line-height:1.1;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vpos-id-line{display:flex;justify-content:space-between;font-size:8.5px;line-height:1.25}
+.vpos-id-line span{color:#5b6b68;font-weight:600}
+.vpos-id-line b{color:#13302b;font-weight:700;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:62%}
+.vpos-id-qr{width:42mm;height:42mm;flex:0 0 42mm;display:flex;align-items:center;justify-content:center}
+.vpos-id-qr svg{width:100%;height:100%}
 .vpos-tip{position:fixed;z-index:999;max-width:320px;background:var(--ink);color:#eafff6;font-size:11px;line-height:1.5;border:1px solid var(--mint-d);border-radius:10px;padding:9px 12px;box-shadow:0 10px 26px rgba(0,0,0,.35);pointer-events:none;opacity:0;transition:opacity .1s;display:none;white-space:pre-line;font-family:'Inter'}
 .vpos-tip b{color:var(--mint)}
 .vpos-li-ok{background:#e7f6f0;color:var(--mint-d);font-size:12px;font-weight:600;padding:8px 10px;border-radius:10px;margin-bottom:6px}
@@ -152,7 +166,12 @@
   .vpos-keypad .vpos-kp-box{width:100%}
   .vpos-kp-keys button{height:48px;font-size:16px}
 }
-@media print{.vpos-login,.vpos-app,.vpos-keypad{display:none!important}#vpos-root{display:block!important}.vpos-prof-card{box-shadow:none;border:2px solid #000}}
+@media print{
+  @page{size:85.6mm 54mm;margin:0}
+  body *{visibility:hidden!important}
+  .vpos-idcard,.vpos-idcard *{visibility:visible!important}
+  .vpos-idcard{position:fixed;left:0;top:0;margin:0;box-shadow:none;border:1px solid #000;width:85.6mm!important;height:54mm!important}
+}
 </style>
 
 <script id="vpos-libs"></script>
@@ -433,9 +452,28 @@ const POS={
         <div class="vpos-prof-code" id="vpos-prof-code">${qrData}</div>
         <button class="vpos-li-qr" id="vpos-prof-dl" style="margin-top:10px">&#11015; Download badge (SVG)</button>
         <button class="vpos-li-qr" id="vpos-prof-copy" style="margin-top:8px">&#128203; Copy badge code</button>
+      </div>
+      <button class="vpos-prof-print" onclick="window.print()">&#128424; Print Badge (ID size)</button>
+      </div>
+      <div class="vpos-idcard" id="vpos-idcard">
+        <div class="vpos-id-head">
+          <div class="vpos-id-logo">V</div>
+          <div class="vpos-id-co">${this.company||""}</div>
+          <div class="vpos-id-title">CASHIER ID</div>
         </div>
-        <button class="vpos-prof-print" onclick="window.print()">&#128424; Print Badge</button>
-        </div>`;
+        <div class="vpos-id-body">
+          <div class="vpos-id-info">
+            <div class="vpos-id-name">${this.empName||this.employee||"—"}</div>
+            <div class="vpos-id-line"><span>Emp #</span><b>${this.empNo||"—"}</b></div>
+            <div class="vpos-id-line"><span>Designation</span><b>${this.designation||"—"}</b></div>
+            <div class="vpos-id-line"><span>Branch</span><b>${this.branch||"—"}</b></div>
+            <div class="vpos-id-line"><span>Department</span><b>${this.department||"—"}</b></div>
+            <div class="vpos-id-line"><span>Reports To</span><b>${this.reportsTo||"—"}</b></div>
+            <div class="vpos-id-line"><span>Email</span><b>${this.email||this.cashier||""}</b></div>
+          </div>
+          <div class="vpos-id-qr">${svg}</div>
+        </div>
+      </div>`;
         const dl=document.getElementById("vpos-prof-dl");
         if(dl)dl.onclick=()=>{const blob=new Blob([svg],{type:"image/svg+xml"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=(this.cashier||"cashier")+"-badge.svg";a.click();};
         const cp=document.getElementById("vpos-prof-copy");

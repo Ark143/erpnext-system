@@ -12580,15 +12580,17 @@ const PESO="\u20B1";
 function flt(v){return Number(v||0);}
 function peso(n){return PESO+Number(n||0).toLocaleString("en-US",{minimumFractionDigits:2});}
 function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+const API_BASE=(new URLSearchParams(location.search).get("api"))||window.POS_API_BASE||"";
+function absUrl(u){if(!u)return u;if(API_BASE&&u.charAt(0)==="/")return API_BASE+u;return u;}
 async function api(method,params){
-  let url="/api/method/"+method;
+  let url=API_BASE+"/api/method/"+method;
   if(params){const qs=Object.keys(params).map(k=>encodeURIComponent(k)+"="+encodeURIComponent(params[k]==null?"":params[k])).join("&");if(qs)url+="?"+qs;}
   try{const r=await fetch(url,{headers:{"X-Requested-With":"XMLHttpRequest"}});const j=await r.json();return j.message;}
   catch(e){console.error("api",method,e);return null;}
 }
 async function frappeLogin(usr,pwd){
   const fd=new URLSearchParams();fd.set("usr",usr);fd.set("pwd",pwd);
-  const r=await fetch("/api/method/login",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded","Expect":""},body:fd.toString()});
+  const r=await fetch(API_BASE+"/api/method/login",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded","Expect":""},body:fd.toString()});
   const j=await r.json();return j;
 }
 
@@ -12614,7 +12616,7 @@ const POS={
   },
   logout(){
     // end the Frappe session server-side, then show the close / sign-in screen
-    try{fetch("/api/method/logout",{method:"POST",headers:{"X-Requested-With":"XMLHttpRequest"}});}catch(e){}
+    try{fetch(API_BASE+"/api/method/logout",{method:"POST",headers:{"X-Requested-With":"XMLHttpRequest"}});}catch(e){}
     window.__vposPwd=null;
     this.loggedIn=false;this.cart=[];this.customer=null;this.vehicle=null;this.company=null;
     this.cashier=null;this.email=null;this.employee=null;this.loggedOutMsg="You have been logged out. Sign in again to continue.";

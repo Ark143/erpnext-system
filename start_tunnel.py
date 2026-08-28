@@ -22,10 +22,16 @@ while time.time() - t0 < 30:
 
 if url:
     print("\n" + "=" * 65)
-    print("  LIVE PUBLIC HTTPS URL CREATED SUCCESSFULLY:")
+    print("  LIVE PUBLIC HTTPS URL READY FOR TESTING:")
     print("  " + url)
     print("=" * 65)
     with open("tools/live_public_url.txt", "w") as f:
         f.write(url)
+    
+    # Keep tunnel alive
+    try:
+        proc.wait()
+    except KeyboardInterrupt:
+        proc.terminate()
 else:
     print("Could not find public URL in 30 seconds.")

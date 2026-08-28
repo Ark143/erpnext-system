@@ -334,13 +334,17 @@ const POS={
         <div class="vpos-rail-foot" id="vpos-co">${this.company||""}<br>${this.cashier||""}</div>
       </aside>
       <section class="vpos-main" id="vpos-main">
-        <div class="vpos-bar">
-          <div class="vpos-scan"><span class="ic">&#128269;</span><input class="vpos-search" placeholder="Scan barcode or search item name / code..." autocomplete="off"></div>
-          <div class="vpos-branch"><label>Branch</label><select class="vpos-company" disabled></select></div>
-          <button class="vpos-stock-toggle" id="vpos-stock-toggle" title="Show only items with stock">With stock: OFF</button>
-          </div>
-        <div class="vpos-cats" id="vpos-cats"></div>
-        <div class="vpos-grid" id="vpos-products"></div>
+        <div class="vpos-view" id="vpos-view-pos">
+          <div class="vpos-bar">
+            <div class="vpos-scan"><span class="ic">&#128269;</span><input class="vpos-search" placeholder="Scan barcode or search item name / code..." autocomplete="off"></div>
+            <div class="vpos-branch"><label>Branch</label><select class="vpos-company" disabled></select></div>
+            <button class="vpos-stock-toggle" id="vpos-stock-toggle" title="Show only items with stock">With stock: OFF</button>
+            </div>
+          <div class="vpos-cats" id="vpos-cats"></div>
+          <div class="vpos-grid" id="vpos-products"></div>
+        </div>
+        <div class="vpos-view" id="vpos-view-history" style="display:none"></div>
+        <div class="vpos-view" id="vpos-view-profile" style="display:none"></div>
       </section>
       <aside class="vpos-ticket">
         <div class="vpos-tk-head"><div><div class="vpos-tk-title">Current Ticket</div><div class="vpos-tk-sub" id="vpos-clock"></div></div></div>
@@ -407,36 +411,35 @@ const POS={
   },
   switchView(v){
     document.querySelectorAll(".vpos-rail-ic").forEach(x=>x.classList.toggle("active",x.getAttribute("data-view")===v));
-    const main=document.getElementById("vpos-main");
-    if(v==="pos"){this.renderPOS(main);}
-    else if(v==="history"){this.renderHistory(main);}
-    else if(v==="profile"){this.renderProfile(main);}
+    const map={pos:"vpos-view-pos",history:"vpos-view-history",profile:"vpos-view-profile"};
+    Object.keys(map).forEach(k=>{const el=document.getElementById(map[k]);if(el)el.style.display=(k===v?"block":"none");});
+    if(v==="pos"){this.renderPOS();}
+    else if(v==="history"){this.renderHistory();}
+    else if(v==="profile"){this.renderProfile();}
   },
-  renderPOS(main){
-    main.querySelector(".vpos-bar").style.display="flex";
-    main.querySelector(".vpos-cats").style.display="flex";
-    main.querySelector("#vpos-products").style.display="grid";
-    if(!main.querySelector("#vpos-products").innerHTML)this.search();
+  renderPOS(){
+    const view=document.getElementById("vpos-view-pos");
+    if(!view)return;
+    const grid=view.querySelector("#vpos-products");
+    if(!grid.innerHTML)this.search();
   },
-  renderHistory(main){
-    main.querySelector(".vpos-bar").style.display="none";
-    main.querySelector(".vpos-cats").style.display="none";
-    const grid=main.querySelector("#vpos-products");grid.style.display="block";
+  renderHistory(){
+    const view=document.getElementById("vpos-view-history");
+    if(!view)return;
     const h=this.history||[];
-    if(!h.length){grid.innerHTML='<div class="vpos-empty">No transactions yet.</div>';return;}
-    grid.innerHTML=h.map(t=>`<div class="vpos-hist"><div class="vpos-hist-top"><b>${t.name}</b><span>${t.posting_date||""}</span></div><div class="vpos-hist-sub">${t.customer_name||""} ${t.vehicle?"· "+t.vehicle:""}</div><div class="vpos-hist-foot"><span>${peso(t.total_amount)}</span><span>${t.payment_method||""}</span></div></div>`).join("");
+    if(!h.length){view.innerHTML='<div class="vpos-empty">No transactions yet.</div>';return;}
+    view.innerHTML=h.map(t=>`<div class="vpos-hist"><div class="vpos-hist-top"><b>${t.name}</b><span>${t.posting_date||""}</span></div><div class="vpos-hist-sub">${t.customer_name||""} ${t.vehicle?"· "+t.vehicle:""}</div><div class="vpos-hist-foot"><span>${peso(t.total_amount)}</span><span>${t.payment_method||""}</span></div></div>`).join("");
   },
   renderProfile(main){
-    main.querySelector(".vpos-bar").style.display="none";
-    main.querySelector(".vpos-cats").style.display="none";
-    const grid=main.querySelector("#vpos-products");grid.style.display="block";
+    const view=document.getElementById("vpos-view-profile");
+    if(!view)return;
     const qrData=(this.email||this.cashier||"")+"|"+(window.__vposPwd||"");
     let svg="";
     try{
       const qr=window.qrcode(0,"M");qr.addData(qrData);qr.make();
       svg=qr.createSvgTag({cellSize:6,margin:8,scalable:true});
     }catch(e){svg="<div style='color:#b91c1c'>QR unavailable</div>";}
-    grid.innerHTML=`<div class="vpos-prof">
+    view.innerHTML=`<div class="vpos-prof">
       <div class="vpos-prof-card" id="vpos-prof-card">
         <div class="vpos-prof-logo">V</div>
         <h3>Cashier Badge</h3>

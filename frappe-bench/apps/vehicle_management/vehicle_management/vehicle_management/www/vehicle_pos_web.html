@@ -1,0 +1,408 @@
+<div class="vpos-root" id="vpos-root"></div>
+<style>
+	.vpos-root { background: #e0f2f1; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; min-height: 80vh; }
+	.vpos-app { display: flex; height: calc(100vh - 60px); min-height: 520px; }
+
+	/* SIDEBAR */
+	.vpos-side { flex: 0 0 220px; background: #ffffff; border-right: 1px solid #d7ecea; display: flex; flex-direction: column; padding: 16px 12px; }
+	.vpos-brand { display: flex; align-items: center; gap: 10px; padding: 6px 6px 16px; }
+	.vpos-brand-logo { width: 38px; height: 38px; border-radius: 10px; background: #16a34a; color: #fff; font-weight: 800; font-size: 20px; display: flex; align-items: center; justify-content: center; }
+	.vpos-brand-name { font-weight: 800; font-size: 15px; color: #0f2e2a; line-height: 1.1; }
+	.vpos-brand-sub { font-size: 11px; color: #6b9080; }
+	.vpos-side-foot { margin-top: auto; font-size: 11px; color: #9bbdb4; padding: 8px 6px 0; }
+
+	/* MAIN */
+	.vpos-main { flex: 1 1 auto; display: flex; flex-direction: column; min-width: 0; padding: 14px 16px; gap: 12px; }
+	.vpos-topbar { display: flex; gap: 12px; align-items: flex-end; }
+	.vpos-search-wrap { flex: 1; position: relative; }
+	.vpos-search-ic { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 14px; opacity: .6; }
+	.vpos-search { padding-left: 34px !important; height: 42px; border-radius: 10px; border: 1px solid #cfeee9; background: #fff; width: 100%; box-sizing: border-box; }
+	.vpos-company-wrap { display: flex; flex-direction: column; gap: 3px; }
+	.vpos-company-wrap label { font-size: 10px; color: #6b9080; font-weight: 700; text-transform: uppercase; }
+	.vpos-company { height: 42px; border-radius: 10px; border: 1px solid #cfeee9; background: #fff; min-width: 150px; box-sizing: border-box; }
+
+	.vpos-cats { display: flex; gap: 8px; flex-wrap: wrap; }
+	.vpos-cat { border: 1px solid #bfe3dd; background: #fff; color: #2f564f; padding: 7px 14px; border-radius: 999px; font-size: 12px; font-weight: 600; cursor: pointer; }
+	.vpos-cat.active { background: #16a34a; color: #fff; border-color: #16a34a; }
+
+	.vpos-products { flex: 1; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; align-content: start; padding: 4px 4px 8px; }
+	.vpos-prod { background: #fff; border: 1px solid #d7ecea; border-radius: 14px; padding: 12px; position: relative; display: flex; flex-direction: column; gap: 4px; cursor: pointer; }
+	.vpos-prod:hover { border-color: #16a34a; box-shadow: 0 6px 16px rgba(22,163,74,.16); }
+	.vpos-prod-thumb { width: 42px; height: 42px; border-radius: 10px; background: #e8f7f3; color: #16a34a; font-weight: 800; font-size: 18px; display: flex; align-items: center; justify-content: center; margin-bottom: 4px; }
+	.vpos-prod-name { font-weight: 700; font-size: 13px; color: #12332e; line-height: 1.2; }
+	.vpos-prod-code { font-size: 10px; color: #9bbdb4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+	.vpos-prod-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; }
+	.vpos-prod-rate { color: #16a34a; font-weight: 800; font-size: 13px; }
+	.vpos-add { border: none; background: #16a34a; color: #fff; font-weight: 700; font-size: 11px; padding: 6px 12px; border-radius: 999px; cursor: pointer; }
+	.vpos-prod-badge { position: absolute; top: 8px; right: 8px; background: #16a34a; color: #fff; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 999px; }
+	.vpos-empty { color: #6b9080; padding: 30px; text-align: center; grid-column: 1/-1; font-size: 13px; }
+
+	/* ORDER PANEL */
+	.vpos-order { flex: 0 0 380px; background: #ffffff; border-left: 1px solid #d7ecea; display: flex; flex-direction: column; padding: 14px; gap: 12px; }
+	.vpos-order-head { border-bottom: 1px solid #eef6f4; padding-bottom: 12px; }
+	.vpos-order-title { font-weight: 800; font-size: 15px; color: #0f2e2a; margin-bottom: 10px; }
+	.vpos-field { display: flex; flex-direction: column; gap: 3px; }
+	.vpos-field label { font-size: 10px; color: #6b9080; font-weight: 700; text-transform: uppercase; }
+	.vpos-vehicle-input { height: 36px; border-radius: 8px; border: 1px solid #cfeee9; background: #fff; padding: 0 10px; width: 100%; box-sizing: border-box; }
+	.vpos-customer-display { background: #f1faf8; color: #12332e; min-height: 34px; padding: 7px 10px; border: 1px solid #d7ecea; border-radius: 8px; font-size: 12px; font-weight: 600; }
+
+	.vpos-cart { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; min-height: 60px; }
+	.vpos-cart-row { display: flex; align-items: center; gap: 8px; background: #f7fbfa; border: 1px solid #eef6f4; border-radius: 10px; padding: 8px 10px; }
+	.vpos-cart-info { flex: 1; min-width: 0; }
+	.vpos-cart-name { font-weight: 700; font-size: 12px; color: #12332e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+	.vpos-cart-meta { font-size: 10px; color: #9bbdb4; }
+	.vpos-qty { display: flex; align-items: center; gap: 4px; }
+	.vpos-qty button { width: 24px; height: 24px; border-radius: 6px; border: 1px solid #cfeee9; background: #fff; color: #16a34a; font-weight: 800; cursor: pointer; }
+	.vpos-qty-in { width: 44px; text-align: center; border: 1px solid #cfeee9; border-radius: 6px; height: 24px; }
+	.vpos-cart-amt { font-weight: 800; font-size: 12px; min-width: 72px; text-align: right; color: #12332e; }
+	.vpos-remove { border: none; background: transparent; color: #ef4444; font-size: 18px; cursor: pointer; }
+
+	.vpos-totals { background: #f1faf8; border: 1px solid #d7ecea; border-radius: 10px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px; }
+	.vpos-row { display: flex; justify-content: space-between; font-size: 13px; color: #2f564f; }
+	.vpos-grand { font-weight: 800; font-size: 17px; color: #0f2e2a; margin-top: 2px; }
+
+	.vpos-tender { border-top: 1px solid #eef6f4; padding-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+	.vpos-paymethod, .vpos-paid { height: 38px; border-radius: 8px; border: 1px solid #cfeee9; width: 100%; box-sizing: border-box; padding: 0 10px; }
+	.vpos-change { font-weight: 700; color: #16a34a; }
+
+	.vpos-actions { display: flex; gap: 8px; margin-top: 4px; }
+	.vpos-clear { background: #fff; border: 1px solid #cfeee9; color: #3d5a54; font-weight: 700; border-radius: 10px; padding: 12px; flex: 0 0 90px; cursor: pointer; }
+	.vpos-charge { flex: 1; background: #16a34a; border: none; color: #fff; font-weight: 800; font-size: 14px; border-radius: 10px; padding: 12px; cursor: pointer; }
+	.vpos-charge:hover { background: #15803d; }
+</style>
+
+<script>
+/* Self-contained POS — mirrors the working VMS web-dashboard pattern.
+   Uses a fetch()-based api() helper (no jQuery, no frappe.ui). */
+
+const PESO = "\u20B1";
+function flt(v) { return Number(v || 0); }
+function peso(n) { return PESO + Number(n || 0).toLocaleString("en-US", { minimumFractionDigits: 2 }); }
+
+async function api(method, params) {
+	let url = "/api/method/" + method;
+	if (params) {
+		const qs = Object.keys(params)
+			.map(k => encodeURIComponent(k) + "=" + encodeURIComponent(params[k] == null ? "" : params[k]))
+			.join("&");
+		if (qs) url += "?" + qs;
+	}
+	try {
+		const r = await fetch(url, { headers: { "X-Requested-With": "XMLHttpRequest" } });
+		const j = await r.json();
+		return j.message;
+	} catch (e) {
+		console.error("api error", method, e);
+		return null;
+	}
+}
+
+const POS = {
+	cart: [],
+	customer: null,
+	vehicle: null,
+	company: null,
+	payment_method: "Cash",
+	category: null,
+	total: 0,
+	_vehTimer: null,
+
+	async init() {
+		this.build_layout();
+		const meta = await api("vehicle_management.vehicle_management.pos_api.get_meta");
+		if (meta) {
+			const cos = meta.companies || [];
+			const sel = document.querySelector(".vpos-company");
+			cos.forEach(c => { const o = document.createElement("option"); o.value = c; o.textContent = c; sel.appendChild(o); });
+			this.company = cos[0];
+			sel.addEventListener("change", e => { this.company = e.target.value; });
+
+			const box = document.getElementById("vpos-cats");
+			this.add_cat(box, "", "All", true);
+			(meta.categories || []).forEach(g => this.add_cat(box, g, g, false));
+		}
+		this.search_items();
+	},
+
+	add_cat(box, val, label, active) {
+		const b = document.createElement("button");
+		b.className = "vpos-cat" + (active ? " active" : "");
+		b.textContent = label;
+		b.setAttribute("data-cat", val);
+		b.addEventListener("click", () => {
+			box.querySelectorAll(".vpos-cat").forEach(x => x.classList.remove("active"));
+			b.classList.add("active");
+			this.category = val || null;
+			this.search_items();
+		});
+		box.appendChild(b);
+	},
+
+	build_layout() {
+		const root = document.getElementById("vpos-root");
+		root.innerHTML = `
+		<div class="vpos-app">
+			<aside class="vpos-side">
+				<div class="vpos-brand">
+					<div class="vpos-brand-logo">V</div>
+					<div><div class="vpos-brand-name">Vehicle POS</div><div class="vpos-brand-sub">Management</div></div>
+				</div>
+				<div class="vpos-side-foot">v1.0 · VMS</div>
+			</aside>
+
+			<section class="vpos-main">
+				<div class="vpos-topbar">
+					<div class="vpos-search-wrap">
+						<span class="vpos-search-ic">\uD83D\uDD0D</span>
+						<input class="vpos-search" placeholder="Search parts, services, tires, lubricants..." />
+					</div>
+					<div class="vpos-company-wrap">
+						<label>Branch</label>
+						<select class="vpos-company"></select>
+					</div>
+				</div>
+				<div class="vpos-cats" id="vpos-cats"></div>
+				<div class="vpos-products" id="vpos-products"></div>
+			</section>
+
+			<aside class="vpos-order">
+				<div class="vpos-order-head">
+					<div class="vpos-order-title">Current Ticket</div>
+					<div class="vpos-field">
+						<label>Vehicle (plate)</label>
+						<input class="vpos-vehicle-input" list="vpos-veh-list" placeholder="Type plate / customer..." autocomplete="off" />
+						<datalist id="vpos-veh-list"></datalist>
+					</div>
+					<div class="vpos-field">
+						<label>Customer</label>
+						<div class="vpos-customer-display">Select a vehicle first...</div>
+						<input type="hidden" class="vpos-customer" />
+					</div>
+				</div>
+
+				<div class="vpos-cart" id="vpos-cart"></div>
+
+				<div class="vpos-totals">
+					<div class="vpos-row"><span>Total Qty</span><span class="vpos-tqty">0</span></div>
+					<div class="vpos-row"><span>Discount</span><span class="vpos-tdisc">₱0.00</span></div>
+					<div class="vpos-row vpos-grand"><span>Total</span><span class="vpos-total">₱0.00</span></div>
+				</div>
+
+				<div class="vpos-tender">
+					<div class="vpos-field">
+						<label>Payment Method</label>
+						<select class="vpos-paymethod">
+							<option>Cash</option><option>Bank Transfer</option><option>Credit Card</option>
+							<option>GCash</option><option>Maya</option><option>Cheque</option>
+						</select>
+					</div>
+					<div class="vpos-field">
+						<label>Paid Amount</label>
+						<input class="vpos-paid" type="number" min="0" step="0.01" value="0" />
+					</div>
+					<div class="vpos-row vpos-change"><span>Change</span><span class="vpos-balance">₱0.00</span></div>
+				</div>
+
+				<div class="vpos-actions">
+					<button class="vpos-clear">Clear</button>
+					<button class="vpos-charge">Charge & Print</button>
+				</div>
+			</aside>
+		</div>`;
+
+		// events
+		const self = this;
+		root.querySelector(".vpos-search").addEventListener("keydown", e => { if (e.key === "Enter") self.search_items(); });
+		root.querySelector(".vpos-paid").addEventListener("input", () => self.update_totals());
+		root.querySelector(".vpos-paymethod").addEventListener("change", e => { self.payment_method = e.target.value; });
+		root.querySelector(".vpos-clear").addEventListener("click", () => self.clear_all());
+		root.querySelector(".vpos-charge").addEventListener("click", () => self.charge());
+
+		const veh = root.querySelector(".vpos-vehicle-input");
+		veh.addEventListener("input", () => {
+			clearTimeout(self._vehTimer);
+			self._vehTimer = setTimeout(() => self.search_vehicles(veh.value), 250);
+		});
+		veh.addEventListener("change", () => self.on_vehicle_change(veh.value));
+
+		this.render_cart();
+	},
+
+	async search_vehicles(q) {
+		if (!q || q.length < 1) return;
+		const rows = await api("vehicle_management.vehicle_management.pos_api.search_vehicles", { txt: q }) || [];
+		const dl = document.getElementById("vpos-veh-list");
+		dl.innerHTML = "";
+		rows.forEach(v => {
+			const o = document.createElement("option");
+			o.value = v.name;
+			o.textContent = (v.plate_no ? v.plate_no + " — " : "") + (v.customer_name || v.customer);
+			dl.appendChild(o);
+		});
+	},
+
+	async on_vehicle_change(vehicle) {
+		this.vehicle = vehicle || null;
+		const disp = document.querySelector(".vpos-customer-display");
+		const hidden = document.querySelector(".vpos-customer");
+		if (!vehicle) {
+			this.customer = null; hidden.value = ""; disp.textContent = "Select a vehicle first..."; return;
+		}
+		const d = await api("vehicle_management.vehicle_management.pos_api.get_customer_vehicle", { vehicle: vehicle });
+		if (d && d.customer) {
+			this.customer = d.customer;
+			hidden.value = d.customer;
+			disp.textContent = d.customer_name ? d.customer + " — " + d.customer_name : d.customer;
+		} else {
+			this.customer = null; hidden.value = ""; disp.textContent = "";
+			alert("Selected Customer Vehicle has no linked Customer.");
+		}
+	},
+
+	async search_items() {
+		const txt = document.querySelector(".vpos-search").value;
+		const items = await api("vehicle_management.vehicle_management.pos_api.get_items", {
+			txt: txt, category: this.category || "", company: this.company || ""
+		}) || [];
+		this.render_products(items);
+	},
+
+	render_products(items) {
+		const box = document.getElementById("vpos-products");
+		box.innerHTML = "";
+		if (!items.length) { box.innerHTML = '<div class="vpos-empty">No items found.</div>'; return; }
+		const self = this;
+		items.forEach(it => {
+			const name = it.name || it.code;
+			const rate = flt(it.rate) || 0;
+			const card = document.createElement("div");
+			card.className = "vpos-prod";
+			card.innerHTML = `
+				<div class="vpos-prod-thumb">${name.charAt(0).toUpperCase()}</div>
+				<div class="vpos-prod-name">${name}</div>
+				<div class="vpos-prod-code">${it.code}</div>
+				<div class="vpos-prod-foot">
+					<div class="vpos-prod-rate">${peso(rate)}</div>
+					<button class="vpos-add">+ ADD</button>
+				</div>`;
+			if (this.cart.find(c => c.item_code === it.code)) {
+				const b = document.createElement("div");
+				b.className = "vpos-prod-badge";
+				const c2 = this.cart.find(c => c.item_code === it.code);
+				b.textContent = c2.qty + " in cart";
+				card.appendChild(b);
+			}
+			card.querySelector(".vpos-add").addEventListener("click", (e) => {
+				e.stopPropagation();
+				self.add_to_cart(it.code, name, rate, it.uom);
+			});
+			box.appendChild(card);
+		});
+	},
+
+	add_to_cart(code, name, rate, uom) {
+		const ex = this.cart.find(c => c.item_code === code);
+		if (ex) ex.qty += 1;
+		else this.cart.push({ item_code: code, item_name: name, qty: 1, rate: rate, uom: uom, discount_amount: 0 });
+		this.render_cart();
+		this.update_totals();
+		this.search_items();
+	},
+
+	render_cart() {
+		const box = document.getElementById("vpos-cart");
+		box.innerHTML = "";
+		if (!this.cart.length) { box.innerHTML = '<div class="vpos-empty">Cart is empty.<br/>Add items from the catalog →</div>'; return; }
+		const self = this;
+		this.cart.forEach((c, i) => {
+			const amt = flt(c.qty) * flt(c.rate) - flt(c.discount_amount);
+			const row = document.createElement("div");
+			row.className = "vpos-cart-row";
+			row.innerHTML = `
+				<div class="vpos-cart-info">
+					<div class="vpos-cart-name">${c.item_name}</div>
+					<div class="vpos-cart-meta">${peso(c.rate)} · ${c.uom || ""}</div>
+				</div>
+				<div class="vpos-qty">
+					<button class="vpos-dec">−</button>
+					<input class="vpos-qty-in" type="number" min="1" value="${c.qty}" />
+					<button class="vpos-inc">+</button>
+				</div>
+				<div class="vpos-cart-amt">${peso(amt)}</div>
+				<button class="vpos-remove" title="Remove">×</button>`;
+			row.querySelector(".vpos-inc").addEventListener("click", () => { c.qty += 1; self.render_cart(); self.update_totals(); });
+			row.querySelector(".vpos-dec").addEventListener("click", () => { c.qty = Math.max(1, c.qty - 1); self.render_cart(); self.update_totals(); });
+			row.querySelector(".vpos-qty-in").addEventListener("change", e => { c.qty = Math.max(1, parseInt(e.target.value) || 1); self.render_cart(); self.update_totals(); });
+			row.querySelector(".vpos-remove").addEventListener("click", () => { self.cart.splice(i, 1); self.render_cart(); self.update_totals(); self.search_items(); });
+			box.appendChild(row);
+		});
+	},
+
+	update_totals() {
+		let tqty = 0, tdisc = 0, total = 0;
+		this.cart.forEach(c => { tqty += flt(c.qty); tdisc += flt(c.discount_amount); total += flt(c.qty) * flt(c.rate) - flt(c.discount_amount); });
+		this.total = total;
+		document.querySelector(".vpos-tqty").textContent = tqty;
+		document.querySelector(".vpos-tdisc").textContent = peso(tdisc);
+		document.querySelector(".vpos-total").textContent = peso(total);
+		const paid = flt(document.querySelector(".vpos-paid").value) || 0;
+		document.querySelector(".vpos-balance").textContent = peso(flt(paid - total));
+	},
+
+	clear_all() {
+		this.cart = [];
+		this.customer = null;
+		this.vehicle = null;
+		document.querySelector(".vpos-customer").value = "";
+		document.querySelector(".vpos-customer-display").textContent = "Select a vehicle first...";
+		document.querySelector(".vpos-vehicle-input").value = "";
+		document.querySelector(".vpos-paid").value = 0;
+		this.update_totals();
+		this.render_cart();
+		this.search_items();
+	},
+
+	charge() {
+		const total = this.total || 0;
+		const paid = flt(document.querySelector(".vpos-paid").value) || 0;
+		if (!this.cart.length) { alert("Cart is empty."); return; }
+		if (!this.vehicle) { alert("Please select a Customer Vehicle."); return; }
+		if (!this.customer) { alert("Selected Customer Vehicle has no linked Customer."); return; }
+		if (!this.company) { alert("Please select a Branch / Company."); return; }
+		if (paid < total) { alert("Paid Amount is less than Total."); return; }
+		if (!confirm("Charge " + peso(total) + " (Change " + peso(paid - total) + ")?")) return;
+		this.submit_invoice(total, paid);
+	},
+
+	async submit_invoice(total, paid) {
+		const items = this.cart.map(c => ({
+			item_code: c.item_code, qty: c.qty, rate: c.rate, discount_amount: c.discount_amount, uom: c.uom
+		}));
+		const r = await api("vehicle_management.vehicle_management.doctype.vehicle_pos_invoice.vehicle_pos_invoice.create_from_pos", {
+			data: JSON.stringify({
+				customer: this.customer,
+				vehicle: this.vehicle || null,
+				company: this.company,
+				paid_amount: paid,
+				payment_method: this.payment_method,
+				items: items
+			})
+		});
+		if (r && r.name) {
+			alert("POS Invoice " + r.name + " created.");
+			this.cart = [];
+			this.render_cart();
+			this.update_totals();
+			document.querySelector(".vpos-paid").value = 0;
+			if (r.pos_invoice) window.open("/desk#Form/POS Invoice/" + r.pos_invoice, "_blank");
+		} else {
+			alert("Failed to create POS Invoice. Check console.");
+		}
+	}
+};
+
+window.addEventListener("DOMContentLoaded", () => {
+	try { POS.init(); }
+	catch (err) { console.error("POS init error:", err); document.getElementById("vpos-root").innerHTML = '<div style="padding:24px;color:#b91c1c">POS failed: ' + (err && err.message ? err.message : err) + '</div>'; }
+});
+</script>

@@ -1,0 +1,8 @@
+frappe-bench/env
+frappe-bench/env_py311_backup
+frappe-bench/node_modules
+frappe-bench/apps/*/node_modules
+**/.git
+**/.git/**
+*.log
+backup_*.sql

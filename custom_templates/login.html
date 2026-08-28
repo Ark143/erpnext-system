@@ -1,0 +1,858 @@
+{% extends "templates/web.html" %}
+{% block navbar %}
+{% if show_language_picker %}
+    {{ super() }}
+{% endif %}
+{% endblock %}
+
+{% macro email_login_body() -%}
+{% if not disable_user_pass_login or (ldap_settings and ldap_settings.enabled) %}
+<div class="page-card-body">
+	<div class="login-error-banner" style="display:none">
+		<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+			<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+		</svg>
+		<span></span>
+	</div>
+	
+	<div class="form-group">
+		<label class="form-label" for="login_email">{{ login_label or _("Email Address")}}</label>
+		<div class="email-field input-wrapper">
+			<svg class="field-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+				<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+				<polyline points="22,6 12,13 2,6"/>
+			</svg>
+			<input type="text" id="login_email" class="form-control"
+				placeholder="{% if login_name_placeholder %}{{ login_name_placeholder }}{% else %}name@example.com{% endif %}"
+				required autofocus autocomplete="username">
+		</div>
+		<p class="field-error"></p>
+	</div>
+
+	<div class="form-group">
+		<div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+			<label class="form-label" for="login_password">{{ _("Password") }}</label>
+			{% if not disable_user_pass_login %}
+			<a href="#forgot" class="forgot-link">{{ _("Forgot password?") }}</a>
+			{% endif %}
+		</div>
+		<div class="password-field input-wrapper">
+			<svg class="field-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+				<rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+				<path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+			</svg>
+			<input type="password" id="login_password" class="form-control" placeholder="••••••••"
+				autocomplete="current-password" required>
+			<span class="toggle-password-btn" onclick="togglePassVisibility()">
+				<svg id="eyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+					<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+				</svg>
+			</span>
+		</div>
+		<p class="field-error"></p>
+	</div>
+</div>
+{% endif %}
+
+<div class="page-card-actions">
+	{% if not disable_user_pass_login %}
+	<button class="btn btn-login btn-get-started" type="submit">
+		<span>{{ _("Get Started") }}</span>
+		<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+			<line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+		</svg>
+	</button>
+	{% endif %}
+	{% if ldap_settings and ldap_settings.enabled %}
+	<button class="btn btn-ldap-login btn-login" style="margin-top:10px;background:#334155;color:#fff">
+		{{ _("Login with LDAP") }}</button>
+	{% endif %}
+	{% if login_with_email_link %}
+	<a href="#login-with-email-link" class="btn btn-login-option btn-login-with-email-link" style="margin-top:10px">
+		{{ _("Login with Email Link") }}</a>
+	{% endif %}
+
+	<div class="social-divider">
+		<span>or continue with</span>
+	</div>
+
+	<div class="quick-portals-grid">
+		<a href="/executive-ultra-mrf-dau-main" class="portal-btn" title="Ultra MRF Dau Main Dashboard">
+			<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.4"/><rect x="14" y="3" width="7" height="5" rx="1.4"/><rect x="14" y="12" width="7" height="9" rx="1.4"/><rect x="3" y="16" width="7" height="5" rx="1.4"/></svg>
+			<span>Main Dau</span>
+		</a>
+		<a href="/executive-automan-car-care-center" class="portal-btn" title="Automan Car Care Center Dashboard">
+			<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+			<span>Automan</span>
+		</a>
+		<a href="/executive-the-wheelhub" class="portal-btn" title="The Wheelhub Dashboard">
+			<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="9"/><line x1="12" y1="15" x2="12" y2="22"/></svg>
+			<span>Wheelhub</span>
+		</a>
+	</div>
+</div>
+{% endmacro %}
+
+{% block head_include %}
+<style>
+/* ==========================================================================
+   Dribbble Minimal Glassmorphic Sign-In Style (Morva Labs Inspired)
+   ========================================================================== */
+:root {
+  --font-family-sans-serif: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: #EEF4FC !important;
+  color: #0F172A;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.web-footer, .navbar {
+  display: none !important;
+}
+
+.page-content-wrapper {
+  min-height: 100vh !important;
+  padding: 0 !important;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Background Atmosphere */
+.dribbble-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at 85% 15%, #C8E3FE 0%, #D8ECFF 30%, #EEF4FC 70%, #F5F9FF 100%);
+  overflow: hidden;
+}
+
+.dribbble-bg-clouds {
+  position: absolute;
+  top: -10%;
+  right: -5%;
+  width: 70vw;
+  height: 70vw;
+  max-width: 900px;
+  max-height: 900px;
+  background: radial-gradient(circle, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 70%);
+  filter: blur(40px);
+}
+
+.dribbble-bg-wireframe {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 1200px;
+  height: 1200px;
+  opacity: 0.45;
+}
+
+/* Header Brand Navigation */
+.dribbble-top-bar {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 28px 48px;
+  max-width: 1440px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.dribbble-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+}
+
+.dribbble-brand img {
+  height: 38px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.06));
+}
+
+.dribbble-brand-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.dribbble-brand-title {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #0F172A;
+  line-height: 1.15;
+}
+
+.dribbble-brand-sub {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #64748B;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.dribbble-top-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-header-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  padding: 8px 16px;
+  border-radius: 99px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+  transition: all 0.2s ease;
+}
+
+.btn-header-pill:hover {
+  background: #FFFFFF;
+  color: #0F172A;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+/* Center Form Container */
+.dribbble-login-wrapper {
+  position: relative;
+  z-index: 10;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 24px 60px;
+  box-sizing: border-box;
+}
+
+.for-forgot,
+.for-login-with-email-link,
+.for-signup,
+.for-email-login {
+  display: none;
+}
+
+.for-login,
+.for-forgot,
+.for-login-with-email-link,
+.for-signup,
+.for-email-login,
+.for-reset-password {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* Glassmorphic Sign-in Card */
+.login-content.page-card {
+  width: 100%;
+  max-width: 430px;
+  background: rgba(255, 255, 255, 0.82) !important;
+  backdrop-filter: blur(28px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.95) !important;
+  box-shadow: 0 24px 48px -12px rgba(15, 35, 75, 0.12), 0 0 0 1px rgba(210, 225, 245, 0.6) !important;
+  border-radius: 28px !important;
+  padding: 38px 36px !important;
+  box-sizing: border-box !important;
+  margin: 0 auto !important;
+  animation: cardFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes cardFadeIn {
+  from { opacity: 0; transform: translateY(14px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Card Header & Icon Box */
+.dribbble-card-header {
+  margin-bottom: 24px;
+}
+
+.dribbble-icon-box {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.04);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0F172A;
+  margin-bottom: 18px;
+}
+
+.dribbble-card-title {
+  font-size: 23px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: #0F172A;
+  margin: 0 0 6px 0;
+  line-height: 1.2;
+}
+
+.dribbble-card-subtitle {
+  font-size: 13.5px;
+  color: #64748B;
+  margin: 0;
+  line-height: 1.45;
+  font-weight: 450;
+}
+
+/* Form Groups & Inputs */
+.form-group {
+  margin-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1E293B;
+  margin: 0;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.input-wrapper .field-icon {
+  position: absolute;
+  left: 14px;
+  color: #94A3B8;
+  pointer-events: none;
+  transition: color 0.2s ease;
+}
+
+.input-wrapper .form-control {
+  width: 100% !important;
+  height: 46px !important;
+  padding: 10px 42px 10px 42px !important;
+  background: #F8FAFC !important;
+  border: 1.5px solid #E2E8F0 !important;
+  border-radius: 12px !important;
+  font-size: 14.5px !important;
+  font-weight: 500 !important;
+  color: #0F172A !important;
+  box-sizing: border-box !important;
+  outline: none !important;
+  box-shadow: none !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.input-wrapper .form-control:focus {
+  background: #FFFFFF !important;
+  border-color: #2563EB !important;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12) !important;
+}
+
+.input-wrapper .form-control:focus + .field-icon,
+.input-wrapper:focus-within .field-icon {
+  color: #2563EB !important;
+}
+
+.toggle-password-btn {
+  position: absolute;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94A3B8;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  transition: color 0.2s ease;
+}
+
+.toggle-password-btn:hover {
+  color: #0F172A;
+}
+
+.forgot-link {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #64748B;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.forgot-link:hover {
+  color: #0F172A;
+  text-decoration: underline;
+}
+
+/* Primary CTA Button ("Get Started") */
+.btn-get-started {
+  width: 100%;
+  height: 48px;
+  background: #0F172A !important;
+  color: #FFFFFF !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  border-radius: 12px !important;
+  border: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  cursor: pointer !important;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.18) !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  margin-top: 6px;
+}
+
+.btn-get-started:hover {
+  background: #1E293B !important;
+  transform: translateY(-1.5px) !important;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.25) !important;
+}
+
+.btn-get-started:active {
+  transform: translateY(0) !important;
+}
+
+/* Divider & Quick Portals */
+.social-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 22px 0 16px;
+  color: #94A3B8;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.social-divider::before,
+.social-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1.5px dashed #CBD5E1;
+}
+
+.social-divider span {
+  padding: 0 12px;
+}
+
+.quick-portals-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.portal-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 64px;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  text-decoration: none;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+  transition: all 0.2s ease;
+}
+
+.portal-btn span {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.portal-btn:hover {
+  background: #F8FAFC;
+  border-color: #CBD5E1;
+  transform: translateY(-1.5px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+}
+
+.portal-btn:hover span {
+  color: #0F172A;
+}
+
+/* Error Banner */
+.login-error-banner {
+  background: #FEF2F2;
+  border: 1px solid #FCA5A5;
+  color: #991B1B;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.field-error {
+  color: #DC2626;
+  font-size: 12px;
+  margin: 4px 0 0 0;
+  display: none;
+}
+
+.sign-up-message {
+  margin-top: 18px;
+  font-size: 13px;
+  color: #64748B;
+  text-align: center;
+}
+
+.sign-up-message a {
+  color: #0F172A;
+  font-weight: 600;
+  text-decoration: none;
+  margin-left: 4px;
+}
+
+.sign-up-message a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+  .dribbble-top-bar {
+    padding: 18px 20px;
+  }
+/* Flaticon Animated App Icon */
+.dribbble-icon-box {
+  width: 58px;
+  height: 58px;
+  border-radius: 18px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.flaticon-animated-app-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  perspective: 600px;
+}
+
+.flaticon-app-svg {
+  animation: flaticonFloat 4s ease-in-out infinite;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  filter: drop-shadow(0 8px 16px rgba(37, 99, 235, 0.15));
+}
+
+.flaticon-animated-app-icon:hover .flaticon-app-svg {
+  transform: scale(1.1) rotate(-3deg);
+}
+
+@keyframes flaticonFloat {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-4px) rotate(1.5deg);
+  }
+}
+
+.app-tile {
+  transform-origin: center;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.flaticon-animated-app-icon:hover .tile-1 {
+  transform: translate(-1.5px, -1.5px) scale(1.05);
+}
+.flaticon-animated-app-icon:hover .tile-2 {
+  transform: translate(1.5px, -1.5px) scale(1.05);
+}
+.flaticon-animated-app-icon:hover .tile-3 {
+  transform: translate(-1.5px, 1.5px) scale(1.05);
+}
+.flaticon-animated-app-icon:hover .tile-4 {
+  transform: translate(1.5px, 1.5px) scale(1.05);
+}
+
+.app-sparkle {
+  transform-origin: 53px 11px;
+  animation: sparkleTwinkle 2.5s ease-in-out infinite;
+}
+
+@keyframes sparkleTwinkle {
+  0%, 100% { transform: scale(0.8) rotate(0deg); opacity: 0.7; }
+  50% { transform: scale(1.25) rotate(90deg); opacity: 1; }
+}
+
+.dribbble-card-title {
+  font-size: 23px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: #0F172A;
+  margin: 0 0 6px 0;
+  line-height: 1.2;
+}
+
+.dribbble-card-subtitle {
+  font-size: 13.5px;
+  color: #64748B;
+  margin: 0;
+  line-height: 1.45;
+  font-weight: 450;
+}
+
+@media (max-width: 480px) {
+  .dribbble-top-bar {
+    padding: 18px 20px;
+  }
+  .login-content.page-card {
+    padding: 28px 22px !important;
+    border-radius: 20px !important;
+  }
+}
+</style>
+{% endblock %}
+
+{% macro dribbble_card_head(title, subtitle) %}
+<div class="dribbble-card-header">
+	<div class="dribbble-icon-box">
+		<div class="flaticon-animated-app-icon">
+			<svg viewBox="0 0 64 64" width="56" height="56" class="flaticon-app-svg">
+				<defs>
+					<linearGradient id="tileBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+						<stop offset="0%" stop-color="#60A5FA"/>
+						<stop offset="100%" stop-color="#2563EB"/>
+					</linearGradient>
+					<linearGradient id="tileCoral" x1="0%" y1="0%" x2="100%" y2="100%">
+						<stop offset="0%" stop-color="#FB7185"/>
+						<stop offset="100%" stop-color="#E11D48"/>
+					</linearGradient>
+					<linearGradient id="tileTeal" x1="0%" y1="0%" x2="100%" y2="100%">
+						<stop offset="0%" stop-color="#34D399"/>
+						<stop offset="100%" stop-color="#059669"/>
+					</linearGradient>
+					<linearGradient id="tileViolet" x1="0%" y1="0%" x2="100%" y2="100%">
+						<stop offset="0%" stop-color="#A78BFA"/>
+						<stop offset="100%" stop-color="#7C3AED"/>
+					</linearGradient>
+					<filter id="flaticonGlow" x="-20%" y="-20%" width="140%" height="140%">
+						<feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#2563EB" flood-opacity="0.18"/>
+					</filter>
+				</defs>
+				
+				<!-- Outer Application Squircle Window -->
+				<rect x="4" y="4" width="56" height="56" rx="16" fill="#FFFFFF" stroke="#0F172A" stroke-width="2.6" filter="url(#flaticonGlow)"/>
+				
+				<!-- 4 Animated App Grid Tiles (Lineal Color Style) -->
+				<!-- Tile 1: Top-Left (Blue / Analytics) -->
+				<g class="app-tile tile-1">
+					<rect x="11" y="11" width="18" height="18" rx="6" fill="url(#tileBlue)" stroke="#0F172A" stroke-width="2"/>
+					<path d="M15 23v-3M20 23v-6M25 23v-8" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round"/>
+				</g>
+				
+				<!-- Tile 2: Top-Right (Coral / Operations) -->
+				<g class="app-tile tile-2">
+					<rect x="35" y="11" width="18" height="18" rx="6" fill="url(#tileCoral)" stroke="#0F172A" stroke-width="2"/>
+					<circle cx="44" cy="18" r="3" stroke="#FFFFFF" stroke-width="1.6" fill="none"/>
+					<path d="M39 25c0-2.5 2.2-4 5-4s5 1.5 5 4" stroke="#FFFFFF" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+				</g>
+				
+				<!-- Tile 3: Bottom-Left (Emerald / Inventory) -->
+				<g class="app-tile tile-3">
+					<rect x="11" y="35" width="18" height="18" rx="6" fill="url(#tileTeal)" stroke="#0F172A" stroke-width="2"/>
+					<path d="M15 42l5-3 5 3v5l-5 3-5-3z" stroke="#FFFFFF" stroke-width="1.6" fill="none" stroke-linejoin="round"/>
+					<path d="M20 39v8" stroke="#FFFFFF" stroke-width="1.4"/>
+				</g>
+				
+				<!-- Tile 4: Bottom-Right (Purple / Modules) -->
+				<g class="app-tile tile-4">
+					<rect x="35" y="35" width="18" height="18" rx="6" fill="url(#tileViolet)" stroke="#0F172A" stroke-width="2"/>
+					<circle cx="44" cy="44" r="3" stroke="#FFFFFF" stroke-width="1.8" fill="none"/>
+					<path d="M44 38v2M44 48v2M38 44h2M48 44h2" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round"/>
+				</g>
+
+				<!-- Sparkle Accent -->
+				<path class="app-sparkle" d="M53 7l1.5 3 3 1.5-3 1.5-1.5 3-1.5-3-3-1.5 3-1.5z" fill="#F59E0B" stroke="#0F172A" stroke-width="0.8"/>
+			</svg>
+		</div>
+	</div>
+	<h1 class="dribbble-card-title">{{ _(title) }}</h1>
+	<p class="dribbble-card-subtitle">{{ _(subtitle) }}</p>
+</div>
+{% endmacro %}
+
+{% block page_content %}
+<div class="dribbble-bg">
+	<div class="dribbble-bg-clouds"></div>
+	<svg class="dribbble-bg-wireframe" viewBox="0 0 1200 1200" fill="none" xmlns="http://www.w3.org/2000/svg">
+		<circle cx="600" cy="600" r="280" stroke="#93C5FD" stroke-width="1.2" stroke-dasharray="6 6"/>
+		<circle cx="600" cy="600" r="420" stroke="#93C5FD" stroke-width="1.2"/>
+		<circle cx="600" cy="600" r="560" stroke="#93C5FD" stroke-width="1.2" stroke-dasharray="10 10"/>
+		<ellipse cx="600" cy="600" rx="580" ry="260" stroke="#BFDBFE" stroke-width="1" transform="rotate(-25 600 600)"/>
+	</svg>
+</div>
+
+<header class="dribbble-top-bar">
+	<a href="/" class="dribbble-brand">
+		<img src="/files/ultra_mrf_logo.png" alt="Company Logo" onerror="this.src='/assets/erpnext/images/erpnext-logo.svg'">
+		<div class="dribbble-brand-text">
+			<span class="dribbble-brand-title">ULTRA MRF Automotive</span>
+			<span class="dribbble-brand-sub">Enterprise Management System</span>
+		</div>
+	</a>
+	<div class="dribbble-top-right">
+		<a href="/executive-ultra-mrf-dau-main" class="btn-header-pill">
+			<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+			<span>Executive Portals</span>
+		</a>
+	</div>
+</header>
+
+<div class="dribbble-login-wrapper">
+	<section class='for-login'>
+		<div class="login-content page-card">
+			{{ dribbble_card_head('Sign in with email', 'Welcome back! Enter your credentials to access your ERP workspace.') }}
+			<form class="form-signin form-login" role="form" novalidate>
+				{{ email_login_body() }}
+			</form>
+			{%- if not disable_signup and not disable_user_pass_login -%}
+			<div class="sign-up-message">
+				{{ _("Don't have an account?") }}
+				<a href="#signup">{{ _("Sign up") }}</a>
+			</div>
+			{%- endif -%}
+		</div>
+	</section>
+
+	<section class='for-forgot'>
+		<div class="login-content page-card">
+			<div class="dribbble-card-header">
+				<div class="dribbble-icon-box">
+					<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+						<rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+						<path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+					</svg>
+				</div>
+				<h1 class="dribbble-card-title">{{ _('Forgot Password?') }}</h1>
+				<p class="dribbble-card-subtitle">{{ _("Enter your email address and we'll send you instructions to reset your password.") }}</p>
+			</div>
+			<form class="form-signin form-forgot hide" role="form" novalidate>
+				<div class="page-card-body">
+					<div class="form-group">
+						<label class="form-label" for="forgot_email">{{ _("Email Address") }}</label>
+						<div class="email-field input-wrapper">
+							<svg class="field-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+								<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+								<polyline points="22,6 12,13 2,6"/>
+							</svg>
+							<input type="email" id="forgot_email" class="form-control"
+								placeholder="name@example.com" required autofocus autocomplete="username">
+						</div>
+						<p class="field-error"></p>
+					</div>
+				</div>
+				<div class="page-card-actions">
+					<button class="btn btn-login btn-get-started btn-forgot" type="submit" disabled>{{ _("Send Reset Link") }}</button>
+				</div>
+			</form>
+			<div class="sign-up-message">
+				<a href="#login">← {{ _("Back to sign in") }}</a>
+			</div>
+		</div>
+	</section>
+
+	<section class='for-login-with-email-link'>
+		<div class="login-content page-card">
+			{{ dribbble_card_head('Sign in with link', 'Check your inbox for a magic sign-in link.') }}
+			<form class="form-signin form-login-with-email-link hide" role="form" novalidate>
+				<div class="page-card-body">
+					<div class="form-group">
+						<label class="form-label" for="login_with_email_link_email">{{ _("Email Address") }}</label>
+						<div class="email-field input-wrapper">
+							<svg class="field-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+								<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+								<polyline points="22,6 12,13 2,6"/>
+							</svg>
+							<input type="email" id="login_with_email_link_email" class="form-control"
+								placeholder="name@example.com" required autofocus autocomplete="username">
+						</div>
+						<p class="field-error"></p>
+					</div>
+				</div>
+				<div class="page-card-actions">
+					<button class="btn btn-login btn-get-started btn-login-with-email-link" type="submit">{{ _("Send Login Link") }}</button>
+					<div class="sign-up-message" style="margin-top:12px">
+						<a href="#login">{{ _("Login with password") }}</a>
+					</div>
+				</div>
+			</form>
+		</div>
+	</section>
+
+	<section class='for-signup {{ "signup-disabled" if disable_signup else "" }}'>
+		<div class="login-content page-card">
+			{{ dribbble_card_head('Create Account', "Let's setup your workspace account.") }}
+			{%- if not disable_signup -%}
+			{{ signup_form_template }}
+			{%- else -%}
+			<div class="signup-disabled-message" style="text-align:center;padding:20px 0">
+				<p style="color:#64748B;font-size:13.5px">{{ _("New user signups are currently managed by administrators.") }}</p>
+				<a href="#login" class="btn btn-get-started" style="display:inline-flex;width:auto;padding:0 24px">{{ _("Back to Sign In") }}</a>
+			</div>
+			{%- endif -%}
+		</div>
+	</section>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+{% include "templates/includes/login/login.js" %}
+
+function togglePassVisibility() {
+  const pInput = document.getElementById('login_password');
+  const eye = document.getElementById('eyeIcon');
+  if (pInput.type === 'password') {
+    pInput.type = 'text';
+    eye.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+  } else {
+    pInput.type = 'password';
+    eye.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  }
+}
+</script>
+{% endblock %}
+
+{% block sidebar %}{% endblock %}

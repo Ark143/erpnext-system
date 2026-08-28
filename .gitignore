@@ -16,18 +16,25 @@ frappe-bench/sites/common_site_config.json
 # Frappe framework + ERPNext core (dependencies; not custom code)
 frappe-bench/apps/frappe/
 frappe-bench/apps/erpnext/
+!frappe-bench/apps/frappe/frappe/www/login.html
 
 # Site data: private (db backups, etc) + public uploads + any nested sites/
+frappe-bench/sites/sites/
 frappe-bench/sites/**/private/
-frappe-bench/sites/**/public/
-frappe-bench/sites/**/*.sql.gz
 frappe-bench/sites/**/backups/
 frappe-bench/sites/*/private/
-frappe-bench/sites/*/public/
 frappe-bench/sites/*/locks/
 frappe-bench/sites/*/logs/
 frappe-bench/logs/
 logs/
+
+# Preserve company branding logo
+!frappe-bench/sites/site1.local/public/files/ultra_mrf_logo*
+*.test_traversal.txt
+
+# Preserve database data backups
+!data_backup/
+!data_backup/*
 
 # Local scratch / payloads
 _wp_payload.json

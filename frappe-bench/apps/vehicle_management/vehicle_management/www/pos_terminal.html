@@ -509,8 +509,22 @@ const POS={
       '<rect x="160" y="44" width="150" height="150" fill="#ffffff"/>'+
       '<svg x="166" y="48" width="138" height="138" viewBox="'+vb+'">'+qrInner+'</svg>'+
       '</svg>';
-    const blob=new Blob([svg],{type:"image/svg+xml"});
-    const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=(this.empNo||this.cashier||"cashier")+"-id-badge.svg";a.click();
+    const fname=(this.empNo||this.cashier||"cashier")+"-id-badge.svg";
+    let done=false;
+    try{
+      const blob=new Blob([svg],{type:"image/svg+xml"});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement("a");
+      a.href=url;a.download=fname;a.rel="noopener";
+      document.body.appendChild(a);a.click();document.body.removeChild(a);
+      setTimeout(()=>URL.revokeObjectURL(url),4000);
+      done=true;
+    }catch(e){}
+    if(!done){
+      // fallback: open the SVG in a new tab so the user can save it manually
+      const w=window.open("","_blank");
+      if(w){w.document.open();w.document.write(svg);w.document.close();}
+    }
   },
   clock(){const d=new Date();const t=d.toLocaleTimeString("en-PH",{hour:"2-digit",minute:"2-digit"});const dt=d.toLocaleDateString("en-PH",{month:"short",day:"numeric"});const el=document.getElementById("vpos-clock");if(el)el.textContent=dt+" · "+t;},
   async searchVeh(q){

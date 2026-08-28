@@ -180,6 +180,7 @@
 const PESO="\u20B1";
 function flt(v){return Number(v||0);}
 function peso(n){return PESO+Number(n||0).toLocaleString("en-US",{minimumFractionDigits:2});}
+function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
 async function api(method,params){
   let url="/api/method/"+method;
   if(params){const qs=Object.keys(params).map(k=>encodeURIComponent(k)+"="+encodeURIComponent(params[k]==null?"":params[k])).join("&");if(qs)url+="?"+qs;}
@@ -450,10 +451,12 @@ const POS={
         <div class="vpos-prof-qr">${svg}</div>
         <div class="vpos-prof-hint">Badge is generated from this cashier's Employee record (Company Details). To log in on any device: upload the image or paste the code.</div>
         <div class="vpos-prof-code" id="vpos-prof-code">${qrData}</div>
-        <button class="vpos-li-qr" id="vpos-prof-dl" style="margin-top:10px">&#11015; Download badge (SVG)</button>
+        <button class="vpos-li-qr" id="vpos-prof-dl" style="margin-top:10px">&#11015; Download ID badge (SVG)</button>
         <button class="vpos-li-qr" id="vpos-prof-copy" style="margin-top:8px">&#128203; Copy badge code</button>
       </div>
-      <button class="vpos-prof-print" onclick="window.print()">&#128424; Print Badge (ID size)</button>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="vpos-prof-print" onclick="window.print()" style="flex:1">&#128424; Print</button>
+      </div>
       </div>
       <div class="vpos-idcard" id="vpos-idcard">
         <div class="vpos-id-head">
@@ -475,9 +478,39 @@ const POS={
         </div>
       </div>`;
         const dl=document.getElementById("vpos-prof-dl");
-        if(dl)dl.onclick=()=>{const blob=new Blob([svg],{type:"image/svg+xml"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=(this.cashier||"cashier")+"-badge.svg";a.click();};
+        if(dl)dl.onclick=()=>self.downloadCard();
         const cp=document.getElementById("vpos-prof-copy");
         if(cp)cp.onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(qrData);cp.textContent="Copied!";setTimeout(()=>cp.textContent="⧉ Copy badge code",1200);};
+  },
+  downloadCard(){
+    // build a standalone, ID-sized (85.6 x 54 mm) SVG of the cashier badge: details + QR
+    const W=323.6,H=204.1; // px at 96dpi ~= 85.6 x 54 mm
+    const qrData=(this.email||this.cashier||"")+"|"+(window.__vposPwd||"");
+    let qrInner="",vb="0 0 100 100";
+    try{
+      const q=window.qrcode(0,"M");q.addData(qrData);q.make();
+      const tag=q.createSvgTag({cellSize:3,margin:3,scalable:true});
+      vb=(tag.match(/viewBox="([^"]+)"/)||[])[1]||vb;
+      qrInner=tag.replace(/^<svg[^>]*>/,"").replace(/<\/svg>$/,"");
+    }catch(e){}
+    const lines=[["Emp #",this.empNo||"—"],["Designation",this.designation||"—"],["Branch",this.branch||"—"],["Department",this.department||"—"],["Reports To",this.reportsTo||"—"],["Email",this.email||this.cashier||""]];
+    let txt="";
+    lines.forEach((p,i)=>{const y=52+i*15;txt+='<text x="10" y="'+y+'" font-family="Inter,Arial,sans-serif" font-size="8.5" fill="#5b6b68">'+esc(p[0])+': <tspan fill="#13302b" font-weight="700">'+esc(p[1])+'</tspan></text>';});
+    const svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+W+'mm" height="'+H+'mm" viewBox="0 0 '+W+' '+H+'">'+
+      '<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0c1a18"/><stop offset="1" stop-color="#123b33"/></linearGradient></defs>'+
+      '<rect width="'+W+'" height="'+H+'" fill="#ffffff" stroke="#0c1a18" stroke-width="1"/>'+
+      '<rect width="'+W+'" height="30" fill="url(#bg)"/>'+
+      '<rect x="8" y="5" width="22" height="22" rx="5" fill="#16c784"/>'+
+      '<text x="34" y="13" font-family="Space Grotesk,Arial,sans-serif" font-size="14" font-weight="700" fill="#04201a">V</text>'+
+      '<text x="34" y="22" font-family="Inter,Arial,sans-serif" font-size="9" font-weight="700" fill="#ffffff">'+esc(this.company||"")+'</text>'+
+      '<text x="'+(W-8)+'" y="18" text-anchor="end" font-family="Inter,Arial,sans-serif" font-size="8" font-weight="800" letter-spacing="1" fill="#ffffff">CASHIER ID</text>'+
+      '<text x="10" y="44" font-family="Space Grotesk,Arial,sans-serif" font-size="13" font-weight="700" fill="#0c1a18">'+esc(this.empName||this.employee||"—")+'</text>'+
+      txt+
+      '<rect x="160" y="44" width="150" height="150" fill="#ffffff"/>'+
+      '<svg x="166" y="48" width="138" height="138" viewBox="'+vb+'">'+qrInner+'</svg>'+
+      '</svg>';
+    const blob=new Blob([svg],{type:"image/svg+xml"});
+    const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=(this.empNo||this.cashier||"cashier")+"-id-badge.svg";a.click();
   },
   clock(){const d=new Date();const t=d.toLocaleTimeString("en-PH",{hour:"2-digit",minute:"2-digit"});const dt=d.toLocaleDateString("en-PH",{month:"short",day:"numeric"});const el=document.getElementById("vpos-clock");if(el)el.textContent=dt+" · "+t;},
   async searchVeh(q){

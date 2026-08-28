@@ -230,8 +230,8 @@ const POS={
   },
   async afterLogin(){
     const c=await api("vehicle_management.vehicle_management.pos_api.get_cashier");
-    if(c&&c.company){this.company=c.company;this.cashier=c.user;this.email=c.email||c.user;this.employee=c.employee||"";}
-    else{this.company=null;this.cashier=this.user;this.email=this.user;this.employee="";}
+    if(c&&c.company){this.company=c.company;this.cashier=c.user;this.email=c.email||c.user;this.employee=c.employee||"";this.empName=c.employee_name||"";this.empNo=c.employee_number||"";this.designation=c.designation||"";this.branch=c.branch||"";this.department=c.department||"";this.reportsTo=c.reports_to_name||c.reports_to||"";}
+    else{this.company=null;this.cashier=this.user;this.email=this.user;this.employee="";this.empName="";this.empNo="";this.designation="";this.branch="";this.department="";this.reportsTo="";}
     this.loggedIn=true;
     this.build();
     this.load();
@@ -373,11 +373,16 @@ const POS={
       <div class="vpos-prof-card" id="vpos-prof-card">
         <div class="vpos-prof-logo">V</div>
         <h3>Cashier Badge</h3>
-        <div class="vpos-prof-row"><span>Email</span><b>${this.email||this.cashier||""}</b></div>
-        <div class="vpos-prof-row"><span>Employee</span><b>${this.employee||"—"}</b></div>
+        <div class="vpos-prof-row"><span>Employee #</span><b>${this.empNo||"—"}</b></div>
+        <div class="vpos-prof-row"><span>Employee</span><b>${this.empName||this.employee||"—"}</b></div>
+        <div class="vpos-prof-row"><span>Designation</span><b>${this.designation||"—"}</b></div>
         <div class="vpos-prof-row"><span>Company</span><b>${this.company||""}</b></div>
+        <div class="vpos-prof-row"><span>Branch</span><b>${this.branch||"—"}</b></div>
+        <div class="vpos-prof-row"><span>Department</span><b>${this.department||"—"}</b></div>
+        <div class="vpos-prof-row"><span>Reports To</span><b>${this.reportsTo||"—"}</b></div>
+        <div class="vpos-prof-row"><span>Email</span><b>${this.email||this.cashier||""}</b></div>
         <div class="vpos-prof-qr">${svg}</div>
-        <div class="vpos-prof-hint">Badge is based on this cashier's Employee email & company. To log in on any device: upload the image or paste the code.</div>
+        <div class="vpos-prof-hint">Badge is generated from this cashier's Employee record (Company Details). To log in on any device: upload the image or paste the code.</div>
         <div class="vpos-prof-code" id="vpos-prof-code">${qrData}</div>
         <button class="vpos-li-qr" id="vpos-prof-dl" style="margin-top:10px">&#11015; Download badge (SVG)</button>
         <button class="vpos-li-qr" id="vpos-prof-copy" style="margin-top:8px">&#128203; Copy badge code</button>

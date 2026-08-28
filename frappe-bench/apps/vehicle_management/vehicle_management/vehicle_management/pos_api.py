@@ -111,35 +111,49 @@ def search_vehicles(txt=None, limit=20):
 def get_cashier():
 	"""Resolve the logged-in cashier's identity from their Employee record.
 
-	Returns {user, email, employee, company, enabled}.
-	- email / company are taken from the Employee whose user_id == session user
-	  (the company "he belongs in" the Employee list).
-	- Falls back to Cashier Profile company, then Global Defaults default_company.
+	Returns the employee's company-details section fields:
+	user, email, employee, employee_name, employee_number, designation,
+	branch, department, reports_to (+ name), company, enabled.
+	Falls back to Cashier Profile company, then Global Defaults default_company.
 	"""
 	user = frappe.session.user
 	email = user
-	employee = None
-	company = None
+	out = {
+		"user": user, "email": email, "employee": None, "employee_name": None,
+		"employee_number": None, "designation": None, "branch": None,
+		"department": None, "reports_to": None, "company": None, "enabled": 1,
+	}
 	emp = frappe.db.get_value(
-		"Employee", {"user_id": user}, ["name", "employee_name", "company"], as_dict=True
+		"Employee",
+		{"user_id": user},
+		["name", "employee_name", "employee_number", "designation", "branch",
+		 "department", "reports_to", "company"],
+		as_dict=True,
 	)
 	if emp:
-		employee = emp.get("name")
+		out["employee"] = emp.get("name")
+		out["employee_name"] = emp.get("employee_name")
+		out["employee_number"] = emp.get("employee_number")
+		out["designation"] = emp.get("designation")
+		out["branch"] = emp.get("branch")
+		out["department"] = emp.get("department")
+		out["reports_to"] = emp.get("reports_to")
+		if emp.get("reports_to"):
+			out["reports_to_name"] = frappe.db.get_value("Employee", emp["reports_to"], "employee_name")
 		if emp.get("company"):
-			company = emp["company"]
-	if not company:
+			out["company"] = emp["company"]
+	if not out["company"]:
 		row = frappe.db.get_value("Cashier Profile", user, ["company", "enabled"], as_dict=True)
 		if row and row.get("company"):
-			company = row["company"]
-			enabled = row.get("enabled") or 0
+			out["company"] = row["company"]
+			out["enabled"] = row.get("enabled") or 0
 		else:
-			company = frappe.db.get_single_value("Global Defaults", "default_company")
-			enabled = 1
+			out["company"] = frappe.db.get_single_value("Global Defaults", "default_company")
+			out["enabled"] = 1
 	else:
-		# still honour Cashier Profile enabled flag if present
 		row = frappe.db.get_value("Cashier Profile", user, "enabled", as_dict=True)
-		enabled = (row.get("enabled") if row else 1) or 0
-	return {"user": user, "email": email, "employee": employee, "company": company, "enabled": enabled}
+		out["enabled"] = (row.get("enabled") if row else 1) or 0
+	return out
 
 
 @frappe.whitelist()

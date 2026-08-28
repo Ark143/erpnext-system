@@ -109,6 +109,7 @@ def search_vehicles(txt=None, limit=20):
 
 @frappe.whitelist()
 def get_cashier():
+
 	"""Resolve the logged-in cashier's identity from their Employee record.
 
 	Returns the employee's company-details section fields:

@@ -1,0 +1,689 @@
+<div class="vpos-root" id="vpos-root"></div>
+<style>
+:root{--ink:#0c1a18;--surface:#f3f7f5;--card:#ffffff;--line:#dde9e4;--mint:#16c784;--mint-d:#0fa76d;--slate:#5b6b68;--amber:#f5a623;--danger:#ef4444;--txt:#13302b;--muted:#7c8f8a}
+*{box-sizing:border-box}
+.vpos-root{font-family:'Inter',system-ui,Arial,sans-serif;background:var(--surface);color:var(--txt);min-height:82vh}
+/* LOGIN */
+.vpos-login{position:fixed;inset:0;background:linear-gradient(160deg,#0c1a18,#123b33);display:flex;align-items:center;justify-content:center;z-index:1000}
+.vpos-login-card{background:#fff;border-radius:20px;padding:30px 26px;width:340px;max-width:92vw;box-shadow:0 24px 60px rgba(0,0,0,.4);text-align:center}
+.vpos-login-logo{width:54px;height:54px;border-radius:14px;background:var(--mint);color:#04201a;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:28px;display:flex;align-items:center;justify-content:center;margin:0 auto 10px}
+.vpos-login-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:20px;color:var(--ink)}
+.vpos-login-sub{color:var(--muted);font-size:12px;margin-bottom:16px}
+.vpos-li{width:100%;height:44px;border:1.5px solid var(--line);border-radius:11px;padding:0 13px;font-size:14px;margin-bottom:10px;font-family:'Inter'}
+.vpos-li:focus{border-color:var(--mint);outline:none}
+.vpos-li-btn{width:100%;height:46px;background:var(--mint);color:#04201a;border:none;border-radius:11px;font-weight:800;font-size:15px;cursor:pointer;font-family:'Space Grotesk',sans-serif}
+.vpos-li-btn:hover{background:var(--mint-d)}
+.vpos-li-or{color:var(--muted);font-size:11px;margin:14px 0 8px}
+.vpos-li-qr{width:100%;height:44px;background:#eef7f3;color:var(--mint-d);border:1.5px solid var(--line);border-radius:11px;font-weight:700;cursor:pointer}
+.vpos-li-err{color:var(--danger);font-size:12px;margin-top:10px;min-height:16px}
+.vpos-li-up{display:block;width:100%;margin-top:8px;height:44px;background:#eef7f3;color:var(--mint-d);border:1.5px solid var(--line);border-radius:11px;font-weight:700;cursor:pointer;line-height:44px;text-align:center;font-size:13px}
+.vpos-li-code{width:100%;height:40px;border:1.5px solid var(--line);border-radius:11px;padding:0 13px;font-size:13px;margin-top:8px;font-family:'Inter'}
+.vpos-prof-code{margin-top:8px;font-size:11px;color:var(--muted);background:#eef7f3;border-radius:8px;padding:6px 8px;word-break:break-all}
+/* APP */
+.vpos-app{display:grid;grid-template-columns:74px 1fr 400px;grid-template-areas:"rail main ticket";height:calc(100vh - 56px);min-height:540px}
+.vpos-rail{grid-area:rail;background:var(--ink);display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 0}
+.vpos-logo{width:42px;height:42px;border-radius:12px;background:var(--mint);color:#04201a;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:22px;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.vpos-rail-ic{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#9fc3b8;font-size:20px;cursor:pointer;transition:.15s}
+.vpos-rail-ic.active{background:#16302b;color:#fff}
+.vpos-rail-ic:hover{color:#fff}
+.vpos-rail-ic.logout{color:#e98a8a}
+.vpos-rail-ic.logout:hover{background:#3a1c1c;color:#fff}
+.vpos-rail-foot{margin-top:auto;color:#5d7a72;font-size:10px;text-align:center;line-height:1.3;max-width:64px;word-break:break-word}
+.vpos-main{grid-area:main;display:flex;flex-direction:column;min-width:0;padding:14px 16px;gap:12px}
+.vpos-ticket{grid-area:ticket;background:var(--card);border-left:1px solid var(--line);display:flex;flex-direction:column;padding:14px;gap:12px}
+.vpos-bar{display:flex;gap:10px;align-items:center}
+.vpos-scan{flex:1;display:flex;align-items:center;gap:8px;background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:0 14px;height:46px}
+.vpos-scan:focus-within{border-color:var(--mint)}
+.vpos-scan .ic{font-size:16px;opacity:.55}
+.vpos-scan input{border:none;outline:none;flex:1;font-size:14px;font-family:'Inter';background:transparent;color:var(--txt)}
+.vpos-branch{display:flex;flex-direction:column;gap:2px}
+.vpos-branch label{font-size:9px;font-weight:700;letter-spacing:.6px;color:var(--muted);text-transform:uppercase}
+.vpos-branch select{height:46px;border:1.5px solid var(--line);border-radius:12px;background:#eef7f3;padding:0 10px;font-family:'Inter';font-weight:600;color:var(--txt)}
+.vpos-stock-toggle{height:46px;align-self:flex-end;border:1.5px solid var(--line);border-radius:12px;background:#fff;padding:0 14px;font-family:'Inter';font-weight:700;color:var(--slate);cursor:pointer;font-size:12px;white-space:nowrap}
+.vpos-stock-toggle.on{background:var(--mint);border-color:var(--mint);color:#04201a}
+.vpos-cats{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.vpos-cat{border:1px solid var(--line);background:var(--card);color:var(--slate);padding:8px 15px;border-radius:999px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:.12s}
+.vpos-cat:hover{border-color:var(--mint)}
+.vpos-cat.active{background:var(--mint);color:#04201a;border-color:var(--mint)}
+.vpos-grid{flex:1;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:12px;align-items:stretch;padding:4px 2px 8px}
+.vpos-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:6px;cursor:pointer;transition:.12s;position:relative;height:100%}
+.vpos-card:hover{border-color:var(--mint);box-shadow:0 8px 22px rgba(22,199,132,.15);transform:translateY(-2px)}
+.vpos-thumb{width:46px;height:46px;border-radius:12px;background:#e7f6f0;color:var(--mint-d);font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:19px;display:flex;align-items:center;justify-content:center;margin-bottom:4px}
+.vpos-card-name{font-weight:700;font-size:13px;line-height:1.2;color:var(--ink);min-height:2.4em}
+.vpos-card-code{font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vpos-card-stock{font-size:10px;font-weight:700;color:var(--mint-d);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vpos-card-stock.zero{color:var(--danger)}
+.vpos-card-foot{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:4px}
+.vpos-card-rate{color:var(--mint-d);font-weight:800;font-size:13px;font-family:'Space Grotesk',sans-serif}
+.vpos-card-add{border:none;background:var(--mint);color:#04201a;font-weight:700;font-size:11px;padding:6px 12px;border-radius:999px;cursor:pointer}
+.vpos-card-badge{position:absolute;top:8px;right:8px;background:var(--mint);color:#04201a;font-size:10px;font-weight:700;padding:2px 7px;border-radius:999px}
+.vpos-empty{color:var(--muted);padding:30px;text-align:center;grid-column:1/-1;font-size:13px}
+.vpos-ticket{background:var(--card);border-left:1px solid var(--line);display:flex;flex-direction:column;padding:14px;gap:12px}
+.vpos-tk-head{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:10px}
+.vpos-tk-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px;color:var(--ink)}
+.vpos-tk-sub{font-size:11px;color:var(--muted)}
+.vpos-field{display:flex;flex-direction:column;gap:4px}
+.vpos-field label{font-size:10px;font-weight:700;letter-spacing:.5px;color:var(--muted);text-transform:uppercase}
+.vpos-inp{height:38px;border:1.5px solid var(--line);border-radius:10px;background:#fbfdfc;padding:0 11px;font-family:'Inter';font-size:13px;width:100%}
+.vpos-vin{height:38px;border:1.5px solid var(--line);border-radius:10px;background:#fbfdfc;padding:0 11px;font-size:13px;width:100%}
+.vpos-cust{background:#eef7f3;color:var(--ink);min-height:36px;padding:8px 11px;border:1.5px solid var(--line);border-radius:10px;font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vpos-cust:empty::before{content:"Select a vehicle first...";color:var(--muted);font-weight:400}
+.vpos-cart{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;min-height:60px}
+.vpos-row{display:flex;align-items:center;gap:8px;background:#f7fbfa;border:1px solid var(--line);border-radius:12px;padding:9px 11px}
+.vpos-row-info{flex:1;min-width:0}
+.vpos-row-name{font-weight:700;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vpos-row-meta{font-size:10px;color:var(--muted)}
+.vpos-qty{display:flex;align-items:center;gap:5px}
+.vpos-qty button{width:26px;height:26px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--mint-d);font-weight:800;cursor:pointer;line-height:1}
+.vpos-qty-in{width:46px;text-align:center;border:1px solid var(--line);border-radius:8px;height:26px;font-weight:700}
+.vpos-row-amt{font-weight:800;font-size:12px;min-width:74px;text-align:right;font-family:'Space Grotesk',sans-serif}
+.vpos-row-disc{width:64px;text-align:center;border:1px solid var(--line);border-radius:8px;height:26px;font-size:11px}
+.vpos-remove{border:none;background:transparent;color:var(--danger);font-size:18px;cursor:pointer;line-height:1}
+.vpos-totals{background:#eef7f3;border:1px solid var(--line);border-radius:12px;padding:11px 13px;display:flex;flex-direction:column;gap:5px}
+.vpos-tot-row{display:flex;justify-content:space-between;font-size:13px;color:var(--slate)}
+.vpos-tot-grand{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:19px;color:var(--ink);margin-top:2px}
+.vpos-tender{display:flex;flex-direction:column;gap:7px}
+.vpos-paid{height:46px;border:2px solid var(--mint);border-radius:12px;padding:0 13px;font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:18px;background:#fff;color:var(--ink);cursor:pointer;text-align:center}
+.vpos-quick{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.vpos-quick button{height:34px;border:1px solid var(--line);background:#fbfdfc;border-radius:9px;font-weight:700;color:var(--mint-d);cursor:pointer;font-size:12px}
+.vpos-quick button:hover{background:#eef7f3}
+.vpos-change{font-weight:700;color:var(--mint-d);font-size:13px}
+.vpos-act{display:flex;gap:8px;margin-top:2px}
+.vpos-clear{flex:0 0 92px;background:#fff;border:1.5px solid var(--line);color:var(--slate);font-weight:700;border-radius:12px;padding:13px;cursor:pointer}
+.vpos-charge{flex:1;background:var(--mint);border:none;color:#04201a;font-weight:800;font-size:15px;font-family:'Space Grotesk',sans-serif;border-radius:12px;padding:13px;cursor:pointer;transition:.12s;display:flex;align-items:center;justify-content:center;gap:8px}
+.vpos-charge:hover{background:var(--mint-d)}
+.vpos-charge:disabled{opacity:.5;cursor:not-allowed}
+/* KEYPAD */
+.vpos-keypad{position:fixed;inset:0;background:rgba(8,20,18,.55);display:none;align-items:center;justify-content:center;z-index:1100}
+.vpos-keypad.open{display:flex}
+.vpos-kp-box{background:#fff;border-radius:18px;padding:18px;width:300px;max-width:92vw}
+.vpos-kp-val{font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:30px;text-align:right;color:var(--ink);padding:8px 10px;background:#eef7f3;border-radius:12px;margin-bottom:12px;overflow:hidden}
+.vpos-kp-keys{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.vpos-kp-keys button{height:54px;border:1px solid var(--line);background:#fbfdfc;border-radius:12px;font-size:18px;font-weight:700;cursor:pointer}
+.vpos-kp-keys button:active{background:#eef7f3}
+.vpos-kp-actions{display:flex;gap:8px;margin-top:12px}
+.vpos-kp-clr{flex:1;height:46px;border:1.5px solid var(--line);background:#fff;border-radius:12px;font-weight:700;cursor:pointer}
+.vpos-kp-ok{flex:1;height:46px;border:none;background:var(--mint);color:#04201a;border-radius:12px;font-weight:800;font-size:15px;cursor:pointer;font-family:'Space Grotesk',sans-serif}
+/* HISTORY */
+.vpos-hist{background:#fff;border:1px solid var(--line);border-radius:14px;padding:13px 15px;margin-bottom:10px;cursor:pointer}
+.vpos-hist-top{display:flex;justify-content:space-between;font-family:'Space Grotesk',sans-serif;font-weight:700;color:var(--ink)}
+.vpos-hist-sub{color:var(--muted);font-size:12px;margin:3px 0}
+.vpos-hist-foot{display:flex;justify-content:space-between;font-weight:700;color:var(--mint-d);margin-top:4px}
+/* PROFILE */
+.vpos-prof{display:flex;flex-direction:column;align-items:center;gap:14px;padding-top:10px}
+.vpos-prof-card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px;width:320px;max-width:92vw;text-align:center;box-shadow:0 8px 22px rgba(0,0,0,.08)}
+.vpos-prof-logo{width:48px;height:48px;border-radius:12px;background:var(--mint);color:#04201a;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:24px;display:flex;align-items:center;justify-content:center;margin:0 auto 8px}
+.vpos-prof-card h3{font-family:'Space Grotesk',sans-serif;margin:4px 0 12px;color:var(--ink)}
+.vpos-prof-row{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px dashed var(--line)}
+.vpos-prof-qr{margin:14px 0;display:flex;justify-content:center}
+.vpos-prof-qr svg{width:200px;height:200px}
+.vpos-prof-hint{color:var(--muted);font-size:11px}
+.vpos-prof-print{border:none;background:var(--mint);color:#04201a;font-weight:800;padding:12px 20px;border-radius:12px;cursor:pointer;font-family:'Space Grotesk',sans-serif}
+/* ID CARD (CR80: 85.6 x 54 mm) — on-screen preview + print target */
+.vpos-idcard{width:85.6mm;height:54mm;background:#fff;border:1px solid var(--line);border-radius:6px;box-shadow:0 8px 22px rgba(0,0,0,.10);overflow:hidden;display:flex;flex-direction:column;box-sizing:border-box;font-family:'Inter',sans-serif;color:#0c1a18;margin-top:14px}
+.vpos-id-head{display:flex;align-items:center;gap:8px;background:linear-gradient(160deg,#0c1a18,#123b33);color:#fff;padding:6px 10px}
+.vpos-id-logo{width:26px;height:26px;border-radius:7px;background:var(--mint);color:#04201a;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center}
+.vpos-id-co{flex:1;font-size:10px;font-weight:700;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vpos-id-title{font-size:9px;font-weight:800;letter-spacing:1px;opacity:.85}
+.vpos-id-body{flex:1;display:flex;gap:8px;padding:7px 10px;align-items:center}
+.vpos-id-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:1.5px}
+.vpos-id-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13px;line-height:1.1;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vpos-id-line{display:flex;justify-content:space-between;font-size:8.5px;line-height:1.25}
+.vpos-id-line span{color:#5b6b68;font-weight:600}
+.vpos-id-line b{color:#13302b;font-weight:700;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:62%}
+.vpos-id-qr{width:42mm;height:42mm;flex:0 0 42mm;display:flex;align-items:center;justify-content:center}
+.vpos-id-qr svg{width:100%;height:100%}
+.vpos-tip{position:fixed;z-index:999;max-width:320px;background:var(--ink);color:#eafff6;font-size:11px;line-height:1.5;border:1px solid var(--mint-d);border-radius:10px;padding:9px 12px;box-shadow:0 10px 26px rgba(0,0,0,.35);pointer-events:none;opacity:0;transition:opacity .1s;display:none;white-space:pre-line;font-family:'Inter'}
+.vpos-tip b{color:var(--mint)}
+.vpos-li-ok{background:#e7f6f0;color:var(--mint-d);font-size:12px;font-weight:600;padding:8px 10px;border-radius:10px;margin-bottom:6px}
+/* RESPONSIVE: tablet (<=1100px) rail becomes top bar, main + ticket side by side */
+@media (max-width:1100px){
+  .vpos-app{grid-template-columns:1fr 360px;grid-template-areas:"rail rail" "main ticket";height:auto}
+  .vpos-rail{flex-direction:row;width:100%;padding:10px 12px;justify-content:flex-start;gap:10px}
+  .vpos-logo{margin-bottom:0;margin-right:8px}
+  .vpos-rail-ic{width:44px;height:44px}
+  .vpos-rail-foot{margin-top:0;margin-left:auto;max-width:160px;text-align:right}
+  .vpos-ticket{border-left:none;border-top:none}
+}
+/* RESPONSIVE: phone (<=680px) single column, ticket stacks, products 2-col */
+@media (max-width:680px){
+  .vpos-app{grid-template-columns:1fr;grid-template-areas:"rail" "main" "ticket";height:auto}
+  .vpos-rail{padding:8px 10px;gap:8px;overflow-x:auto}
+  .vpos-logo{width:34px;height:34px;font-size:18px;margin-right:4px}
+  .vpos-rail-ic{width:40px;height:40px;font-size:18px}
+  .vpos-rail-foot{font-size:9px;max-width:120px}
+  .vpos-main{padding:10px 12px;gap:10px}
+  .vpos-bar{flex-wrap:wrap}
+  .vpos-scan{flex:1 1 100%}
+  .vpos-branch,.vpos-stock-toggle{flex:1 1 auto}
+  .vpos-stock-toggle{white-space:normal;height:auto;min-height:44px}
+  .vpos-grid{grid-template-columns:repeat(2,1fr);gap:10px}
+  .vpos-card-name{font-size:12px;min-height:2.2em}
+  .vpos-ticket{border-top:1px solid var(--line);padding:12px}
+  .vpos-paid{font-size:16px}
+  .vpos-charge{font-size:14px;padding:11px}
+  .vpos-clear{padding:11px}
+  .vpos-keypad .vpos-kp-box{width:100%}
+  .vpos-kp-keys button{height:48px;font-size:16px}
+}
+@media print{
+  @page{size:85.6mm 54mm;margin:0}
+  body *{visibility:hidden!important}
+  .vpos-idcard,.vpos-idcard *{visibility:visible!important}
+  .vpos-idcard{position:fixed;left:0;top:0;margin:0;box-shadow:none;border:1px solid #000;width:85.6mm!important;height:54mm!important}
+}
+</style>
+
+<script id="vpos-libs"></script>
+
+<script>
+const PESO="\u20B1";
+function flt(v){return Number(v||0);}
+function peso(n){return PESO+Number(n||0).toLocaleString("en-US",{minimumFractionDigits:2});}
+function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+async function api(method,params){
+  let url="/api/method/"+method;
+  if(params){const qs=Object.keys(params).map(k=>encodeURIComponent(k)+"="+encodeURIComponent(params[k]==null?"":params[k])).join("&");if(qs)url+="?"+qs;}
+  try{const r=await fetch(url,{headers:{"X-Requested-With":"XMLHttpRequest"}});const j=await r.json();return j.message;}
+  catch(e){console.error("api",method,e);return null;}
+}
+async function frappeLogin(usr,pwd){
+  const fd=new URLSearchParams();fd.set("usr",usr);fd.set("pwd",pwd);
+  const r=await fetch("/api/method/login",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded","Expect":""},body:fd.toString()});
+  const j=await r.json();return j;
+}
+
+const POS={
+  cart:[],customer:null,vehicle:null,company:null,payment_method:"Cash",category:null,total:0,_vt:null,
+  PROD_LIMIT:10,showAll:false,STOCK:{},onlyStock:false,loggedIn:false,user:null,cashier:null,
+  history:[],discount:0,loggedOutMsg:null,
+  async init(){
+    this.hideChrome();
+    this.buildLogin();
+  },
+  hideChrome(){
+    // hide Frappe default header/footer so the SPA is full-bleed
+    const hide=()=>{
+      const nv=document.querySelector("nav.navbar, header.navbar"); if(nv)nv.style.display="none";
+      const wf=document.querySelector("footer.web-footer"); if(wf)wf.style.display="none";
+      const fc=document.querySelector(".page_content"); if(fc)fc.style.padding="0";
+      document.body.style.margin="0";
+    };
+    hide();
+    window.addEventListener("load",hide);
+    setTimeout(hide,400);
+  },
+  logout(){
+    // end the Frappe session server-side, then show the close / sign-in screen
+    try{fetch("/api/method/logout",{method:"POST",headers:{"X-Requested-With":"XMLHttpRequest"}});}catch(e){}
+    window.__vposPwd=null;
+    this.loggedIn=false;this.cart=[];this.customer=null;this.vehicle=null;this.company=null;
+    this.cashier=null;this.email=null;this.employee=null;this.loggedOutMsg="You have been logged out. Sign in again to continue.";
+    this.buildLogin();
+  },
+  buildLogin(){
+    const r=document.getElementById("vpos-root");
+    r.innerHTML=`<div class="vpos-login" id="vpos-login">
+      <div class="vpos-login-card">
+        <div class="vpos-login-logo">V</div>
+        <div class="vpos-login-title">Vehicle POS</div>
+        <div class="vpos-login-sub">Cashier Sign-In</div>
+        ${this.loggedOutMsg?('<div class="vpos-li-ok">'+this.loggedOutMsg+'</div>'):''}
+        <input class="vpos-li vpos-li-user" placeholder="User ID / Email">
+        <input class="vpos-li vpos-li-pass" type="password" placeholder="Password">
+        <button class="vpos-li-btn" id="vpos-li-go">Sign In</button>
+        <div class="vpos-li-or">— or scan your QR badge —</div>
+        <button class="vpos-li-qr" id="vpos-li-scan">&#128247; Scan QR Code (camera)</button>
+        <label class="vpos-li-up"><input type="file" accept="image/*" id="vpos-li-file" style="display:none">&#128247; Upload QR image to log in</label>
+        <div class="vpos-li-or">— or paste badge code —</div>
+        <input class="vpos-li vpos-li-code" id="vpos-li-code" placeholder="user|password">
+        <button class="vpos-li-qr" id="vpos-li-codego">Use code</button>
+        <div class="vpos-li-err" id="vpos-li-err"></div>
+        <video id="vpos-video" playsinline style="display:none;width:100%;border-radius:12px;margin-top:10px"></video>
+      </div>
+    </div>`;
+    const self=this;
+    r.querySelector("#vpos-li-go").onclick=()=>self.doLogin(r.querySelector(".vpos-li-user").value,r.querySelector(".vpos-li-pass").value);
+    r.querySelector("#vpos-li-scan").onclick=()=>self.openScanner();
+    r.querySelector("#vpos-li-file").onchange=e=>self.decodeImage(e.target.files[0]);
+    r.querySelector("#vpos-li-codego").onclick=()=>{const c=r.querySelector("#vpos-li-code").value.trim();const p=c.split("|");self.applyQr(c);};
+  },
+  applyQr(data){
+    if(!data){return;}
+    const parts=String(data).split("|");
+    const u=document.querySelector(".vpos-li-user");const p=document.querySelector(".vpos-li-pass");
+    if(u)u.value=parts[0]||""; if(p)p.value=parts[1]||"";
+    this.doLogin(parts[0]||"",parts[1]||"");
+  },
+  decodeImage(file){
+    const err=document.getElementById("vpos-li-err");
+    if(!file){return;}
+    err.textContent="Reading QR from image...";
+    const img=new Image();
+    const reader=new FileReader();
+    reader.onload=()=>{
+      img.onload=()=>{
+        const canvas=document.createElement("canvas");canvas.width=img.width;canvas.height=img.height;
+        const ctx=canvas.getContext("2d");ctx.drawImage(img,0,0,canvas.width,canvas.height);
+        const d=ctx.getImageData(0,0,canvas.width,canvas.height);
+        let res=null;
+        try{res=window.jsQR(d.data,d.width,d.height,{inversionAttempts:"attemptBoth"});}catch(e){}
+        if(res&&res.data){err.textContent="QR decoded.";this.applyQr(res.data);}
+        else{err.textContent="No QR found in that image.";}
+      };
+      img.onerror=()=>err.textContent="Could not read image.";
+      img.src=reader.result;
+    };
+    reader.readAsDataURL(file);
+  },
+  async doLogin(usr,pwd){
+    const err=document.getElementById("vpos-li-err");
+    if(!usr||!pwd){err.textContent="Enter user ID and password.";return;}
+    err.textContent="Signing in...";
+    try{
+      const j=await frappeLogin(usr,pwd);
+      if(j&&(j.message==="Logged In"||j.full_name||j.home_route||(j&&!j.exc))){
+        this.user=usr;window.__vposPwd=pwd;
+        await this.afterLogin();
+      } else {
+        err.textContent=(j&&j.message)?j.message:"Login failed.";
+      }
+    }catch(e){err.textContent="Login error: "+e.message;}
+  },
+  async afterLogin(){
+    const c=await api("vehicle_management.vehicle_management.pos_api.get_cashier");
+    if(c&&c.company){this.company=c.company;this.cashier=c.user;this.email=c.email||c.user;this.employee=c.employee||"";this.empName=c.employee_name||"";this.empNo=c.employee_number||"";this.designation=c.designation||"";this.branch=c.branch||"";this.department=c.department||"";this.reportsTo=c.reports_to_name||c.reports_to||"";}
+    else{this.company=null;this.cashier=this.user;this.email=this.user;this.employee="";this.empName="";this.empNo="";this.designation="";this.branch="";this.department="";this.reportsTo="";}
+    this.loggedIn=true;
+    this.build();
+    this.load();
+  },
+  openScanner(){
+    const v=document.getElementById("vpos-video");const err=document.getElementById("vpos-li-err");
+    err.textContent="Point camera at the cashier QR badge...";
+    navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"}}).then(stream=>{
+      v.srcObject=stream;v.style.display="block";v.play();
+      const canvas=document.createElement("canvas");
+      const tick=()=>{
+        if(v.videoWidth===0){requestAnimationFrame(tick);return;}
+        canvas.width=v.videoWidth;canvas.height=v.videoHeight;
+        const ctx=canvas.getContext("2d");ctx.drawImage(v,0,0,canvas.width,canvas.height);
+        const img=ctx.getImageData(0,0,canvas.width,canvas.height);
+        let res=null;
+        try{res=window.jsQR(img.data,img.width,img.height,{inversionAttempts:"attemptBoth"});}catch(e){}
+        if(res&&res.data){
+          stream.getTracks().forEach(t=>t.stop());v.style.display="none";
+          const parts=res.data.split("|");
+          const u=document.querySelector(".vpos-li-user");const p=document.querySelector(".vpos-li-pass");
+          if(u)u.value=parts[0]||""; if(p)p.value=parts[1]||"";
+          this.doLogin(parts[0]||"",parts[1]||"");
+        } else {requestAnimationFrame(tick);}
+      };
+      tick();
+    }).catch(e=>{err.textContent="Camera blocked: "+e.message+". Use 'Upload QR image' or 'Use code' instead.";});
+  },
+  build(){
+    const r=document.getElementById("vpos-root");
+    r.innerHTML=`<div class="vpos-app">
+      <aside class="vpos-rail">
+        <div class="vpos-logo">V</div>
+        <div class="vpos-rail-ic active" data-view="pos" title="Point of Sale">&#128722;</div>
+        <div class="vpos-rail-ic" data-view="history" title="History">&#128202;</div>
+        <div class="vpos-rail-ic" data-view="profile" title="Cashier Profile">&#128100;</div>
+        <div class="vpos-rail-ic logout" data-action="logout" title="Log out / Close">&#9211;</div>
+        <div class="vpos-rail-foot" id="vpos-co">${this.company||""}<br>${this.cashier||""}</div>
+      </aside>
+      <section class="vpos-main" id="vpos-main">
+        <div class="vpos-view" id="vpos-view-pos">
+          <div class="vpos-bar">
+            <div class="vpos-scan"><span class="ic">&#128269;</span><input class="vpos-search" placeholder="Scan barcode or search item name / code..." autocomplete="off"></div>
+            <div class="vpos-branch"><label>Branch</label><select class="vpos-company" disabled></select></div>
+            <button class="vpos-stock-toggle" id="vpos-stock-toggle" title="Show only items with stock">With stock: OFF</button>
+            </div>
+          <div class="vpos-cats" id="vpos-cats"></div>
+          <div class="vpos-grid" id="vpos-products"></div>
+        </div>
+        <div class="vpos-view" id="vpos-view-history" style="display:none"></div>
+        <div class="vpos-view" id="vpos-view-profile" style="display:none"></div>
+      </section>
+      <aside class="vpos-ticket">
+        <div class="vpos-tk-head"><div><div class="vpos-tk-title">Current Ticket</div><div class="vpos-tk-sub" id="vpos-clock"></div></div></div>
+        <div class="vpos-field"><label>Vehicle (plate / search)</label><input class="vpos-vin" list="vpos-veh" placeholder="Type plate or customer..." autocomplete="off"><datalist id="vpos-veh"></datalist></div>
+        <div class="vpos-field"><label>Customer</label><div class="vpos-cust"></div></div>
+        <div class="vpos-cart" id="vpos-cart"></div>
+        <div class="vpos-totals">
+          <div class="vpos-tot-row"><span>Items</span><span class="vpos-tqty">0</span></div>
+          <div class="vpos-tot-row"><span>Discount</span><span class="vpos-tdisc">₱0.00</span></div>
+          <div class="vpos-tot-row vpos-tot-grand"><span>Total</span><span class="vpos-total">₱0.00</span></div>
+        </div>
+        <div class="vpos-tender">
+          <div class="vpos-tender-row"><input class="vpos-paid" type="text" readonly value="0" placeholder="Tap to enter paid"></div>
+          <div class="vpos-quick"><button data-q="100">+100</button><button data-q="200">+200</button><button data-q="500">+500</button><button data-q="1000">+1000</button></div>
+          <div class="vpos-tot-row vpos-change"><span>Change</span><span class="vpos-balance">₱0.00</span></div>
+        </div>
+        <div class="vpos-act"><button class="vpos-clear">Clear</button><button class="vpos-charge">&#9889; Charge</button></div>
+      </aside>
+    </div>
+    <div class="vpos-keypad" id="vpos-keypad">
+      <div class="vpos-kp-box">
+        <div class="vpos-kp-val" id="vpos-kp-val">0</div>
+        <div class="vpos-kp-keys">
+          ${[7,8,9,4,5,6,1,2,3,".","0","⌫"].map(k=>'<button data-k="'+k+'">'+k+'</button>').join("")}
+        </div>
+        <div class="vpos-kp-actions"><button class="vpos-kp-clr">Clear</button><button class="vpos-kp-ok">OK</button></div>
+      </div>
+    </div>`;
+    const self=this;
+    r.querySelectorAll(".vpos-rail-ic").forEach(b=>b.onclick=()=>{
+      const act=b.getAttribute("data-action");
+      if(act==="logout"){self.logout();return;}
+      self.switchView(b.getAttribute("data-view"));
+    });
+    r.querySelector(".vpos-search").addEventListener("keydown",e=>{if(e.key==="Enter")self.search();});
+    const comp=r.querySelector(".vpos-company");comp.value=this.company||"";
+    const st=r.querySelector("#vpos-stock-toggle");
+    st.onclick=()=>{self.onlyStock=!self.onlyStock;st.classList.toggle("on",self.onlyStock);st.textContent="With stock: "+(self.onlyStock?"ON":"OFF");self.render(self._items||[]);};
+    r.querySelector(".vpos-paid").addEventListener("click",()=>self.openKeypad());
+    r.querySelectorAll(".vpos-quick button").forEach(b=>b.onclick=()=>self.quickAdd(flt(b.getAttribute("data-q"))));
+    r.querySelector(".vpos-clear").onclick=()=>self.clear();
+    r.querySelector(".vpos-charge").onclick=()=>self.charge();
+    const vin=r.querySelector(".vpos-vin");
+    vin.addEventListener("input",()=>{clearTimeout(self._vt);self._vt=setTimeout(()=>self.searchVeh(vin.value),250);});
+    vin.addEventListener("change",()=>self.onVeh(vin.value));
+    this.clock();setInterval(()=>this.clock(),1000);
+    this.initTip();
+    this.cartRender();this.totals();
+  },
+  async load(){
+    const meta=await api("vehicle_management.vehicle_management.pos_api.get_meta");
+    const box=document.getElementById("vpos-cats");
+    if(meta){
+      this.cat(box,"", "All",true);
+      (meta.categories||[]).forEach(g=>this.cat(box,g,g,false));
+    }
+    this.search();
+    this.history=await api("vehicle_management.vehicle_management.pos_api.get_history")||[];
+  },
+  cat(box,val,label,active){
+    const b=document.createElement("button");b.className="vpos-cat"+(active?" active":"");b.textContent=label;b.setAttribute("data-cat",val);
+    b.onclick=()=>{box.querySelectorAll(".vpos-cat").forEach(x=>x.classList.remove("active"));b.classList.add("active");this.category=val||null;this.search();};
+    box.appendChild(b);
+  },
+  switchView(v){
+    document.querySelectorAll(".vpos-rail-ic").forEach(x=>x.classList.toggle("active",x.getAttribute("data-view")===v));
+    const map={pos:"vpos-view-pos",history:"vpos-view-history",profile:"vpos-view-profile"};
+    Object.keys(map).forEach(k=>{const el=document.getElementById(map[k]);if(el)el.style.display=(k===v?"block":"none");});
+    if(v==="pos"){this.renderPOS();}
+    else if(v==="history"){this.renderHistory();}
+    else if(v==="profile"){this.renderProfile();}
+  },
+  renderPOS(){
+    const view=document.getElementById("vpos-view-pos");
+    if(!view)return;
+    const grid=view.querySelector("#vpos-products");
+    if(!grid.innerHTML)this.search();
+  },
+  renderHistory(){
+    const view=document.getElementById("vpos-view-history");
+    if(!view)return;
+    const h=this.history||[];
+    if(!h.length){view.innerHTML='<div class="vpos-empty">No transactions yet.</div>';return;}
+    view.innerHTML=h.map(t=>`<div class="vpos-hist"><div class="vpos-hist-top"><b>${t.name}</b><span>${t.posting_date||""}</span></div><div class="vpos-hist-sub">${t.customer_name||""} ${t.vehicle?"· "+t.vehicle:""}</div><div class="vpos-hist-foot"><span>${peso(t.total_amount)}</span><span>${t.payment_method||""}</span></div></div>`).join("");
+  },
+  renderProfile(main){
+    const view=document.getElementById("vpos-view-profile");
+    if(!view)return;
+    const qrData=(this.email||this.cashier||"")+"|"+(window.__vposPwd||"");
+    let svg="";
+    try{
+      const qr=window.qrcode(0,"M");qr.addData(qrData);qr.make();
+      svg=qr.createSvgTag({cellSize:6,margin:8,scalable:true});
+    }catch(e){svg="<div style='color:#b91c1c'>QR unavailable</div>";}
+    view.innerHTML=`<div class="vpos-prof">
+      <div class="vpos-prof-card" id="vpos-prof-card">
+        <div class="vpos-prof-logo">V</div>
+        <h3>Cashier Badge</h3>
+        <div class="vpos-prof-row"><span>Employee #</span><b>${this.empNo||"—"}</b></div>
+        <div class="vpos-prof-row"><span>Employee</span><b>${this.empName||this.employee||"—"}</b></div>
+        <div class="vpos-prof-row"><span>Designation</span><b>${this.designation||"—"}</b></div>
+        <div class="vpos-prof-row"><span>Company</span><b>${this.company||""}</b></div>
+        <div class="vpos-prof-row"><span>Branch</span><b>${this.branch||"—"}</b></div>
+        <div class="vpos-prof-row"><span>Department</span><b>${this.department||"—"}</b></div>
+        <div class="vpos-prof-row"><span>Reports To</span><b>${this.reportsTo||"—"}</b></div>
+        <div class="vpos-prof-row"><span>Email</span><b>${this.email||this.cashier||""}</b></div>
+        <div class="vpos-prof-qr">${svg}</div>
+        <div class="vpos-prof-hint">Badge is generated from this cashier's Employee record (Company Details). To log in on any device: upload the image or paste the code.</div>
+        <div class="vpos-prof-code" id="vpos-prof-code">${qrData}</div>
+        <button class="vpos-li-qr" id="vpos-prof-dl" style="margin-top:10px">&#11015; Download ID badge (SVG)</button>
+        <button class="vpos-li-qr" id="vpos-prof-copy" style="margin-top:8px">&#128203; Copy badge code</button>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="vpos-prof-print" onclick="window.print()" style="flex:1">&#128424; Print</button>
+      </div>
+      </div>
+      <div class="vpos-idcard" id="vpos-idcard">
+        <div class="vpos-id-head">
+          <div class="vpos-id-logo">V</div>
+          <div class="vpos-id-co">${this.company||""}</div>
+          <div class="vpos-id-title">CASHIER ID</div>
+        </div>
+        <div class="vpos-id-body">
+          <div class="vpos-id-info">
+            <div class="vpos-id-name">${this.empName||this.employee||"—"}</div>
+            <div class="vpos-id-line"><span>Emp #</span><b>${this.empNo||"—"}</b></div>
+            <div class="vpos-id-line"><span>Designation</span><b>${this.designation||"—"}</b></div>
+            <div class="vpos-id-line"><span>Branch</span><b>${this.branch||"—"}</b></div>
+            <div class="vpos-id-line"><span>Department</span><b>${this.department||"—"}</b></div>
+            <div class="vpos-id-line"><span>Reports To</span><b>${this.reportsTo||"—"}</b></div>
+            <div class="vpos-id-line"><span>Email</span><b>${this.email||this.cashier||""}</b></div>
+          </div>
+          <div class="vpos-id-qr">${svg}</div>
+        </div>
+      </div>`;
+        const dl=document.getElementById("vpos-prof-dl");
+        if(dl)dl.onclick=()=>self.downloadCard();
+        const cp=document.getElementById("vpos-prof-copy");
+        if(cp)cp.onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(qrData);cp.textContent="Copied!";setTimeout(()=>cp.textContent="⧉ Copy badge code",1200);};
+  },
+  downloadCard(){
+    // build a standalone, ID-sized (85.6 x 54 mm) SVG of the cashier badge: details + QR
+    const W=323.6,H=204.1; // px at 96dpi ~= 85.6 x 54 mm
+    const qrData=(this.email||this.cashier||"")+"|"+(window.__vposPwd||"");
+    let qrInner="",vb="0 0 100 100";
+    try{
+      const q=window.qrcode(0,"M");q.addData(qrData);q.make();
+      const tag=q.createSvgTag({cellSize:3,margin:3,scalable:true});
+      vb=(tag.match(/viewBox="([^"]+)"/)||[])[1]||vb;
+      qrInner=tag.replace(/^<svg[^>]*>/,"").replace(/<\/svg>$/,"");
+    }catch(e){}
+    const lines=[["Emp #",this.empNo||"—"],["Designation",this.designation||"—"],["Branch",this.branch||"—"],["Department",this.department||"—"],["Reports To",this.reportsTo||"—"],["Email",this.email||this.cashier||""]];
+    let txt="";
+    lines.forEach((p,i)=>{const y=52+i*15;txt+='<text x="10" y="'+y+'" font-family="Inter,Arial,sans-serif" font-size="8.5" fill="#5b6b68">'+esc(p[0])+': <tspan fill="#13302b" font-weight="700">'+esc(p[1])+'</tspan></text>';});
+    const svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+W+'mm" height="'+H+'mm" viewBox="0 0 '+W+' '+H+'">'+
+      '<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0c1a18"/><stop offset="1" stop-color="#123b33"/></linearGradient></defs>'+
+      '<rect width="'+W+'" height="'+H+'" fill="#ffffff" stroke="#0c1a18" stroke-width="1"/>'+
+      '<rect width="'+W+'" height="30" fill="url(#bg)"/>'+
+      '<rect x="8" y="5" width="22" height="22" rx="5" fill="#16c784"/>'+
+      '<text x="34" y="13" font-family="Space Grotesk,Arial,sans-serif" font-size="14" font-weight="700" fill="#04201a">V</text>'+
+      '<text x="34" y="22" font-family="Inter,Arial,sans-serif" font-size="9" font-weight="700" fill="#ffffff">'+esc(this.company||"")+'</text>'+
+      '<text x="'+(W-8)+'" y="18" text-anchor="end" font-family="Inter,Arial,sans-serif" font-size="8" font-weight="800" letter-spacing="1" fill="#ffffff">CASHIER ID</text>'+
+      '<text x="10" y="44" font-family="Space Grotesk,Arial,sans-serif" font-size="13" font-weight="700" fill="#0c1a18">'+esc(this.empName||this.employee||"—")+'</text>'+
+      txt+
+      '<rect x="160" y="44" width="150" height="150" fill="#ffffff"/>'+
+      '<svg x="166" y="48" width="138" height="138" viewBox="'+vb+'">'+qrInner+'</svg>'+
+      '</svg>';
+    const fname=(this.empNo||this.cashier||"cashier")+"-id-badge.svg";
+    let done=false;
+    try{
+      const blob=new Blob([svg],{type:"image/svg+xml"});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement("a");
+      a.href=url;a.download=fname;a.rel="noopener";
+      document.body.appendChild(a);a.click();document.body.removeChild(a);
+      setTimeout(()=>URL.revokeObjectURL(url),4000);
+      done=true;
+    }catch(e){}
+    if(!done){
+      // fallback: open the SVG in a new tab so the user can save it manually
+      const w=window.open("","_blank");
+      if(w){w.document.open();w.document.write(svg);w.document.close();}
+    }
+  },
+  clock(){const d=new Date();const t=d.toLocaleTimeString("en-PH",{hour:"2-digit",minute:"2-digit"});const dt=d.toLocaleDateString("en-PH",{month:"short",day:"numeric"});const el=document.getElementById("vpos-clock");if(el)el.textContent=dt+" · "+t;},
+  async searchVeh(q){
+    if(!q||q.length<1)return;
+    const rows=await api("vm_pos_vehicles",{txt:q})||[];
+    const dl=document.getElementById("vpos-veh");dl.innerHTML="";
+    rows.forEach(v=>{const o=document.createElement("option");o.value=v.name;o.textContent=(v.plate_no?v.plate_no+" — ":"")+(v.customer_name||v.customer);dl.appendChild(o);});
+  },
+  async onVeh(vehicle){
+    this.vehicle=vehicle||null;
+    const disp=document.querySelector(".vpos-cust");
+    if(!vehicle){this.customer=null;disp.textContent="";return;}
+    const d=await api("vm_pos_vehicle_customer",{vehicle:vehicle});
+    if(d&&d.customer){this.customer=d.customer;disp.textContent=d.customer_name?d.customer+" — "+d.customer_name:d.customer;}
+    else{this.customer=null;disp.textContent="";alert("Selected Customer Vehicle has no linked Customer.");}
+  },
+  async search(){
+    const txt=document.querySelector(".vpos-search").value;
+    const items=await api("vm_pos_items",{txt:txt,category:this.category||"",company:this.company||""})||[];
+    this.render(items);
+  },
+  async render(items){
+    const box=document.getElementById("vpos-products");box.innerHTML="";
+    if(!items.length){box.innerHTML='<div class="vpos-empty">No items found.</div>';return;}
+    this._items=items;
+    await this.loadStock(items);
+    let visible=items;
+    if(this.onlyStock){visible=items.filter(it=>flt((this.STOCK[it.code]||{}).stock)>0);}
+    if(!visible.length){box.innerHTML='<div class="vpos-empty">No items in stock.</div>';return;}
+    const shown=this.showAll?visible:visible.slice(0,this.PROD_LIMIT);
+    const self=this;
+    shown.forEach(it=>self.card(it,box));
+    if(visible.length>this.PROD_LIMIT){
+      const more=document.createElement("button");more.className="vpos-card vpos-more";
+      more.style.cssText="display:flex;align-items:center;justify-content:center;cursor:pointer;border-style:dashed;color:var(--mint-d);font-weight:700;font-size:13px";
+      const left=visible.length-shown.length;
+      more.textContent=this.showAll?("Show less ("+this.PROD_LIMIT+" shown)"):("Show more ("+left+" more)");
+      more.onclick=()=>{self.showAll=!self.showAll;self.render(items);};
+      box.appendChild(more);
+    }
+  },
+  async loadStock(list){
+    if(!list||!list.length)return;
+    const codes=list.map(it=>it.code).join(",");
+    const data=await api("vehicle_management.vehicle_management.pos_api.get_stock",{codes:codes})||{};
+    this.STOCK=data;
+    const self=this;
+    list.forEach(it=>{
+      const el=document.querySelector('[data-code="'+CSS.escape(it.code)+'"]');if(!el)return;
+      const st=data[it.code];
+      const stockEl=el.querySelector(".vpos-card-stock");
+      if(stockEl){const s=flt(st?st.stock:0);stockEl.textContent="Stock: "+s;if(s<=0)stockEl.classList.add("zero");}
+      if(st)el.setAttribute("data-tip",this.stockTip(st));
+    });
+  },
+  stockTip(st){
+    let s="On hand: "+flt(st.stock)+"\n";
+    (st.bins||[]).forEach(b=>{s+="\n"+b.warehouse+"  "+flt(b.qty)+(b.bin?("  · bin "+b.bin):"");});
+    return s.trim();
+  },
+  card(it,box){
+    const self=this;
+    const name=it.name||it.code;const rate=flt(it.rate)||0;
+    const card=document.createElement("div");card.className="vpos-card";card.setAttribute("data-code",it.code);
+    const stock=this.STOCK&&this.STOCK[it.code]?this.STOCK[it.code].stock:null;
+    const tip=this.STOCK&&this.STOCK[it.code]?this.stockTip(this.STOCK[it.code]):"";
+    card.innerHTML=`<div class="vpos-thumb">${name.charAt(0).toUpperCase()}</div><div class="vpos-card-name">${name}</div><div class="vpos-card-code">${it.code}</div><div class="vpos-card-stock">${stock==null?"Stock: …":"Stock: "+flt(stock)}</div><div class="vpos-card-foot"><div class="vpos-card-rate">${peso(rate)}</div><button class="vpos-card-add">+ ADD</button></div>`;
+    if(tip)card.setAttribute("data-tip",tip);
+    const inc=this.cart.find(c=>c.item_code===it.code);
+    if(inc){const b=document.createElement("div");b.className="vpos-card-badge";b.textContent=inc.qty+" in cart";card.appendChild(b);}
+    card.querySelector(".vpos-card-add").addEventListener("click",e=>{e.stopPropagation();self.add(it.code,name,rate,it.uom);});
+    box.appendChild(card);
+  },
+  add(code,name,rate,uom){
+    const ex=this.cart.find(c=>c.item_code===code);
+    if(ex)ex.qty+=1;else this.cart.push({item_code:code,item_name:name,qty:1,rate:rate,uom:uom,discount_amount:0});
+    this.cartRender();this.totals();this.search();
+  },
+  cartRender(){
+    const box=document.getElementById("vpos-cart");box.innerHTML="";
+    if(!this.cart.length){box.innerHTML='<div class="vpos-empty">Cart is empty.<br>Scan or search to add items.</div>';return;}
+    const self=this;
+    this.cart.forEach((c,i)=>{
+      const amt=flt(c.qty)*flt(c.rate)-flt(c.discount_amount);
+      const row=document.createElement("div");row.className="vpos-row";
+      row.innerHTML=`<div class="vpos-row-info"><div class="vpos-row-name">${c.item_name}</div><div class="vpos-row-meta">${peso(c.rate)} · ${c.uom||""}</div></div>
+        <div class="vpos-qty"><button class="vpos-dec">−</button><input class="vpos-qty-in" type="number" min="1" value="${c.qty}"><button class="vpos-inc">+</button></div>
+        <input class="vpos-row-disc" type="number" min="0" step="0.01" value="${flt(c.discount_amount)}" title="Discount">
+        <div class="vpos-row-amt">${peso(amt)}</div><button class="vpos-remove" title="Remove">×</button>`;
+      row.querySelector(".vpos-inc").onclick=()=>{c.qty+=1;self.cartRender();self.totals();};
+      row.querySelector(".vpos-dec").onclick=()=>{c.qty=Math.max(1,c.qty-1);self.cartRender();self.totals();};
+      row.querySelector(".vpos-qty-in").onchange=e=>{c.qty=Math.max(1,parseInt(e.target.value)||1);self.cartRender();self.totals();};
+      row.querySelector(".vpos-row-disc").onchange=e=>{c.discount_amount=Math.max(0,flt(e.target.value));self.cartRender();self.totals();};
+      row.querySelector(".vpos-remove").onclick=()=>{self.cart.splice(i,1);self.cartRender();self.totals();self.search();};
+      box.appendChild(row);
+    });
+  },
+  totals(){
+    let tq=0,td=0,tot=0;
+    this.cart.forEach(c=>{tq+=flt(c.qty);td+=flt(c.discount_amount);tot+=flt(c.qty)*flt(c.rate)-flt(c.discount_amount);});
+    this.total=tot;
+    document.querySelector(".vpos-tqty").textContent=tq;
+    document.querySelector(".vpos-tdisc").textContent=peso(td);
+    document.querySelector(".vpos-total").textContent=peso(tot);
+    const paid=flt(document.querySelector(".vpos-paid").value)||0;
+    document.querySelector(".vpos-balance").textContent=peso(flt(paid-tot));
+    document.querySelector(".vpos-charge").disabled=!(this.cart.length&&this.vehicle&&this.customer&&this.company&&paid>=tot);
+  },
+  openKeypad(){
+    const kp=document.getElementById("vpos-keypad");
+    this._kp=flt(document.querySelector(".vpos-paid").value)||0;
+    document.getElementById("vpos-kp-val").textContent=this._kp;
+    kp.classList.add("open");
+    const self=this;
+    kp.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{
+      const k=b.getAttribute("data-k");
+      if(k==="⌫"){self._kp=Math.floor(self._kp/10);}
+      else if(k==="."){if(!String(self._kp).includes("."))self._kp=self._kp+".";}
+      else{self._kp=(self._kp===0?""+k:self._kp+""+k);}
+      document.getElementById("vpos-kp-val").textContent=self._kp;
+    });
+    kp.querySelector(".vpos-kp-clr").onclick=()=>{self._kp=0;document.getElementById("vpos-kp-val").textContent="0";};
+    kp.querySelector(".vpos-kp-ok").onclick=()=>{document.querySelector(".vpos-paid").value=self._kp;kp.classList.remove("open");self.totals();};
+  },
+  quickAdd(q){const cur=flt(document.querySelector(".vpos-paid").value)||0;const v=cur+q;document.querySelector(".vpos-paid").value=v;this.totals();},
+  clear(){
+    this.cart=[];this.customer=null;this.vehicle=null;
+    document.querySelector(".vpos-cust").textContent="";
+    document.querySelector(".vpos-vin").value="";
+    document.querySelector(".vpos-paid").value=0;
+    this.totals();this.cartRender();this.search();
+  },
+  charge(){
+    const tot=this.total||0;const paid=flt(document.querySelector(".vpos-paid").value)||0;
+    if(!this.cart.length){alert("Cart is empty.");return;}
+    if(!this.vehicle){alert("Select a Customer Vehicle.");return;}
+    if(!this.customer){alert("Customer Vehicle has no linked Customer.");return;}
+    if(!this.company){alert("Company not set.");return;}
+    if(paid<tot){alert("Paid is less than total.");return;}
+    if(!confirm("Charge "+peso(tot)+" (Change "+peso(paid-tot)+")?"))return;
+    this.submit(tot,paid);
+  },
+  async submit(tot,paid){
+    const items=this.cart.map(c=>({item_code:c.item_code,qty:c.qty,rate:c.rate,discount_amount:c.discount_amount,uom:c.uom}));
+    const r=await api("vehicle_management.vehicle_management.doctype.vehicle_pos_invoice.vehicle_pos_invoice.create_from_pos",
+      {data:JSON.stringify({customer:this.customer,vehicle:this.vehicle||null,company:this.company,paid_amount:paid,payment_method:this.payment_method,items:items})});
+    if(r&&r.name){alert("POS Invoice "+r.name+" created.");this.cart=[];this.cartRender();this.totals();document.querySelector(".vpos-paid").value=0;this.history=await api("vehicle_management.vehicle_management.pos_api.get_history")||this.history;if(r.pos_invoice)window.open("/desk#Form/POS Invoice/"+r.pos_invoice,"_blank");}
+    else alert("Failed to create invoice. See console.");
+  },
+  initTip(){
+    const tip=document.createElement("div");tip.className="vpos-tip";document.body.appendChild(tip);this._tip=tip;
+    const grid=document.getElementById("vpos-products");
+    grid.addEventListener("mouseover",e=>{const c=e.target.closest("[data-tip]");if(c&&c.getAttribute("data-tip")){tip.innerHTML=c.getAttribute("data-tip").replace(/&/g,"&amp;").replace(/\n/g,"<br>").replace(/(bin [^\n<]+)/g,"<b>$1</b>");tip.style.display="block";tip.style.opacity="1";}});
+    grid.addEventListener("mousemove",e=>{let x=e.clientX+14,y=e.clientY+14;if(x+tip.offsetWidth>window.innerWidth)x=window.innerWidth-tip.offsetWidth-8;if(y+tip.offsetHeight>window.innerHeight)y=window.innerHeight-tip.offsetHeight-8;tip.style.left=x+"px";tip.style.top=y+"px";});
+    grid.addEventListener("mouseout",e=>{if(e.target.closest("[data-tip]")){tip.style.opacity="0";tip.style.display="none";}});
+  }
+};
+window.addEventListener("DOMContentLoaded",()=>{try{POS.init();}catch(err){console.error(err);document.getElementById("vpos-root").innerHTML='<div style="padding:24px;color:#b91c1c">POS failed: '+(err&&err.message?err.message:err)+'</div>';}});
+</script>

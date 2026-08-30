@@ -9,21 +9,11 @@ mkdir -p "$DEST"
 # 1) full DB dump of site1_local (captures Web Page, Server Scripts, Cashier Profiles, all doctype data)
 wsl -d podman-machine-default sudo podman exec erp-postgres bash -c "pg_dump -U postgres site1_local" | gzip > "$DEST/erpnext-site1_local-$TS.sql.gz"
 # 2) export POS-critical records as JSON, captured on the Windows side from container stdout
-wsl -d podman-machine-default sudo podman exec -e FRAPPE_STREAM_LOGGING=1 -w /workspace/frappe-bench erp-frappe bash -c 'cat > /tmp/exp_cron.py <<PY
-import frappe, json, sys
-try:
-    frappe.init(site="erp.localhost", sites_path="/workspace/frappe-bench/sites")
-except Exception:
-    frappe.init(site="site1.local", sites_path="/workspace/frappe-bench/sites")
-frappe.connect(); frappe.set_user("Administrator")
-out={}
-for dt,names in [("Web Page",["vehicle-pos-terminal"]),("Server Script",["VM POS Items","VM POS Meta","VM POS Vehicles","VM POS Vehicle Customer","VM POS Cashier","VM POS History"]),("Cashier Profile",None)]:
-    if names is None:
-        names=[d.name for d in frappe.get_all(dt,filters={},limit_page_length=200)]
-    out[dt]=[frappe.get_doc(dt,n).as_dict() for n in names]
-sys.stdout.write(json.dumps(out,default=str))
-PY
-python /tmp/exp_cron.py' > "$DEST/pos_export-$TS.json"
+#    NOTE: bare `python` inside the container is the system interpreter (no frappe on path).
+#    Use the bench virtualenv at /workspace/frappe-bench/env/bin/python. The exporter is piped
+#    in via stdin (pos_export_job.py alongside this script) to avoid passing a multi-line script
+#    through `wsl` argv. frappe.connect() writes a log under /workspace/logs, which must exist.
+wsl -d podman-machine-default sudo podman exec -i -w /workspace/frappe-bench erp-frappe bash -c "mkdir -p /workspace/logs && /workspace/frappe-bench/env/bin/python -" < "$WINREPO/backups/pos_export_job.py" > "$DEST/pos_export-$TS.json"
 echo "exported pos_export-$TS.json ($(wc -c < "$DEST/pos_export-$TS.json") bytes)"
 # keep only last 20 dumps
 ls -tp "$DEST"/erpnext-site1_local-*.sql.gz | tail -n +21 | xargs -r rm -f

@@ -1,33 +1,19 @@
 :80, :8080, http:// {
-    handle /socket.io/* {
-        reverse_proxy 10.88.0.50:9000 {
-            header_up Host site1.local
-            header_up X-Real-IP {remote_host}
-        }
-    }
+	handle /socket.io/* {
+		reverse_proxy 10.88.0.50:9000 {
+			header_up Host site1.local
+			header_up X-Real-IP {remote_host}
+		}
+	}
 
-    # Serve uploaded files (/files/*) directly from the filesystem
-    # bypassing Frappe's Python route which has a PostgreSQL LIMIT bug
-    handle_path /files/* {
-        root * /workspace/frappe-bench/sites/site1.local/public/files
-        file_server {
-            browse
-        }
-        header Cache-Control "public, max-age=3600"
-        header Access-Control-Allow-Origin "*"
-    }
-
-    handle {
-        reverse_proxy 10.88.0.50:8000 {
-            header_up Host site1.local
-            header_up X-Real-IP {remote_host}
-        }
-        # Force browsers to always revalidate HTML pages (login/desk/pos)
-        # so stale cached pages referencing old broken JS bundles are never served.
-        @html path *.html / /login /desk /pos-terminal
-        header @html Cache-Control "no-cache, no-store, must-revalidate"
-        # Hashed assets (unique per build) can be cached long-term.
-        @asset path *.js *.css *.png *.jpg *.woff *.woff2 *.ttf *.svg
-        header @asset Cache-Control "public, max-age=31536000, immutable"
-    }
+	handle {
+		reverse_proxy 10.88.0.50:8000 {
+			header_up Host site1.local
+			header_up X-Real-IP {remote_host}
+		}
+		@html path *.html / /login /desk /pos-terminal
+		header @html Cache-Control "no-cache, no-store, must-revalidate"
+		@asset path *.js *.css *.png *.jpg *.woff *.woff2 *.ttf *.svg
+		header @asset Cache-Control "public, max-age=31536000, immutable"
+	}
 }

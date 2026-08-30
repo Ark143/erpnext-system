@@ -5,7 +5,7 @@ import frappe
 from frappe.utils import flt, nowdate, add_months, getdate
 
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def get_vehicle_management_analytics(company=None, timespan="Last 30 Days", from_date=None, to_date=None):
 	"""
 	Returns consolidated analytics for Vehicle Management:

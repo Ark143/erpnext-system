@@ -12780,8 +12780,8 @@ const POS = {
     r.innerHTML = `
     <div class="vpos-login" id="vpos-login">
       <div class="vpos-login-card">
-        <div class="vpos-login-logo">V</div>
-        <div class="vpos-login-title">Vehicle POS</div>
+        <div class="vpos-login-logo" style="background:linear-gradient(135deg,#16c784,#0fa76d);font-size:22px;font-weight:900;letter-spacing:-1px">V</div>
+        <div class="vpos-login-title">Vehicle POS Terminal</div>
         <div class="vpos-login-sub">Cashier Sign-In</div>
         ${this.loggedOutMsg ? ('<div class="vpos-li-ok">' + this.loggedOutMsg + '</div>') : ''}
         <input class="vpos-li vpos-li-user" placeholder="User ID / Email" autocomplete="username">
@@ -13184,12 +13184,12 @@ const POS = {
     </div>`;
 
     const dl = document.getElementById("vpos-prof-dl");
-    if (dl) dl.onclick = () => this.downloadCard();
+    if (dl) dl.onclick = () => POS.downloadCard();
     const cp = document.getElementById("vpos-prof-copy");
     if (cp) cp.onclick = () => {
       if (navigator.clipboard) navigator.clipboard.writeText(qrData);
       cp.textContent = "Copied!";
-      setTimeout(() => cp.textContent = "📋 Copy Badge Code", 1200);
+      setTimeout(() => cp.textContent = "\uD83D\uDCCB Copy Badge Code", 1200);
     };
   },
 

@@ -13194,7 +13194,17 @@ const POS = {
   },
 
   downloadCard() {
-    const W = 323.6, H = 204.1;
+    const dlBtn = document.getElementById("vpos-prof-dl");
+    const origText = dlBtn ? dlBtn.textContent : "";
+    const setStatus = (msg, color) => {
+      if (dlBtn) { dlBtn.textContent = msg; dlBtn.style.color = color || ""; }
+    };
+
+    setStatus("⏳ Generating badge...", "#0fa76d");
+
+    const W = 323.6, H = 204.1; // px at 96dpi ≈ CR80 card (85.6×54mm)
+    const PX_W = 680, PX_H = 430; // canvas px at 2× for crisp output
+
     const qrData = (this.email || this.cashier || "") + "|" + (window.__vposPwd || "");
     let qrInner = "", vb = "0 0 100 100";
     try {
@@ -13202,33 +13212,131 @@ const POS = {
       const tag = q.createSvgTag({ cellSize: 3, margin: 3, scalable: true });
       vb = (tag.match(/viewBox="([^"]+)"/) || [])[1] || vb;
       qrInner = tag.replace(/^<svg[^>]*>/, "").replace(/<\/svg>$/, "");
-    } catch (e) {}
-    const lines = [["Emp #", this.empNo || "—"], ["Designation", this.designation || "—"], ["Branch", this.branch || "—"], ["Email", this.email || this.cashier || ""]];
-    let txt = "";
-    lines.forEach((p, i) => { const y = 54 + i * 16; txt += '<text x="12" y="' + y + '" font-family="Inter,Arial,sans-serif" font-size="9" fill="#5b6b68">' + esc(p[0]) + ': <tspan fill="#13302b" font-weight="700">' + esc(p[1]) + '</tspan></text>'; });
-    const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + W + 'mm" height="' + H + 'mm" viewBox="0 0 ' + W + ' ' + H + '">' +
-      '<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0c1a18"/><stop offset="1" stop-color="#123b33"/></linearGradient></defs>' +
-      '<rect width="' + W + '" height="' + H + '" fill="#ffffff" stroke="#0c1a18" stroke-width="1"/>' +
-      '<rect width="' + W + '" height="32" fill="url(#bg)"/>' +
-      '<rect x="8" y="5" width="22" height="22" rx="5" fill="#16c784"/>' +
-      '<text x="34" y="14" font-family="Space Grotesk,Arial,sans-serif" font-size="14" font-weight="700" fill="#04201a">V</text>' +
-      '<text x="34" y="24" font-family="Inter,Arial,sans-serif" font-size="9.5" font-weight="700" fill="#ffffff">' + esc(this.company || "") + '</text>' +
-      '<text x="' + (W - 10) + '" y="20" text-anchor="end" font-family="Inter,Arial,sans-serif" font-size="8.5" font-weight="800" letter-spacing="1" fill="#ffffff">CASHIER ID</text>' +
-      '<text x="12" y="46" font-family="Space Grotesk,Arial,sans-serif" font-size="13" font-weight="700" fill="#0c1a18">' + esc(this.empName || this.employee || "—") + '</text>' +
-      txt +
-      '<rect x="160" y="44" width="150" height="150" fill="#ffffff"/>' +
-      '<svg x="166" y="48" width="138" height="138" viewBox="' + vb + '">' + qrInner + '</svg>' +
-      '</svg>';
-    const fname = (this.empNo || this.cashier || "cashier") + "-id-badge.svg";
-    try {
-      const blob = new Blob([svg], { type: "image/svg+xml" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url; a.download = fname;
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(url), 4000);
-    } catch (e) {}
+    } catch (e) { console.warn("QR gen failed", e); }
+
+    const lines = [
+      ["Employee", this.empName || this.employee || "—"],
+      ["Emp #", this.empNo || "—"],
+      ["Designation", this.designation || "—"],
+      ["Branch", this.branch || "—"],
+      ["Department", this.department || "—"],
+      ["Email", this.email || this.cashier || ""]
+    ];
+
+    // ── Build inline SVG markup ──────────────────────────────────────────────
+    let txtRows = "";
+    lines.forEach((p, i) => {
+      const y = 46 + i * 17;
+      const label = p[0].replace(/&/g,"&amp;").replace(/</g,"&lt;");
+      const value = p[1].replace(/&/g,"&amp;").replace(/</g,"&lt;");
+      txtRows += `<text x="12" y="${y}" font-family="Arial,sans-serif" font-size="9" fill="#5b6b68">${label}: <tspan fill="#13302b" font-weight="700">${value}</tspan></text>`;
+    });
+
+    const company = (this.company || "").replace(/&/g,"&amp;");
+    const empName = (this.empName || this.employee || "—").replace(/&/g,"&amp;");
+
+    const svgMarkup = `<svg xmlns="http://www.w3.org/2000/svg" width="${PX_W}" height="${PX_H}" viewBox="0 0 ${W} ${H}">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0c1a18"/>
+      <stop offset="1" stop-color="#123b33"/>
+    </linearGradient>
+  </defs>
+  <!-- Card background -->
+  <rect width="${W}" height="${H}" fill="#ffffff" stroke="#0c1a18" stroke-width="1" rx="4"/>
+  <!-- Header bar -->
+  <rect width="${W}" height="32" fill="url(#bg)" rx="4"/>
+  <rect y="20" width="${W}" height="16" fill="url(#bg)"/>
+  <!-- Logo badge -->
+  <rect x="8" y="5" width="22" height="22" rx="5" fill="#16c784"/>
+  <text x="19" y="20" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#04201a" text-anchor="middle">V</text>
+  <!-- Company name -->
+  <text x="36" y="15" font-family="Arial,sans-serif" font-size="8.5" font-weight="700" fill="#ffffff">${company}</text>
+  <!-- CASHIER ID label -->
+  <text x="${W - 10}" y="20" text-anchor="end" font-family="Arial,sans-serif" font-size="7.5" font-weight="800" letter-spacing="1" fill="#16c784">CASHIER ID</text>
+  <!-- Cashier name -->
+  <text x="12" y="42" font-family="Arial,sans-serif" font-size="12" font-weight="700" fill="#0c1a18">${empName}</text>
+  <!-- Info rows -->
+  ${txtRows}
+  <!-- QR code area -->
+  <rect x="190" y="36" width="126" height="126" fill="#ffffff"/>
+  <svg x="194" y="40" width="118" height="118" viewBox="${vb}">${qrInner}</svg>
+  <!-- Footer line -->
+  <line x1="0" y1="${H - 10}" x2="${W}" y2="${H - 10}" stroke="#dde9e4" stroke-width="0.5"/>
+  <text x="${W/2}" y="${H - 3}" font-family="Arial,sans-serif" font-size="6.5" fill="#7c8f8a" text-anchor="middle">Ultra MRF Automotive Group • Vehicle POS System</text>
+</svg>`;
+
+    const fname = (this.empNo || this.cashier || "cashier").replace(/[^a-zA-Z0-9_-]/g, "_") + "-cashier-id";
+
+    // ── Method 1: Render to Canvas → download PNG ──────────────────────────
+    const tryPNG = () => {
+      try {
+        const canvas = document.createElement("canvas");
+        canvas.width = PX_W; canvas.height = PX_H;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) throw new Error("No 2D context");
+
+        const svgBlob = new Blob([svgMarkup], { type: "image/svg+xml;charset=utf-8" });
+        const svgUrl = URL.createObjectURL(svgBlob);
+        const img = new Image();
+        img.onload = () => {
+          ctx.drawImage(img, 0, 0, PX_W, PX_H);
+          URL.revokeObjectURL(svgUrl);
+          canvas.toBlob(blob => {
+            if (!blob) { trySVG(); return; }
+            const pngUrl = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = pngUrl; a.download = fname + ".png";
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(pngUrl), 5000);
+            setStatus("✓ Downloaded as PNG!", "#0fa76d");
+            setTimeout(() => { if (dlBtn) { dlBtn.textContent = origText; dlBtn.style.color = ""; } }, 2500);
+          }, "image/png");
+        };
+        img.onerror = () => { URL.revokeObjectURL(svgUrl); trySVG(); };
+        img.src = svgUrl;
+      } catch (e) { trySVG(); }
+    };
+
+    // ── Method 2: Direct SVG download fallback ─────────────────────────────
+    const trySVG = () => {
+      try {
+        const blob = new Blob([svgMarkup], { type: "image/svg+xml" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url; a.download = fname + ".svg";
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 5000);
+        setStatus("✓ Downloaded as SVG!", "#0fa76d");
+        setTimeout(() => { if (dlBtn) { dlBtn.textContent = origText; dlBtn.style.color = ""; } }, 2500);
+      } catch (e2) { tryDataURL(); }
+    };
+
+    // ── Method 3: data: URI fallback (works even in restricted browsers) ───
+    const tryDataURL = () => {
+      try {
+        const encoded = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgMarkup);
+        const a = document.createElement("a");
+        a.href = encoded; a.download = fname + ".svg"; a.target = "_blank";
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        setStatus("✓ Saving SVG...", "#0fa76d");
+        setTimeout(() => { if (dlBtn) { dlBtn.textContent = origText; dlBtn.style.color = ""; } }, 2000);
+      } catch (e3) {
+        // Last resort: open in new tab for manual save
+        const w = window.open("", "_blank");
+        if (w) {
+          w.document.open();
+          w.document.write(`<!DOCTYPE html><html><head><title>Cashier Badge - Right-click → Save as</title></head><body style="margin:0;background:#f3f7f5;display:flex;align-items:center;justify-content:center;min-height:100vh"><p style="position:fixed;top:10px;left:50%;transform:translateX(-50%);background:#fff;padding:10px 18px;border-radius:8px;font-family:sans-serif;font-size:14px;box-shadow:0 4px 14px rgba(0,0,0,.15)">Right-click the card below → <b>Save image as…</b></p>${svgMarkup}</body></html>`);
+          w.document.close();
+        }
+        setStatus("↗ Opened in new tab - save manually", "#f5a623");
+        setTimeout(() => { if (dlBtn) { dlBtn.textContent = origText; dlBtn.style.color = ""; } }, 3500);
+      }
+    };
+
+    tryPNG();
   },
+
 
   clock() {
     const d = new Date();

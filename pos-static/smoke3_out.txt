@@ -1,0 +1,12 @@
+LOGIN FAILED: timed out
+
+TEST                                                 HTTP  s    RESULT
+------------------------------------------------------------------------------------------
+search Customer [customer_query]                     ERR   17.0 TimeoutError  <-- FAIL
+search Supplier [supplier_query]                     ERR   17.0 TimeoutError  <-- FAIL
+search Item [item_query]                             ERR   17.0 TimeoutError  <-- FAIL
+search Warehouse                                     ERR   17.1 TimeoutError  <-- FAIL
+search Account [ledger_account_query]                ERR   17.0 TimeoutError  <-- FAIL
+search BOM                                           ERR   4.1  URLError  <-- FAIL
+search Sales Order                                   ERR   4.1  URLError  <-- FAIL
+search Employee                                      ERR   4.1  URLError  <-- FAIL

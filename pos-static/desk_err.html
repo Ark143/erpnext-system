@@ -1,0 +1,1726 @@
+<!doctype html>
+<html lang=en>
+  <head>
+    <title>psycopg2.OperationalError: connection to server at &#34;127.0.0.1&#34;, port 5433 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+ // Werkzeug Debugger</title>
+    <link rel="stylesheet" href="?__debugger__=yes&amp;cmd=resource&amp;f=style.css">
+    <link rel="shortcut icon"
+        href="?__debugger__=yes&amp;cmd=resource&amp;f=console.png">
+    <script src="?__debugger__=yes&amp;cmd=resource&amp;f=debugger.js"></script>
+    <script>
+      var CONSOLE_MODE = false,
+          EVALEX = true,
+          EVALEX_TRUSTED = false,
+          SECRET = "1dCXcQc9H4H3K03pCVDX";
+    </script>
+  </head>
+  <body style="background-color: #fff">
+    <div class="debugger">
+<h1>psycopg2.OperationalError</h1>
+<div class="detail">
+  <p class="errormsg">psycopg2.OperationalError: connection to server at &#34;127.0.0.1&#34;, port 5433 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+</p>
+</div>
+<h2 class="traceback">Traceback <em>(most recent call last)</em></h2>
+<div class="traceback">
+  <h3></h3>
+  <ul><li><div class="frame" id="frame-131525791426304">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/app.py"</cite>,
+      line <em class="line">102</em>,
+      in <code class="function">application</code></h4>
+  <div class="source "><pre class="line before"><span class="ws"></span>@Request.application</pre>
+<pre class="line before"><span class="ws"></span>def application(request: Request):</pre>
+<pre class="line before"><span class="ws">        </span>response = None</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">        </span>try:</pre>
+<pre class="line current"><span class="ws">                </span>init_request(request)
+<span class="ws">                </span>^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">                </span>validate_auth()</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">                </span>if request.method == &#34;OPTIONS&#34;:</pre>
+<pre class="line after"><span class="ws">                        </span>response = Response()</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791426464">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/app.py"</cite>,
+      line <em class="line">205</em>,
+      in <code class="function">init_request</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">        </span>else:</pre>
+<pre class="line before"><span class="ws">                </span>request.max_content_length = cint(frappe.local.conf.get(&#34;max_file_size&#34;)) or 25 * 1024 * 1024</pre>
+<pre class="line before"><span class="ws">        </span>make_form_dict(request)</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">        </span>if request.method != &#34;OPTIONS&#34;:</pre>
+<pre class="line current"><span class="ws">                </span>frappe.local.http_request = HTTPRequest()
+<span class="ws">                </span>              ^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">        </span>for before_request_task in frappe.get_hooks(&#34;before_request&#34;):</pre>
+<pre class="line after"><span class="ws">                </span>frappe.call(before_request_task)</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws"></span> </pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791426624">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/auth.py"</cite>,
+      line <em class="line">42</em>,
+      in <code class="function">__init__</code></h4>
+  <div class="source "><pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">                </span># load cookies</pre>
+<pre class="line before"><span class="ws">                </span>self.set_cookies()</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">                </span># login and start/resume user session</pre>
+<pre class="line current"><span class="ws">                </span>self.set_session()
+<span class="ws">                </span>^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">                </span># set request language</pre>
+<pre class="line after"><span class="ws">                </span>self.set_lang()</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">                </span># match csrf token from current session</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791426784">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/auth.py"</cite>,
+      line <em class="line">79</em>,
+      in <code class="function">set_session</code></h4>
+  <div class="source "><pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">        </span>def set_cookies(self):</pre>
+<pre class="line before"><span class="ws">                </span>frappe.local.cookie_manager = CookieManager()</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">        </span>def set_session(self):</pre>
+<pre class="line current"><span class="ws">                </span>frappe.local.login_manager = LoginManager()
+<span class="ws">                </span>               ^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">        </span>def validate_csrf_token(self):</pre>
+<pre class="line after"><span class="ws">                </span>if (</pre>
+<pre class="line after"><span class="ws">                        </span>not frappe.request</pre>
+<pre class="line after"><span class="ws">                        </span>or frappe.request.method not in UNSAFE_HTTP_METHODS</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791426944">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/auth.py"</cite>,
+      line <em class="line">137</em>,
+      in <code class="function">__init__</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">                                </span>return</pre>
+<pre class="line before"><span class="ws">                        </span>self.resume = False</pre>
+<pre class="line before"><span class="ws">                </span>else:</pre>
+<pre class="line before"><span class="ws">                        </span>try:</pre>
+<pre class="line before"><span class="ws">                                </span>self.resume = True</pre>
+<pre class="line current"><span class="ws">                                </span>self.make_session(resume=True)
+<span class="ws">                                </span>^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws">                                </span>self.get_user_info()</pre>
+<pre class="line after"><span class="ws">                                </span>self.set_user_info(resume=True)</pre>
+<pre class="line after"><span class="ws">                        </span>except (AttributeError, frappe.DoesNotExistError):</pre>
+<pre class="line after"><span class="ws">                                </span>self.user = &#34;Guest&#34;</pre>
+<pre class="line after"><span class="ws">                                </span>self.get_user_info()</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791427104">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/auth.py"</cite>,
+      line <em class="line">228</em>,
+      in <code class="function">make_session</code></h4>
+  <div class="source "><pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">        </span>def make_session(</pre>
+<pre class="line before"><span class="ws">                </span>self, resume: bool = False, session_end: str | None = None, audit_user: str | None = None</pre>
+<pre class="line before"><span class="ws">        </span>):</pre>
+<pre class="line before"><span class="ws">                </span># start session</pre>
+<pre class="line current"><span class="ws">                </span>frappe.local.session_obj = Session(
+<span class="ws">                </span>             </pre>
+<pre class="line after"><span class="ws">                        </span>user=self.user,</pre>
+<pre class="line after"><span class="ws">                        </span>resume=resume,</pre>
+<pre class="line after"><span class="ws">                        </span>full_name=self.full_name,</pre>
+<pre class="line after"><span class="ws">                        </span>user_type=self.user_type,</pre>
+<pre class="line after"><span class="ws">                        </span>session_end=session_end,</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791427264">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/sessions.py"</cite>,
+      line <em class="line">236</em>,
+      in <code class="function">__init__</code></h4>
+  <div class="source "><pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">                </span># set local session</pre>
+<pre class="line before"><span class="ws">                </span>frappe.local.session = self.data</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">                </span>if resume:</pre>
+<pre class="line current"><span class="ws">                        </span>self.resume()
+<span class="ws">                        </span>^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">                </span>else:</pre>
+<pre class="line after"><span class="ws">                        </span>if self.user:</pre>
+<pre class="line after"><span class="ws">                                </span>self.validate_user()</pre>
+<pre class="line after"><span class="ws">                                </span>self.start(session_end, audit_user)</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791427424">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/sessions.py"</cite>,
+      line <em class="line">327</em>,
+      in <code class="function">resume</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">                </span>data = self.get_session_record()</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">                </span>if data:</pre>
+<pre class="line before"><span class="ws">                        </span>self.data.update({&#34;data&#34;: data, &#34;user&#34;: data.user, &#34;sid&#34;: self.sid})</pre>
+<pre class="line before"><span class="ws">                        </span>self.user = data.user</pre>
+<pre class="line current"><span class="ws">                        </span>validate_ip_address(self.user)
+<span class="ws">                        </span>^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws">                </span>else:</pre>
+<pre class="line after"><span class="ws">                        </span>self.start_as_guest()</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">                </span>if self.sid != &#34;Guest&#34;:</pre>
+<pre class="line after"><span class="ws">                        </span>frappe.local.lang = frappe.translate.get_user_lang(self.data.user)</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791427584">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/auth.py"</cite>,
+      line <em class="line">476</em>,
+      in <code class="function">validate_ip_address</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">        </span>if hasattr(frappe.local, &#34;request&#34;) and frappe.local.request.path.startswith(</pre>
+<pre class="line before"><span class="ws">                </span>&#34;/api/method/frappe.realtime.&#34;</pre>
+<pre class="line before"><span class="ws">        </span>):</pre>
+<pre class="line before"><span class="ws">                </span>return True</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line current"><span class="ws">        </span>user_info = frappe.get_cached_doc(&#34;User&#34;, user)
+<span class="ws">        </span>     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws">        </span>ip_list = user_info.get_restricted_ip_list()</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">        </span>if not ip_list:</pre>
+<pre class="line after"><span class="ws">                </span>return</pre>
+<pre class="line after"><span class="ws"></span> </pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791427744">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/model/document.py"</cite>,
+      line <em class="line">2254</em>,
+      in <code class="function">get_cached_doc</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">        </span>&#34;&#34;&#34;Identical to `frappe.get_doc`, but return from cache if available.&#34;&#34;&#34;</pre>
+<pre class="line before"><span class="ws">        </span>if (key := can_cache_doc(args)) and (doc := frappe.cache.get_value(key)):</pre>
+<pre class="line before"><span class="ws">                </span>return doc</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">        </span># Not found in cache, fetch from DB</pre>
+<pre class="line current"><span class="ws">        </span>doc = get_doc(*args, **kwargs)
+<span class="ws">        </span>^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">        </span># Store in cache</pre>
+<pre class="line after"><span class="ws">        </span>if not key:</pre>
+<pre class="line after"><span class="ws">                </span>key = get_document_cache_key(doc.doctype, doc.name)</pre>
+<pre class="line after"><span class="ws"></span> </pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791427904">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/model/utils/__init__.py"</cite>,
+      line <em class="line">225</em>,
+      in <code class="function">wrapper</code></h4>
+  <div class="source "><pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">        </span>@wraps(func)</pre>
+<pre class="line before"><span class="ws">        </span>def wrapper(*args, **kw):</pre>
+<pre class="line before"><span class="ws">                </span>if not args:</pre>
+<pre class="line before"><span class="ws">                        </span>return func(*args, **kw)</pre>
+<pre class="line current"><span class="ws">                </span>return dispatch(args[0])(*args, **kw)
+<span class="ws">                </span>^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">        </span>wrapper.register = register</pre>
+<pre class="line after"><span class="ws">        </span>return wrapper</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791428064">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/model/document.py"</cite>,
+      line <em class="line">144</em>,
+      in <code class="function">get_doc_str</code></h4>
+  <div class="source "><pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws"></span>@get_doc.register(str)</pre>
+<pre class="line before"><span class="ws"></span>def get_doc_str(doctype: str, name: str | None = None, **kwargs) -&gt; &#34;Document&#34;:</pre>
+<pre class="line before"><span class="ws">        </span># if no name: it&#39;s a single</pre>
+<pre class="line before"><span class="ws">        </span>if controller := get_controller(doctype):</pre>
+<pre class="line current"><span class="ws">                </span>doc = controller(doctype, name, **kwargs)
+<span class="ws">                </span>^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws">                </span>return get_doc_permission_check(doc, kwargs.get(&#34;check_permission&#34;))</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">        </span>raise ImportError(doctype)</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws"></span> </pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791428224">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/model/document.py"</cite>,
+      line <em class="line">227</em>,
+      in <code class="function">__init__</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">                                </span>self.name = first_arg if len(args) == 1 else args[1]</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">                                </span># for_update is set in flags to avoid changing load_from_db signature</pre>
+<pre class="line before"><span class="ws">                                </span># since it is used in virtual doctypes and inherited in child classes</pre>
+<pre class="line before"><span class="ws">                                </span>self.flags.for_update = kwargs.get(&#34;for_update&#34;, False)</pre>
+<pre class="line current"><span class="ws">                                </span>self.load_from_db()
+<span class="ws">                                </span>^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws">                                </span>return</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">                        </span>if isinstance(first_arg, dict):</pre>
+<pre class="line after"><span class="ws">                                </span>kwargs = first_arg</pre>
+<pre class="line after"><span class="ws"></span> </pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791428384">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/model/document.py"</cite>,
+      line <em class="line">276</em>,
+      in <code class="function">load_from_db</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">                        </span>if not is_doctype and isinstance(self.name, str | int):</pre>
+<pre class="line before"><span class="ws">                                </span>for_update = &#34;&#34;</pre>
+<pre class="line before"><span class="ws">                                </span>if self.flags.for_update and frappe.db.db_type != &#34;sqlite&#34;:</pre>
+<pre class="line before"><span class="ws">                                        </span>for_update = &#34;FOR UPDATE&#34;</pre>
+<pre class="line before"><span class="ws">                                </span># Fast path - use raw SQL to avoid QB/ORM overheads.</pre>
+<pre class="line current"><span class="ws">                                </span>d = frappe.db.sql(
+<span class="ws">                                </span></pre>
+<pre class="line after"><span class="ws">                                        </span>&#34;SELECT * FROM {table_name} WHERE `name` = %s {for_update}&#34;.format(</pre>
+<pre class="line after"><span class="ws">                                                </span>table_name=get_table_name(self.doctype, wrap_in_backticks=True),</pre>
+<pre class="line after"><span class="ws">                                                </span>for_update=for_update,</pre>
+<pre class="line after"><span class="ws">                                        </span>),</pre>
+<pre class="line after"><span class="ws">                                        </span>(self.name),</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791428544">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/database/postgres/database.py"</cite>,
+      line <em class="line">234</em>,
+      in <code class="function">sql</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">        </span>def _transform_result(self, result: list[tuple] | tuple[tuple]) -&gt; tuple[tuple]:</pre>
+<pre class="line before"><span class="ws">                </span>return tuple(result) if isinstance(result, list) else result</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">        </span># pylint: disable=W0221</pre>
+<pre class="line before"><span class="ws">        </span>def sql(self, query, values=EmptyQueryValues, *args, **kwargs):</pre>
+<pre class="line current"><span class="ws">                </span>return super().sql(modify_query(query), modify_values(values), *args, **kwargs)
+<span class="ws">                </span>^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">        </span>def lazy_mogrify(self, *args, **kwargs) -&gt; str:</pre>
+<pre class="line after"><span class="ws">                </span>return self.last_query</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">        </span>def get_tables(self, cached=True):</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791428704">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/database/database.py"</cite>,
+      line <em class="line">249</em>,
+      in <code class="function">sql</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">                </span># remove whitespace / indentation from start and end of query</pre>
+<pre class="line before"><span class="ws">                </span># and replace ifnull in query with coalesce</pre>
+<pre class="line before"><span class="ws">                </span>query = IFNULL_PATTERN.sub(&#34;coalesce(&#34;, query.strip())</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">                </span>if not self._conn:</pre>
+<pre class="line current"><span class="ws">                        </span>self.connect()
+<span class="ws">                        </span>^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">                </span># in transaction validations</pre>
+<pre class="line after"><span class="ws">                </span>self.check_transaction_status(query, query_type)</pre>
+<pre class="line after"><span class="ws">                </span>self.clear_db_table_cache(query_type)</pre>
+<pre class="line after"><span class="ws"></span> </pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791428864">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/database/postgres/database.py"</cite>,
+      line <em class="line">179</em>,
+      in <code class="function">connect</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">        </span>@property</pre>
+<pre class="line before"><span class="ws">        </span>def db_schema(self):</pre>
+<pre class="line before"><span class="ws">                </span>return frappe.conf.get(&#34;db_schema&#34;, &#34;public&#34;).replace(&#34;&#39;&#34;, &#34;&#34;).replace(&#39;&#34;&#39;, &#34;&#34;)</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">        </span>def connect(self):</pre>
+<pre class="line current"><span class="ws">                </span>super().connect()
+<span class="ws">                </span>^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">                </span>self._cursor.execute(&#34;SET search_path TO %s&#34;, (self.db_schema,))</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">        </span>def get_connection(self):</pre>
+<pre class="line after"><span class="ws">                </span>conn_settings = {</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791429024">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/database/database.py"</cite>,
+      line <em class="line">147</em>,
+      in <code class="function">connect</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">                </span>pass</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">        </span>def connect(self):</pre>
+<pre class="line before"><span class="ws">                </span>&#34;&#34;&#34;Connects to a database as set in `site_config.json`.&#34;&#34;&#34;</pre>
+<pre class="line before"><span class="ws">                </span>self._conn: MySQLdbConnection | MariadbConnection | PostgresConnection | SQLiteConnection = (</pre>
+<pre class="line current"><span class="ws">                        </span>self.get_connection()
+<span class="ws">                        </span>^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws">                </span>)</pre>
+<pre class="line after"><span class="ws">                </span>self._cursor: MySQLdbCursor | MariadbCursor | PostgresCursor | SQLiteCursor = self._conn.cursor()</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">                </span>try:</pre>
+<pre class="line after"><span class="ws">                        </span>if execution_timeout := get_query_execution_timeout():</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791429184">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/database/postgres/database.py"</cite>,
+      line <em class="line">195</em>,
+      in <code class="function">get_connection</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">                </span>if self.password:</pre>
+<pre class="line before"><span class="ws">                        </span>conn_settings[&#34;password&#34;] = self.password</pre>
+<pre class="line before"><span class="ws">                </span>if not self.socket and self.port:</pre>
+<pre class="line before"><span class="ws">                        </span>conn_settings[&#34;port&#34;] = self.port</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line current"><span class="ws">                </span>conn = psycopg2.connect(**conn_settings)
+<span class="ws">                </span>^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws">                </span>conn.set_isolation_level(ISOLATION_LEVEL_REPEATABLE_READ)</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">                </span>return conn</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">        </span>def set_execution_timeout(self, seconds: int):</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791429344">
+  <h4>File <cite class="filename">"/usr/local/lib/python3.14/site-packages/psycopg2/__init__.py"</cite>,
+      line <em class="line">122</em>,
+      in <code class="function">connect</code></h4>
+  <div class="source library"><pre class="line before"><span class="ws">        </span>kwasync[&#39;async&#39;] = kwargs.pop(&#39;async&#39;)</pre>
+<pre class="line before"><span class="ws">    </span>if &#39;async_&#39; in kwargs:</pre>
+<pre class="line before"><span class="ws">        </span>kwasync[&#39;async_&#39;] = kwargs.pop(&#39;async_&#39;)</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">    </span>dsn = _ext.make_dsn(dsn, **kwargs)</pre>
+<pre class="line current"><span class="ws">    </span>conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+<span class="ws">    </span>       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws">    </span>if cursor_factory is not None:</pre>
+<pre class="line after"><span class="ws">        </span>conn.cursor_factory = cursor_factory</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">    </span>return conn</pre></div>
+</div>
+
+<li><div class="exc-divider">During handling of the above exception, another exception occurred:</div>
+<li><div class="frame" id="frame-131525791426144">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/utils/caching.py"</cite>,
+      line <em class="line">65</em>,
+      in <code class="function">wrapper</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">                        </span>args_key = __generate_request_cache_key(args, kwargs)</pre>
+<pre class="line before"><span class="ws">                </span>except Exception:</pre>
+<pre class="line before"><span class="ws">                        </span>return func(*args, **kwargs)</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">                </span>try:</pre>
+<pre class="line current"><span class="ws">                        </span>return _cache[func][args_key]
+<span class="ws">                        </span>^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws">                </span>except TypeError:</pre>
+<pre class="line after"><span class="ws">                        </span># args_key is not hashable</pre>
+<pre class="line after"><span class="ws">                        </span>return func(*args, **kwargs)</pre>
+<pre class="line after"><span class="ws">                </span>except KeyError:</pre>
+<pre class="line after"><span class="ws">                        </span># cache miss</pre></div>
+</div>
+
+<li><div class="exc-divider">During handling of the above exception, another exception occurred:</div>
+<li><div class="frame" id="frame-131525791423584">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/apps.py"</cite>,
+      line <em class="line">40</em>,
+      in <code class="function">get_apps</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">                </span>if not len(app_details):</pre>
+<pre class="line before"><span class="ws">                        </span>continue</pre>
+<pre class="line before"><span class="ws">                </span>for app_detail in app_details:</pre>
+<pre class="line before"><span class="ws">                        </span>try:</pre>
+<pre class="line before"><span class="ws">                                </span>has_permission_path = app_detail.get(&#34;has_permission&#34;)</pre>
+<pre class="line current"><span class="ws">                                </span>if has_permission_path and not frappe.get_attr(has_permission_path)():
+<span class="ws">                                </span>   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws">                                        </span>continue</pre>
+<pre class="line after"><span class="ws">                                </span>app_list.append(</pre>
+<pre class="line after"><span class="ws">                                        </span>{</pre>
+<pre class="line after"><span class="ws">                                                </span>&#34;name&#34;: app,</pre>
+<pre class="line after"><span class="ws">                                                </span>&#34;logo&#34;: app_detail.get(&#34;logo&#34;),</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791423744">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/erpnext/erpnext/__init__.py"</cite>,
+      line <em class="line">161</em>,
+      in <code class="function">check_app_permission</code></h4>
+  <div class="source "><pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws"></span>def check_app_permission():</pre>
+<pre class="line before"><span class="ws">        </span>if frappe.session.user == &#34;Administrator&#34;:</pre>
+<pre class="line before"><span class="ws">                </span>return True</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line current"><span class="ws">        </span>if is_website_user():
+<span class="ws">        </span>^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws">                </span>return False</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">        </span>return True</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws"></span> </pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791423904">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/utils/user.py"</cite>,
+      line <em class="line">401</em>,
+      in <code class="function">is_website_user</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">                </span>},</pre>
+<pre class="line before"><span class="ws">        </span>)</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws"></span>def is_website_user(username: str | None = None) -&gt; str | None:</pre>
+<pre class="line current"><span class="ws">        </span>return frappe.get_cached_value(&#34;User&#34;, username or frappe.session.user, &#34;user_type&#34;) == &#34;Website User&#34;
+<span class="ws">        </span>^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws"></span>def is_system_user(username: str | None = None) -&gt; str | None:</pre>
+<pre class="line after"><span class="ws">        </span># TODO: Depracate this. Inefficient, incorrect. This function is meant to be used in emails only.</pre>
+<pre class="line after"><span class="ws">        </span># Problem: Filters on email instead of PK, implicitly filters out disabled users.</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791424224">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/model/document.py"</cite>,
+      line <em class="line">2315</em>,
+      in <code class="function">get_cached_value</code></h4>
+  <div class="source "><pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws"></span>def get_cached_value(</pre>
+<pre class="line before"><span class="ws">        </span>doctype: str, name: str | dict, fieldname: str | Iterable[str] = &#34;name&#34;, as_dict: bool = False</pre>
+<pre class="line before"><span class="ws"></span>) -&gt; Any:</pre>
+<pre class="line before"><span class="ws">        </span>try:</pre>
+<pre class="line current"><span class="ws">                </span>doc = get_cached_doc(doctype, name)
+<span class="ws">                </span>^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws">        </span>except frappe.DoesNotExistError:</pre>
+<pre class="line after"><span class="ws">                </span>frappe.clear_last_message()</pre>
+<pre class="line after"><span class="ws">                </span>return</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">        </span>if isinstance(fieldname, str):</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791424384">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/model/document.py"</cite>,
+      line <em class="line">2254</em>,
+      in <code class="function">get_cached_doc</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">        </span>&#34;&#34;&#34;Identical to `frappe.get_doc`, but return from cache if available.&#34;&#34;&#34;</pre>
+<pre class="line before"><span class="ws">        </span>if (key := can_cache_doc(args)) and (doc := frappe.cache.get_value(key)):</pre>
+<pre class="line before"><span class="ws">                </span>return doc</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">        </span># Not found in cache, fetch from DB</pre>
+<pre class="line current"><span class="ws">        </span>doc = get_doc(*args, **kwargs)
+<span class="ws">        </span>^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">        </span># Store in cache</pre>
+<pre class="line after"><span class="ws">        </span>if not key:</pre>
+<pre class="line after"><span class="ws">                </span>key = get_document_cache_key(doc.doctype, doc.name)</pre>
+<pre class="line after"><span class="ws"></span> </pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791424544">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/model/utils/__init__.py"</cite>,
+      line <em class="line">225</em>,
+      in <code class="function">wrapper</code></h4>
+  <div class="source "><pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">        </span>@wraps(func)</pre>
+<pre class="line before"><span class="ws">        </span>def wrapper(*args, **kw):</pre>
+<pre class="line before"><span class="ws">                </span>if not args:</pre>
+<pre class="line before"><span class="ws">                        </span>return func(*args, **kw)</pre>
+<pre class="line current"><span class="ws">                </span>return dispatch(args[0])(*args, **kw)
+<span class="ws">                </span>^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">        </span>wrapper.register = register</pre>
+<pre class="line after"><span class="ws">        </span>return wrapper</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791424704">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/model/document.py"</cite>,
+      line <em class="line">144</em>,
+      in <code class="function">get_doc_str</code></h4>
+  <div class="source "><pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws"></span>@get_doc.register(str)</pre>
+<pre class="line before"><span class="ws"></span>def get_doc_str(doctype: str, name: str | None = None, **kwargs) -&gt; &#34;Document&#34;:</pre>
+<pre class="line before"><span class="ws">        </span># if no name: it&#39;s a single</pre>
+<pre class="line before"><span class="ws">        </span>if controller := get_controller(doctype):</pre>
+<pre class="line current"><span class="ws">                </span>doc = controller(doctype, name, **kwargs)
+<span class="ws">                </span>^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws">                </span>return get_doc_permission_check(doc, kwargs.get(&#34;check_permission&#34;))</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">        </span>raise ImportError(doctype)</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws"></span> </pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791424864">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/model/document.py"</cite>,
+      line <em class="line">227</em>,
+      in <code class="function">__init__</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">                                </span>self.name = first_arg if len(args) == 1 else args[1]</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">                                </span># for_update is set in flags to avoid changing load_from_db signature</pre>
+<pre class="line before"><span class="ws">                                </span># since it is used in virtual doctypes and inherited in child classes</pre>
+<pre class="line before"><span class="ws">                                </span>self.flags.for_update = kwargs.get(&#34;for_update&#34;, False)</pre>
+<pre class="line current"><span class="ws">                                </span>self.load_from_db()
+<span class="ws">                                </span>^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws">                                </span>return</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">                        </span>if isinstance(first_arg, dict):</pre>
+<pre class="line after"><span class="ws">                                </span>kwargs = first_arg</pre>
+<pre class="line after"><span class="ws"></span> </pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791425024">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/model/document.py"</cite>,
+      line <em class="line">276</em>,
+      in <code class="function">load_from_db</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">                        </span>if not is_doctype and isinstance(self.name, str | int):</pre>
+<pre class="line before"><span class="ws">                                </span>for_update = &#34;&#34;</pre>
+<pre class="line before"><span class="ws">                                </span>if self.flags.for_update and frappe.db.db_type != &#34;sqlite&#34;:</pre>
+<pre class="line before"><span class="ws">                                        </span>for_update = &#34;FOR UPDATE&#34;</pre>
+<pre class="line before"><span class="ws">                                </span># Fast path - use raw SQL to avoid QB/ORM overheads.</pre>
+<pre class="line current"><span class="ws">                                </span>d = frappe.db.sql(
+<span class="ws">                                </span></pre>
+<pre class="line after"><span class="ws">                                        </span>&#34;SELECT * FROM {table_name} WHERE `name` = %s {for_update}&#34;.format(</pre>
+<pre class="line after"><span class="ws">                                                </span>table_name=get_table_name(self.doctype, wrap_in_backticks=True),</pre>
+<pre class="line after"><span class="ws">                                                </span>for_update=for_update,</pre>
+<pre class="line after"><span class="ws">                                        </span>),</pre>
+<pre class="line after"><span class="ws">                                        </span>(self.name),</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791425184">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/database/postgres/database.py"</cite>,
+      line <em class="line">234</em>,
+      in <code class="function">sql</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">        </span>def _transform_result(self, result: list[tuple] | tuple[tuple]) -&gt; tuple[tuple]:</pre>
+<pre class="line before"><span class="ws">                </span>return tuple(result) if isinstance(result, list) else result</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">        </span># pylint: disable=W0221</pre>
+<pre class="line before"><span class="ws">        </span>def sql(self, query, values=EmptyQueryValues, *args, **kwargs):</pre>
+<pre class="line current"><span class="ws">                </span>return super().sql(modify_query(query), modify_values(values), *args, **kwargs)
+<span class="ws">                </span>^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">        </span>def lazy_mogrify(self, *args, **kwargs) -&gt; str:</pre>
+<pre class="line after"><span class="ws">                </span>return self.last_query</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">        </span>def get_tables(self, cached=True):</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791425344">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/database/database.py"</cite>,
+      line <em class="line">249</em>,
+      in <code class="function">sql</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">                </span># remove whitespace / indentation from start and end of query</pre>
+<pre class="line before"><span class="ws">                </span># and replace ifnull in query with coalesce</pre>
+<pre class="line before"><span class="ws">                </span>query = IFNULL_PATTERN.sub(&#34;coalesce(&#34;, query.strip())</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">                </span>if not self._conn:</pre>
+<pre class="line current"><span class="ws">                        </span>self.connect()
+<span class="ws">                        </span>^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">                </span># in transaction validations</pre>
+<pre class="line after"><span class="ws">                </span>self.check_transaction_status(query, query_type)</pre>
+<pre class="line after"><span class="ws">                </span>self.clear_db_table_cache(query_type)</pre>
+<pre class="line after"><span class="ws"></span> </pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791425504">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/database/postgres/database.py"</cite>,
+      line <em class="line">179</em>,
+      in <code class="function">connect</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">        </span>@property</pre>
+<pre class="line before"><span class="ws">        </span>def db_schema(self):</pre>
+<pre class="line before"><span class="ws">                </span>return frappe.conf.get(&#34;db_schema&#34;, &#34;public&#34;).replace(&#34;&#39;&#34;, &#34;&#34;).replace(&#39;&#34;&#39;, &#34;&#34;)</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">        </span>def connect(self):</pre>
+<pre class="line current"><span class="ws">                </span>super().connect()
+<span class="ws">                </span>^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">                </span>self._cursor.execute(&#34;SET search_path TO %s&#34;, (self.db_schema,))</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">        </span>def get_connection(self):</pre>
+<pre class="line after"><span class="ws">                </span>conn_settings = {</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791425664">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/database/database.py"</cite>,
+      line <em class="line">147</em>,
+      in <code class="function">connect</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">                </span>pass</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">        </span>def connect(self):</pre>
+<pre class="line before"><span class="ws">                </span>&#34;&#34;&#34;Connects to a database as set in `site_config.json`.&#34;&#34;&#34;</pre>
+<pre class="line before"><span class="ws">                </span>self._conn: MySQLdbConnection | MariadbConnection | PostgresConnection | SQLiteConnection = (</pre>
+<pre class="line current"><span class="ws">                        </span>self.get_connection()
+<span class="ws">                        </span>^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws">                </span>)</pre>
+<pre class="line after"><span class="ws">                </span>self._cursor: MySQLdbCursor | MariadbCursor | PostgresCursor | SQLiteCursor = self._conn.cursor()</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">                </span>try:</pre>
+<pre class="line after"><span class="ws">                        </span>if execution_timeout := get_query_execution_timeout():</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791425824">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/database/postgres/database.py"</cite>,
+      line <em class="line">195</em>,
+      in <code class="function">get_connection</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">                </span>if self.password:</pre>
+<pre class="line before"><span class="ws">                        </span>conn_settings[&#34;password&#34;] = self.password</pre>
+<pre class="line before"><span class="ws">                </span>if not self.socket and self.port:</pre>
+<pre class="line before"><span class="ws">                        </span>conn_settings[&#34;port&#34;] = self.port</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line current"><span class="ws">                </span>conn = psycopg2.connect(**conn_settings)
+<span class="ws">                </span>^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws">                </span>conn.set_isolation_level(ISOLATION_LEVEL_REPEATABLE_READ)</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">                </span>return conn</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">        </span>def set_execution_timeout(self, seconds: int):</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791425984">
+  <h4>File <cite class="filename">"/usr/local/lib/python3.14/site-packages/psycopg2/__init__.py"</cite>,
+      line <em class="line">122</em>,
+      in <code class="function">connect</code></h4>
+  <div class="source library"><pre class="line before"><span class="ws">        </span>kwasync[&#39;async&#39;] = kwargs.pop(&#39;async&#39;)</pre>
+<pre class="line before"><span class="ws">    </span>if &#39;async_&#39; in kwargs:</pre>
+<pre class="line before"><span class="ws">        </span>kwasync[&#39;async_&#39;] = kwargs.pop(&#39;async_&#39;)</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">    </span>dsn = _ext.make_dsn(dsn, **kwargs)</pre>
+<pre class="line current"><span class="ws">    </span>conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+<span class="ws">    </span>       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws">    </span>if cursor_factory is not None:</pre>
+<pre class="line after"><span class="ws">        </span>conn.cursor_factory = cursor_factory</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">    </span>return conn</pre></div>
+</div>
+
+<li><div class="exc-divider">During handling of the above exception, another exception occurred:</div>
+<li><div class="frame" id="frame-131525791418144">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/middlewares.py"</cite>,
+      line <em class="line">31</em>,
+      in <code class="function">__call__</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">                                </span>filename = Path(path).name</pre>
+<pre class="line before"><span class="ws">                                </span>headers.append((&#34;Content-Disposition&#34;, f&#34;attachment; filename*=UTF-8&#39;&#39;{quote(filename)}&#34;))</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">                        </span>return start_response(status, headers, exc_info)</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line current"><span class="ws">                </span>return super().__call__(environ, patch_start_response)
+<span class="ws">                </span>^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">        </span>def get_directory_loader(self, directory):</pre>
+<pre class="line after"><span class="ws">                </span>def loader(path):</pre>
+<pre class="line after"><span class="ws">                        </span>site = get_site_name(frappe.app._site or self.environ.get(&#34;HTTP_HOST&#34;))</pre>
+<pre class="line after"><span class="ws">                        </span>files_path = Path(directory) / site / &#34;public&#34; / &#34;files&#34;</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791418464">
+  <h4>File <cite class="filename">"/usr/local/lib/python3.14/site-packages/werkzeug/middleware/shared_data.py"</cite>,
+      line <em class="line">250</em>,
+      in <code class="function">__call__</code></h4>
+  <div class="source library"><pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">                </span>if file_loader is not None:</pre>
+<pre class="line before"><span class="ws">                    </span>break</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">        </span>if file_loader is None or not self.is_allowed(real_filename):  # type: ignore</pre>
+<pre class="line current"><span class="ws">            </span>return self.app(environ, start_response)
+<span class="ws">            </span>       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">        </span>guessed_type = mimetypes.guess_type(real_filename)  # type: ignore</pre>
+<pre class="line after"><span class="ws">        </span>mime_type = get_content_type(guessed_type[0] or self.fallback_mimetype, &#34;utf-8&#34;)</pre>
+<pre class="line after"><span class="ws">        </span>f, mtime, file_size = file_loader()</pre>
+<pre class="line after"><span class="ws"></span> </pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791418304">
+  <h4>File <cite class="filename">"/usr/local/lib/python3.14/site-packages/werkzeug/middleware/shared_data.py"</cite>,
+      line <em class="line">250</em>,
+      in <code class="function">__call__</code></h4>
+  <div class="source library"><pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">                </span>if file_loader is not None:</pre>
+<pre class="line before"><span class="ws">                    </span>break</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">        </span>if file_loader is None or not self.is_allowed(real_filename):  # type: ignore</pre>
+<pre class="line current"><span class="ws">            </span>return self.app(environ, start_response)
+<span class="ws">            </span>       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">        </span>guessed_type = mimetypes.guess_type(real_filename)  # type: ignore</pre>
+<pre class="line after"><span class="ws">        </span>mime_type = get_content_type(guessed_type[0] or self.fallback_mimetype, &#34;utf-8&#34;)</pre>
+<pre class="line after"><span class="ws">        </span>f, mtime, file_size = file_loader()</pre>
+<pre class="line after"><span class="ws"></span> </pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791418624">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/app.py"</cite>,
+      line <em class="line">84</em>,
+      in <code class="function">application</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">        </span>This is done to reduce response time by deferring expensive tasks.&#34;&#34;&#34;</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">        </span>@functools.wraps(app)</pre>
+<pre class="line before"><span class="ws">        </span>def application(environ, start_response):</pre>
+<pre class="line before"><span class="ws">                </span>return ClosingIterator(</pre>
+<pre class="line current"><span class="ws">                        </span>app(environ, start_response),
+<span class="ws">                        </span>^^^^^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws">                        </span>(</pre>
+<pre class="line after"><span class="ws">                                </span>frappe.rate_limiter.update,</pre>
+<pre class="line after"><span class="ws">                                </span>frappe.recorder.dump,</pre>
+<pre class="line after"><span class="ws">                                </span>frappe.request.after_response.run,</pre>
+<pre class="line after"><span class="ws">                                </span>frappe.destroy,</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791418784">
+  <h4>File <cite class="filename">"/usr/local/lib/python3.14/site-packages/werkzeug/wrappers/request.py"</cite>,
+      line <em class="line">193</em>,
+      in <code class="function">application</code></h4>
+  <div class="source library"><pre class="line before"><span class="ws">        </span>@functools.wraps(f)</pre>
+<pre class="line before"><span class="ws">        </span>def application(*args: t.Any) -&gt; cabc.Iterable[bytes]:</pre>
+<pre class="line before"><span class="ws">            </span>request = cls(args[-2])</pre>
+<pre class="line before"><span class="ws">            </span>with request:</pre>
+<pre class="line before"><span class="ws">                </span>try:</pre>
+<pre class="line current"><span class="ws">                    </span>resp = f(*args[:-2] + (request,))
+<span class="ws">                    </span>       ^^^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws">                </span>except HTTPException as e:</pre>
+<pre class="line after"><span class="ws">                    </span>resp = t.cast(&#34;WSGIApplication&#34;, e.get_response(args[-2]))</pre>
+<pre class="line after"><span class="ws">                </span>return resp(*args[-2:])</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">        </span>return t.cast(&#34;WSGIApplication&#34;, application)</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791418944">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/app.py"</cite>,
+      line <em class="line">145</em>,
+      in <code class="function">application</code></h4>
+  <div class="source "><pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">                </span>else:</pre>
+<pre class="line before"><span class="ws">                        </span>raise NotFound</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">        </span>except Exception as e:</pre>
+<pre class="line current"><span class="ws">                </span>response = e.get_response(request.environ) if isinstance(e, HTTPException) else handle_exception(e)
+<span class="ws">                </span>                                                                  ^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws">                </span>if db := getattr(frappe.local, &#34;db&#34;, None):</pre>
+<pre class="line after"><span class="ws">                        </span>db.rollback(chain=True)</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">        </span>else:</pre>
+<pre class="line after"><span class="ws">                </span>sync_database()</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791419104">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/permissions.py"</cite>,
+      line <em class="line">938</em>,
+      in <code class="function">wrapper</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">                        </span>try:</pre>
+<pre class="line before"><span class="ws">                                </span>check_doctype_permission(doctype)</pre>
+<pre class="line before"><span class="ws">                        </span>except frappe.PermissionError as _e:</pre>
+<pre class="line before"><span class="ws">                                </span>return fn(_e, *args, **kwargs)</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line current"><span class="ws">                </span>return fn(e, *args, **kwargs)
+<span class="ws">                </span>^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">        </span>return wrapper</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws"></span>def _get_parent_and_ancestors(doctype, parent):</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791419264">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/app.py"</cite>,
+      line <em class="line">405</em>,
+      in <code class="function">handle_exception</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">                </span>response = frappe.rate_limiter.respond()</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">        </span>else:</pre>
+<pre class="line before"><span class="ws">                </span>response = ErrorPage(</pre>
+<pre class="line before"><span class="ws">                        </span>http_status_code=http_status_code, title=_(&#34;Server Error&#34;), message=_(&#34;Uncaught Exception&#34;)</pre>
+<pre class="line current"><span class="ws">                </span>).render()
+<span class="ws">                </span>^^^^^^^^</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">        </span>if e.__class__ == frappe.AuthenticationError:</pre>
+<pre class="line after"><span class="ws">                </span>if hasattr(frappe.local, &#34;login_manager&#34;):</pre>
+<pre class="line after"><span class="ws">                        </span>frappe.local.login_manager.clear_cookies()</pre>
+<pre class="line after"><span class="ws"></span> </pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791419424">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/website/page_renderers/template_page.py"</cite>,
+      line <em class="line">84</em>,
+      in <code class="function">render</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">                </span>return (</pre>
+<pre class="line before"><span class="ws">                        </span>frappe.as_unicode(f&#34;{search_path}{d}&#34;) for d in (&#34;&#34;, &#34;.html&#34;, &#34;.md&#34;, &#34;/index.html&#34;, &#34;/index.md&#34;)</pre>
+<pre class="line before"><span class="ws">                </span>)</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">        </span>def render(self):</pre>
+<pre class="line current"><span class="ws">                </span>html = self.get_html()
+<span class="ws">                </span>^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws">                </span>html = self.add_csrf_token(html)</pre>
+<pre class="line after"><span class="ws">                </span>return self.build_response(html)</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">        </span>@cache_html</pre>
+<pre class="line after"><span class="ws">        </span>def get_html(self):</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791419584">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/website/utils.py"</cite>,
+      line <em class="line">545</em>,
+      in <code class="function">cache_html_decorator</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">                                </span>html = page_cache[frappe.local.lang]</pre>
+<pre class="line before"><span class="ws">                        </span>if html:</pre>
+<pre class="line before"><span class="ws">                                </span>frappe.local.response.from_cache = True</pre>
+<pre class="line before"><span class="ws">                                </span>frappe.local.response_headers.update(cache_headers)</pre>
+<pre class="line before"><span class="ws">                                </span>return html</pre>
+<pre class="line current"><span class="ws">                </span>html = func(*args, **kwargs)
+<span class="ws">                </span>^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws">                </span>context = args[0].context</pre>
+<pre class="line after"><span class="ws">                </span>if can_cache(context.no_cache):</pre>
+<pre class="line after"><span class="ws">                        </span>page_cache = frappe.cache.get_value(cache_key) or {}</pre>
+<pre class="line after"><span class="ws">                        </span>page_cache[frappe.local.lang] = html</pre>
+<pre class="line after"><span class="ws">                        </span>frappe.cache.set_value(cache_key, page_cache, expires_in_sec=30 * 60)</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791419744">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/website/page_renderers/template_page.py"</cite>,
+      line <em class="line">92</em>,
+      in <code class="function">get_html</code></h4>
+  <div class="source "><pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">        </span>@cache_html</pre>
+<pre class="line before"><span class="ws">        </span>def get_html(self):</pre>
+<pre class="line before"><span class="ws">                </span># context object should be separate from self for security</pre>
+<pre class="line before"><span class="ws">                </span># because it will be accessed via the user defined template</pre>
+<pre class="line current"><span class="ws">                </span>self.init_context()
+<span class="ws">                </span>^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">                </span>self.set_pymodule()</pre>
+<pre class="line after"><span class="ws">                </span>self.update_context()</pre>
+<pre class="line after"><span class="ws">                </span>self.setup_template_source()</pre>
+<pre class="line after"><span class="ws">                </span>self.load_colocated_files()</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791419904">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/website/page_renderers/error_page.py"</cite>,
+      line <em class="line">17</em>,
+      in <code class="function">init_context</code></h4>
+  <div class="source "><pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">        </span>def can_render(self):</pre>
+<pre class="line before"><span class="ws">                </span>return True</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">        </span>def init_context(self):</pre>
+<pre class="line current"><span class="ws">                </span>super().init_context()
+<span class="ws">                </span>^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws">                </span>self.context.http_status_code = (</pre>
+<pre class="line after"><span class="ws">                        </span>self.http_status_code or getattr(self.exception, &#34;http_status_code&#34;, None) or 500</pre>
+<pre class="line after"><span class="ws">                </span>)</pre>
+<pre class="line after"><span class="ws">                </span>self.context.title = self.title or getattr(self.exception, &#34;title&#34;, None)</pre>
+<pre class="line after"><span class="ws">                </span>self.context.message = self.message or getattr(self.exception, &#34;message&#34;, None)</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791420064">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/website/page_renderers/base_template_page.py"</cite>,
+      line <em class="line">15</em>,
+      in <code class="function">init_context</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">                </span>self.template_path = &#34;&#34;</pre>
+<pre class="line before"><span class="ws">                </span>self.source = &#34;&#34;</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">        </span>def init_context(self):</pre>
+<pre class="line before"><span class="ws">                </span>self.context = frappe._dict()</pre>
+<pre class="line current"><span class="ws">                </span>self.context.update(get_website_settings())
+<span class="ws">                </span>      ^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws">                </span>self.context.update(frappe.local.conf.get(&#34;website_context&#34;) or {})</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">        </span>def add_csrf_token(self, html):</pre>
+<pre class="line after"><span class="ws">                </span>if frappe.local.session and getattr(frappe.local.session, &#34;data&#34;, None):</pre>
+<pre class="line after"><span class="ws">                        </span>csrf_token = frappe.local.session.data.csrf_token</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791420224">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/website/doctype/website_settings/website_settings.py"</cite>,
+      line <em class="line">263</em>,
+      in <code class="function">get_website_settings</code></h4>
+  <div class="source "><pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">        </span>if settings.splash_image:</pre>
+<pre class="line before"><span class="ws">                </span>context[&#34;splash_image&#34;] = settings.splash_image</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">        </span>context.read_only_mode = frappe.flags.read_only</pre>
+<pre class="line current"><span class="ws">        </span>context.boot = get_boot_data()
+<span class="ws">        </span>        ^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">        </span>return context</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws"></span>def get_items(parentfield: str) -&gt; list[dict]:</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791420384">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/website/utils.py"</cite>,
+      line <em class="line">178</em>,
+      in <code class="function">get_boot_data</code></h4>
+  <div class="source "><pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws"></span>def get_boot_data():</pre>
+<pre class="line before"><span class="ws">        </span>from frappe.integrations.frappe_providers.frappecloud_billing import is_fc_site</pre>
+<pre class="line before"><span class="ws">        </span>from frappe.locale import get_date_format, get_first_day_of_the_week, get_number_format, get_time_format</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line current"><span class="ws">        </span>apps = get_apps()
+<span class="ws">        </span>^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">        </span>return {</pre>
+<pre class="line after"><span class="ws">                </span>&#34;lang&#34;: frappe.local.lang or &#34;en&#34;,</pre>
+<pre class="line after"><span class="ws">                </span>&#34;apps_data&#34;: {</pre>
+<pre class="line after"><span class="ws">                        </span>&#34;apps&#34;: apps or [],</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791420544">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/utils/typing_validations.py"</cite>,
+      line <em class="line">36</em>,
+      in <code class="function">wrapper</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">                </span>:param kwargs: Function keyword arguments.&#34;&#34;&#34;</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">                </span>if apply_condition is None or apply_condition():</pre>
+<pre class="line before"><span class="ws">                        </span>args, kwargs = transform_parameter_types(func, args, kwargs)</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line current"><span class="ws">                </span>return func(*args, **kwargs)
+<span class="ws">                </span>^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">        </span>return wrapper</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws"></span>def qualified_name(obj) -&gt; str:</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791420704">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/utils/caching.py"</cite>,
+      line <em class="line">71</em>,
+      in <code class="function">wrapper</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">                </span>except TypeError:</pre>
+<pre class="line before"><span class="ws">                        </span># args_key is not hashable</pre>
+<pre class="line before"><span class="ws">                        </span>return func(*args, **kwargs)</pre>
+<pre class="line before"><span class="ws">                </span>except KeyError:</pre>
+<pre class="line before"><span class="ws">                        </span># cache miss</pre>
+<pre class="line current"><span class="ws">                        </span>return_val = func(*args, **kwargs)
+<span class="ws">                        </span>^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws">                        </span>_cache[func][args_key] = return_val</pre>
+<pre class="line after"><span class="ws">                        </span>return return_val</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">        </span>return wrapper</pre>
+<pre class="line after"><span class="ws"></span> </pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791420864">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/apps.py"</cite>,
+      line <em class="line">51</em>,
+      in <code class="function">get_apps</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">                                                </span>&#34;title&#34;: _(app_detail.get(&#34;title&#34;)),</pre>
+<pre class="line before"><span class="ws">                                                </span>&#34;route&#34;: app_detail.get(&#34;route&#34;),</pre>
+<pre class="line before"><span class="ws">                                        </span>}</pre>
+<pre class="line before"><span class="ws">                                </span>)</pre>
+<pre class="line before"><span class="ws">                        </span>except Exception:</pre>
+<pre class="line current"><span class="ws">                                </span>frappe.log_error(f&#34;Failed to call has_permission hook ({has_permission_path}) for {app}&#34;)
+<span class="ws">                                </span>^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws">        </span>return app_list</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws"></span>def get_route(app_name):</pre>
+<pre class="line after"><span class="ws">        </span>if app_name not in frappe.get_installed_apps():</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791421024">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/utils/error.py"</cite>,
+      line <em class="line">84</em>,
+      in <code class="function">log_error</code></h4>
+  <div class="source "><pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">        </span>trace_id = get_trace_id()</pre>
+<pre class="line before"><span class="ws">        </span>metadata = get_error_metadata()</pre>
+<pre class="line before"><span class="ws">        </span>fingerprint = get_error_fingerprint()</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line current"><span class="ws">        </span>error_log = frappe.get_doc(
+<span class="ws">        </span>     </pre>
+<pre class="line after"><span class="ws">                </span>doctype=&#34;Error Log&#34;,</pre>
+<pre class="line after"><span class="ws">                </span>error=traceback,</pre>
+<pre class="line after"><span class="ws">                </span>method=title,</pre>
+<pre class="line after"><span class="ws">                </span>reference_doctype=reference_doctype,</pre>
+<pre class="line after"><span class="ws">                </span>reference_name=reference_name,</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791421184">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/model/utils/__init__.py"</cite>,
+      line <em class="line">224</em>,
+      in <code class="function">wrapper</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">                </span>return decorator</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">        </span>@wraps(func)</pre>
+<pre class="line before"><span class="ws">        </span>def wrapper(*args, **kw):</pre>
+<pre class="line before"><span class="ws">                </span>if not args:</pre>
+<pre class="line current"><span class="ws">                        </span>return func(*args, **kw)
+<span class="ws">                        </span>^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws">                </span>return dispatch(args[0])(*args, **kw)</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">        </span>wrapper.register = register</pre>
+<pre class="line after"><span class="ws">        </span>return wrapper</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791421344">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/model/document.py"</cite>,
+      line <em class="line">130</em>,
+      in <code class="function">get_doc</code></h4>
+  <div class="source "><pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">                </span># select a document for update</pre>
+<pre class="line before"><span class="ws">                </span>user = get_doc(&#34;User&#34;, &#34;test@example.com&#34;, for_update=True)</pre>
+<pre class="line before"><span class="ws">        </span>&#34;&#34;&#34;</pre>
+<pre class="line before"><span class="ws">        </span>if not args and kwargs:</pre>
+<pre class="line current"><span class="ws">                </span>return get_doc_from_dict(kwargs)
+<span class="ws">                </span>^^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws">        </span>else:</pre>
+<pre class="line after"><span class="ws">                </span>raise ValueError(&#34;First non keyword argument must be a string or dict&#34;)</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws"></span>@get_doc.register(BaseDocument)</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791421504">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/model/document.py"</cite>,
+      line <em class="line">159</em>,
+      in <code class="function">get_doc_from_dict</code></h4>
+  <div class="source "><pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws"></span>@get_doc.register(dict)</pre>
+<pre class="line before"><span class="ws"></span>def get_doc_from_dict(data: dict[str, Any], **kwargs) -&gt; &#34;Document&#34;:</pre>
+<pre class="line before"><span class="ws">        </span>if &#34;doctype&#34; not in data:</pre>
+<pre class="line before"><span class="ws">                </span>raise ValueError(&#39;&#34;doctype&#34; is a required key&#39;)</pre>
+<pre class="line current"><span class="ws">        </span>if controller := get_controller(data[&#34;doctype&#34;]):
+<span class="ws">        </span>          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws">                </span>doc = controller(**data)</pre>
+<pre class="line after"><span class="ws">                </span>return get_doc_permission_check(doc, kwargs.get(&#34;check_permission&#34;))</pre>
+<pre class="line after"><span class="ws">        </span>raise ImportError(data[&#34;doctype&#34;])</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws"></span> </pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791421664">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/model/base_document.py"</cite>,
+      line <em class="line">92</em>,
+      in <code class="function">get_controller</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">        </span>:param doctype: DocType name as string.</pre>
+<pre class="line before"><span class="ws">        </span>&#34;&#34;&#34;</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">        </span>site_controllers = frappe.controllers.setdefault(frappe.local.site, {})</pre>
+<pre class="line before"><span class="ws">        </span>if doctype not in site_controllers:</pre>
+<pre class="line current"><span class="ws">                </span>site_controllers[doctype] = import_controller(doctype)
+<span class="ws">                </span>              ^^^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">        </span>return site_controllers[doctype]</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws"></span>def import_controller(doctype):</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791421824">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/model/base_document.py"</cite>,
+      line <em class="line">103</em>,
+      in <code class="function">import_controller</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">        </span>from frappe.model.document import Document</pre>
+<pre class="line before"><span class="ws">        </span>from frappe.utils.nestedset import NestedSet</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">        </span>module_name = &#34;Core&#34;</pre>
+<pre class="line before"><span class="ws">        </span>if doctype not in DOCTYPES_FOR_DOCTYPE:</pre>
+<pre class="line current"><span class="ws">                </span>doctype_info = frappe.db.get_value(&#34;DocType&#34;, doctype, (&#34;module&#34;, &#34;custom&#34;, &#34;is_tree&#34;), as_dict=True)
+<span class="ws">                </span> ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws">                </span>if doctype_info:</pre>
+<pre class="line after"><span class="ws">                        </span>if doctype_info.custom:</pre>
+<pre class="line after"><span class="ws">                                </span>return NestedSet if doctype_info.is_tree else Document</pre>
+<pre class="line after"><span class="ws">                        </span>module_name = doctype_info.module</pre>
+<pre class="line after"><span class="ws"></span> </pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791422144">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/database/database.py"</cite>,
+      line <em class="line">564</em>,
+      in <code class="function">get_value</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">                                </span>[&#34;last_login&#34;, &#34;last_ip&#34;])</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">                        </span># returns default date_format</pre>
+<pre class="line before"><span class="ws">                        </span>frappe.db.get_value(&#34;System Settings&#34;, None, &#34;date_format&#34;)</pre>
+<pre class="line before"><span class="ws">                </span>&#34;&#34;&#34;</pre>
+<pre class="line current"><span class="ws">                </span>result = self.get_values(
+<span class="ws">                </span></pre>
+<pre class="line after"><span class="ws">                        </span>doctype,</pre>
+<pre class="line after"><span class="ws">                        </span>filters,</pre>
+<pre class="line after"><span class="ws">                        </span>fieldname,</pre>
+<pre class="line after"><span class="ws">                        </span>ignore,</pre>
+<pre class="line after"><span class="ws">                        </span>as_dict,</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791422304">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/database/database.py"</cite>,
+      line <em class="line">680</em>,
+      in <code class="function">get_values</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">                                                </span>distinct=distinct,</pre>
+<pre class="line before"><span class="ws">                                                </span>limit=limit,</pre>
+<pre class="line before"><span class="ws">                                        </span>)</pre>
+<pre class="line before"><span class="ws">                                        </span>if isinstance(fieldname, str) and fieldname == &#34;*&#34;:</pre>
+<pre class="line before"><span class="ws">                                                </span>as_dict = True</pre>
+<pre class="line current"><span class="ws">                                        </span>out = query.run(as_dict=as_dict, debug=debug, update=update, run=run, pluck=pluck)
+<span class="ws">                                        </span>^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">                                </span>except Exception as e:</pre>
+<pre class="line after"><span class="ws">                                        </span>if ignore and (</pre>
+<pre class="line after"><span class="ws">                                                </span>frappe.db.is_missing_column(e)</pre>
+<pre class="line after"><span class="ws">                                                </span>or frappe.db.is_table_missing(e)</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791422464">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/query_builder/utils.py"</cite>,
+      line <em class="line">135</em>,
+      in <code class="function">execute_query</code></h4>
+  <div class="source "><pre class="line before"><span class="ws"></span>def execute_query(query, *args, **kwargs):</pre>
+<pre class="line before"><span class="ws">        </span>dt = query.__dict__.get(&#34;_doctype&#34;)</pre>
+<pre class="line before"><span class="ws">        </span>fields = query.__dict__.get(&#34;_fields_list&#34;, [])</pre>
+<pre class="line before"><span class="ws">        </span>child_queries = query._child_queries</pre>
+<pre class="line before"><span class="ws">        </span>query, params = prepare_query(query)</pre>
+<pre class="line current"><span class="ws">        </span>result = frappe.local.db.sql(query, params, *args, **kwargs)  # nosemgrep
+<span class="ws">        </span>  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">        </span>if child_queries and isinstance(child_queries, list) and result:</pre>
+<pre class="line after"><span class="ws">                </span>execute_child_queries(child_queries, result)</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">        </span>if result and dt and fields:</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791422624">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/database/postgres/database.py"</cite>,
+      line <em class="line">234</em>,
+      in <code class="function">sql</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">        </span>def _transform_result(self, result: list[tuple] | tuple[tuple]) -&gt; tuple[tuple]:</pre>
+<pre class="line before"><span class="ws">                </span>return tuple(result) if isinstance(result, list) else result</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">        </span># pylint: disable=W0221</pre>
+<pre class="line before"><span class="ws">        </span>def sql(self, query, values=EmptyQueryValues, *args, **kwargs):</pre>
+<pre class="line current"><span class="ws">                </span>return super().sql(modify_query(query), modify_values(values), *args, **kwargs)
+<span class="ws">                </span>^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">        </span>def lazy_mogrify(self, *args, **kwargs) -&gt; str:</pre>
+<pre class="line after"><span class="ws">                </span>return self.last_query</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">        </span>def get_tables(self, cached=True):</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791422784">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/database/database.py"</cite>,
+      line <em class="line">249</em>,
+      in <code class="function">sql</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">                </span># remove whitespace / indentation from start and end of query</pre>
+<pre class="line before"><span class="ws">                </span># and replace ifnull in query with coalesce</pre>
+<pre class="line before"><span class="ws">                </span>query = IFNULL_PATTERN.sub(&#34;coalesce(&#34;, query.strip())</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">                </span>if not self._conn:</pre>
+<pre class="line current"><span class="ws">                        </span>self.connect()
+<span class="ws">                        </span>^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">                </span># in transaction validations</pre>
+<pre class="line after"><span class="ws">                </span>self.check_transaction_status(query, query_type)</pre>
+<pre class="line after"><span class="ws">                </span>self.clear_db_table_cache(query_type)</pre>
+<pre class="line after"><span class="ws"></span> </pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791422944">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/database/postgres/database.py"</cite>,
+      line <em class="line">179</em>,
+      in <code class="function">connect</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">        </span>@property</pre>
+<pre class="line before"><span class="ws">        </span>def db_schema(self):</pre>
+<pre class="line before"><span class="ws">                </span>return frappe.conf.get(&#34;db_schema&#34;, &#34;public&#34;).replace(&#34;&#39;&#34;, &#34;&#34;).replace(&#39;&#34;&#39;, &#34;&#34;)</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">        </span>def connect(self):</pre>
+<pre class="line current"><span class="ws">                </span>super().connect()
+<span class="ws">                </span>^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">                </span>self._cursor.execute(&#34;SET search_path TO %s&#34;, (self.db_schema,))</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">        </span>def get_connection(self):</pre>
+<pre class="line after"><span class="ws">                </span>conn_settings = {</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791423104">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/database/database.py"</cite>,
+      line <em class="line">147</em>,
+      in <code class="function">connect</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">                </span>pass</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">        </span>def connect(self):</pre>
+<pre class="line before"><span class="ws">                </span>&#34;&#34;&#34;Connects to a database as set in `site_config.json`.&#34;&#34;&#34;</pre>
+<pre class="line before"><span class="ws">                </span>self._conn: MySQLdbConnection | MariadbConnection | PostgresConnection | SQLiteConnection = (</pre>
+<pre class="line current"><span class="ws">                        </span>self.get_connection()
+<span class="ws">                        </span>^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws">                </span>)</pre>
+<pre class="line after"><span class="ws">                </span>self._cursor: MySQLdbCursor | MariadbCursor | PostgresCursor | SQLiteCursor = self._conn.cursor()</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">                </span>try:</pre>
+<pre class="line after"><span class="ws">                        </span>if execution_timeout := get_query_execution_timeout():</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791423264">
+  <h4>File <cite class="filename">"/workspace/frappe-bench/apps/frappe/frappe/database/postgres/database.py"</cite>,
+      line <em class="line">195</em>,
+      in <code class="function">get_connection</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">                </span>if self.password:</pre>
+<pre class="line before"><span class="ws">                        </span>conn_settings[&#34;password&#34;] = self.password</pre>
+<pre class="line before"><span class="ws">                </span>if not self.socket and self.port:</pre>
+<pre class="line before"><span class="ws">                        </span>conn_settings[&#34;port&#34;] = self.port</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line current"><span class="ws">                </span>conn = psycopg2.connect(**conn_settings)
+<span class="ws">                </span>^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws">                </span>conn.set_isolation_level(ISOLATION_LEVEL_REPEATABLE_READ)</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">                </span>return conn</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">        </span>def set_execution_timeout(self, seconds: int):</pre></div>
+</div>
+
+<li><div class="frame" id="frame-131525791423424">
+  <h4>File <cite class="filename">"/usr/local/lib/python3.14/site-packages/psycopg2/__init__.py"</cite>,
+      line <em class="line">122</em>,
+      in <code class="function">connect</code></h4>
+  <div class="source library"><pre class="line before"><span class="ws">        </span>kwasync[&#39;async&#39;] = kwargs.pop(&#39;async&#39;)</pre>
+<pre class="line before"><span class="ws">    </span>if &#39;async_&#39; in kwargs:</pre>
+<pre class="line before"><span class="ws">        </span>kwasync[&#39;async_&#39;] = kwargs.pop(&#39;async_&#39;)</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">    </span>dsn = _ext.make_dsn(dsn, **kwargs)</pre>
+<pre class="line current"><span class="ws">    </span>conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+<span class="ws">    </span>       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws">    </span>if cursor_factory is not None:</pre>
+<pre class="line after"><span class="ws">        </span>conn.cursor_factory = cursor_factory</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">    </span>return conn</pre></div>
+</div>
+</ul>
+  <blockquote>psycopg2.OperationalError: connection to server at &#34;127.0.0.1&#34;, port 5433 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+</blockquote>
+</div>
+
+<div class="plain">
+    <p>
+      This is the Copy/Paste friendly version of the traceback.
+    </p>
+    <textarea cols="50" rows="10" name="code" readonly>Traceback (most recent call last):
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/app.py&#34;, line 102, in application
+    init_request(request)
+    ~~~~~~~~~~~~^^^^^^^^^
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/app.py&#34;, line 205, in init_request
+    frappe.local.http_request = HTTPRequest()
+                                ~~~~~~~~~~~^^
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/auth.py&#34;, line 42, in __init__
+    self.set_session()
+    ~~~~~~~~~~~~~~~~^^
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/auth.py&#34;, line 79, in set_session
+    frappe.local.login_manager = LoginManager()
+                                 ~~~~~~~~~~~~^^
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/auth.py&#34;, line 137, in __init__
+    self.make_session(resume=True)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/auth.py&#34;, line 228, in make_session
+    frappe.local.session_obj = Session(
+    
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/sessions.py&#34;, line 236, in __init__
+    self.resume()
+    ~~~~~~~~~~~^^
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/sessions.py&#34;, line 327, in resume
+    validate_ip_address(self.user)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/auth.py&#34;, line 476, in validate_ip_address
+    user_info = frappe.get_cached_doc(&#34;User&#34;, user)
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/model/document.py&#34;, line 2254, in get_cached_doc
+    doc = get_doc(*args, **kwargs)
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/model/utils/__init__.py&#34;, line 225, in wrapper
+    return dispatch(args[0])(*args, **kw)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/model/document.py&#34;, line 144, in get_doc_str
+    doc = controller(doctype, name, **kwargs)
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/model/document.py&#34;, line 227, in __init__
+    self.load_from_db()
+    ~~~~~~~~~~~~~~~~~^^
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/model/document.py&#34;, line 276, in load_from_db
+    d = frappe.db.sql(
+    
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/database/postgres/database.py&#34;, line 234, in sql
+    return super().sql(modify_query(query), modify_values(values), *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/database/database.py&#34;, line 249, in sql
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/database/postgres/database.py&#34;, line 179, in connect
+    super().connect()
+    ~~~~~~~~~~~~~~~^^
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/database/database.py&#34;, line 147, in connect
+    self.get_connection()
+    ~~~~~~~~~~~~~~~~~~~^^
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/database/postgres/database.py&#34;, line 195, in get_connection
+    conn = psycopg2.connect(**conn_settings)
+  File &#34;/usr/local/lib/python3.14/site-packages/psycopg2/__init__.py&#34;, line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+psycopg2.OperationalError: connection to server at &#34;127.0.0.1&#34;, port 5433 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/utils/caching.py&#34;, line 65, in wrapper
+    return _cache[func][args_key]
+           ~~~~~~~~~~~~^^^^^^^^^^
+KeyError: ()
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/apps.py&#34;, line 40, in get_apps
+    if has_permission_path and not frappe.get_attr(has_permission_path)():
+                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File &#34;/workspace/frappe-bench/apps/erpnext/erpnext/__init__.py&#34;, line 161, in check_app_permission
+    if is_website_user():
+       ~~~~~~~~~~~~~~~^^
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/utils/user.py&#34;, line 401, in is_website_user
+    return frappe.get_cached_value(&#34;User&#34;, username or frappe.session.user, &#34;user_type&#34;) == &#34;Website User&#34;
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/model/document.py&#34;, line 2315, in get_cached_value
+    doc = get_cached_doc(doctype, name)
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/model/document.py&#34;, line 2254, in get_cached_doc
+    doc = get_doc(*args, **kwargs)
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/model/utils/__init__.py&#34;, line 225, in wrapper
+    return dispatch(args[0])(*args, **kw)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/model/document.py&#34;, line 144, in get_doc_str
+    doc = controller(doctype, name, **kwargs)
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/model/document.py&#34;, line 227, in __init__
+    self.load_from_db()
+    ~~~~~~~~~~~~~~~~~^^
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/model/document.py&#34;, line 276, in load_from_db
+    d = frappe.db.sql(
+    
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/database/postgres/database.py&#34;, line 234, in sql
+    return super().sql(modify_query(query), modify_values(values), *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/database/database.py&#34;, line 249, in sql
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/database/postgres/database.py&#34;, line 179, in connect
+    super().connect()
+    ~~~~~~~~~~~~~~~^^
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/database/database.py&#34;, line 147, in connect
+    self.get_connection()
+    ~~~~~~~~~~~~~~~~~~~^^
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/database/postgres/database.py&#34;, line 195, in get_connection
+    conn = psycopg2.connect(**conn_settings)
+  File &#34;/usr/local/lib/python3.14/site-packages/psycopg2/__init__.py&#34;, line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+psycopg2.OperationalError: connection to server at &#34;127.0.0.1&#34;, port 5433 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/middlewares.py&#34;, line 31, in __call__
+    return super().__call__(environ, patch_start_response)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File &#34;/usr/local/lib/python3.14/site-packages/werkzeug/middleware/shared_data.py&#34;, line 250, in __call__
+    return self.app(environ, start_response)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File &#34;/usr/local/lib/python3.14/site-packages/werkzeug/middleware/shared_data.py&#34;, line 250, in __call__
+    return self.app(environ, start_response)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/app.py&#34;, line 84, in application
+    app(environ, start_response),
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File &#34;/usr/local/lib/python3.14/site-packages/werkzeug/wrappers/request.py&#34;, line 193, in application
+    resp = f(*args[:-2] + (request,))
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/app.py&#34;, line 145, in application
+    response = e.get_response(request.environ) if isinstance(e, HTTPException) else handle_exception(e)
+                                                                                    ~~~~~~~~~~~~~~~~^^^
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/permissions.py&#34;, line 938, in wrapper
+    return fn(e, *args, **kwargs)
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/app.py&#34;, line 405, in handle_exception
+    ).render()
+      ~~~~~~^^
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/website/page_renderers/template_page.py&#34;, line 84, in render
+    html = self.get_html()
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/website/utils.py&#34;, line 545, in cache_html_decorator
+    html = func(*args, **kwargs)
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/website/page_renderers/template_page.py&#34;, line 92, in get_html
+    self.init_context()
+    ~~~~~~~~~~~~~~~~~^^
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/website/page_renderers/error_page.py&#34;, line 17, in init_context
+    super().init_context()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/website/page_renderers/base_template_page.py&#34;, line 15, in init_context
+    self.context.update(get_website_settings())
+                        ~~~~~~~~~~~~~~~~~~~~^^
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/website/doctype/website_settings/website_settings.py&#34;, line 263, in get_website_settings
+    context.boot = get_boot_data()
+                   ~~~~~~~~~~~~~^^
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/website/utils.py&#34;, line 178, in get_boot_data
+    apps = get_apps()
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/utils/typing_validations.py&#34;, line 36, in wrapper
+    return func(*args, **kwargs)
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/utils/caching.py&#34;, line 71, in wrapper
+    return_val = func(*args, **kwargs)
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/apps.py&#34;, line 51, in get_apps
+    frappe.log_error(f&#34;Failed to call has_permission hook ({has_permission_path}) for {app}&#34;)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/utils/error.py&#34;, line 84, in log_error
+    error_log = frappe.get_doc(
+    
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/model/utils/__init__.py&#34;, line 224, in wrapper
+    return func(*args, **kw)
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/model/document.py&#34;, line 130, in get_doc
+    return get_doc_from_dict(kwargs)
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/model/document.py&#34;, line 159, in get_doc_from_dict
+    if controller := get_controller(data[&#34;doctype&#34;]):
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/model/base_document.py&#34;, line 92, in get_controller
+    site_controllers[doctype] = import_controller(doctype)
+                                ~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/model/base_document.py&#34;, line 103, in import_controller
+    doctype_info = frappe.db.get_value(&#34;DocType&#34;, doctype, (&#34;module&#34;, &#34;custom&#34;, &#34;is_tree&#34;), as_dict=True)
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/database/database.py&#34;, line 564, in get_value
+    result = self.get_values(
+    
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/database/database.py&#34;, line 680, in get_values
+    out = query.run(as_dict=as_dict, debug=debug, update=update, run=run, pluck=pluck)
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/query_builder/utils.py&#34;, line 135, in execute_query
+    result = frappe.local.db.sql(query, params, *args, **kwargs)  # nosemgrep
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/database/postgres/database.py&#34;, line 234, in sql
+    return super().sql(modify_query(query), modify_values(values), *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/database/database.py&#34;, line 249, in sql
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/database/postgres/database.py&#34;, line 179, in connect
+    super().connect()
+    ~~~~~~~~~~~~~~~^^
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/database/database.py&#34;, line 147, in connect
+    self.get_connection()
+    ~~~~~~~~~~~~~~~~~~~^^
+  File &#34;/workspace/frappe-bench/apps/frappe/frappe/database/postgres/database.py&#34;, line 195, in get_connection
+    conn = psycopg2.connect(**conn_settings)
+  File &#34;/usr/local/lib/python3.14/site-packages/psycopg2/__init__.py&#34;, line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+psycopg2.OperationalError: connection to server at &#34;127.0.0.1&#34;, port 5433 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+</textarea>
+</div>
+<div class="explanation">
+  The debugger caught an exception in your WSGI application.  You can now
+  look at the traceback which led to the error.  <span class="nojavascript">
+  If you enable JavaScript you can also use additional features such as code
+  execution (if the evalex feature is enabled), automatic pasting of the
+  exceptions and much more.</span>
+</div>
+      <div class="footer">
+        Brought to you by <strong class="arthur">DON'T PANIC</strong>, your
+        friendly Werkzeug powered traceback interpreter.
+      </div>
+    </div>
+
+    <div class="pin-prompt">
+      <div class="inner">
+        <h3>Console Locked</h3>
+        <p>
+          The console is locked and needs to be unlocked by entering the PIN.
+          You can find the PIN printed out on the standard output of your
+          shell that runs the server.
+        <form>
+          <p>PIN:
+            <input type=text name=pin size=14>
+            <input type=submit name=btn value="Confirm Pin">
+        </form>
+      </div>
+    </div>
+  </body>
+</html>
+
+<!--
+
+Traceback (most recent call last):
+  File "/workspace/frappe-bench/apps/frappe/frappe/app.py", line 102, in application
+    init_request(request)
+    ~~~~~~~~~~~~^^^^^^^^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/app.py", line 205, in init_request
+    frappe.local.http_request = HTTPRequest()
+                                ~~~~~~~~~~~^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/auth.py", line 42, in __init__
+    self.set_session()
+    ~~~~~~~~~~~~~~~~^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/auth.py", line 79, in set_session
+    frappe.local.login_manager = LoginManager()
+                                 ~~~~~~~~~~~~^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/auth.py", line 137, in __init__
+    self.make_session(resume=True)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/auth.py", line 228, in make_session
+    frappe.local.session_obj = Session(
+    
+  File "/workspace/frappe-bench/apps/frappe/frappe/sessions.py", line 236, in __init__
+    self.resume()
+    ~~~~~~~~~~~^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/sessions.py", line 327, in resume
+    validate_ip_address(self.user)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/auth.py", line 476, in validate_ip_address
+    user_info = frappe.get_cached_doc("User", user)
+  File "/workspace/frappe-bench/apps/frappe/frappe/model/document.py", line 2254, in get_cached_doc
+    doc = get_doc(*args, **kwargs)
+  File "/workspace/frappe-bench/apps/frappe/frappe/model/utils/__init__.py", line 225, in wrapper
+    return dispatch(args[0])(*args, **kw)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/model/document.py", line 144, in get_doc_str
+    doc = controller(doctype, name, **kwargs)
+  File "/workspace/frappe-bench/apps/frappe/frappe/model/document.py", line 227, in __init__
+    self.load_from_db()
+    ~~~~~~~~~~~~~~~~~^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/model/document.py", line 276, in load_from_db
+    d = frappe.db.sql(
+    
+  File "/workspace/frappe-bench/apps/frappe/frappe/database/postgres/database.py", line 234, in sql
+    return super().sql(modify_query(query), modify_values(values), *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/database/database.py", line 249, in sql
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/database/postgres/database.py", line 179, in connect
+    super().connect()
+    ~~~~~~~~~~~~~~~^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/database/database.py", line 147, in connect
+    self.get_connection()
+    ~~~~~~~~~~~~~~~~~~~^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/database/postgres/database.py", line 195, in get_connection
+    conn = psycopg2.connect(**conn_settings)
+  File "/usr/local/lib/python3.14/site-packages/psycopg2/__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+psycopg2.OperationalError: connection to server at "127.0.0.1", port 5433 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/frappe-bench/apps/frappe/frappe/utils/caching.py", line 65, in wrapper
+    return _cache[func][args_key]
+           ~~~~~~~~~~~~^^^^^^^^^^
+KeyError: ()
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/frappe-bench/apps/frappe/frappe/apps.py", line 40, in get_apps
+    if has_permission_path and not frappe.get_attr(has_permission_path)():
+                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/workspace/frappe-bench/apps/erpnext/erpnext/__init__.py", line 161, in check_app_permission
+    if is_website_user():
+       ~~~~~~~~~~~~~~~^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/utils/user.py", line 401, in is_website_user
+    return frappe.get_cached_value("User", username or frappe.session.user, "user_type") == "Website User"
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/model/document.py", line 2315, in get_cached_value
+    doc = get_cached_doc(doctype, name)
+  File "/workspace/frappe-bench/apps/frappe/frappe/model/document.py", line 2254, in get_cached_doc
+    doc = get_doc(*args, **kwargs)
+  File "/workspace/frappe-bench/apps/frappe/frappe/model/utils/__init__.py", line 225, in wrapper
+    return dispatch(args[0])(*args, **kw)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/model/document.py", line 144, in get_doc_str
+    doc = controller(doctype, name, **kwargs)
+  File "/workspace/frappe-bench/apps/frappe/frappe/model/document.py", line 227, in __init__
+    self.load_from_db()
+    ~~~~~~~~~~~~~~~~~^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/model/document.py", line 276, in load_from_db
+    d = frappe.db.sql(
+    
+  File "/workspace/frappe-bench/apps/frappe/frappe/database/postgres/database.py", line 234, in sql
+    return super().sql(modify_query(query), modify_values(values), *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/database/database.py", line 249, in sql
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/database/postgres/database.py", line 179, in connect
+    super().connect()
+    ~~~~~~~~~~~~~~~^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/database/database.py", line 147, in connect
+    self.get_connection()
+    ~~~~~~~~~~~~~~~~~~~^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/database/postgres/database.py", line 195, in get_connection
+    conn = psycopg2.connect(**conn_settings)
+  File "/usr/local/lib/python3.14/site-packages/psycopg2/__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+psycopg2.OperationalError: connection to server at "127.0.0.1", port 5433 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/frappe-bench/apps/frappe/frappe/middlewares.py", line 31, in __call__
+    return super().__call__(environ, patch_start_response)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.14/site-packages/werkzeug/middleware/shared_data.py", line 250, in __call__
+    return self.app(environ, start_response)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.14/site-packages/werkzeug/middleware/shared_data.py", line 250, in __call__
+    return self.app(environ, start_response)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/app.py", line 84, in application
+    app(environ, start_response),
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.14/site-packages/werkzeug/wrappers/request.py", line 193, in application
+    resp = f(*args[:-2] + (request,))
+  File "/workspace/frappe-bench/apps/frappe/frappe/app.py", line 145, in application
+    response = e.get_response(request.environ) if isinstance(e, HTTPException) else handle_exception(e)
+                                                                                    ~~~~~~~~~~~~~~~~^^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/permissions.py", line 938, in wrapper
+    return fn(e, *args, **kwargs)
+  File "/workspace/frappe-bench/apps/frappe/frappe/app.py", line 405, in handle_exception
+    ).render()
+      ~~~~~~^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/website/page_renderers/template_page.py", line 84, in render
+    html = self.get_html()
+  File "/workspace/frappe-bench/apps/frappe/frappe/website/utils.py", line 545, in cache_html_decorator
+    html = func(*args, **kwargs)
+  File "/workspace/frappe-bench/apps/frappe/frappe/website/page_renderers/template_page.py", line 92, in get_html
+    self.init_context()
+    ~~~~~~~~~~~~~~~~~^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/website/page_renderers/error_page.py", line 17, in init_context
+    super().init_context()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/website/page_renderers/base_template_page.py", line 15, in init_context
+    self.context.update(get_website_settings())
+                        ~~~~~~~~~~~~~~~~~~~~^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/website/doctype/website_settings/website_settings.py", line 263, in get_website_settings
+    context.boot = get_boot_data()
+                   ~~~~~~~~~~~~~^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/website/utils.py", line 178, in get_boot_data
+    apps = get_apps()
+  File "/workspace/frappe-bench/apps/frappe/frappe/utils/typing_validations.py", line 36, in wrapper
+    return func(*args, **kwargs)
+  File "/workspace/frappe-bench/apps/frappe/frappe/utils/caching.py", line 71, in wrapper
+    return_val = func(*args, **kwargs)
+  File "/workspace/frappe-bench/apps/frappe/frappe/apps.py", line 51, in get_apps
+    frappe.log_error(f"Failed to call has_permission hook ({has_permission_path}) for {app}")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/utils/error.py", line 84, in log_error
+    error_log = frappe.get_doc(
+    
+  File "/workspace/frappe-bench/apps/frappe/frappe/model/utils/__init__.py", line 224, in wrapper
+    return func(*args, **kw)
+  File "/workspace/frappe-bench/apps/frappe/frappe/model/document.py", line 130, in get_doc
+    return get_doc_from_dict(kwargs)
+  File "/workspace/frappe-bench/apps/frappe/frappe/model/document.py", line 159, in get_doc_from_dict
+    if controller := get_controller(data["doctype"]):
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/model/base_document.py", line 92, in get_controller
+    site_controllers[doctype] = import_controller(doctype)
+                                ~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/model/base_document.py", line 103, in import_controller
+    doctype_info = frappe.db.get_value("DocType", doctype, ("module", "custom", "is_tree"), as_dict=True)
+  File "/workspace/frappe-bench/apps/frappe/frappe/database/database.py", line 564, in get_value
+    result = self.get_values(
+    
+  File "/workspace/frappe-bench/apps/frappe/frappe/database/database.py", line 680, in get_values
+    out = query.run(as_dict=as_dict, debug=debug, update=update, run=run, pluck=pluck)
+  File "/workspace/frappe-bench/apps/frappe/frappe/query_builder/utils.py", line 135, in execute_query
+    result = frappe.local.db.sql(query, params, *args, **kwargs)  # nosemgrep
+  File "/workspace/frappe-bench/apps/frappe/frappe/database/postgres/database.py", line 234, in sql
+    return super().sql(modify_query(query), modify_values(values), *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/database/database.py", line 249, in sql
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/database/postgres/database.py", line 179, in connect
+    super().connect()
+    ~~~~~~~~~~~~~~~^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/database/database.py", line 147, in connect
+    self.get_connection()
+    ~~~~~~~~~~~~~~~~~~~^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/database/postgres/database.py", line 195, in get_connection
+    conn = psycopg2.connect(**conn_settings)
+  File "/usr/local/lib/python3.14/site-packages/psycopg2/__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+psycopg2.OperationalError: connection to server at "127.0.0.1", port 5433 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+
+
+-->

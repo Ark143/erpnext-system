@@ -1,47 +1,5 @@
-# Python / venv
-env/
-env_py311_backup/
-**/__pycache__/
-*.pyc
-*.pyo
-*.egg-info/
-.pytest_cache/
-
-# Frappe bench runtime / secrets
-frappe-bench/env/
-frappe-bench/node_modules/
-frappe-bench/sites/*/site_config.json
-frappe-bench/sites/common_site_config.json
-
-# Frappe framework + ERPNext core (dependencies; not custom code)
-frappe-bench/apps/frappe/
-frappe-bench/apps/erpnext/
-!frappe-bench/apps/frappe/frappe/www/login.html
-
-# Site data: private (db backups, etc) + public uploads + any nested sites/
-frappe-bench/sites/sites/
-frappe-bench/sites/**/private/
-frappe-bench/sites/**/backups/
-frappe-bench/sites/*/private/
-frappe-bench/sites/*/locks/
-frappe-bench/sites/*/logs/
-frappe-bench/logs/
-logs/
-
-# Preserve company branding logo
-!frappe-bench/sites/site1.local/public/files/ultra_mrf_logo*
-*.test_traversal.txt
-
-# Preserve database data backups
-!data_backup/
-!data_backup/*
-
-# Local scratch / payloads
-_wp_payload.json
-*.json.tmp
-Caddyfile.bak
-
-# OS
-Thumbs.db
-Desktop.ini
-.DS_Store
+data_backup/
+volume_backup/
+backups/*.sql.gz
+backups/*.tar.gz
+*.dump

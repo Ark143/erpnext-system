@@ -159,17 +159,133 @@ def get_cashier():
 
 @frappe.whitelist()
 def get_history():
-	"""Recent Vehicle POS Invoices created by the logged-in cashier."""
+	"""Recent Vehicle POS Invoices created by the logged-in cashier (real-time)."""
 	user = frappe.session.user
 	rows = frappe.get_all(
 		"Vehicle POS Invoice",
 		filters=[["Vehicle POS Invoice", "cashier", "=", user], ["Vehicle POS Invoice", "docstatus", "=", 1]],
-		fields=["name", "posting_date", "customer_name", "vehicle", "total_amount", "paid_amount",
-		        "payment_method", "company", "creation"],
+		fields=["name", "posting_date", "customer_name", "vehicle", "plate_no", "total_amount", "paid_amount",
+		        "payment_method", "company", "pos_invoice", "creation"],
 		order_by="creation desc",
-		limit_page_length=50,
+		limit_page_length=200,
 	)
+	for r in rows:
+		r["timestamp"] = _fmt_ts(r)
 	return rows
+
+
+def _fmt_ts(r):
+	"""Human timestamp: YYYY-MM-DD HH:MM:SS from creation, fallback to posting_date."""
+	c = r.get("creation") or ""
+	if c:
+		return str(c)[:19]
+	return str(r.get("posting_date") or "")
+
+
+@frappe.whitelist()
+def get_receipt(name):
+	"""Full receipt detail for a single Vehicle POS Invoice (for receipt printing)."""
+	if not name:
+		return {}
+	doc = frappe.get_doc("Vehicle POS Invoice", name)
+	roles = frappe.get_roles(frappe.session.user)
+	if doc.cashier and doc.cashier != frappe.session.user and "System Manager" not in roles:
+		frappe.throw("Not permitted", frappe.PermissionError)
+	items = []
+	for it in doc.get("items") or []:
+		items.append({
+			"item_code": it.item_code,
+			"item_name": it.item_name,
+			"uom": it.uom,
+			"qty": flt(it.qty),
+			"rate": flt(it.rate),
+			"discount_amount": flt(it.discount_amount),
+			"amount": flt(it.amount),
+		})
+	return {
+		"name": doc.name,
+		"posting_date": str(doc.posting_date or ""),
+		"timestamp": str(doc.creation or "")[:19],
+		"customer": doc.customer,
+		"customer_name": doc.customer_name,
+		"vehicle": doc.vehicle,
+		"plate_no": doc.plate_no,
+		"company": doc.company,
+		"cashier": doc.cashier,
+		"payment_method": doc.payment_method,
+		"paid_amount": flt(doc.paid_amount),
+		"total_amount": flt(doc.total_amount),
+		"total_discount": flt(doc.total_discount),
+		"balance_amount": flt(doc.balance_amount),
+		"pos_invoice": doc.pos_invoice,
+		"items": items,
+	}
+
+
+@frappe.whitelist()
+def get_cashier_shift():
+	"""Current open POS Opening Entry for the logged-in cashier (or closed)."""
+	user = frappe.session.user
+	e = frappe.db.get_value(
+		"POS Opening Entry",
+		{"user": user, "status": "Open", "docstatus": 1},
+		["name", "pos_profile", "company", "period_start_date"],
+		as_dict=True,
+	)
+	if e:
+		return {"open": True, "name": e.name, "pos_profile": e.pos_profile,
+		        "company": e.company, "period_start_date": str(e.period_start_date or "")}
+	return {"open": False, "name": None}
+
+
+@frappe.whitelist()
+def open_cashier(company=None, opening_amount=0):
+	"""Open a POS Opening Entry for the logged-in cashier."""
+	user = frappe.session.user
+	existing = frappe.db.get_value(
+		"POS Opening Entry", {"user": user, "status": "Open", "docstatus": 1}, "name"
+	)
+	if existing:
+		return {"status": "already_open", "name": existing}
+	if not company:
+		company = (get_cashier() or {}).get("company")
+	if not company:
+		frappe.throw("Could not resolve a company for this cashier.")
+	from vehicle_management.vehicle_management.doctype.vehicle_pos_invoice.vehicle_pos_invoice import VehiclePOSInvoice
+	vpi = VehiclePOSInvoice({"doctype": "Vehicle POS Invoice"})
+	pos_profile = vpi.ensure_pos_profile(company)
+	cash = vpi.get_mode_of_payment("Cash", company)
+	entry = frappe.get_doc({
+		"doctype": "POS Opening Entry",
+		"company": company,
+		"pos_profile": pos_profile,
+		"user": user,
+		"posting_date": frappe.utils.nowdate(),
+		"period_start_date": frappe.utils.now_datetime(),
+		"balance_details": [{"mode_of_payment": cash, "opening_amount": flt(opening_amount)}],
+	})
+	entry.insert()
+	entry.submit()
+	frappe.db.commit()
+	return {"status": "opened", "name": entry.name}
+
+
+@frappe.whitelist()
+def close_cashier():
+	"""Close the cashier's open POS Opening Entry via a POS Closing Entry."""
+	user = frappe.session.user
+	opening_name = frappe.db.get_value(
+		"POS Opening Entry", {"user": user, "status": "Open", "docstatus": 1}, "name"
+	)
+	if not opening_name:
+		return {"status": "no_open_entry", "message": "No open POS Opening Entry found."}
+	from erpnext.accounts.doctype.pos_closing_entry.pos_closing_entry import make_closing_entry_from_opening
+	opening = frappe.get_doc("POS Opening Entry", opening_name)
+	closing = make_closing_entry_from_opening(opening)
+	closing.insert()
+	closing.submit()
+	frappe.db.commit()
+	return {"status": "closed", "name": closing.name}
 
 
 def cint_safe(v):
@@ -223,3 +339,21 @@ def get_stock(codes=None):
 	for ic in result:
 		result[ic]["stock"] = round(result[ic]["stock"], 2)
 	return result
+
+
+@frappe.whitelist()
+def vm_pos_items(txt=None, category=None, company=None):
+    """POS catalog search (client calls this)."""
+    return get_items(txt=txt, category=category, company=company)
+
+
+@frappe.whitelist()
+def vm_pos_vehicles(txt=None):
+    """Customer Vehicle autocomplete (client calls this)."""
+    return search_vehicles(txt=txt)
+
+
+@frappe.whitelist()
+def vm_pos_vehicle_customer(vehicle=None):
+    """Resolve Customer Vehicle -> Customer (client calls this)."""
+    return get_customer_vehicle(vehicle=vehicle)

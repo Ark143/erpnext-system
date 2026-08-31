@@ -1,4 +1,6 @@
 frappe.pages["vehicle_pos"].on_page_load = function (wrapper) {
+	inject_pos_styles();
+
 	const page = frappe.ui.make_app_page({
 		parent: wrapper,
 		title: __("Vehicle POS"),
@@ -6,10 +8,19 @@ frappe.pages["vehicle_pos"].on_page_load = function (wrapper) {
 	});
 
 	page.main.addClass("vehicle-pos-page");
-	inject_pos_styles();
 
-	const pos = new VehiclePOS(page);
-	pos.render();
+	const boot = () => {
+		const pos = new VehiclePOS(page);
+		pos.render();
+	};
+
+	// jsQR is required for QR badge login; load it once from CDN if absent.
+	if (window.jsQR) { boot(); return; }
+	const s = document.createElement("script");
+	s.src = "https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js";
+	s.onload = boot;
+	s.onerror = () => { boot(); };  // fall back to credential-only login if CDN blocked
+	document.head.appendChild(s);
 };
 
 class VehiclePOS {
@@ -21,13 +32,168 @@ class VehiclePOS {
 		this.company = null;
 		this.payment_method = "Cash";
 		this.category = null;
+		this.cashier = null;
+		this.cashier_user = null;
+		this.logged_in = false;
 	}
 
 	render() {
 		this.page.main.empty();
+		if (!this.logged_in) {
+			this.build_login();
+			return;
+		}
 		this.build_layout();
 		this.load_companies();
 		this.bind_global_keys();
+	}
+
+	build_login() {
+		const self = this;
+		const html = `
+		<div class="vpos-login" id="vpos-login">
+			<div class="vpos-login-card">
+				<div class="vpos-login-logo">V</div>
+				<div class="vpos-login-title">Vehicle POS</div>
+				<div class="vpos-login-sub">Cashier Sign-In</div>
+				<input class="vpos-li vpos-li-user" placeholder="User ID / Email" autocomplete="username" />
+				<input class="vpos-li vpos-li-pass" type="password" placeholder="Password" autocomplete="current-password" />
+				<button class="vpos-li-btn" id="vpos-li-go">Sign In</button>
+				<div class="vpos-li-or">— or scan your QR badge —</div>
+				<button class="vpos-li-qr" id="vpos-li-scan">&#128247; Scan QR Code (camera)</button>
+				<label class="vpos-li-up"><input type="file" accept="image/*" id="vpos-li-file" style="display:none" />&#128247; Upload QR image to log in</label>
+				<div class="vpos-li-or">— or paste badge code —</div>
+				<input class="vpos-li vpos-li-code" id="vpos-li-code" placeholder="user|password" />
+				<button class="vpos-li-qr" id="vpos-li-codego">Use code</button>
+				<div class="vpos-li-err" id="vpos-li-err"></div>
+				<video id="vpos-video" playsinline style="display:none;width:100%;border-radius:12px;margin-top:10px"></video>
+			</div>
+		</div>`;
+		this.page.main.append(html);
+		this.page.main.find("#vpos-li-go").on("click", () => self.do_login(
+			self.page.main.find(".vpos-li-user").val(), self.page.main.find(".vpos-li-pass").val()));
+		this.page.main.find("#vpos-li-scan").on("click", () => self.open_scanner());
+		this.page.main.find("#vpos-li-file").on("change", (e) => self.decode_image(e.target.files[0]));
+		this.page.main.find("#vpos-li-codego").on("click", () => {
+			const c = (self.page.main.find("#vpos-li-code").val() || "").trim();
+			self.apply_qr(c);
+		});
+		// allow Enter on password field
+		this.page.main.find(".vpos-li-pass").on("keypress", (e) => {
+			if (e.which === 13) self.page.main.find("#vpos-li-go").trigger("click");
+		});
+	}
+
+	apply_qr(data) {
+		if (!data) return;
+		const parts = String(data).split("|");
+		const u = this.page.main.find(".vpos-li-user");
+		const p = this.page.main.find(".vpos-li-pass");
+		if (u.length) u.val(parts[0] || "");
+		if (p.length) p.val(parts[1] || "");
+		this.do_login(parts[0] || "", parts[1] || "");
+	}
+
+	do_login(usr, pwd) {
+		const self = this;
+		const err = this.page.main.find("#vpos-li-err");
+		if (!usr || !pwd) { err.text("Enter user ID and password."); return; }
+		err.text("Signing in...");
+		frappe.call({
+			method: "login",
+			args: { usr: usr, pwd: pwd },
+			callback: (r) => {
+				// frappe.call with method 'login' returns the login response
+				if (r.message === "Logged In" || (r.message && !r.message.exc)) {
+					self.cashier_user = usr;
+					window.__vposPwd = pwd;
+					self.after_login();
+				} else {
+					err.text((r.message && r.message.message) ? r.message.message : "Login failed.");
+				}
+			},
+			error: () => { err.text("Login failed."); }
+		});
+	}
+
+	after_login() {
+		const self = this;
+		frappe.call({
+			method: "vehicle_management.vehicle_management.pos_api.get_cashier",
+			callback: (r) => {
+				const c = r.message || {};
+				self.cashier = c.user || self.cashier_user;
+				self.company = c.company || null;
+				self.logged_in = true;
+				self.render();
+			},
+			error: () => {
+				// get_cashier unavailable — still allow login with no company
+				self.cashier = self.cashier_user;
+				self.logged_in = true;
+				self.render();
+			}
+		});
+	}
+
+	open_scanner() {
+		const self = this;
+		const v = this.page.main.find("#vpos-video")[0];
+		const err = this.page.main.find("#vpos-li-err");
+		if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+			err.text("Camera not available. Upload a QR image instead.");
+			return;
+		}
+		err.text("Point camera at the cashier QR badge...");
+		navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }).then((stream) => {
+			v.srcObject = stream; v.style.display = "block"; v.play();
+			const canvas = document.createElement("canvas");
+			const ctx = canvas.getContext("2d");
+			const tick = () => {
+				if (!self.logged_in && v.readyState === 4) {
+					canvas.width = v.videoWidth; canvas.height = v.videoHeight;
+					ctx.drawImage(v, 0, 0, canvas.width, canvas.height);
+					try {
+						const d = ctx.getImageData(0, 0, canvas.width, canvas.height);
+						let res = null;
+						try { res = window.jsQR(d.data, d.width, d.height, { inversionAttempts: "attemptBoth" }); } catch (e) {}
+						if (res && res.data) {
+							stream.getTracks().forEach(t => t.stop());
+							v.style.display = "none";
+							self.apply_qr(res.data);
+							return;
+						}
+					} catch (e) {}
+				}
+				setTimeout(tick, 300);
+			};
+			tick();
+		}).catch(() => err.text("Camera access denied. Upload a QR image instead."));
+	}
+
+	decode_image(file) {
+		const self = this;
+		const err = this.page.main.find("#vpos-li-err");
+		if (!file) return;
+		err.text("Reading QR from image...");
+		const img = new Image();
+		const reader = new FileReader();
+		reader.onload = () => {
+			img.onload = () => {
+				const canvas = document.createElement("canvas");
+				canvas.width = img.width; canvas.height = img.height;
+				const ctx = canvas.getContext("2d");
+				ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+				const d = ctx.getImageData(0, 0, canvas.width, canvas.height);
+				let res = null;
+				try { res = window.jsQR(d.data, d.width, d.height, { inversionAttempts: "attemptBoth" }); } catch (e) {}
+				if (res && res.data) { err.text("QR decoded."); self.apply_qr(res.data); }
+				else { err.text("No QR found in that image."); }
+			};
+			img.onerror = () => err.text("Could not read image.");
+			img.src = reader.result;
+		};
+		reader.readAsDataURL(file);
 	}
 
 	build_layout() {
@@ -431,6 +597,22 @@ function inject_pos_styles() {
 	$(`
 	<style id="vpos-custom-styles">
 		.vehicle-pos-page { background: #e0f2f1; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
+		/* CASHIER LOGIN */
+		.vpos-login { position: fixed; inset: 0; background: linear-gradient(160deg, #0c1a18, #123b33); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 16px; }
+		.vpos-login-card { background: #fff; border-radius: 24px; padding: 32px 24px; width: 360px; max-width: 100%; box-shadow: 0 24px 60px rgba(0,0,0,.45); text-align: center; }
+		.vpos-login-logo { width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg,#16c784,#0fa76d); color: #04201a; font-weight: 800; font-size: 28px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
+		.vpos-login-title { font-weight: 800; font-size: 22px; color: #12332e; }
+		.vpos-login-sub { color: #6b9080; font-size: 13px; margin-bottom: 20px; font-weight: 500; }
+		.vpos-li { width: 100%; height: 46px; border: 1.5px solid #d7ecea; border-radius: 12px; padding: 0 14px; margin-bottom: 10px; font-size: 14px; background: #fbfdfc; }
+		.vpos-li:focus { outline: none; border-color: #16a34a; }
+		.vpos-li-btn { width: 100%; height: 48px; background: #16a34a; color: #fff; border: none; border-radius: 12px; font-weight: 800; font-size: 15px; cursor: pointer; margin-bottom: 14px; }
+		.vpos-li-btn:hover { background: #15803d; }
+		.vpos-li-or { color: #9bbdb4; font-size: 11px; margin: 10px 0; text-transform: uppercase; letter-spacing: .04em; }
+		.vpos-li-qr { width: 100%; height: 46px; background: #eef7f3; color: #0f766e; border: 1.5px solid #d7ecea; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+		.vpos-li-qr:hover { background: #e0f2ed; }
+		.vpos-li-up { display: flex; width: 100%; height: 46px; background: #eef7f3; color: #0f766e; border: 1.5px dashed #bfe3dd; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 13px; align-items: center; justify-content: center; gap: 6px; margin-bottom: 10px; }
+		.vpos-li-err { color: #dc2626; font-size: 12px; min-height: 16px; margin-top: 8px; font-weight: 600; }
+		.vpos-li-ok { color: #16a34a; font-size: 12px; margin-bottom: 10px; font-weight: 600; }
 		.vehicle-pos-page .page-head, .vehicle-pos-page .page-head .title { display: none !important; }
 		.vehicle-pos-page .layout-main-section { padding: 0 !important; margin: 0 !important; }
 		.vehicle-pos-page .page-content { padding: 0 !important; }

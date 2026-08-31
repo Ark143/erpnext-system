@@ -107,6 +107,14 @@ Full data migration: web pages, POS, vehicle_management, master data, Postgres p
 15. **`route_history.deferred_insert` returns 400** — harmless best-effort route-history log quirk;
     `tabRoute History` table exists; not a functional bug. Ignore.
 
+16. **Cashier opening/closing amounts** — `open_cashier(company, opening_amount)` records the cashier's
+    opening cash in POS Opening Entry `balance_details`; `close_cashier(closing_amount)` records the
+    counted cash in POS Closing Entry `payment_reconciliation` (with a fallback that appends a Cash row
+    when the shift had zero sales, so the amount is never dropped). `get_cashier_shift` returns
+    `opening_amount` for the UI. Frontend uses a SELF-CONTAINED inline modal (`_promptAmount`) — do NOT
+    use `frappe.ui.Dialog` in the standalone POS SPA: `frappe.ui` is present but the desk modal wrapper
+    isn't initialized, so the dialog silently never renders.
+
 ## Files (local)
 - C:/Users/josem/erpnext-system/vps_migration/  (Dockerfile, docker-compose.yml, Caddyfile,
   entrypoint.sh, restore.sh, build_prep.sh, requirements.txt, artifacts/, sites/)

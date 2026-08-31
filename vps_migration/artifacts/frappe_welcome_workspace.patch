@@ -1,0 +1,8 @@
+diff --git a/frappe/desk/doctype/workspace_sidebar/workspace_sidebar.py b/frappe/desk/doctype/workspace_sidebar/workspace_sidebar.py
+--- a/frappe/desk/doctype/workspace_sidebar/workspace_sidebar.py
++++ b/frappe/desk/doctype/workspace_sidebar/workspace_sidebar.py
+@@ create_sidebar_items(): for item in items loop @@
+ 		for item in items:
++			if entity_lower == "workspace" and item == "Welcome Workspace":
++				continue  # excluded from frappe.workspaces; would crash the desk sidebar route
+ 			item_info = {"label": item, "type": "Link", "link_type": entity, "link_to": item, "idx": idx}

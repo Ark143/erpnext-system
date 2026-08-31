@@ -40,7 +40,7 @@ add_to_apps_screen = [
 # webform_include_css = {"doctype": "public/css/doctype.css"}
 
 # include js in page
-page_js = {"vehicle_pos": "public/js/vehicle_pos.js"}
+# page_js = {"page" : "public/js/file.js"}
 
 doctype_js = {
 	"Item": "public/js/item.js",

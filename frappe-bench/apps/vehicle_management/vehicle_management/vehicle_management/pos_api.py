@@ -233,9 +233,16 @@ def get_cashier_shift():
 		as_dict=True,
 	)
 	if e:
+		opening_amount = 0.0
+		try:
+			bd = frappe.db.get_all("POS Opening Entry Detail", {"parent": e.name}, ["opening_amount"])
+			opening_amount = sum(flt(x.opening_amount) for x in bd)
+		except Exception:
+			pass
 		return {"open": True, "name": e.name, "pos_profile": e.pos_profile,
-		        "company": e.company, "period_start_date": str(e.period_start_date or "")}
-	return {"open": False, "name": None}
+		        "company": e.company, "period_start_date": str(e.period_start_date or ""),
+		        "opening_amount": opening_amount}
+	return {"open": False, "name": None, "opening_amount": 0.0}
 
 
 @frappe.whitelist()
@@ -271,8 +278,9 @@ def open_cashier(company=None, opening_amount=0):
 
 
 @frappe.whitelist()
-def close_cashier():
-	"""Close the cashier's open POS Opening Entry via a POS Closing Entry."""
+def close_cashier(closing_amount=0):
+	"""Close the cashier's open POS Opening Entry via a POS Closing Entry,
+	recording the cashier's counted closing amount."""
 	user = frappe.session.user
 	opening_name = frappe.db.get_value(
 		"POS Opening Entry", {"user": user, "status": "Open", "docstatus": 1}, "name"
@@ -281,7 +289,27 @@ def close_cashier():
 		return {"status": "no_open_entry", "message": "No open POS Opening Entry found."}
 	from erpnext.accounts.doctype.pos_closing_entry.pos_closing_entry import make_closing_entry_from_opening
 	opening = frappe.get_doc("POS Opening Entry", opening_name)
+	opening_amount = 0.0
+	for b in opening.get("balance_details") or []:
+		if (b.mode_of_payment or "").lower() == "cash":
+			opening_amount = flt(b.opening_amount)
 	closing = make_closing_entry_from_opening(opening)
+	# record the cashier's counted cash (closing amount) on the Cash reconciliation row.
+	# If there were no sales in the shift, make_closing_entry_from_opening leaves
+	# payment_reconciliation empty — ensure a Cash row exists so the amount is recorded.
+	rows = closing.get("payment_reconciliation") or []
+	cash_rows = [r for r in rows if (r.get("mode_of_payment") or "").lower() == "cash"]
+	if cash_rows:
+		for r in cash_rows:
+			r.opening_amount = opening_amount
+			r.closing_amount = flt(closing_amount)
+	else:
+		closing.append("payment_reconciliation", {
+			"mode_of_payment": opening.get("balance_details")[0].mode_of_payment if opening.get("balance_details") else "Cash",
+			"opening_amount": opening_amount,
+			"expected_amount": 0,
+			"closing_amount": flt(closing_amount),
+		})
 	closing.insert()
 	closing.submit()
 	frappe.db.commit()

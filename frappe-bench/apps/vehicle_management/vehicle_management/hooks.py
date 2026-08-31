@@ -1,5 +1,6 @@
 app_name = "vehicle_management"
 app_title = "Vehicle Management"
+app_icon = "fa fa-car"
 app_publisher = "Autometrik"
 app_description = "Vehicle Management Module for Customer Vehicles, Job Orders, and Inspections"
 app_email = "admin@erp.local"
@@ -39,7 +40,7 @@ add_to_apps_screen = [
 # webform_include_css = {"doctype": "public/css/doctype.css"}
 
 # include js in page
-# page_js = {"page" : "public/js/file.js"}
+page_js = {"vehicle_pos": "public/js/vehicle_pos.js"}
 
 doctype_js = {
 	"Item": "public/js/item.js",

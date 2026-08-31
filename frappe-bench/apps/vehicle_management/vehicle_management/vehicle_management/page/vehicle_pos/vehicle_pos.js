@@ -33,8 +33,8 @@ class VehiclePOS {
 	build_layout() {
 		const html = `
 		<div class="vpos-app">
-			<!-- LEFT SIDEBAR -->
-			<aside class="vpos-side">
+			<!-- TOP NAV BAR -->
+			<header class="vpos-topnav">
 				<div class="vpos-brand">
 					<div class="vpos-brand-logo">V</div>
 					<div>
@@ -49,8 +49,11 @@ class VehiclePOS {
 					<a class="vpos-nav-item" data-route="List/Customer Vehicle"><span class="vpos-nav-ic">🚗</span> Vehicles</a>
 					<a class="vpos-nav-item" data-route="List/Vehicle POS Invoice"><span class="vpos-nav-ic">🧾</span> POS Invoices</a>
 				</nav>
+				<div class="vpos-topnav-cats">
+					<div class="vpos-cats" id="vpos-cats"></div>
+				</div>
 				<div class="vpos-side-foot">v1.0 · VMS</div>
-			</aside>
+			</header>
 
 			<!-- CENTER: DISCOVERY -->
 			<section class="vpos-main">
@@ -64,8 +67,6 @@ class VehiclePOS {
 						<select class="vpos-company form-control"></select>
 					</div>
 				</div>
-
-				<div class="vpos-cats" id="vpos-cats"></div>
 
 				<div class="vpos-products" id="vpos-products"></div>
 			</section>
@@ -86,6 +87,8 @@ class VehiclePOS {
 						</div>
 					</div>
 				</div>
+
+				<div class="vpos-vehicle-details" id="vpos-vehicle-details"></div>
 
 				<div class="vpos-cart" id="vpos-cart"></div>
 
@@ -155,28 +158,59 @@ class VehiclePOS {
 		});
 	}
 
-	on_vehicle_change(vehicle) {
+on_vehicle_change(vehicle) {
 		const self = this;
 		this.vehicle = vehicle || null;
 		if (!vehicle) {
 			this.customer = null;
 			this.$(".vpos-customer").val("");
 			this.$(".vpos-customer-display").text("Select a vehicle first...");
+			this.$("#vpos-vehicle-details").empty();
 			return;
 		}
-		frappe.db.get_value("Customer Vehicle", vehicle, ["customer", "customer_name", "plate_no"]).then((r) => {
+		frappe.db.get_value("Customer Vehicle", vehicle, ["customer","customer_name","contact_no","email","plate_no","make","model","year_model","color","vin","transmission","fuel_type","status"]).then((r) => {
 			if (r && r.customer) {
 				self.customer = r.customer;
 				const label = r.customer_name ? `${r.customer} — ${r.customer_name}` : r.customer;
 				self.$(".vpos-customer").val(r.customer);
 				self.$(".vpos-customer-display").text(label);
+				self.render_vehicle_details(r, true);
 			} else {
 				self.customer = null;
 				self.$(".vpos-customer").val("");
 				self.$(".vpos-customer-display").text("");
+				self.render_vehicle_details(r, false);
 				frappe.msgprint(__("Selected Customer Vehicle has no linked Customer."));
 			}
 		});
+	}
+
+	render_vehicle_details(r, linked) {
+		const self = this;
+		const box = this.$("#vpos-vehicle-details").empty();
+		if (!r) return;
+		const esc = (v) => (v == null ? "" : String(v).replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[c])));
+		const row = (label, val) => { const e = esc(val); return e ? `<div class="vpos-vd-row"><span class="vpos-vd-label">${label}</span><span class="vpos-vd-val">${e}</span></div>` : ""; };
+		const vehicleLine = [r.make, r.model, r.year_model].filter(Boolean).map(esc).join(" ");
+		let html = "";
+		html += `<div class="vpos-vd-head"><span class="vpos-vd-plate">${esc(r.plate_no)}</span>`;
+		if (r.status) html += `<span class="vpos-vd-badge${r.status === "Active" ? " vpos-vd-badge-active" : ""}">${esc(r.status)}</span>`;
+		html += `</div>`;
+		html += row("Vehicle", vehicleLine);
+		html += row("Color", r.color);
+		html += row("VIN", r.vin);
+		html += row("Transmission", r.transmission);
+		html += row("Fuel", r.fuel_type);
+		const cust = r.customer_name || r.customer;
+		html += row("Customer", cust);
+		html += row("Contact", r.contact_no);
+		html += row("Email", r.email);
+		if (linked && r.customer) {
+			html += `<div class="vpos-vd-link">Linked to customer: ${esc(r.customer)}</div>`;
+		} else {
+			html += `<div class="vpos-vd-warn">No linked customer — invoice cannot be created</div>`;
+		}
+		box.append(html);
 	}
 
 	bind_global_keys() {
@@ -400,23 +434,24 @@ function inject_pos_styles() {
 		.vehicle-pos-page .page-head, .vehicle-pos-page .page-head .title { display: none !important; }
 		.vehicle-pos-page .layout-main-section { padding: 0 !important; margin: 0 !important; }
 		.vehicle-pos-page .page-content { padding: 0 !important; }
-		.vpos-app { display: flex; height: calc(100vh - 46px); min-height: 520px; }
+		.vpos-app { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto 1fr; grid-template-areas: "topnav topnav" "main order"; height: calc(100vh - 46px); min-height: 520px; }
 
-		/* SIDEBAR */
-		.vpos-side { flex: 0 0 220px; background: #ffffff; border-right: 1px solid #d7ecea; display: flex; flex-direction: column; padding: 16px 12px; }
-		.vpos-brand { display: flex; align-items: center; gap: 10px; padding: 6px 6px 16px; }
+		/* TOP NAV */
+		.vpos-topnav { grid-area: topnav; display: flex; align-items: center; gap: 14px; width: 100%; background: #ffffff; border-bottom: 1px solid #d7ecea; padding: 10px 14px; flex-wrap: wrap; }
+		.vpos-brand { display: flex; align-items: center; gap: 10px; padding: 4px 6px; }
 		.vpos-brand-logo { width: 38px; height: 38px; border-radius: 10px; background: #16a34a; color: #fff; font-weight: 800; font-size: 20px; display: flex; align-items: center; justify-content: center; }
 		.vpos-brand-name { font-weight: 800; font-size: 15px; color: #0f2e2a; line-height: 1.1; }
 		.vpos-brand-sub { font-size: 11px; color: #6b9080; }
-		.vpos-nav { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
-		.vpos-nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; color: #3d5a54; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; }
+		.vpos-nav { display: flex; flex-direction: row; gap: 4px; margin-top: 0; flex-wrap: nowrap; overflow-x: auto; }
+		.vpos-nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; color: #3d5a54; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; white-space: nowrap; }
 		.vpos-nav-item:hover { background: #f0faf8; }
 		.vpos-nav-item.active { background: #16a34a; color: #fff; }
 		.vpos-nav-ic { font-size: 14px; }
-		.vpos-side-foot { margin-top: auto; font-size: 11px; color: #9bbdb4; padding: 8px 6px 0; }
+		.vpos-topnav-cats { display: flex; align-items: center; flex: 1 1 auto; min-width: 0; overflow: hidden; }
+		.vpos-side-foot { margin-left: auto; margin-top: 0; font-size: 11px; color: #9bbdb4; padding: 0 6px; white-space: nowrap; }
 
 		/* MAIN */
-		.vpos-main { flex: 1 1 auto; display: flex; flex-direction: column; min-width: 0; padding: 14px 16px; gap: 12px; }
+		.vpos-main { flex: 1 1 auto; grid-area: main; overflow: hidden; display: flex; flex-direction: column; min-width: 0; padding: 14px 16px; gap: 12px; }
 		.vpos-topbar { display: flex; gap: 12px; align-items: flex-end; }
 		.vpos-search-wrap { flex: 1; position: relative; }
 		.vpos-search-ic { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 14px; opacity: .6; }
@@ -425,7 +460,7 @@ function inject_pos_styles() {
 		.vpos-company-wrap label { font-size: 10px; color: #6b9080; font-weight: 700; text-transform: uppercase; }
 		.vpos-company { height: 42px; border-radius: 10px; border: 1px solid #cfeee9; background: #fff; min-width: 150px; }
 
-		.vpos-cats { display: flex; gap: 8px; flex-wrap: wrap; }
+		.vpos-cats { display: flex; gap: 8px; flex-wrap: nowrap; overflow-x: auto; white-space: nowrap; }
 		.vpos-cat { border: 1px solid #bfe3dd; background: #fff; color: #2f564f; padding: 7px 14px; border-radius: 999px; font-size: 12px; font-weight: 600; cursor: pointer; transition: .12s; }
 		.vpos-cat:hover { border-color: #16a34a; }
 		.vpos-cat.active { background: #16a34a; color: #fff; border-color: #16a34a; }
@@ -444,7 +479,7 @@ function inject_pos_styles() {
 		.vpos-empty { color: #6b9080; padding: 30px; text-align: center; grid-column: 1/-1; font-size: 13px; }
 
 		/* ORDER PANEL */
-		.vpos-order { flex: 0 0 380px; background: #ffffff; border-left: 1px solid #d7ecea; display: flex; flex-direction: column; padding: 14px; gap: 12px; }
+		.vpos-order { flex: none; grid-area: order; min-width: 0; overflow-y: auto; background: #ffffff; border-left: 1px solid #d7ecea; display: flex; flex-direction: column; padding: 14px; gap: 12px; }
 		.vpos-order-head { border-bottom: 1px solid #eef6f4; padding-bottom: 12px; }
 		.vpos-order-title { font-weight: 800; font-size: 15px; color: #0f2e2a; margin-bottom: 10px; }
 		.vpos-order-meta { display: flex; flex-direction: column; gap: 8px; }
@@ -477,5 +512,32 @@ function inject_pos_styles() {
 		.vpos-clear:hover { background: #f0faf8; }
 		.vpos-charge { flex: 1; background: #16a34a; border: none; color: #fff; font-weight: 800; font-size: 14px; border-radius: 10px; padding: 12px; cursor: pointer; transition: .12s; }
 		.vpos-charge:hover { background: #15803d; }
-	</style>`).appendTo("head");
+		/* RESPONSIVE: tablet + mobile (fix overlap + 50/50 on all sizes) */
+		@media (max-width: 1024px) {
+			.vpos-app { grid-template-columns: 1fr 1fr; }
+			.vpos-products { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+		}
+		@media (max-width: 768px) {
+			.vpos-app { display: grid; grid-template-columns: 1fr; grid-template-rows: auto auto auto; grid-template-areas: "topnav" "main" "order"; height: auto; min-height: 0; }
+			.vpos-topnav { flex-wrap: wrap; }
+			.vpos-nav { flex-wrap: nowrap; }
+			.vpos-topnav-cats { flex-basis: 100%; overflow-x: auto; }
+			.vpos-main { overflow: visible; }
+			.vpos-order { width: 100%; border-left: none; border-top: 1px solid #d7ecea; max-height: 65vh; }
+			.vpos-products { grid-template-columns: repeat(2, 1fr); }
+		}
+	
+		/* VEHICLE DETAILS PANEL */
+		.vpos-vehicle-details { background: #f1faf8; border: 1px solid #d7ecea; border-radius: 10px; padding: 10px 12px; margin-top: 10px; font-size: 12px; overflow: hidden; }
+		.vpos-vd-head { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+		.vpos-vd-plate { font-weight: 800; font-size: 14px; color: #0f2e2a; }
+		.vpos-vd-badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: #e2e8f0; color: #475569; text-transform: uppercase; letter-spacing: .03em; }
+		.vpos-vd-badge-active { background: #dcfce7; color: #15803d; }
+		.vpos-vd-row { display: flex; justify-content: space-between; gap: 10px; padding: 2px 0; border-bottom: 1px dashed #e6f2ef; }
+		.vpos-vd-row:last-of-type { border-bottom: none; }
+		.vpos-vd-label { color: #9bbdb4; font-size: 11px; text-transform: uppercase; letter-spacing: .02em; white-space: nowrap; }
+		.vpos-vd-val { color: #12332e; font-weight: 600; text-align: right; word-break: break-word; }
+		.vpos-vd-link { margin-top: 8px; padding: 6px 10px; background: #dcfce7; border: 1px solid #86efac; border-radius: 8px; color: #16a34a; font-weight: 700; font-size: 12px; }
+		.vpos-vd-warn { margin-top: 8px; padding: 6px 10px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; color: #dc2626; font-weight: 700; font-size: 12px; }
+</style>`).appendTo("head");
 }

@@ -1,0 +1,43 @@
+			.groupby(ple.account, ple.against_voucher_type, ple.against_voucher_no, ple.party_type, ple.party, ple.posting_date, ple.due_date, ple.account_currency)
+		)
+
+		# build CTE for combining voucher amount and outstanding
+		self.cte_query_voucher_amount_and_outstanding = (
+			qb.with_(query_voucher_amount, "vouchers")
+			.with_(query_voucher_outstanding, "outstanding")
+			.from_(AliasedQuery("vouchers"))
+			.left_join(AliasedQuery("outstanding"))
+			.on(
+				(AliasedQuery("vouchers").account == AliasedQuery("outstanding").account)
+				& (AliasedQuery("vouchers").voucher_type == AliasedQuery("outstanding").voucher_type)
+				& (AliasedQuery("vouchers").voucher_no == AliasedQuery("outstanding").voucher_no)
+				& (AliasedQuery("vouchers").party_type == AliasedQuery("outstanding").party_type)
+				& (AliasedQuery("vouchers").party == AliasedQuery("outstanding").party)
+			)
+			.select(
+				Table("vouchers").account,
+				Table("vouchers").voucher_type,
+				Table("vouchers").voucher_no,
+				Table("vouchers").party_type,
+				Table("vouchers").party,
+				Table("vouchers").posting_date,
+				Table("vouchers").amount.as_("invoice_amount"),
+				Table("vouchers").amount_in_account_currency.as_("invoice_amount_in_account_currency"),
+				Table("outstanding").amount.as_("outstanding"),
+				Table("outstanding").amount_in_account_currency.as_("outstanding_in_account_currency"),
+				(Table("vouchers").amount - Table("outstanding").amount).as_("paid_amount"),
+				(
+					Table("vouchers").amount_in_account_currency
+					- Table("outstanding").amount_in_account_currency
+				).as_("paid_amount_in_account_currency"),
+				Table("vouchers").due_date,
+				Table("vouchers").currency,
+				Table("vouchers").cost_center.as_("cost_center"),
+				Table("vouchers").remarks,
+			)
+			.where(Criterion.all(filter_on_outstanding_amount))
+		)
+
+		# build CTE filter
+		# only fetch invoices
+		if self.get_invoices:

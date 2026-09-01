@@ -1,0 +1,18 @@
+EXISTS Vehicle Make 200
+EXISTS Vehicle Model 200
+EXISTS Customer Vehicle 200
+MISSING Cashier Profile 404
+EXISTS Inspection Template 200
+EXISTS Inspection Template Item 200
+EXISTS Item Part Cross Reference 200
+EXISTS Item Vehicle Compatibility 200
+EXISTS Bin Location 200
+EXISTS Vehicle Service Reminder 200
+EXISTS Vehicle POS Invoice Item 200
+MISSING Vehicle POS Invoice 404
+EXISTS Vehicle Inspection Item 200
+MISSING Vehicle Inspection 404
+EXISTS Job Order Part Item 200
+EXISTS Job Order Service Item 200
+MISSING Vehicle Estimate 404
+MISSING Vehicle Job Order 404

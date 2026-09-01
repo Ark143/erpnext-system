@@ -1,0 +1,15 @@
+import frappe, traceback
+frappe.init(site="site1.local", sites_path="/workspace/frappe-bench/sites"); frappe.connect()
+user = frappe.session.user
+opens = frappe.get_all("POS Opening Entry", {"user": user, "status": "Open", "docstatus": 1}, ["name","pos_profile","company","period_start_date"])
+print("open entries:", opens)
+for e in opens:
+    try:
+        from erpnext.accounts.doctype.pos_closing_entry.pos_closing_entry import make_closing_entry_from_opening
+        closing = make_closing_entry_from_opening(e["name"])
+        print("closing created:", closing.name, "docstatus:", closing.docstatus)
+    except Exception as ex:
+        print("CLOSE FAILED for", e["name"], "->", repr(ex)[:400])
+        traceback.print_exc()
+frappe.db.commit()
+print("remaining open:", frappe.get_all("POS Opening Entry", {"user": user, "status": "Open", "docstatus": 1}, "name"))

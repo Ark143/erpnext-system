@@ -1,0 +1,254 @@
+{
+  "Vehicle Make": [
+    "OK",
+    60
+  ],
+  "Vehicle Model": [
+    "OK",
+    0
+  ],
+  "Customer Vehicle": [
+    "OK",
+    0
+  ],
+  "Cashier Profile": [
+    "OK",
+    0
+  ],
+  "Inspection Template": [
+    "NO_PERM",
+    "403"
+  ],
+  "Inspection Template Item": [
+    "NO_PERM",
+    "403"
+  ],
+  "Item Part Cross Reference": [
+    "NO_PERM",
+    "403"
+  ],
+  "Item Vehicle Compatibility": [
+    "NO_PERM",
+    "403"
+  ],
+  "Bin Location": [
+    "OK",
+    0
+  ],
+  "Vehicle Service Reminder": [
+    "OK",
+    0
+  ],
+  "Vehicle POS Invoice": [
+    "NO_PERM",
+    "403"
+  ],
+  "Vehicle POS Invoice Item": [
+    "NO_PERM",
+    "403"
+  ],
+  "Vehicle Inspection": [
+    "NO_PERM",
+    "403"
+  ],
+  "Vehicle Inspection Item": [
+    "NO_PERM",
+    "403"
+  ],
+  "Job Order Part Item": [
+    "NO_PERM",
+    "403"
+  ],
+  "Job Order Service Item": [
+    "NO_PERM",
+    "403"
+  ],
+  "Vehicle Estimate": [
+    "MISSING",
+    "404"
+  ],
+  "Vehicle Job Order": [
+    "MISSING",
+    "404"
+  ],
+  "Company": [
+    "OK",
+    3
+  ],
+  "Customer": [
+    "OK",
+    41
+  ],
+  "Supplier": [
+    "OK",
+    679
+  ],
+  "Item": [
+    "OK",
+    94
+  ],
+  "Item Group": [
+    "OK",
+    17
+  ],
+  "Customer Group": [
+    "OK",
+    7
+  ],
+  "Supplier Group": [
+    "OK",
+    9
+  ],
+  "Warehouse": [
+    "OK",
+    31
+  ],
+  "Account": [
+    "OK",
+    363
+  ],
+  "Cost Center": [
+    "OK",
+    30
+  ],
+  "POS Profile": [
+    "OK",
+    1
+  ],
+  "Mode of Payment": [
+    "OK",
+    5
+  ],
+  "Price List": [
+    "OK",
+    2
+  ],
+  "Sales Invoice": [
+    "OK",
+    430
+  ],
+  "Purchase Invoice": [
+    "OK",
+    115
+  ],
+  "Stock Entry": [
+    "OK",
+    119
+  ],
+  "Lead": [
+    "OK",
+    0
+  ],
+  "Opportunity": [
+    "OK",
+    0
+  ],
+  "Quotation": [
+    "OK",
+    48
+  ],
+  "Sales Order": [
+    "OK",
+    74
+  ],
+  "Serial No": [
+    "OK",
+    0
+  ],
+  "Batch": [
+    "OK",
+    9
+  ],
+  "BOM": [
+    "OK",
+    11
+  ],
+  "Work Order": [
+    "OK",
+    20
+  ],
+  "Purchase Order": [
+    "OK",
+    373
+  ],
+  "Material Request": [
+    "OK",
+    507
+  ],
+  "Payment Entry": [
+    "OK",
+    323
+  ],
+  "Journal Entry": [
+    "OK",
+    3
+  ],
+  "Delivery Note": [
+    "OK",
+    48
+  ],
+  "Purchase Receipt": [
+    "OK",
+    152
+  ],
+  "Loyalty Program": [
+    "OK",
+    0
+  ],
+  "Tax Category": [
+    "OK",
+    2
+  ],
+  "Address": [
+    "OK",
+    2
+  ],
+  "Contact": [
+    "OK",
+    32
+  ],
+  "Employee": [
+    "OK",
+    5
+  ],
+  "WebPage/executive": [
+    "OK",
+    "Executive Dashboard"
+  ],
+  "WebPage/inasal-dashboard": [
+    "OK",
+    "Inasal Operations Dashboard"
+  ],
+  "WebPage/inventory-stock-ledger-balance": [
+    "OK",
+    "Inventory Stock Ledger & Cycle Count"
+  ],
+  "WebPage/inventory-monitoring": [
+    "OK",
+    "ULTR MRF INVENTORY MANAGEMENT SYSTEM"
+  ],
+  "WebPage/sales-revenue-dashboard": [
+    "OK",
+    "Sales Revenue"
+  ],
+  "WebPage/sales-revenue-analytics": [
+    "OK",
+    "JMIT Sales Revenue Analytics"
+  ],
+  "WebPage/ultr-mrf": [
+    "OK",
+    "ULTR MRF INVENTORY MANAGEMENT SYSTEM"
+  ],
+  "WebPage/daily-sales-report": [
+    "OK",
+    "Ultra MRF Daily Sales Report"
+  ],
+  "ServerScript": [
+    "ERR",
+    417
+  ],
+  "POS_PAGE": [
+    "note",
+    "custom POS page only exists if app deployed (MIG-007 app deploy pending)"
+  ]
+}

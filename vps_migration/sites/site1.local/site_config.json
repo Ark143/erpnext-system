@@ -1,0 +1,13 @@
+{
+  "db_name": "site1_local",
+  "db_host": "postgres",
+  "db_port": 5432,
+  "db_user": "site1_local",
+  "db_password": "postgres",
+  "db_type": "postgres",
+  "admin_password": "admin",
+  "default_site": "site1.local",
+  "sites_path": "/workspace/frappe-bench/sites",
+  "developer_mode": 1,
+  "allow_cors": ["*"]
+}

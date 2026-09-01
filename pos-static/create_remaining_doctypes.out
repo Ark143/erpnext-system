@@ -1,0 +1,6 @@
+OK vehicle_pos_invoice: 200 
+OK vehicle_inspection: 200 
+FAIL vehicle_estimate: 417 frappe.core.doctype.doctype.doctype.WrongOptionsDoctypeLinkError: Vehicle Estimate: Options must be a valid DocType for 
+FAIL vehicle_job_order: 417 frappe.core.doctype.doctype.doctype.WrongOptionsDoctypeLinkError: Vehicle Job Order: Options must be a valid DocType for
+FAIL Cashier Profile: 417 frappe.exceptions.ValidationError: Fieldname called <strong>naming_series</strong> must exist to enable autonaming
+DONE

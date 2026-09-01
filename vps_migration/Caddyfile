@@ -1,0 +1,14 @@
+:80 {
+	handle /socket.io/* {
+		reverse_proxy erpnext:9000
+	}
+	handle {
+		reverse_proxy erpnext:8000 {
+			header_up Host site1.local
+		}
+		@html path *.html / /login /desk /pos-terminal /vehicle-pos
+		header @html Cache-Control "no-cache, no-store, must-revalidate"
+		@asset path *.js *.css *.png *.jpg *.woff *.woff2 *.ttf *.svg
+		header @asset Cache-Control "public, max-age=31536000, immutable"
+	}
+}

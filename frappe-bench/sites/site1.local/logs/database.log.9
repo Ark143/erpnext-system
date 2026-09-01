@@ -1,0 +1,2104 @@
+2026-08-23 15:43:39,208 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "certificate_required" ON "tabAsset Maintenance Task"("certificate_required");
+2026-08-23 15:43:39,337 WARNING database DDL Query made to DB:
+create table "tabAsset Maintenance Team" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"maintenance_team_name" varchar(140) UNIQUE,
+"maintenance_manager" varchar(140),
+"maintenance_manager_name" varchar(140),
+"company" varchar(140),
+"_user_tags" text,
+"_comments" text,
+"_assign" text,
+"_liked_by" text
+			)
+2026-08-23 15:43:39,500 WARNING database DDL Query made to DB:
+create table "tabAsset Movement" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"company" varchar(140),
+"purpose" varchar(140),
+"transaction_date" timestamp,
+"reference_doctype" varchar(140),
+"reference_name" varchar(140),
+"amended_from" varchar(140),
+"_user_tags" text,
+"_comments" text,
+"_assign" text,
+"_liked_by" text
+			)
+2026-08-23 15:43:39,644 WARNING database DDL Query made to DB:
+create table "tabAsset Movement Item" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"company" varchar(140),
+"asset" varchar(140),
+"source_location" varchar(140),
+"from_employee" varchar(140),
+"asset_name" varchar(140),
+"target_location" varchar(140),
+"to_employee" varchar(140),
+parent varchar(140),
+parentfield varchar(140),
+parenttype varchar(140)
+			)
+2026-08-23 15:43:39,859 WARNING database DDL Query made to DB:
+create table "tabAsset Repair" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"naming_series" varchar(140),
+"company" varchar(140),
+"asset" varchar(140),
+"asset_name" varchar(140),
+"repair_status" varchar(140) DEFAULT 'Pending',
+"failure_date" timestamp,
+"completion_date" timestamp,
+"downtime" varchar(140),
+"amended_from" varchar(140),
+"description" text,
+"actions_performed" text,
+"repair_cost" decimal(21,9) NOT NULL DEFAULT 0.0,
+"consumed_items_cost" decimal(21,9) NOT NULL DEFAULT 0.0,
+"capitalize_repair_cost" smallint NOT NULL DEFAULT 0,
+"increase_in_asset_life" int NOT NULL DEFAULT 0,
+"total_repair_cost" decimal(21,9) NOT NULL DEFAULT 0.0,
+"cost_center" varchar(140),
+"project" varchar(140),
+"_user_tags" text,
+"_comments" text,
+"_assign" text,
+"_liked_by" text,
+"_seen" text
+			)
+2026-08-23 15:43:39,993 WARNING database DDL Query made to DB:
+create table "tabAsset Repair Consumed Item" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"item_code" varchar(140),
+"warehouse" varchar(140),
+"valuation_rate" decimal(21,9) NOT NULL DEFAULT 0.0,
+"consumed_quantity" varchar(140),
+"total_value" decimal(21,9) NOT NULL DEFAULT 0.0,
+"serial_no" text,
+"serial_and_batch_bundle" varchar(140),
+parent varchar(140),
+parentfield varchar(140),
+parenttype varchar(140)
+			)
+2026-08-23 15:43:40,103 WARNING database DDL Query made to DB:
+create table "tabAsset Repair Purchase Invoice" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"purchase_invoice" varchar(140),
+"expense_account" varchar(140),
+"repair_cost" decimal(21,9) NOT NULL DEFAULT 0.0,
+parent varchar(140),
+parentfield varchar(140),
+parenttype varchar(140)
+			)
+2026-08-23 15:43:40,266 WARNING database DDL Query made to DB:
+create table "tabAsset Shift Allocation" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"asset" varchar(140),
+"naming_series" varchar(140),
+"finance_book" varchar(140),
+"amended_from" varchar(140),
+"_user_tags" text,
+"_comments" text,
+"_assign" text,
+"_liked_by" text
+			)
+2026-08-23 15:43:40,267 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "amended_from" ON "tabAsset Shift Allocation"("amended_from");
+2026-08-23 15:43:40,388 WARNING database DDL Query made to DB:
+create table "tabAsset Shift Factor" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"shift_name" varchar(140) UNIQUE,
+"shift_factor" decimal(21,9) NOT NULL DEFAULT 0.0,
+"default" smallint NOT NULL DEFAULT 0,
+"_user_tags" text,
+"_comments" text,
+"_assign" text,
+"_liked_by" text
+			)
+2026-08-23 15:43:40,564 WARNING database DDL Query made to DB:
+create table "tabAsset Value Adjustment" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"company" varchar(140),
+"asset" varchar(140),
+"asset_category" varchar(140),
+"date" date,
+"finance_book" varchar(140),
+"amended_from" varchar(140),
+"current_asset_value" decimal(21,9) NOT NULL DEFAULT 0.0,
+"new_asset_value" decimal(21,9) NOT NULL DEFAULT 0.0,
+"difference_amount" decimal(21,9) NOT NULL DEFAULT 0.0,
+"difference_account" varchar(140),
+"journal_entry" varchar(140),
+"cost_center" varchar(140),
+"_user_tags" text,
+"_comments" text,
+"_assign" text,
+"_liked_by" text
+			)
+2026-08-23 15:43:40,732 WARNING database DDL Query made to DB:
+create table "tabDepreciation Schedule" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"schedule_date" date,
+"depreciation_amount" decimal(21,9) NOT NULL DEFAULT 0.0,
+"accumulated_depreciation_amount" decimal(21,9) NOT NULL DEFAULT 0.0,
+"journal_entry" varchar(140),
+"shift" varchar(140),
+parent varchar(140),
+parentfield varchar(140),
+parenttype varchar(140)
+			)
+2026-08-23 15:43:40,848 WARNING database DDL Query made to DB:
+create table "tabLinked Location" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"location" varchar(140),
+parent varchar(140),
+parentfield varchar(140),
+parenttype varchar(140)
+			)
+2026-08-23 15:43:41,011 WARNING database DDL Query made to DB:
+create table "tabLocation" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"location_name" varchar(140) UNIQUE,
+"parent_location" varchar(140),
+"is_container" smallint NOT NULL DEFAULT 0,
+"is_group" smallint NOT NULL DEFAULT 0,
+"latitude" decimal(21,9) NOT NULL DEFAULT 0.0,
+"longitude" decimal(21,9) NOT NULL DEFAULT 0.0,
+"area" decimal(21,9) NOT NULL DEFAULT 0.0,
+"area_uom" varchar(140),
+"location" text,
+"lft" int NOT NULL DEFAULT 0,
+"rgt" int NOT NULL DEFAULT 0,
+"old_parent" varchar(140),
+"_user_tags" text,
+"_comments" text,
+"_assign" text,
+"_liked_by" text
+			)
+2026-08-23 15:43:41,015 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "parent_location" ON "tabLocation"("parent_location");
+2026-08-23 15:43:41,069 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "lft_rgt_index" ON "public"."tabLocation" ("lft", "rgt")
+2026-08-23 15:43:41,144 WARNING database DDL Query made to DB:
+create table "tabMaintenance Team Member" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"team_member" varchar(140) UNIQUE,
+"full_name" varchar(140),
+"maintenance_role" varchar(140),
+parent varchar(140),
+parentfield varchar(140),
+parenttype varchar(140)
+			)
+2026-08-23 15:43:41,467 WARNING database DDL Query made to DB:
+create table "tabWebsite Attribute" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"attribute" varchar(140),
+parent varchar(140),
+parentfield varchar(140),
+parenttype varchar(140)
+			)
+2026-08-23 15:43:41,588 WARNING database DDL Query made to DB:
+create table "tabWebsite Filter Field" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"fieldname" varchar(140),
+parent varchar(140),
+parentfield varchar(140),
+parenttype varchar(140)
+			)
+2026-08-23 15:43:41,803 WARNING database DDL Query made to DB:
+create table "tabMaintenance Schedule" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"naming_series" varchar(140),
+"customer" varchar(140),
+"status" varchar(140) DEFAULT 'Draft',
+"transaction_date" date,
+"customer_name" varchar(140),
+"contact_person" varchar(140),
+"contact_mobile" varchar(140),
+"contact_email" varchar(140),
+"contact_display" text,
+"customer_address" varchar(140),
+"address_display" text,
+"territory" varchar(140),
+"customer_group" varchar(140),
+"company" varchar(140),
+"amended_from" varchar(140),
+"_user_tags" text,
+"_comments" text,
+"_assign" text,
+"_liked_by" text
+			)
+2026-08-23 15:43:41,804 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "customer" ON "tabMaintenance Schedule"("customer");
+2026-08-23 15:43:41,944 WARNING database DDL Query made to DB:
+create table "tabMaintenance Schedule Detail" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"item_code" varchar(140),
+"item_name" varchar(140),
+"scheduled_date" date,
+"actual_date" date,
+"sales_person" varchar(140),
+"completion_status" varchar(140) DEFAULT 'Pending',
+"serial_no" text,
+"item_reference" varchar(140),
+parent varchar(140),
+parentfield varchar(140),
+parenttype varchar(140)
+			)
+2026-08-23 15:43:41,947 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "item_code" ON "tabMaintenance Schedule Detail"("item_code");CREATE INDEX IF NOT EXISTS "scheduled_date" ON "tabMaintenance Schedule Detail"("scheduled_date");
+2026-08-23 15:43:42,082 WARNING database DDL Query made to DB:
+create table "tabMaintenance Schedule Item" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"item_code" varchar(140),
+"item_name" varchar(140),
+"description" text,
+"start_date" date,
+"end_date" date,
+"periodicity" varchar(140),
+"no_of_visits" int NOT NULL DEFAULT 0,
+"sales_person" varchar(140),
+"serial_no" text,
+"sales_order" varchar(140),
+"serial_and_batch_bundle" varchar(140),
+parent varchar(140),
+parentfield varchar(140),
+parenttype varchar(140)
+			)
+2026-08-23 15:43:42,085 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "item_code" ON "tabMaintenance Schedule Item"("item_code");CREATE INDEX IF NOT EXISTS "start_date" ON "tabMaintenance Schedule Item"("start_date");CREATE INDEX IF NOT EXISTS "end_date" ON "tabMaintenance Schedule Item"("end_date");CREATE INDEX IF NOT EXISTS "sales_order" ON "tabMaintenance Schedule Item"("sales_order");
+2026-08-23 15:43:42,341 WARNING database DDL Query made to DB:
+create table "tabMaintenance Visit" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"naming_series" varchar(140),
+"customer" varchar(140),
+"customer_name" varchar(140),
+"address_display" text,
+"contact_display" text,
+"contact_mobile" varchar(140),
+"contact_email" varchar(140),
+"maintenance_schedule" varchar(140),
+"maintenance_schedule_detail" varchar(140),
+"mntc_date" date,
+"mntc_time" time(6),
+"completion_status" varchar(140),
+"maintenance_type" varchar(140) DEFAULT 'Unscheduled',
+"customer_feedback" text,
+"status" varchar(140) DEFAULT 'Draft',
+"amended_from" varchar(140),
+"company" varchar(140),
+"customer_address" varchar(140),
+"contact_person" varchar(140),
+"territory" varchar(140),
+"customer_group" varchar(140),
+"_user_tags" text,
+"_comments" text,
+"_assign" text,
+"_liked_by" text
+			)
+2026-08-23 15:43:42,468 WARNING database DDL Query made to DB:
+create table "tabMaintenance Visit Purpose" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"item_code" varchar(140),
+"item_name" varchar(140),
+"service_person" varchar(140),
+"serial_no" varchar(140),
+"description" text,
+"work_done" text,
+"prevdoc_doctype" varchar(140),
+"prevdoc_docname" varchar(140),
+"maintenance_schedule_detail" varchar(140),
+parent varchar(140),
+parentfield varchar(140),
+parenttype varchar(140)
+			)
+2026-08-23 15:43:42,650 WARNING database DDL Query made to DB:
+create table "tabImport Supplier Invoice" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"invoice_series" varchar(140),
+"company" varchar(140),
+"item_code" varchar(140),
+"supplier_group" varchar(140),
+"tax_account" varchar(140),
+"default_buying_price_list" varchar(140),
+"zip_file" text,
+"status" varchar(140),
+"_user_tags" text,
+"_comments" text,
+"_assign" text,
+"_liked_by" text
+			)
+2026-08-23 15:43:42,800 WARNING database DDL Query made to DB:
+create table "tabLower Deduction Certificate" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"tax_withholding_category" varchar(140),
+"fiscal_year" varchar(140),
+"company" varchar(140),
+"certificate_no" varchar(140) UNIQUE,
+"supplier" varchar(140),
+"pan_no" varchar(140),
+"valid_from" date,
+"valid_upto" date,
+"rate" decimal(21,9) NOT NULL DEFAULT 0.0,
+"certificate_limit" decimal(21,9) NOT NULL DEFAULT 0.0,
+"_user_tags" text,
+"_comments" text,
+"_assign" text,
+"_liked_by" text
+			)
+2026-08-23 15:43:42,928 WARNING database DDL Query made to DB:
+create table "tabSouth Africa VAT Settings" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"company" varchar(140) UNIQUE,
+"_user_tags" text,
+"_comments" text,
+"_assign" text,
+"_liked_by" text
+			)
+2026-08-23 15:43:43,042 WARNING database DDL Query made to DB:
+create table "tabUAE VAT Account" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"account" varchar(140),
+parent varchar(140),
+parentfield varchar(140),
+parenttype varchar(140)
+			)
+2026-08-23 15:43:43,160 WARNING database DDL Query made to DB:
+create table "tabUAE VAT Settings" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"company" varchar(140) UNIQUE,
+"_user_tags" text,
+"_comments" text,
+"_assign" text,
+"_liked_by" text
+			)
+2026-08-23 15:43:44,194 WARNING database DDL Query made to DB:
+create table "tabNon Conformance" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"subject" varchar(140),
+"procedure" varchar(140),
+"process_owner" varchar(140),
+"full_name" varchar(140),
+"status" varchar(140),
+"details" text,
+"corrective_action" text,
+"preventive_action" text,
+"_user_tags" text,
+"_comments" text,
+"_assign" text,
+"_liked_by" text
+			)
+2026-08-23 15:43:44,394 WARNING database DDL Query made to DB:
+create table "tabQuality Action" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"corrective_preventive" varchar(140) DEFAULT 'Corrective',
+"review" varchar(140),
+"feedback" varchar(140),
+"status" varchar(140) DEFAULT 'Open',
+"date" date,
+"goal" varchar(140),
+"procedure" varchar(140),
+"_user_tags" text,
+"_comments" text,
+"_assign" text,
+"_liked_by" text
+			)
+2026-08-23 15:43:44,523 WARNING database DDL Query made to DB:
+create table "tabQuality Action Resolution" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"problem" text,
+"resolution" text,
+"status" varchar(140),
+"responsible" varchar(140),
+"completion_by" date,
+parent varchar(140),
+parentfield varchar(140),
+parenttype varchar(140)
+			)
+2026-08-23 15:43:44,652 WARNING database DDL Query made to DB:
+create table "tabQuality Feedback" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"template" varchar(140),
+"document_type" varchar(140),
+"document_name" varchar(140),
+"_user_tags" text,
+"_comments" text,
+"_assign" text,
+"_liked_by" text
+			)
+2026-08-23 15:43:44,771 WARNING database DDL Query made to DB:
+create table "tabQuality Feedback Parameter" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"parameter" varchar(140),
+"rating" varchar(140) DEFAULT '1',
+"feedback" text,
+parent varchar(140),
+parentfield varchar(140),
+parenttype varchar(140)
+			)
+2026-08-23 15:43:44,915 WARNING database DDL Query made to DB:
+create table "tabQuality Feedback Template" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"template" varchar(140) UNIQUE,
+"_user_tags" text,
+"_comments" text,
+"_assign" text,
+"_liked_by" text
+			)
+2026-08-23 15:43:45,037 WARNING database DDL Query made to DB:
+create table "tabQuality Feedback Template Parameter" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"parameter" varchar(140),
+parent varchar(140),
+parentfield varchar(140),
+parenttype varchar(140)
+			)
+2026-08-23 15:43:45,166 WARNING database DDL Query made to DB:
+create table "tabQuality Goal" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"goal" varchar(140) UNIQUE,
+"frequency" varchar(140) DEFAULT 'None',
+"procedure" varchar(140),
+"weekday" varchar(140),
+"date" varchar(140),
+"_user_tags" text,
+"_comments" text,
+"_assign" text,
+"_liked_by" text
+			)
+2026-08-23 15:43:45,277 WARNING database DDL Query made to DB:
+create table "tabQuality Goal Objective" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"objective" text,
+"target" varchar(140),
+"uom" varchar(140),
+parent varchar(140),
+parentfield varchar(140),
+parenttype varchar(140)
+			)
+2026-08-23 15:43:45,403 WARNING database DDL Query made to DB:
+create table "tabQuality Meeting" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"status" varchar(140) DEFAULT 'Open',
+"_user_tags" text,
+"_comments" text,
+"_assign" text,
+"_liked_by" text
+			)
+2026-08-23 15:43:45,520 WARNING database DDL Query made to DB:
+create table "tabQuality Meeting Agenda" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"agenda" text,
+parent varchar(140),
+parentfield varchar(140),
+parenttype varchar(140)
+			)
+2026-08-23 15:43:45,643 WARNING database DDL Query made to DB:
+create table "tabQuality Meeting Minutes" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"document_type" varchar(140),
+"document_name" varchar(140),
+"minute" text,
+parent varchar(140),
+parentfield varchar(140),
+parenttype varchar(140)
+			)
+2026-08-23 15:43:45,815 WARNING database DDL Query made to DB:
+create table "tabQuality Procedure" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"quality_procedure_name" varchar(140) UNIQUE,
+"process_owner" varchar(140),
+"process_owner_full_name" varchar(140),
+"parent_quality_procedure" varchar(140),
+"is_group" smallint NOT NULL DEFAULT 0,
+"rgt" int NOT NULL DEFAULT 0,
+"lft" int NOT NULL DEFAULT 0,
+"old_parent" varchar(140),
+"_user_tags" text,
+"_comments" text,
+"_assign" text,
+"_liked_by" text
+			)
+2026-08-23 15:43:45,979 WARNING database DDL Query made to DB:
+create table "tabQuality Procedure Process" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"process_description" text,
+"procedure" varchar(140),
+parent varchar(140),
+parentfield varchar(140),
+parenttype varchar(140)
+			)
+2026-08-23 15:43:46,180 WARNING database DDL Query made to DB:
+create table "tabQuality Review" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"goal" varchar(140),
+"date" date,
+"procedure" varchar(140),
+"status" varchar(140) DEFAULT 'Open',
+"additional_information" text,
+"_user_tags" text,
+"_comments" text,
+"_assign" text,
+"_liked_by" text
+			)
+2026-08-23 15:43:46,319 WARNING database DDL Query made to DB:
+create table "tabQuality Review Objective" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"objective" text,
+"target" varchar(140),
+"uom" varchar(140),
+"status" varchar(140) DEFAULT 'Open',
+"review" text,
+parent varchar(140),
+parentfield varchar(140),
+parenttype varchar(140)
+			)
+2026-08-23 15:43:46,562 WARNING database DDL Query made to DB:
+create table "tabCommunication Medium" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"communication_channel" varchar(140),
+"communication_medium_type" varchar(140),
+"catch_all" varchar(140),
+"provider" varchar(140),
+"disabled" smallint NOT NULL DEFAULT 0,
+"_user_tags" text,
+"_comments" text,
+"_assign" text,
+"_liked_by" text
+			)
+2026-08-23 15:43:46,694 WARNING database DDL Query made to DB:
+create table "tabCommunication Medium Timeslot" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"day_of_week" varchar(140),
+"from_time" time(6),
+"to_time" time(6),
+"employee_group" varchar(140),
+parent varchar(140),
+parentfield varchar(140),
+parenttype varchar(140)
+			)
+2026-08-23 15:43:46,863 WARNING database DDL Query made to DB:
+create table "tabCall Log" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"id" varchar(140) UNIQUE,
+"from" varchar(140),
+"to" varchar(140),
+"call_received_by" varchar(140),
+"employee_user_id" varchar(140),
+"medium" varchar(140),
+"start_time" timestamp,
+"end_time" timestamp,
+"type" varchar(140),
+"customer" varchar(140),
+"status" varchar(140),
+"duration" decimal(21,9),
+"recording_url" varchar(140),
+"type_of_call" varchar(140),
+"summary" text,
+"_user_tags" text,
+"_comments" text,
+"_assign" text,
+"_liked_by" text
+			)
+2026-08-23 15:43:46,995 WARNING database DDL Query made to DB:
+create table "tabIncoming Call Handling Schedule" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"day_of_week" varchar(140),
+"from_time" time(6) DEFAULT '9:00:00',
+"to_time" time(6) DEFAULT '17:00:00',
+"agent_group" varchar(140),
+parent varchar(140),
+parentfield varchar(140),
+parenttype varchar(140)
+			)
+2026-08-23 15:43:47,109 WARNING database DDL Query made to DB:
+create table "tabIncoming Call Settings" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"call_routing" varchar(140) DEFAULT 'Sequential',
+"greeting_message" varchar(140),
+"agent_busy_message" varchar(140),
+"agent_unavailable_message" varchar(140),
+"_user_tags" text,
+"_comments" text,
+"_assign" text,
+"_liked_by" text
+			)
+2026-08-23 15:43:47,264 WARNING database DDL Query made to DB:
+create table "tabTelephony Call Type" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"call_type" varchar(140) UNIQUE,
+"amended_from" varchar(140),
+"_user_tags" text,
+"_comments" text,
+"_assign" text,
+"_liked_by" text
+			)
+2026-08-23 15:43:47,392 WARNING database DDL Query made to DB:
+create table "tabVoice Call Settings" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"user" varchar(140) UNIQUE,
+"call_receiving_device" varchar(140) DEFAULT 'Computer',
+"greeting_message" varchar(140),
+"agent_busy_message" varchar(140),
+"agent_unavailable_message" varchar(140),
+"_user_tags" text,
+"_comments" text,
+"_assign" text,
+"_liked_by" text
+			)
+2026-08-23 15:43:47,637 WARNING database DDL Query made to DB:
+create table "tabBulk Transaction Log Detail" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"from_doctype" varchar(140),
+"transaction_name" varchar(140),
+"date" date,
+"time" time(6),
+"transaction_status" varchar(140),
+"error_description" text,
+"to_doctype" varchar(140),
+"retried" int NOT NULL DEFAULT 0,
+"_user_tags" text,
+"_comments" text,
+"_assign" text,
+"_liked_by" text
+			)
+2026-08-23 15:43:47,641 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "from_doctype" ON "tabBulk Transaction Log Detail"("from_doctype");CREATE INDEX IF NOT EXISTS "transaction_name" ON "tabBulk Transaction Log Detail"("transaction_name");CREATE INDEX IF NOT EXISTS "date" ON "tabBulk Transaction Log Detail"("date");
+2026-08-23 15:43:47,776 WARNING database DDL Query made to DB:
+create table "tabSubcontracting BOM" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"is_active" smallint NOT NULL DEFAULT 1,
+"finished_good" varchar(140),
+"finished_good_qty" decimal(21,9) NOT NULL DEFAULT 1.0,
+"finished_good_uom" varchar(140),
+"finished_good_bom" varchar(140),
+"service_item" varchar(140),
+"service_item_qty" decimal(21,9) NOT NULL DEFAULT 1.0,
+"service_item_uom" varchar(140),
+"conversion_factor" decimal(21,9) NOT NULL DEFAULT 0.0,
+"_user_tags" text,
+"_comments" text,
+"_assign" text,
+"_liked_by" text
+			)
+2026-08-23 15:43:47,782 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "finished_good" ON "tabSubcontracting BOM"("finished_good");CREATE INDEX IF NOT EXISTS "finished_good_bom" ON "tabSubcontracting BOM"("finished_good_bom");CREATE INDEX IF NOT EXISTS "service_item" ON "tabSubcontracting BOM"("service_item");
+2026-08-23 15:43:47,975 WARNING database DDL Query made to DB:
+create table "tabSubcontracting Inward Order" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"naming_series" varchar(140),
+"sales_order" varchar(140),
+"customer" varchar(140),
+"customer_name" varchar(140),
+"currency" varchar(140),
+"company" varchar(140),
+"transaction_date" date,
+"customer_warehouse" varchar(140),
+"amended_from" varchar(140),
+"set_delivery_warehouse" varchar(140),
+"title" varchar(140),
+"status" varchar(140) DEFAULT 'Draft',
+"per_raw_material_received" decimal(21,9) NOT NULL DEFAULT 0.0,
+"per_produced" decimal(21,9) NOT NULL DEFAULT 0.0,
+"per_delivered" decimal(21,9) NOT NULL DEFAULT 0.0,
+"per_raw_material_returned" decimal(21,9) NOT NULL DEFAULT 0.0,
+"per_process_loss" decimal(21,9) NOT NULL DEFAULT 0.0,
+"per_returned" decimal(21,9) NOT NULL DEFAULT 0.0,
+"_user_tags" text,
+"_comments" text,
+"_assign" text,
+"_liked_by" text
+			)
+2026-08-23 15:43:47,977 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "customer" ON "tabSubcontracting Inward Order"("customer");CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabSubcontracting Inward Order"("transaction_date");CREATE INDEX IF NOT EXISTS "status" ON "tabSubcontracting Inward Order"("status");
+2026-08-23 15:43:48,136 WARNING database DDL Query made to DB:
+create table "tabSubcontracting Inward Order Item" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"item_code" varchar(140),
+"item_name" varchar(140),
+"bom" varchar(140),
+"delivery_warehouse" varchar(140),
+"include_exploded_items" smallint NOT NULL DEFAULT 0,
+"qty" decimal(21,9) NOT NULL DEFAULT 1.0,
+"produced_qty" decimal(21,9) NOT NULL DEFAULT 0.0,
+"returned_qty" decimal(21,9) NOT NULL DEFAULT 0.0,
+"stock_uom" varchar(140),
+"process_loss_qty" decimal(21,9) NOT NULL DEFAULT 0.0,
+"delivered_qty" decimal(21,9) NOT NULL DEFAULT 0.0,
+"conversion_factor" decimal(21,9) NOT NULL DEFAULT 1.0,
+"sales_order_item" varchar(140),
+"subcontracting_conversion_factor" decimal(21,9) NOT NULL DEFAULT 0.0,
+parent varchar(140),
+parentfield varchar(140),
+parenttype varchar(140)
+			)
+2026-08-23 15:43:48,138 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "item_code" ON "tabSubcontracting Inward Order Item"("item_code");CREATE INDEX IF NOT EXISTS "sales_order_item" ON "tabSubcontracting Inward Order Item"("sales_order_item");
+2026-08-23 15:43:48,279 WARNING database DDL Query made to DB:
+create table "tabSubcontracting Inward Order Received Item" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"main_item_code" varchar(140),
+"rm_item_code" varchar(140),
+"is_customer_provided_item" smallint NOT NULL DEFAULT 0,
+"is_additional_item" smallint NOT NULL DEFAULT 0,
+"stock_uom" varchar(140),
+"warehouse" varchar(140),
+"bom_detail_no" varchar(140),
+"reference_name" varchar(140),
+"required_qty" decimal(21,9) NOT NULL DEFAULT 0.0,
+"billed_qty" decimal(21,9) NOT NULL DEFAULT 0.0,
+"received_qty" decimal(21,9) NOT NULL DEFAULT 0.0,
+"consumed_qty" decimal(21,9) NOT NULL DEFAULT 0.0,
+"work_order_qty" decimal(21,9) NOT NULL DEFAULT 0.0,
+"returned_qty" decimal(21,9) NOT NULL DEFAULT 0.0,
+"rate" decimal(21,9) NOT NULL DEFAULT 0.0,
+parent varchar(140),
+parentfield varchar(140),
+parenttype varchar(140)
+			)
+2026-08-23 15:43:48,423 WARNING database DDL Query made to DB:
+create table "tabSubcontracting Inward Order Secondary Item" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"type" varchar(140),
+"reference_name" varchar(140),
+"item_code" varchar(140),
+"fg_item_code" varchar(140),
+"stock_uom" varchar(140),
+"warehouse" varchar(140),
+"produced_qty" decimal(21,9) NOT NULL DEFAULT 0.0,
+"delivered_qty" decimal(21,9) NOT NULL DEFAULT 0.0,
+parent varchar(140),
+parentfield varchar(140),
+parenttype varchar(140)
+			)
+2026-08-23 15:43:48,567 WARNING database DDL Query made to DB:
+create table "tabSubcontracting Inward Order Service Item" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"item_code" varchar(140),
+"item_name" varchar(140),
+"qty" decimal(21,9) NOT NULL DEFAULT 0.0,
+"uom" varchar(140),
+"rate" decimal(21,9) NOT NULL DEFAULT 0.0,
+"amount" decimal(21,9) NOT NULL DEFAULT 0.0,
+"fg_item" varchar(140),
+"fg_item_qty" decimal(21,9) NOT NULL DEFAULT 1.0,
+"sales_order_item" varchar(140),
+parent varchar(140),
+parentfield varchar(140),
+parenttype varchar(140)
+			)
+2026-08-23 15:43:48,568 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "item_code" ON "tabSubcontracting Inward Order Service Item"("item_code");CREATE INDEX IF NOT EXISTS "sales_order_item" ON "tabSubcontracting Inward Order Service Item"("sales_order_item");
+2026-08-23 15:43:48,815 WARNING database DDL Query made to DB:
+create table "tabSubcontracting Order" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"naming_series" varchar(140),
+"purchase_order" varchar(140),
+"supplier" varchar(140),
+"supplier_name" varchar(140),
+"supplier_warehouse" varchar(140),
+"supplier_currency" varchar(140),
+"company" varchar(140),
+"transaction_date" date,
+"schedule_date" date,
+"amended_from" varchar(140),
+"cost_center" varchar(140),
+"project" varchar(140),
+"set_warehouse" varchar(140),
+"total_qty" decimal(21,9) NOT NULL DEFAULT 0.0,
+"total" decimal(21,9) NOT NULL DEFAULT 0.0,
+"set_reserve_warehouse" varchar(140),
+"reserve_stock" smallint NOT NULL DEFAULT 0,
+"supplier_address" varchar(140),
+"address_display" text,
+"contact_person" varchar(140),
+"contact_display" text,
+"contact_mobile" text,
+"contact_email" text,
+"shipping_address" varchar(140),
+"shipping_address_display" text,
+"billing_address" varchar(140),
+"billing_address_display" text,
+"distribute_additional_costs_based_on" varchar(140) DEFAULT 'Qty',
+"total_additional_costs" decimal(21,9) NOT NULL DEFAULT 0.0,
+"title" varchar(140),
+"status" varchar(140) DEFAULT 'Draft',
+"per_received" decimal(21,9) NOT NULL DEFAULT 0.0,
+"select_print_heading" varchar(140),
+"letter_head" varchar(140),
+"production_plan" varchar(140),
+"_user_tags" text,
+"_comments" text,
+"_assign" text,
+"_liked_by" text
+			)
+2026-08-23 15:43:48,816 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "supplier" ON "tabSubcontracting Order"("supplier");CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabSubcontracting Order"("transaction_date");CREATE INDEX IF NOT EXISTS "status" ON "tabSubcontracting Order"("status");
+2026-08-23 15:43:49,031 WARNING database DDL Query made to DB:
+create table "tabSubcontracting Order Item" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"item_code" varchar(140),
+"item_name" varchar(140),
+"bom" varchar(140),
+"include_exploded_items" smallint NOT NULL DEFAULT 0,
+"schedule_date" date,
+"expected_delivery_date" date,
+"description" text,
+"image" text,
+"qty" decimal(21,9) NOT NULL DEFAULT 1.0,
+"received_qty" decimal(21,9) NOT NULL DEFAULT 0.0,
+"returned_qty" decimal(21,9) NOT NULL DEFAULT 0.0,
+"stock_uom" varchar(140),
+"conversion_factor" decimal(21,9) NOT NULL DEFAULT 1.0,
+"rate" decimal(21,9) NOT NULL DEFAULT 0.0,
+"amount" decimal(21,9) NOT NULL DEFAULT 0.0,
+"rm_cost_per_qty" decimal(21,9) NOT NULL DEFAULT 0.0,
+"service_cost_per_qty" decimal(21,9) NOT NULL DEFAULT 0.0,
+"additional_cost_per_qty" decimal(21,9) NOT NULL DEFAULT 0.0,
+"warehouse" varchar(140),
+"expense_account" varchar(140),
+"manufacturer" varchar(140),
+"manufacturer_part_no" varchar(140),
+"material_request" varchar(140),
+"material_request_item" varchar(140),
+"cost_center" varchar(140),
+"project" varchar(140),
+"job_card" varchar(140),
+"purchase_order_item" varchar(140),
+"page_break" smallint NOT NULL DEFAULT 0,
+"subcontracting_conversion_factor" decimal(21,9) NOT NULL DEFAULT 0.0,
+"production_plan_sub_assembly_item" varchar(140),
+parent varchar(140),
+parentfield varchar(140),
+parenttype varchar(140)
+			)
+2026-08-23 15:43:49,033 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "item_code" ON "tabSubcontracting Order Item"("item_code");CREATE INDEX IF NOT EXISTS "expected_delivery_date" ON "tabSubcontracting Order Item"("expected_delivery_date");CREATE INDEX IF NOT EXISTS "material_request" ON "tabSubcontracting Order Item"("material_request");CREATE INDEX IF NOT EXISTS "material_request_item" ON "tabSubcontracting Order Item"("material_request_item");CREATE INDEX IF NOT EXISTS "purchase_order_item" ON "tabSubcontracting Order Item"("purchase_order_item");
+2026-08-23 15:43:49,184 WARNING database DDL Query made to DB:
+create table "tabSubcontracting Order Service Item" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"item_code" varchar(140),
+"item_name" varchar(140),
+"qty" decimal(21,9) NOT NULL DEFAULT 0.0,
+"rate" decimal(21,9) NOT NULL DEFAULT 0.0,
+"amount" decimal(21,9) NOT NULL DEFAULT 0.0,
+"fg_item" varchar(140),
+"fg_item_qty" decimal(21,9) NOT NULL DEFAULT 1.0,
+"purchase_order_item" varchar(140),
+"material_request" varchar(140),
+"material_request_item" varchar(140),
+parent varchar(140),
+parentfield varchar(140),
+parenttype varchar(140)
+			)
+2026-08-23 15:43:49,186 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "item_code" ON "tabSubcontracting Order Service Item"("item_code");CREATE INDEX IF NOT EXISTS "purchase_order_item" ON "tabSubcontracting Order Service Item"("purchase_order_item");
+2026-08-23 15:43:49,325 WARNING database DDL Query made to DB:
+create table "tabSubcontracting Order Supplied Item" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"main_item_code" varchar(140),
+"rm_item_code" varchar(140),
+"stock_uom" varchar(140),
+"conversion_factor" decimal(21,9) NOT NULL DEFAULT 1.0,
+"reserve_warehouse" varchar(140),
+"bom_detail_no" varchar(140),
+"reference_name" varchar(140),
+"rate" decimal(21,9) NOT NULL DEFAULT 0.0,
+"amount" decimal(21,9) NOT NULL DEFAULT 0.0,
+"required_qty" decimal(21,9) NOT NULL DEFAULT 0.0,
+"supplied_qty" decimal(21,9) NOT NULL DEFAULT 0.0,
+"stock_reserved_qty" decimal(21,9) NOT NULL DEFAULT 0.0,
+"consumed_qty" decimal(21,9) NOT NULL DEFAULT 0.0,
+"returned_qty" decimal(21,9) NOT NULL DEFAULT 0.0,
+"total_supplied_qty" decimal(21,9) NOT NULL DEFAULT 0.0,
+parent varchar(140),
+parentfield varchar(140),
+parenttype varchar(140)
+			)
+2026-08-23 15:43:49,615 WARNING database DDL Query made to DB:
+create table "tabSubcontracting Receipt" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"title" varchar(140) DEFAULT '{supplier_name}',
+"naming_series" varchar(140),
+"supplier" varchar(140),
+"supplier_name" varchar(140),
+"supplier_delivery_note" varchar(140),
+"company" varchar(140),
+"posting_date" date,
+"posting_time" time(6),
+"set_posting_time" smallint NOT NULL DEFAULT 0,
+"is_return" smallint NOT NULL DEFAULT 0,
+"return_against" varchar(140),
+"cost_center" varchar(140),
+"project" varchar(140),
+"set_warehouse" varchar(140),
+"rejected_warehouse" varchar(140),
+"supplier_warehouse" varchar(140),
+"total_qty" decimal(21,9) NOT NULL DEFAULT 0.0,
+"total" decimal(21,9) NOT NULL DEFAULT 0.0,
+"in_words" varchar(240),
+"bill_no" varchar(140),
+"bill_date" date,
+"supplier_address" varchar(140),
+"contact_person" varchar(140),
+"address_display" text,
+"contact_display" text,
+"contact_mobile" text,
+"contact_email" text,
+"shipping_address" varchar(140),
+"shipping_address_display" text,
+"billing_address" varchar(140),
+"billing_address_display" text,
+"distribute_additional_costs_based_on" varchar(140) DEFAULT 'Qty',
+"total_additional_costs" decimal(21,9) NOT NULL DEFAULT 0.0,
+"amended_from" varchar(140),
+"range" varchar(140),
+"represents_company" varchar(140),
+"status" varchar(140) DEFAULT 'Draft',
+"per_returned" decimal(21,9) NOT NULL DEFAULT 0.0,
+"auto_repeat" varchar(140),
+"letter_head" varchar(140),
+"language" varchar(140),
+"instructions" text,
+"select_print_heading" varchar(140),
+"remarks" text,
+"transporter_name" varchar(140),
+"lr_no" varchar(140),
+"lr_date" date,
+"_user_tags" text,
+"_comments" text,
+"_assign" text,
+"_liked_by" text
+			)
+2026-08-23 15:43:49,617 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "supplier" ON "tabSubcontracting Receipt"("supplier");CREATE INDEX IF NOT EXISTS "posting_date" ON "tabSubcontracting Receipt"("posting_date");CREATE INDEX IF NOT EXISTS "status" ON "tabSubcontracting Receipt"("status");
+2026-08-23 15:43:49,917 WARNING database DDL Query made to DB:
+create table "tabSubcontracting Receipt Item" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"item_code" varchar(140),
+"is_legacy_scrap_item" smallint NOT NULL DEFAULT 0,
+"type" varchar(140),
+"item_name" varchar(140),
+"description" text,
+"brand" varchar(140),
+"image" text,
+"received_qty" decimal(21,9) NOT NULL DEFAULT 0.0,
+"qty" decimal(21,9) NOT NULL DEFAULT 0.0,
+"rejected_qty" decimal(21,9) NOT NULL DEFAULT 0.0,
+"returned_qty" decimal(21,9) NOT NULL DEFAULT 0.0,
+"process_loss_qty" decimal(21,9) NOT NULL DEFAULT 0.0,
+"stock_uom" varchar(140),
+"conversion_factor" decimal(21,9) NOT NULL DEFAULT 1.0,
+"rate" decimal(21,9) NOT NULL DEFAULT 0.0,
+"amount" decimal(21,9) NOT NULL DEFAULT 0.0,
+"landed_cost_voucher_amount" decimal(21,9) NOT NULL DEFAULT 0.0,
+"rm_cost_per_qty" decimal(21,9) NOT NULL DEFAULT 0.0,
+"service_cost_per_qty" decimal(21,9) NOT NULL DEFAULT 0.0,
+"additional_cost_per_qty" decimal(21,9) NOT NULL DEFAULT 0.0,
+"secondary_items_cost_per_qty" decimal(21,9) NOT NULL DEFAULT 0.0,
+"rm_supp_cost" decimal(21,9) NOT NULL DEFAULT 0.0,
+"warehouse" varchar(140),
+"subcontracting_order" varchar(140),
+"subcontracting_order_item" varchar(140),
+"subcontracting_receipt_item" varchar(140),
+"job_card" varchar(140),
+"rejected_warehouse" varchar(140),
+"bom" varchar(140),
+"include_exploded_items" smallint NOT NULL DEFAULT 0,
+"quality_inspection" varchar(140),
+"schedule_date" date,
+"reference_name" varchar(140),
+"serial_and_batch_bundle" varchar(140),
+"use_serial_batch_fields" smallint NOT NULL DEFAULT 0,
+"rejected_serial_and_batch_bundle" varchar(140),
+"serial_no" text,
+"rejected_serial_no" text,
+"batch_no" varchar(140),
+"manufacturer" varchar(140),
+"manufacturer_part_no" varchar(140),
+"expense_account" varchar(140),
+"service_expense_account" varchar(140),
+"cost_center" varchar(140),
+"project" varchar(140),
+"page_break" smallint NOT NULL DEFAULT 0,
+"purchase_order" varchar(140),
+"purchase_order_item" varchar(140),
+parent varchar(140),
+parentfield varchar(140),
+parenttype varchar(140)
+			)
+2026-08-23 15:43:49,921 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "item_code" ON "tabSubcontracting Receipt Item"("item_code");CREATE INDEX IF NOT EXISTS "subcontracting_order" ON "tabSubcontracting Receipt Item"("subcontracting_order");CREATE INDEX IF NOT EXISTS "subcontracting_order_item" ON "tabSubcontracting Receipt Item"("subcontracting_order_item");CREATE INDEX IF NOT EXISTS "job_card" ON "tabSubcontracting Receipt Item"("job_card");CREATE INDEX IF NOT EXISTS "purchase_order" ON "tabSubcontracting Receipt Item"("purchase_order");CREATE INDEX IF NOT EXISTS "purchase_order_item" ON "tabSubcontracting Receipt Item"("purchase_order_item");
+2026-08-23 15:43:50,095 WARNING database DDL Query made to DB:
+create table "tabSubcontracting Receipt Supplied Item" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"main_item_code" varchar(140),
+"rm_item_code" varchar(140),
+"item_name" varchar(140),
+"bom_detail_no" varchar(140),
+"description" text,
+"stock_uom" varchar(140),
+"conversion_factor" decimal(21,9) NOT NULL DEFAULT 1.0,
+"reference_name" varchar(140),
+"rate" decimal(21,9) NOT NULL DEFAULT 0.0,
+"amount" decimal(21,9) NOT NULL DEFAULT 0.0,
+"available_qty_for_consumption" decimal(21,9) NOT NULL DEFAULT 0.0,
+"required_qty" decimal(21,9) NOT NULL DEFAULT 0.0,
+"consumed_qty" decimal(21,9) NOT NULL DEFAULT 0.0,
+"current_stock" decimal(21,9) NOT NULL DEFAULT 0.0,
+"serial_and_batch_bundle" varchar(140),
+"use_serial_batch_fields" smallint NOT NULL DEFAULT 0,
+"subcontracting_order" varchar(140),
+"serial_no" text,
+"batch_no" varchar(140),
+"expense_account" varchar(140),
+"cost_center" varchar(140),
+parent varchar(140),
+parentfield varchar(140),
+parenttype varchar(140)
+			)
+2026-08-23 15:43:50,401 WARNING database DDL Query made to DB:
+create table "tabCode List" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"title" varchar(140),
+"canonical_uri" varchar(140),
+"url" varchar(140),
+"default_common_code" varchar(140),
+"version" varchar(140),
+"publisher" varchar(140),
+"publisher_id" varchar(140),
+"description" text,
+"_user_tags" text,
+"_comments" text,
+"_assign" text,
+"_liked_by" text
+			)
+2026-08-23 15:43:50,591 WARNING database DDL Query made to DB:
+create table "tabCommon Code" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"code_list" varchar(140),
+"canonical_uri" varchar(140),
+"title" varchar(300),
+"common_code" varchar(300),
+"description" text,
+"additional_data" text,
+"_user_tags" text,
+"_comments" text,
+"_assign" text,
+"_liked_by" text
+			)
+2026-08-23 15:43:50,595 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "code_list" ON "tabCommon Code"("code_list");CREATE INDEX IF NOT EXISTS "common_code" ON "tabCommon Code"("common_code");
+2026-08-23 15:43:50,646 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "code_list_common_code_index" ON "public"."tabCommon Code" ("code_list", "common_code")
+2026-08-23 15:43:52,650 WARNING database DDL Query made to DB:
+ALTER TABLE "tabQuotation" ADD COLUMN "crm_deal" varchar(140)
+2026-08-23 15:43:52,651 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabQuotation"("transaction_date");
+2026-08-23 15:43:52,749 WARNING database DDL Query made to DB:
+ALTER TABLE "tabCustomer" ADD COLUMN "crm_deal" varchar(140)
+2026-08-23 15:43:52,750 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "customer_group" ON "tabCustomer"("customer_group");
+2026-08-23 15:44:06,620 WARNING database DDL Query made to DB:
+ALTER TABLE "tabUTM Campaign" ADD COLUMN "crm_campaign" varchar(140)
+2026-08-23 15:44:07,598 WARNING database DDL Query made to DB:
+ALTER TABLE "tabAddress" ADD COLUMN "tax_category" varchar(140), ADD COLUMN "is_your_company_address" smallint NOT NULL DEFAULT 0
+2026-08-23 15:44:07,688 WARNING database DDL Query made to DB:
+ALTER TABLE "tabContact" ADD COLUMN "is_billing_contact" smallint NOT NULL DEFAULT 0
+2026-08-23 15:44:08,236 WARNING database DDL Query made to DB:
+ALTER TABLE "tabCommunication" ADD COLUMN "company" varchar(140)
+2026-08-23 15:44:08,238 WARNING database DDL Query made to DB:
+DROP INDEX IF EXISTS "communication_type" ;DROP INDEX IF EXISTS "status" ;DROP INDEX IF EXISTS "communication_date" ;DROP INDEX IF EXISTS "reference_doctype" ;DROP INDEX IF EXISTS "reference_name" ;
+2026-08-23 15:44:08,356 WARNING database DDL Query made to DB:
+ALTER TABLE "tabEmail Account" ADD COLUMN "company" varchar(140)
+2026-08-24 00:28:51,735 WARNING database DDL Query made to DB:
+ALTER TABLE "tabSupplier" ADD COLUMN "irs_1099" smallint NOT NULL DEFAULT 0
+2026-08-24 00:28:52,531 WARNING database DDL Query made to DB:
+ALTER TABLE "tabSales Invoice" ADD COLUMN "exempt_from_sales_tax" smallint NOT NULL DEFAULT 0, ALTER COLUMN "posting_time" TYPE time(6)
+2026-08-24 00:28:52,533 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "customer" ON "tabSales Invoice"("customer");CREATE INDEX IF NOT EXISTS "posting_date" ON "tabSales Invoice"("posting_date");CREATE INDEX IF NOT EXISTS "return_against" ON "tabSales Invoice"("return_against");CREATE INDEX IF NOT EXISTS "project" ON "tabSales Invoice"("project");CREATE INDEX IF NOT EXISTS "debit_to" ON "tabSales Invoice"("debit_to");
+2026-08-24 00:28:52,535 WARNING database DDL Query made to DB:
+DROP INDEX IF EXISTS "company" ;
+2026-08-24 00:28:52,612 WARNING database DDL Query made to DB:
+ALTER TABLE "tabQuotation" ADD COLUMN "exempt_from_sales_tax" smallint NOT NULL DEFAULT 0
+2026-08-24 00:28:52,613 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabQuotation"("transaction_date");
+2026-08-24 00:28:52,678 WARNING database DDL Query made to DB:
+ALTER TABLE "tabCustomer" ADD COLUMN "exempt_from_sales_tax" smallint NOT NULL DEFAULT 0
+2026-08-24 00:28:52,679 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "customer_group" ON "tabCustomer"("customer_group");
+2026-08-24 00:28:52,773 WARNING database DDL Query made to DB:
+ALTER TABLE "tabSales Order" ADD COLUMN "exempt_from_sales_tax" smallint NOT NULL DEFAULT 0, ALTER COLUMN "transaction_time" TYPE time(6)
+2026-08-24 00:28:52,792 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "customer" ON "tabSales Order"("customer");CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabSales Order"("transaction_date");CREATE INDEX IF NOT EXISTS "project" ON "tabSales Order"("project");CREATE INDEX IF NOT EXISTS "status" ON "tabSales Order"("status");
+2026-08-24 00:28:52,793 WARNING database DDL Query made to DB:
+DROP INDEX IF EXISTS "company" ;
+2026-08-24 00:50:03,783 WARNING database DDL Query made to DB:
+create table "tabCustomer Vehicle" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"plate_no" varchar(140) UNIQUE,
+"customer" varchar(140),
+"customer_name" varchar(140),
+"contact_no" varchar(140),
+"email" varchar(140),
+"status" varchar(140) DEFAULT 'Active',
+"make" varchar(140),
+"model" varchar(140),
+"year_model" int NOT NULL DEFAULT 0,
+"color" varchar(140),
+"vin" varchar(140),
+"engine_no" varchar(140),
+"transmission" varchar(140),
+"cylinders" int NOT NULL DEFAULT 4,
+"fuel_type" varchar(140) DEFAULT 'Gasoline',
+"current_mileage" decimal(21,9) NOT NULL DEFAULT 0.0,
+"mileage_unit" varchar(140) DEFAULT 'km',
+"last_service_date" date,
+"registration_type" varchar(140) DEFAULT 'Private',
+"insurance_company" varchar(140),
+"insurance_expiry_date" date,
+"notes" text,
+"_user_tags" text,
+"_comments" text,
+"_assign" text,
+"_liked_by" text
+			)
+2026-08-24 00:50:04,100 WARNING database DDL Query made to DB:
+create table "tabInspection Template" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"template_name" varchar(140) UNIQUE,
+"description" text,
+"_user_tags" text,
+"_comments" text,
+"_assign" text,
+"_liked_by" text
+			)
+2026-08-24 00:50:04,238 WARNING database DDL Query made to DB:
+create table "tabInspection Template Item" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"category" varchar(140),
+"item_name" varchar(140),
+"standard_description" text,
+parent varchar(140),
+parentfield varchar(140),
+parenttype varchar(140)
+			)
+2026-08-24 00:50:04,420 WARNING database DDL Query made to DB:
+create table "tabJob Order Part Item" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"item_code" varchar(140),
+"item_name" varchar(140),
+"part_no" varchar(140),
+"qty" decimal(21,9) NOT NULL DEFAULT 1.0,
+"rate" decimal(21,9) NOT NULL DEFAULT 0.0,
+"discount_amount" decimal(21,9) NOT NULL DEFAULT 0.0,
+"amount" decimal(21,9) NOT NULL DEFAULT 0.0,
+parent varchar(140),
+parentfield varchar(140),
+parenttype varchar(140)
+			)
+2026-08-24 00:50:04,560 WARNING database DDL Query made to DB:
+create table "tabJob Order Service Item" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"service_item" varchar(140),
+"description" text,
+"mechanic" varchar(140),
+"hours" decimal(21,9) NOT NULL DEFAULT 1.0,
+"rate" decimal(21,9) NOT NULL DEFAULT 0.0,
+"discount_amount" decimal(21,9) NOT NULL DEFAULT 0.0,
+"total_amount" decimal(21,9) NOT NULL DEFAULT 0.0,
+"next_service_date" date,
+parent varchar(140),
+parentfield varchar(140),
+parenttype varchar(140)
+			)
+2026-08-24 00:50:04,835 WARNING database DDL Query made to DB:
+create table "tabVehicle Inspection" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"naming_series" varchar(140) DEFAULT 'INSP-.YYYY.-.#####',
+"inspection_date" date,
+"vehicle" varchar(140),
+"plate_no" varchar(140),
+"customer" varchar(140),
+"customer_name" varchar(140),
+"inspection_template" varchar(140),
+"mechanic" varchar(140),
+"mileage" decimal(21,9) NOT NULL DEFAULT 0.0,
+"overall_status" varchar(140) DEFAULT 'Passed',
+"general_remarks" text,
+"_user_tags" text,
+"_comments" text,
+"_assign" text,
+"_liked_by" text
+			)
+2026-08-24 00:50:04,942 WARNING database DDL Query made to DB:
+create table "tabVehicle Inspection Item" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"category" varchar(140),
+"item_name" varchar(140),
+"status" varchar(140) DEFAULT 'Pass / OK',
+"observation" text,
+"estimated_cost" decimal(21,9) NOT NULL DEFAULT 0.0,
+parent varchar(140),
+parentfield varchar(140),
+parenttype varchar(140)
+			)
+2026-08-24 00:50:05,198 WARNING database DDL Query made to DB:
+create table "tabVehicle Job Order" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"naming_series" varchar(140) DEFAULT 'JO-.YYYY.-.#####',
+"vehicle" varchar(140),
+"plate_no" varchar(140),
+"customer" varchar(140),
+"customer_name" varchar(140),
+"contact_no" varchar(140),
+"job_order_date" date,
+"promised_date" timestamp,
+"status" varchar(140) DEFAULT 'Draft',
+"service_advisor" varchar(140),
+"mileage" decimal(21,9) NOT NULL DEFAULT 0.0,
+"mileage_unit" varchar(140) DEFAULT 'km',
+"customer_complaint" text,
+"total_labor" decimal(21,9) NOT NULL DEFAULT 0.0,
+"total_parts" decimal(21,9) NOT NULL DEFAULT 0.0,
+"net_total" decimal(21,9) NOT NULL DEFAULT 0.0,
+"discount_amount" decimal(21,9) NOT NULL DEFAULT 0.0,
+"grand_total" decimal(21,9) NOT NULL DEFAULT 0.0,
+"sales_invoice" varchar(140),
+"payment_status" varchar(140) DEFAULT 'Unpaid',
+"paid_amount" decimal(21,9) NOT NULL DEFAULT 0.0,
+"outstanding_amount" decimal(21,9) NOT NULL DEFAULT 0.0,
+"_user_tags" text,
+"_comments" text,
+"_assign" text,
+"_liked_by" text
+			)
+2026-08-24 00:50:05,313 WARNING database DDL Query made to DB:
+create table "tabVehicle Make" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"make_name" varchar(140) UNIQUE,
+"logo" text,
+"_user_tags" text,
+"_comments" text,
+"_assign" text,
+"_liked_by" text
+			)
+2026-08-24 00:50:05,448 WARNING database DDL Query made to DB:
+create table "tabVehicle Model" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"make" varchar(140),
+"model_name" varchar(140),
+"category" varchar(140),
+"_user_tags" text,
+"_comments" text,
+"_assign" text,
+"_liked_by" text
+			)
+2026-08-24 00:50:05,587 WARNING database DDL Query made to DB:
+create table "tabVehicle Service Reminder" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"naming_series" varchar(140) DEFAULT 'REM-.YYYY.-.#####',
+"vehicle" varchar(140),
+"plate_no" varchar(140),
+"customer" varchar(140),
+"customer_name" varchar(140),
+"contact_no" varchar(140),
+"service_type" varchar(140),
+"due_date" date,
+"due_mileage" decimal(21,9) NOT NULL DEFAULT 0.0,
+"lead_days" int NOT NULL DEFAULT 7,
+"status" varchar(140) DEFAULT 'Pending',
+"reminder_message" text,
+"_user_tags" text,
+"_comments" text,
+"_assign" text,
+"_liked_by" text
+			)
+2026-08-24 02:37:16,187 WARNING database DDL Query made to DB:
+create table "tabItem Part Cross Reference" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"brand_or_oem" varchar(140),
+"part_number" varchar(140),
+"reference_type" varchar(140) DEFAULT 'OEM Genuine',
+"remarks" varchar(140),
+parent varchar(140),
+parentfield varchar(140),
+parenttype varchar(140)
+			)
+2026-08-24 02:37:16,513 WARNING database DDL Query made to DB:
+create table "tabItem Vehicle Compatibility" (
+			name varchar(140) primary key,
+			creation timestamp(6),
+			modified timestamp(6),
+			modified_by varchar(140),
+			owner varchar(140),
+			docstatus smallint not null default '0',
+			idx bigint not null default '0',
+			"make" varchar(140),
+"model" varchar(140),
+"year_from" int NOT NULL DEFAULT 0,
+"year_to" int NOT NULL DEFAULT 0,
+"engine" varchar(140),
+"transmission" varchar(140) DEFAULT 'All',
+"fitment_notes" varchar(140),
+parent varchar(140),
+parentfield varchar(140),
+parenttype varchar(140)
+			)
+2026-08-24 02:39:31,064 WARNING database DDL Query made to DB:
+ALTER TABLE "tabItem" ADD COLUMN "custom_print_display_name" varchar(140), ADD COLUMN "custom_part_no" varchar(140), ADD COLUMN "custom_manufacturer_no" varchar(140), ADD COLUMN "custom_product_category" varchar(140), ADD COLUMN "custom_color" varchar(140), ADD COLUMN "custom_expiry_date" date, ADD COLUMN "custom_incentive" decimal(21,9) NOT NULL DEFAULT 0.0, ADD COLUMN "custom_allow_zero_value" smallint NOT NULL DEFAULT 0, ADD COLUMN "custom_rack" varchar(140), ADD COLUMN "custom_shelf" varchar(140), ADD COLUMN "custom_bin_location" varchar(140), ADD COLUMN "custom_order_multiple" decimal(21,9) NOT NULL DEFAULT 1.0, ADD COLUMN "custom_purchase_cost" decimal(21,9) NOT NULL DEFAULT 0.0, ADD COLUMN "custom_pricing_rule" varchar(140) DEFAULT 'MARK-UP 50%%', ADD COLUMN "custom_markup_rate" decimal(21,9) NOT NULL DEFAULT 50.0, ADD COLUMN "custom_sell_price" decimal(21,9) NOT NULL DEFAULT 0.0, ADD COLUMN "custom_margin_percent" decimal(21,9) NOT NULL DEFAULT 0.0
+2026-08-24 02:39:31,066 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "item_name" ON "tabItem"("item_name");CREATE INDEX IF NOT EXISTS "item_group" ON "tabItem"("item_group");
+2026-08-24 02:47:29,455 WARNING database DDL Query made to DB:
+ALTER TABLE "tabCustomer" ADD COLUMN "custom_first_name" varchar(140), ADD COLUMN "custom_last_name" varchar(140), ADD COLUMN "custom_business_style" varchar(140), ADD COLUMN "custom_contact_person" varchar(140), ADD COLUMN "custom_office_no" varchar(140), ADD COLUMN "custom_office_fax" varchar(140), ADD COLUMN "custom_mobile_no" varchar(140), ADD COLUMN "custom_telephone_no" varchar(140), ADD COLUMN "custom_email_address" varchar(140), ADD COLUMN "custom_address_text" text, ADD COLUMN "custom_notes" text, ADD COLUMN "custom_labor_discount_rate" decimal(21,9) NOT NULL DEFAULT 0.0, ADD COLUMN "custom_product_discount_rate" decimal(21,9) NOT NULL DEFAULT 0.0, ADD COLUMN "custom_is_vat_exempt" smallint NOT NULL DEFAULT 0, ADD COLUMN "custom_is_zero_rated" smallint NOT NULL DEFAULT 0, ADD COLUMN "custom_allow_withholding_tax" smallint NOT NULL DEFAULT 0, ADD COLUMN "custom_withholding_tax_type" varchar(140)
+2026-08-24 02:47:29,457 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "customer_group" ON "tabCustomer"("customer_group");
+2026-08-24 05:51:01,838 WARNING database DDL Query made to DB:
+ALTER TABLE "tabQuotation" ALTER COLUMN "disable_rounded_total" SET DEFAULT 1
+2026-08-24 05:51:01,840 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabQuotation"("transaction_date");
+2026-08-24 05:51:02,054 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabQuotation"("transaction_date");
+2026-08-24 05:51:02,265 WARNING database DDL Query made to DB:
+ALTER TABLE "tabQuotation" ADD COLUMN "custom_vehicle_plate" varchar(140)
+2026-08-24 05:51:02,290 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "custom_vehicle_plate" ON "tabQuotation"("custom_vehicle_plate");CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabQuotation"("transaction_date");
+2026-08-24 05:51:02,518 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabQuotation"("transaction_date");
+2026-08-24 05:51:02,715 WARNING database DDL Query made to DB:
+ALTER TABLE "tabQuotation" ADD COLUMN "custom_vehicle_make" varchar(140)
+2026-08-24 05:51:02,716 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabQuotation"("transaction_date");
+2026-08-24 05:51:02,903 WARNING database DDL Query made to DB:
+ALTER TABLE "tabQuotation" ADD COLUMN "custom_vehicle_model" varchar(140)
+2026-08-24 05:51:02,904 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabQuotation"("transaction_date");
+2026-08-24 05:51:03,094 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabQuotation"("transaction_date");
+2026-08-24 05:51:03,301 WARNING database DDL Query made to DB:
+ALTER TABLE "tabQuotation" ADD COLUMN "custom_vehicle_year" int NOT NULL DEFAULT 0
+2026-08-24 05:51:03,303 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabQuotation"("transaction_date");
+2026-08-24 05:51:03,527 WARNING database DDL Query made to DB:
+ALTER TABLE "tabQuotation" ADD COLUMN "custom_vehicle_color" varchar(140)
+2026-08-24 05:51:03,528 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabQuotation"("transaction_date");
+2026-08-24 05:51:03,732 WARNING database DDL Query made to DB:
+ALTER TABLE "tabQuotation" ADD COLUMN "custom_vehicle_transmission" varchar(140)
+2026-08-24 05:51:03,733 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabQuotation"("transaction_date");
+2026-08-24 05:51:03,926 WARNING database DDL Query made to DB:
+ALTER TABLE "tabQuotation" ADD COLUMN "custom_vehicle_fuel_type" varchar(140)
+2026-08-24 05:51:03,927 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabQuotation"("transaction_date");
+2026-08-24 05:51:04,129 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabQuotation"("transaction_date");
+2026-08-24 05:51:04,318 WARNING database DDL Query made to DB:
+ALTER TABLE "tabQuotation" ADD COLUMN "custom_vehicle_vin" varchar(140)
+2026-08-24 05:51:04,319 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabQuotation"("transaction_date");
+2026-08-24 05:51:04,545 WARNING database DDL Query made to DB:
+ALTER TABLE "tabQuotation" ADD COLUMN "custom_vehicle_engine_no" varchar(140)
+2026-08-24 05:51:04,546 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabQuotation"("transaction_date");
+2026-08-24 05:51:04,796 WARNING database DDL Query made to DB:
+ALTER TABLE "tabQuotation" ADD COLUMN "custom_vehicle_mileage" decimal(21,9) NOT NULL DEFAULT 0.0
+2026-08-24 05:51:04,797 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabQuotation"("transaction_date");
+2026-08-24 05:51:05,002 WARNING database DDL Query made to DB:
+ALTER TABLE "tabQuotation" ADD COLUMN "custom_vehicle_mileage_unit" varchar(140) DEFAULT 'km'
+2026-08-24 05:51:05,003 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabQuotation"("transaction_date");
+2026-08-24 05:51:05,202 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabQuotation"("transaction_date");
+2026-08-24 05:51:05,407 WARNING database DDL Query made to DB:
+ALTER TABLE "tabQuotation" ADD COLUMN "custom_vehicle_registration_type" varchar(140)
+2026-08-24 05:51:05,408 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabQuotation"("transaction_date");
+2026-08-24 05:51:05,606 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabQuotation"("transaction_date");
+2026-08-24 05:51:05,800 WARNING database DDL Query made to DB:
+ALTER TABLE "tabQuotation" ADD COLUMN "custom_vehicle_insurance_company" varchar(140)
+2026-08-24 05:51:05,800 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabQuotation"("transaction_date");
+2026-08-24 05:51:06,035 WARNING database DDL Query made to DB:
+ALTER TABLE "tabQuotation" ADD COLUMN "custom_vehicle_insurance_expiry" date
+2026-08-24 05:51:06,036 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabQuotation"("transaction_date");
+2026-08-24 05:51:06,239 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabQuotation"("transaction_date");
+2026-08-24 05:51:06,433 WARNING database DDL Query made to DB:
+ALTER TABLE "tabQuotation" ADD COLUMN "custom_vehicle_notes" text
+2026-08-24 05:51:06,434 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabQuotation"("transaction_date");
+2026-08-24 05:51:06,674 WARNING database DDL Query made to DB:
+ALTER TABLE "tabSales Order" ALTER COLUMN "transaction_time" TYPE time(6) , ALTER COLUMN "disable_rounded_total" SET DEFAULT 1
+2026-08-24 05:51:06,675 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "customer" ON "tabSales Order"("customer");CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabSales Order"("transaction_date");CREATE INDEX IF NOT EXISTS "project" ON "tabSales Order"("project");
+2026-08-24 05:51:06,676 WARNING database DDL Query made to DB:
+DROP INDEX IF EXISTS "company" ;
+2026-08-24 05:51:06,864 WARNING database DDL Query made to DB:
+ALTER TABLE "tabSales Order" ALTER COLUMN "transaction_time" TYPE time(6)
+2026-08-24 05:51:06,865 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "customer" ON "tabSales Order"("customer");CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabSales Order"("transaction_date");CREATE INDEX IF NOT EXISTS "project" ON "tabSales Order"("project");
+2026-08-24 05:51:06,865 WARNING database DDL Query made to DB:
+DROP INDEX IF EXISTS "company" ;
+2026-08-24 05:51:07,049 WARNING database DDL Query made to DB:
+ALTER TABLE "tabSales Order" ADD COLUMN "custom_vehicle_plate" varchar(140), ALTER COLUMN "transaction_time" TYPE time(6)
+2026-08-24 05:51:07,050 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "custom_vehicle_plate" ON "tabSales Order"("custom_vehicle_plate");CREATE INDEX IF NOT EXISTS "customer" ON "tabSales Order"("customer");CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabSales Order"("transaction_date");CREATE INDEX IF NOT EXISTS "project" ON "tabSales Order"("project");
+2026-08-24 05:51:07,051 WARNING database DDL Query made to DB:
+DROP INDEX IF EXISTS "company" ;
+2026-08-24 05:51:07,258 WARNING database DDL Query made to DB:
+ALTER TABLE "tabSales Order" ALTER COLUMN "transaction_time" TYPE time(6)
+2026-08-24 05:51:07,260 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "custom_vehicle_plate" ON "tabSales Order"("custom_vehicle_plate");CREATE INDEX IF NOT EXISTS "customer" ON "tabSales Order"("customer");CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabSales Order"("transaction_date");CREATE INDEX IF NOT EXISTS "project" ON "tabSales Order"("project");
+2026-08-24 05:51:07,261 WARNING database DDL Query made to DB:
+DROP INDEX IF EXISTS "company" ;
+2026-08-24 05:51:07,464 WARNING database DDL Query made to DB:
+ALTER TABLE "tabSales Order" ADD COLUMN "custom_vehicle_make" varchar(140), ALTER COLUMN "transaction_time" TYPE time(6)
+2026-08-24 05:51:07,465 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "custom_vehicle_plate" ON "tabSales Order"("custom_vehicle_plate");CREATE INDEX IF NOT EXISTS "customer" ON "tabSales Order"("customer");CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabSales Order"("transaction_date");CREATE INDEX IF NOT EXISTS "project" ON "tabSales Order"("project");
+2026-08-24 05:51:07,467 WARNING database DDL Query made to DB:
+DROP INDEX IF EXISTS "company" ;
+2026-08-24 05:51:07,747 WARNING database DDL Query made to DB:
+ALTER TABLE "tabSales Order" ADD COLUMN "custom_vehicle_model" varchar(140), ALTER COLUMN "transaction_time" TYPE time(6)
+2026-08-24 05:51:07,748 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "custom_vehicle_plate" ON "tabSales Order"("custom_vehicle_plate");CREATE INDEX IF NOT EXISTS "customer" ON "tabSales Order"("customer");CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabSales Order"("transaction_date");CREATE INDEX IF NOT EXISTS "project" ON "tabSales Order"("project");
+2026-08-24 05:51:07,748 WARNING database DDL Query made to DB:
+DROP INDEX IF EXISTS "company" ;
+2026-08-24 05:51:07,940 WARNING database DDL Query made to DB:
+ALTER TABLE "tabSales Order" ALTER COLUMN "transaction_time" TYPE time(6)
+2026-08-24 05:51:07,942 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "custom_vehicle_plate" ON "tabSales Order"("custom_vehicle_plate");CREATE INDEX IF NOT EXISTS "customer" ON "tabSales Order"("customer");CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabSales Order"("transaction_date");CREATE INDEX IF NOT EXISTS "project" ON "tabSales Order"("project");
+2026-08-24 05:51:07,942 WARNING database DDL Query made to DB:
+DROP INDEX IF EXISTS "company" ;
+2026-08-24 05:51:08,135 WARNING database DDL Query made to DB:
+ALTER TABLE "tabSales Order" ADD COLUMN "custom_vehicle_year" int NOT NULL DEFAULT 0, ALTER COLUMN "transaction_time" TYPE time(6)
+2026-08-24 05:51:08,137 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "custom_vehicle_plate" ON "tabSales Order"("custom_vehicle_plate");CREATE INDEX IF NOT EXISTS "customer" ON "tabSales Order"("customer");CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabSales Order"("transaction_date");CREATE INDEX IF NOT EXISTS "project" ON "tabSales Order"("project");
+2026-08-24 05:51:08,137 WARNING database DDL Query made to DB:
+DROP INDEX IF EXISTS "company" ;
+2026-08-24 05:51:08,329 WARNING database DDL Query made to DB:
+ALTER TABLE "tabSales Order" ADD COLUMN "custom_vehicle_color" varchar(140), ALTER COLUMN "transaction_time" TYPE time(6)
+2026-08-24 05:51:08,331 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "custom_vehicle_plate" ON "tabSales Order"("custom_vehicle_plate");CREATE INDEX IF NOT EXISTS "customer" ON "tabSales Order"("customer");CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabSales Order"("transaction_date");CREATE INDEX IF NOT EXISTS "project" ON "tabSales Order"("project");
+2026-08-24 05:51:08,331 WARNING database DDL Query made to DB:
+DROP INDEX IF EXISTS "company" ;
+2026-08-24 05:51:08,550 WARNING database DDL Query made to DB:
+ALTER TABLE "tabSales Order" ADD COLUMN "custom_vehicle_transmission" varchar(140), ALTER COLUMN "transaction_time" TYPE time(6)
+2026-08-24 05:51:08,551 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "custom_vehicle_plate" ON "tabSales Order"("custom_vehicle_plate");CREATE INDEX IF NOT EXISTS "customer" ON "tabSales Order"("customer");CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabSales Order"("transaction_date");CREATE INDEX IF NOT EXISTS "project" ON "tabSales Order"("project");
+2026-08-24 05:51:08,552 WARNING database DDL Query made to DB:
+DROP INDEX IF EXISTS "company" ;
+2026-08-24 05:51:08,798 WARNING database DDL Query made to DB:
+ALTER TABLE "tabSales Order" ADD COLUMN "custom_vehicle_fuel_type" varchar(140), ALTER COLUMN "transaction_time" TYPE time(6)
+2026-08-24 05:51:08,800 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "custom_vehicle_plate" ON "tabSales Order"("custom_vehicle_plate");CREATE INDEX IF NOT EXISTS "customer" ON "tabSales Order"("customer");CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabSales Order"("transaction_date");CREATE INDEX IF NOT EXISTS "project" ON "tabSales Order"("project");
+2026-08-24 05:51:08,800 WARNING database DDL Query made to DB:
+DROP INDEX IF EXISTS "company" ;
+2026-08-24 05:51:09,036 WARNING database DDL Query made to DB:
+ALTER TABLE "tabSales Order" ALTER COLUMN "transaction_time" TYPE time(6)
+2026-08-24 05:51:09,037 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "custom_vehicle_plate" ON "tabSales Order"("custom_vehicle_plate");CREATE INDEX IF NOT EXISTS "customer" ON "tabSales Order"("customer");CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabSales Order"("transaction_date");CREATE INDEX IF NOT EXISTS "project" ON "tabSales Order"("project");
+2026-08-24 05:51:09,037 WARNING database DDL Query made to DB:
+DROP INDEX IF EXISTS "company" ;
+2026-08-24 05:51:09,262 WARNING database DDL Query made to DB:
+ALTER TABLE "tabSales Order" ADD COLUMN "custom_vehicle_vin" varchar(140), ALTER COLUMN "transaction_time" TYPE time(6)
+2026-08-24 05:51:09,264 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "custom_vehicle_plate" ON "tabSales Order"("custom_vehicle_plate");CREATE INDEX IF NOT EXISTS "customer" ON "tabSales Order"("customer");CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabSales Order"("transaction_date");CREATE INDEX IF NOT EXISTS "project" ON "tabSales Order"("project");
+2026-08-24 05:51:09,264 WARNING database DDL Query made to DB:
+DROP INDEX IF EXISTS "company" ;
+2026-08-24 05:51:09,501 WARNING database DDL Query made to DB:
+ALTER TABLE "tabSales Order" ADD COLUMN "custom_vehicle_engine_no" varchar(140), ALTER COLUMN "transaction_time" TYPE time(6)
+2026-08-24 05:51:09,502 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "custom_vehicle_plate" ON "tabSales Order"("custom_vehicle_plate");CREATE INDEX IF NOT EXISTS "customer" ON "tabSales Order"("customer");CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabSales Order"("transaction_date");CREATE INDEX IF NOT EXISTS "project" ON "tabSales Order"("project");
+2026-08-24 05:51:09,502 WARNING database DDL Query made to DB:
+DROP INDEX IF EXISTS "company" ;
+2026-08-24 05:51:09,704 WARNING database DDL Query made to DB:
+ALTER TABLE "tabSales Order" ADD COLUMN "custom_vehicle_mileage" decimal(21,9) NOT NULL DEFAULT 0.0, ALTER COLUMN "transaction_time" TYPE time(6)
+2026-08-24 05:51:09,706 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "custom_vehicle_plate" ON "tabSales Order"("custom_vehicle_plate");CREATE INDEX IF NOT EXISTS "customer" ON "tabSales Order"("customer");CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabSales Order"("transaction_date");CREATE INDEX IF NOT EXISTS "project" ON "tabSales Order"("project");
+2026-08-24 05:51:09,707 WARNING database DDL Query made to DB:
+DROP INDEX IF EXISTS "company" ;
+2026-08-24 05:51:09,952 WARNING database DDL Query made to DB:
+ALTER TABLE "tabSales Order" ADD COLUMN "custom_vehicle_mileage_unit" varchar(140) DEFAULT 'km', ALTER COLUMN "transaction_time" TYPE time(6)
+2026-08-24 05:51:09,953 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "custom_vehicle_plate" ON "tabSales Order"("custom_vehicle_plate");CREATE INDEX IF NOT EXISTS "customer" ON "tabSales Order"("customer");CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabSales Order"("transaction_date");CREATE INDEX IF NOT EXISTS "project" ON "tabSales Order"("project");
+2026-08-24 05:51:09,954 WARNING database DDL Query made to DB:
+DROP INDEX IF EXISTS "company" ;
+2026-08-24 05:51:10,164 WARNING database DDL Query made to DB:
+ALTER TABLE "tabSales Order" ALTER COLUMN "transaction_time" TYPE time(6)
+2026-08-24 05:51:10,165 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "custom_vehicle_plate" ON "tabSales Order"("custom_vehicle_plate");CREATE INDEX IF NOT EXISTS "customer" ON "tabSales Order"("customer");CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabSales Order"("transaction_date");CREATE INDEX IF NOT EXISTS "project" ON "tabSales Order"("project");
+2026-08-24 05:51:10,165 WARNING database DDL Query made to DB:
+DROP INDEX IF EXISTS "company" ;
+2026-08-24 05:51:10,370 WARNING database DDL Query made to DB:
+ALTER TABLE "tabSales Order" ADD COLUMN "custom_vehicle_registration_type" varchar(140), ALTER COLUMN "transaction_time" TYPE time(6)
+2026-08-24 05:51:10,371 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "custom_vehicle_plate" ON "tabSales Order"("custom_vehicle_plate");CREATE INDEX IF NOT EXISTS "customer" ON "tabSales Order"("customer");CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabSales Order"("transaction_date");CREATE INDEX IF NOT EXISTS "project" ON "tabSales Order"("project");
+2026-08-24 05:51:10,372 WARNING database DDL Query made to DB:
+DROP INDEX IF EXISTS "company" ;
+2026-08-24 05:51:10,569 WARNING database DDL Query made to DB:
+ALTER TABLE "tabSales Order" ALTER COLUMN "transaction_time" TYPE time(6)
+2026-08-24 05:51:10,570 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "custom_vehicle_plate" ON "tabSales Order"("custom_vehicle_plate");CREATE INDEX IF NOT EXISTS "customer" ON "tabSales Order"("customer");CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabSales Order"("transaction_date");CREATE INDEX IF NOT EXISTS "project" ON "tabSales Order"("project");
+2026-08-24 05:51:10,571 WARNING database DDL Query made to DB:
+DROP INDEX IF EXISTS "company" ;
+2026-08-24 05:51:10,767 WARNING database DDL Query made to DB:
+ALTER TABLE "tabSales Order" ADD COLUMN "custom_vehicle_insurance_company" varchar(140), ALTER COLUMN "transaction_time" TYPE time(6)
+2026-08-24 05:51:10,768 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "custom_vehicle_plate" ON "tabSales Order"("custom_vehicle_plate");CREATE INDEX IF NOT EXISTS "customer" ON "tabSales Order"("customer");CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabSales Order"("transaction_date");CREATE INDEX IF NOT EXISTS "project" ON "tabSales Order"("project");
+2026-08-24 05:51:10,769 WARNING database DDL Query made to DB:
+DROP INDEX IF EXISTS "company" ;
+2026-08-24 05:51:10,988 WARNING database DDL Query made to DB:
+ALTER TABLE "tabSales Order" ADD COLUMN "custom_vehicle_insurance_expiry" date, ALTER COLUMN "transaction_time" TYPE time(6)
+2026-08-24 05:51:10,990 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "custom_vehicle_plate" ON "tabSales Order"("custom_vehicle_plate");CREATE INDEX IF NOT EXISTS "customer" ON "tabSales Order"("customer");CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabSales Order"("transaction_date");CREATE INDEX IF NOT EXISTS "project" ON "tabSales Order"("project");
+2026-08-24 05:51:10,991 WARNING database DDL Query made to DB:
+DROP INDEX IF EXISTS "company" ;
+2026-08-24 05:51:11,223 WARNING database DDL Query made to DB:
+ALTER TABLE "tabSales Order" ALTER COLUMN "transaction_time" TYPE time(6)
+2026-08-24 05:51:11,224 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "custom_vehicle_plate" ON "tabSales Order"("custom_vehicle_plate");CREATE INDEX IF NOT EXISTS "customer" ON "tabSales Order"("customer");CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabSales Order"("transaction_date");CREATE INDEX IF NOT EXISTS "project" ON "tabSales Order"("project");
+2026-08-24 05:51:11,225 WARNING database DDL Query made to DB:
+DROP INDEX IF EXISTS "company" ;
+2026-08-24 05:51:11,420 WARNING database DDL Query made to DB:
+ALTER TABLE "tabSales Order" ADD COLUMN "custom_vehicle_notes" text, ALTER COLUMN "transaction_time" TYPE time(6)
+2026-08-24 05:51:11,421 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "custom_vehicle_plate" ON "tabSales Order"("custom_vehicle_plate");CREATE INDEX IF NOT EXISTS "customer" ON "tabSales Order"("customer");CREATE INDEX IF NOT EXISTS "transaction_date" ON "tabSales Order"("transaction_date");CREATE INDEX IF NOT EXISTS "project" ON "tabSales Order"("project");
+2026-08-24 05:51:11,422 WARNING database DDL Query made to DB:
+DROP INDEX IF EXISTS "company" ;
+2026-08-24 05:51:11,615 WARNING database DDL Query made to DB:
+ALTER TABLE "tabDelivery Note" ALTER COLUMN "posting_time" TYPE time(6) , ALTER COLUMN "disable_rounded_total" SET DEFAULT 1
+2026-08-24 05:51:11,616 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "customer" ON "tabDelivery Note"("customer");CREATE INDEX IF NOT EXISTS "posting_date" ON "tabDelivery Note"("posting_date");CREATE INDEX IF NOT EXISTS "return_against" ON "tabDelivery Note"("return_against");CREATE INDEX IF NOT EXISTS "status" ON "tabDelivery Note"("status");
+2026-08-24 05:51:11,800 WARNING database DDL Query made to DB:
+ALTER TABLE "tabDelivery Note" ALTER COLUMN "posting_time" TYPE time(6)
+2026-08-24 05:51:11,801 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "customer" ON "tabDelivery Note"("customer");CREATE INDEX IF NOT EXISTS "posting_date" ON "tabDelivery Note"("posting_date");CREATE INDEX IF NOT EXISTS "return_against" ON "tabDelivery Note"("return_against");CREATE INDEX IF NOT EXISTS "status" ON "tabDelivery Note"("status");
+2026-08-24 05:51:11,978 WARNING database DDL Query made to DB:
+ALTER TABLE "tabDelivery Note" ADD COLUMN "custom_vehicle_plate" varchar(140), ALTER COLUMN "posting_time" TYPE time(6)
+2026-08-24 05:51:11,979 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "custom_vehicle_plate" ON "tabDelivery Note"("custom_vehicle_plate");CREATE INDEX IF NOT EXISTS "customer" ON "tabDelivery Note"("customer");CREATE INDEX IF NOT EXISTS "posting_date" ON "tabDelivery Note"("posting_date");CREATE INDEX IF NOT EXISTS "return_against" ON "tabDelivery Note"("return_against");CREATE INDEX IF NOT EXISTS "status" ON "tabDelivery Note"("status");
+2026-08-24 05:51:12,176 WARNING database DDL Query made to DB:
+ALTER TABLE "tabDelivery Note" ALTER COLUMN "posting_time" TYPE time(6)
+2026-08-24 05:51:12,177 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "custom_vehicle_plate" ON "tabDelivery Note"("custom_vehicle_plate");CREATE INDEX IF NOT EXISTS "customer" ON "tabDelivery Note"("customer");CREATE INDEX IF NOT EXISTS "posting_date" ON "tabDelivery Note"("posting_date");CREATE INDEX IF NOT EXISTS "return_against" ON "tabDelivery Note"("return_against");CREATE INDEX IF NOT EXISTS "status" ON "tabDelivery Note"("status");
+2026-08-24 05:51:12,370 WARNING database DDL Query made to DB:
+ALTER TABLE "tabDelivery Note" ADD COLUMN "custom_vehicle_make" varchar(140), ALTER COLUMN "posting_time" TYPE time(6)
+2026-08-24 05:51:12,372 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "custom_vehicle_plate" ON "tabDelivery Note"("custom_vehicle_plate");CREATE INDEX IF NOT EXISTS "customer" ON "tabDelivery Note"("customer");CREATE INDEX IF NOT EXISTS "posting_date" ON "tabDelivery Note"("posting_date");CREATE INDEX IF NOT EXISTS "return_against" ON "tabDelivery Note"("return_against");CREATE INDEX IF NOT EXISTS "status" ON "tabDelivery Note"("status");
+2026-08-24 05:51:12,564 WARNING database DDL Query made to DB:
+ALTER TABLE "tabDelivery Note" ADD COLUMN "custom_vehicle_model" varchar(140), ALTER COLUMN "posting_time" TYPE time(6)
+2026-08-24 05:51:12,565 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "custom_vehicle_plate" ON "tabDelivery Note"("custom_vehicle_plate");CREATE INDEX IF NOT EXISTS "customer" ON "tabDelivery Note"("customer");CREATE INDEX IF NOT EXISTS "posting_date" ON "tabDelivery Note"("posting_date");CREATE INDEX IF NOT EXISTS "return_against" ON "tabDelivery Note"("return_against");CREATE INDEX IF NOT EXISTS "status" ON "tabDelivery Note"("status");
+2026-08-24 05:51:12,747 WARNING database DDL Query made to DB:
+ALTER TABLE "tabDelivery Note" ALTER COLUMN "posting_time" TYPE time(6)
+2026-08-24 05:51:12,748 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "custom_vehicle_plate" ON "tabDelivery Note"("custom_vehicle_plate");CREATE INDEX IF NOT EXISTS "customer" ON "tabDelivery Note"("customer");CREATE INDEX IF NOT EXISTS "posting_date" ON "tabDelivery Note"("posting_date");CREATE INDEX IF NOT EXISTS "return_against" ON "tabDelivery Note"("return_against");CREATE INDEX IF NOT EXISTS "status" ON "tabDelivery Note"("status");
+2026-08-24 05:51:12,937 WARNING database DDL Query made to DB:
+ALTER TABLE "tabDelivery Note" ADD COLUMN "custom_vehicle_year" int NOT NULL DEFAULT 0, ALTER COLUMN "posting_time" TYPE time(6)
+2026-08-24 05:51:12,939 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "custom_vehicle_plate" ON "tabDelivery Note"("custom_vehicle_plate");CREATE INDEX IF NOT EXISTS "customer" ON "tabDelivery Note"("customer");CREATE INDEX IF NOT EXISTS "posting_date" ON "tabDelivery Note"("posting_date");CREATE INDEX IF NOT EXISTS "return_against" ON "tabDelivery Note"("return_against");CREATE INDEX IF NOT EXISTS "status" ON "tabDelivery Note"("status");
+2026-08-24 05:51:13,134 WARNING database DDL Query made to DB:
+ALTER TABLE "tabDelivery Note" ADD COLUMN "custom_vehicle_color" varchar(140), ALTER COLUMN "posting_time" TYPE time(6)
+2026-08-24 05:51:13,136 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "custom_vehicle_plate" ON "tabDelivery Note"("custom_vehicle_plate");CREATE INDEX IF NOT EXISTS "customer" ON "tabDelivery Note"("customer");CREATE INDEX IF NOT EXISTS "posting_date" ON "tabDelivery Note"("posting_date");CREATE INDEX IF NOT EXISTS "return_against" ON "tabDelivery Note"("return_against");CREATE INDEX IF NOT EXISTS "status" ON "tabDelivery Note"("status");
+2026-08-24 05:51:13,338 WARNING database DDL Query made to DB:
+ALTER TABLE "tabDelivery Note" ADD COLUMN "custom_vehicle_transmission" varchar(140), ALTER COLUMN "posting_time" TYPE time(6)
+2026-08-24 05:51:13,340 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "custom_vehicle_plate" ON "tabDelivery Note"("custom_vehicle_plate");CREATE INDEX IF NOT EXISTS "customer" ON "tabDelivery Note"("customer");CREATE INDEX IF NOT EXISTS "posting_date" ON "tabDelivery Note"("posting_date");CREATE INDEX IF NOT EXISTS "return_against" ON "tabDelivery Note"("return_against");CREATE INDEX IF NOT EXISTS "status" ON "tabDelivery Note"("status");
+2026-08-24 05:51:13,525 WARNING database DDL Query made to DB:
+ALTER TABLE "tabDelivery Note" ADD COLUMN "custom_vehicle_fuel_type" varchar(140), ALTER COLUMN "posting_time" TYPE time(6)
+2026-08-24 05:51:13,527 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "custom_vehicle_plate" ON "tabDelivery Note"("custom_vehicle_plate");CREATE INDEX IF NOT EXISTS "customer" ON "tabDelivery Note"("customer");CREATE INDEX IF NOT EXISTS "posting_date" ON "tabDelivery Note"("posting_date");CREATE INDEX IF NOT EXISTS "return_against" ON "tabDelivery Note"("return_against");CREATE INDEX IF NOT EXISTS "status" ON "tabDelivery Note"("status");
+2026-08-24 05:51:13,757 WARNING database DDL Query made to DB:
+ALTER TABLE "tabDelivery Note" ALTER COLUMN "posting_time" TYPE time(6)
+2026-08-24 05:51:13,758 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "custom_vehicle_plate" ON "tabDelivery Note"("custom_vehicle_plate");CREATE INDEX IF NOT EXISTS "customer" ON "tabDelivery Note"("customer");CREATE INDEX IF NOT EXISTS "posting_date" ON "tabDelivery Note"("posting_date");CREATE INDEX IF NOT EXISTS "return_against" ON "tabDelivery Note"("return_against");CREATE INDEX IF NOT EXISTS "status" ON "tabDelivery Note"("status");
+2026-08-24 05:51:14,046 WARNING database DDL Query made to DB:
+ALTER TABLE "tabDelivery Note" ADD COLUMN "custom_vehicle_vin" varchar(140), ALTER COLUMN "posting_time" TYPE time(6)
+2026-08-24 05:51:14,047 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "custom_vehicle_plate" ON "tabDelivery Note"("custom_vehicle_plate");CREATE INDEX IF NOT EXISTS "customer" ON "tabDelivery Note"("customer");CREATE INDEX IF NOT EXISTS "posting_date" ON "tabDelivery Note"("posting_date");CREATE INDEX IF NOT EXISTS "return_against" ON "tabDelivery Note"("return_against");CREATE INDEX IF NOT EXISTS "status" ON "tabDelivery Note"("status");
+2026-08-24 05:51:14,293 WARNING database DDL Query made to DB:
+ALTER TABLE "tabDelivery Note" ADD COLUMN "custom_vehicle_engine_no" varchar(140), ALTER COLUMN "posting_time" TYPE time(6)
+2026-08-24 05:51:14,294 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "custom_vehicle_plate" ON "tabDelivery Note"("custom_vehicle_plate");CREATE INDEX IF NOT EXISTS "customer" ON "tabDelivery Note"("customer");CREATE INDEX IF NOT EXISTS "posting_date" ON "tabDelivery Note"("posting_date");CREATE INDEX IF NOT EXISTS "return_against" ON "tabDelivery Note"("return_against");CREATE INDEX IF NOT EXISTS "status" ON "tabDelivery Note"("status");
+2026-08-24 05:51:14,504 WARNING database DDL Query made to DB:
+ALTER TABLE "tabDelivery Note" ADD COLUMN "custom_vehicle_mileage" decimal(21,9) NOT NULL DEFAULT 0.0, ALTER COLUMN "posting_time" TYPE time(6)
+2026-08-24 05:51:14,505 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "custom_vehicle_plate" ON "tabDelivery Note"("custom_vehicle_plate");CREATE INDEX IF NOT EXISTS "customer" ON "tabDelivery Note"("customer");CREATE INDEX IF NOT EXISTS "posting_date" ON "tabDelivery Note"("posting_date");CREATE INDEX IF NOT EXISTS "return_against" ON "tabDelivery Note"("return_against");CREATE INDEX IF NOT EXISTS "status" ON "tabDelivery Note"("status");
+2026-08-24 05:51:14,691 WARNING database DDL Query made to DB:
+ALTER TABLE "tabDelivery Note" ADD COLUMN "custom_vehicle_mileage_unit" varchar(140) DEFAULT 'km', ALTER COLUMN "posting_time" TYPE time(6)
+2026-08-24 05:51:14,692 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "custom_vehicle_plate" ON "tabDelivery Note"("custom_vehicle_plate");CREATE INDEX IF NOT EXISTS "customer" ON "tabDelivery Note"("customer");CREATE INDEX IF NOT EXISTS "posting_date" ON "tabDelivery Note"("posting_date");CREATE INDEX IF NOT EXISTS "return_against" ON "tabDelivery Note"("return_against");CREATE INDEX IF NOT EXISTS "status" ON "tabDelivery Note"("status");
+2026-08-24 05:51:14,907 WARNING database DDL Query made to DB:
+ALTER TABLE "tabDelivery Note" ALTER COLUMN "posting_time" TYPE time(6)
+2026-08-24 05:51:14,909 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "custom_vehicle_plate" ON "tabDelivery Note"("custom_vehicle_plate");CREATE INDEX IF NOT EXISTS "customer" ON "tabDelivery Note"("customer");CREATE INDEX IF NOT EXISTS "posting_date" ON "tabDelivery Note"("posting_date");CREATE INDEX IF NOT EXISTS "return_against" ON "tabDelivery Note"("return_against");CREATE INDEX IF NOT EXISTS "status" ON "tabDelivery Note"("status");
+2026-08-24 05:51:15,147 WARNING database DDL Query made to DB:
+ALTER TABLE "tabDelivery Note" ADD COLUMN "custom_vehicle_registration_type" varchar(140), ALTER COLUMN "posting_time" TYPE time(6)
+2026-08-24 05:51:15,149 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "custom_vehicle_plate" ON "tabDelivery Note"("custom_vehicle_plate");CREATE INDEX IF NOT EXISTS "customer" ON "tabDelivery Note"("customer");CREATE INDEX IF NOT EXISTS "posting_date" ON "tabDelivery Note"("posting_date");CREATE INDEX IF NOT EXISTS "return_against" ON "tabDelivery Note"("return_against");CREATE INDEX IF NOT EXISTS "status" ON "tabDelivery Note"("status");
+2026-08-24 05:51:15,353 WARNING database DDL Query made to DB:
+ALTER TABLE "tabDelivery Note" ALTER COLUMN "posting_time" TYPE time(6)
+2026-08-24 05:51:15,354 WARNING database DDL Query made to DB:
+CREATE INDEX IF NOT EXISTS "custom_vehicle_plate" ON "tabDelivery Note"("custom_vehicle_plate");CREATE INDEX IF NOT EXISTS "customer" ON "tabDelivery Note"("customer");CREATE INDEX IF NOT EXISTS "posting_date" ON "tabDelivery Note"("posting_date");CREATE INDEX IF NOT EXISTS "return_against" ON "tabDelivery Note"("return_against");CREATE INDEX IF NOT EXISTS "status" ON "tabDelivery Note"("status");

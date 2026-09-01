@@ -1,0 +1,293 @@
+{
+ "doctype": "DocType",
+ "name": "Vehicle Estimate",
+ "module": "Vehicle Management",
+ "custom": 0,
+ "is_submittable": 0,
+ "istable": 0,
+ "editable_grid": 0,
+ "track_changes": 1,
+ "engine": "InnoDB",
+ "autoname": "naming_series:",
+ "naming_rule": "By \"Naming Series\" field",
+ "search_fields": "customer,customer_name,vehicle,plate_no,service_advisor",
+ "title_field": "customer_name",
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "options": "EST-.YYYY.-.#####",
+   "default": "EST-.YYYY.-.#####",
+   "label": "Series",
+   "reqd": 1
+  },
+  {
+   "fieldname": "sec_header",
+   "fieldtype": "Section Break",
+   "label": "Estimate Information"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "options": "Company",
+   "label": "Company / Branch",
+   "default": "ULTRA MRF",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "estimate_date",
+   "fieldtype": "Date",
+   "label": "Estimate Date",
+   "default": "Today",
+   "in_list_view": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "valid_till",
+   "fieldtype": "Date",
+   "label": "Valid Until Date"
+  },
+  {
+   "fieldname": "col_break_header",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "service_advisor",
+   "fieldtype": "Link",
+   "options": "User",
+   "label": "Service Advisor / Estimator",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "options": "Draft\nSent\nApproved\nDeclined\nConverted to Job Order\nExpired\nCancelled",
+   "default": "Draft",
+   "label": "Status",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "sec_customer",
+   "fieldtype": "Section Break",
+   "label": "Customer Information"
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "options": "Customer",
+   "label": "Customer",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "label": "Customer Name",
+   "fetch_from": "customer.customer_name",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "col_break_cust",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "contact_no",
+   "fieldtype": "Data",
+   "label": "Contact Number",
+   "fetch_from": "customer.mobile_no"
+  },
+  {
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "label": "Email Address",
+   "fetch_from": "customer.email_id"
+  },
+  {
+   "fieldname": "sec_vehicle",
+   "fieldtype": "Section Break",
+   "label": "Vehicle Information"
+  },
+  {
+   "fieldname": "vehicle",
+   "fieldtype": "Link",
+   "options": "Customer Vehicle",
+   "label": "Vehicle Plate No / Conduction Sticker",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "plate_no",
+   "fieldtype": "Data",
+   "label": "Plate No",
+   "fetch_from": "vehicle.plate_no",
+   "read_only": 1
+  },
+  {
+   "fieldname": "make",
+   "fieldtype": "Link",
+   "options": "Vehicle Make",
+   "label": "Make",
+   "fetch_from": "vehicle.make",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "model",
+   "fieldtype": "Link",
+   "options": "Vehicle Model",
+   "label": "Model",
+   "fetch_from": "vehicle.model",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "year_model",
+   "fieldtype": "Int",
+   "label": "Year Model",
+   "fetch_from": "vehicle.year_model"
+  },
+  {
+   "fieldname": "col_break_veh",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "vin",
+   "fieldtype": "Data",
+   "label": "VIN / Chassis No",
+   "fetch_from": "vehicle.vin"
+  },
+  {
+   "fieldname": "engine_no",
+   "fieldtype": "Data",
+   "label": "Engine No",
+   "fetch_from": "vehicle.engine_no"
+  },
+  {
+   "fieldname": "color",
+   "fieldtype": "Data",
+   "label": "Body Color",
+   "fetch_from": "vehicle.color"
+  },
+  {
+   "fieldname": "mileage",
+   "fieldtype": "Float",
+   "label": "Current Odometer"
+  },
+  {
+   "fieldname": "mileage_unit",
+   "fieldtype": "Select",
+   "options": "km\nmi",
+   "default": "km",
+   "label": "Odometer Unit"
+  },
+  {
+   "fieldname": "sec_complaint",
+   "fieldtype": "Section Break",
+   "label": "Customer Request / Concerns"
+  },
+  {
+   "fieldname": "customer_complaint",
+   "fieldtype": "Small Text",
+   "label": "Stated Customer Complaints / Scope Requested"
+  },
+  {
+   "fieldname": "sec_services",
+   "fieldtype": "Section Break",
+   "label": "Estimated Services & Labor"
+  },
+  {
+   "fieldname": "services",
+   "fieldtype": "Table",
+   "options": "Job Order Service Item",
+   "label": "Services & Labor"
+  },
+  {
+   "fieldname": "sec_parts",
+   "fieldtype": "Section Break",
+   "label": "Estimated Parts & Materials"
+  },
+  {
+   "fieldname": "parts",
+   "fieldtype": "Table",
+   "options": "Job Order Part Item",
+   "label": "Parts & Materials"
+  },
+  {
+   "fieldname": "sec_totals",
+   "fieldtype": "Section Break",
+   "label": "Pricing & Total Breakdown"
+  },
+  {
+   "fieldname": "total_labor",
+   "fieldtype": "Currency",
+   "label": "Total Labor Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_parts",
+   "fieldtype": "Currency",
+   "label": "Total Parts Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "col_break_tot",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "net_total",
+   "fieldtype": "Currency",
+   "label": "Subtotal",
+   "read_only": 1
+  },
+  {
+   "fieldname": "discount_amount",
+   "fieldtype": "Currency",
+   "label": "Additional Overall Discount",
+   "default": "0"
+  },
+  {
+   "fieldname": "grand_total",
+   "fieldtype": "Currency",
+   "label": "Total Estimated Amount",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "sec_conversion",
+   "fieldtype": "Section Break",
+   "label": "Conversion & Terms"
+  },
+  {
+   "fieldname": "job_order",
+   "fieldtype": "Link",
+   "options": "Vehicle Job Order",
+   "label": "Converted Vehicle Job Order",
+   "read_only": 1
+  },
+  {
+   "fieldname": "terms_and_conditions",
+   "fieldtype": "Small Text",
+   "label": "Terms & Warranty Conditions",
+   "default": "1. Quotation validity is 15 days from date of issue.\n2. Prices are subject to change based on actual parts availability and final scope of work.\n3. Parts installed carry standard manufacturer warranty."
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Small Text",
+   "label": "Internal Notes / Remarks"
+  }
+ ],
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1
+  }
+ ]
+}

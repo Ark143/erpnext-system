@@ -1,0 +1,47 @@
+{
+ "doctype": "DocType",
+ "name": "Vehicle Model",
+ "module": "Vehicle Management",
+ "custom": 0,
+ "is_submittable": 0,
+ "istable": 0,
+ "editable_grid": 0,
+ "track_changes": 1,
+ "engine": "InnoDB",
+ "autoname": "format:{make}-{model_name}",
+ "naming_rule": null,
+ "search_fields": null,
+ "title_field": null,
+ "fields": [
+  {
+   "fieldname": "make",
+   "fieldtype": "Link",
+   "options": "Vehicle Make",
+   "label": "Make",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "model_name",
+   "fieldtype": "Data",
+   "label": "Model Name",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "category",
+   "fieldtype": "Select",
+   "options": "Sedan\nSUV\nPickup\nHatchback\nCoupe\nVan\nTruck\nMotorcycle\nOther",
+   "label": "Body Type"
+  }
+ ],
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1
+  }
+ ]
+}

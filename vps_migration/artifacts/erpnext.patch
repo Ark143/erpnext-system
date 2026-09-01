@@ -1,0 +1,1016 @@
+diff --git a/erpnext/accounts/doctype/budget/budget.py b/erpnext/accounts/doctype/budget/budget.py
+old mode 100644
+new mode 100755
+index d5f939a..999664b
+--- a/erpnext/accounts/doctype/budget/budget.py
++++ b/erpnext/accounts/doctype/budget/budget.py
+@@ -679,7 +679,7 @@ def get_requested_amount(params):
+ 	condition = get_other_condition(params, "Material Request")
+ 
+ 	data = frappe.db.sql(
+-		""" select ifnull((sum(child.stock_qty - child.ordered_qty) * rate), 0) as amount
++		""" select coalesce((sum(child.stock_qty - child.ordered_qty) * rate), 0) as amount
+ 		from `tabMaterial Request Item` child, `tabMaterial Request` parent where parent.name = child.parent and
+ 		child.item_code = %s and parent.docstatus = 1 and child.stock_qty > child.ordered_qty and {} and
+ 		parent.material_request_type = 'Purchase' and parent.status != 'Stopped'""".format(condition),
+@@ -695,7 +695,7 @@ def get_ordered_amount(params):
+ 	condition = get_other_condition(params, "Purchase Order")
+ 
+ 	data = frappe.db.sql(
+-		f""" select ifnull(sum(child.amount - child.billed_amt), 0) as amount
++		f""" select coalesce(sum(child.amount - child.billed_amt), 0) as amount
+ 		from `tabPurchase Order Item` child, `tabPurchase Order` parent where
+ 		parent.name = child.parent and child.item_code = %s and parent.docstatus = 1 and child.amount > child.billed_amt
+ 		and parent.status != 'Closed' and {condition}""",
+diff --git a/erpnext/accounts/doctype/loyalty_program/test_loyalty_program.py b/erpnext/accounts/doctype/loyalty_program/test_loyalty_program.py
+old mode 100644
+new mode 100755
+diff --git a/erpnext/accounts/doctype/payment_entry/payment_entry.py b/erpnext/accounts/doctype/payment_entry/payment_entry.py
+index 7b2911b..efbeca9 100644
+--- a/erpnext/accounts/doctype/payment_entry/payment_entry.py
++++ b/erpnext/accounts/doctype/payment_entry/payment_entry.py
+@@ -2597,8 +2597,8 @@ def get_orders_to_be_billed(
+ 		"""
+ 		select
+ 			name as voucher_no,
+-			if({rounded_total_field}, {rounded_total_field}, {grand_total_field}) as invoice_amount,
+-			(if({rounded_total_field}, {rounded_total_field}, {grand_total_field}) - advance_paid) as outstanding_amount,
++			case when {rounded_total_field} then {rounded_total_field} else {grand_total_field} end as invoice_amount,
++			(case when {rounded_total_field} then {rounded_total_field} else {grand_total_field} end - advance_paid) as outstanding_amount,
+ 			transaction_date as posting_date
+ 		from
+ 			`tab{voucher_type}`
+@@ -2607,7 +2607,7 @@ def get_orders_to_be_billed(
+ 			and docstatus = 1
+ 			and company = %s
+ 			and status != "Closed"
+-			and if({rounded_total_field}, {rounded_total_field}, {grand_total_field}) > advance_paid
++			and case when {rounded_total_field} then {rounded_total_field} else {grand_total_field} end > advance_paid
+ 			and abs(100 - per_billed) > 0.01
+ 			{condition}
+ 		order by
+@@ -2674,7 +2674,7 @@ def get_negative_outstanding_invoices(
+ 		"""
+ 		select
+ 			"{voucher_type}" as voucher_type, name as voucher_no, {account} as account,
+-			if({rounded_total_field}, {rounded_total_field}, {grand_total_field}) as invoice_amount,
++			case when {rounded_total_field} then {rounded_total_field} else {grand_total_field} end as invoice_amount,
+ 			outstanding_amount, posting_date,
+ 			due_date, conversion_rate as exchange_rate
+ 		from
+diff --git a/erpnext/accounts/doctype/pos_closing_entry/pos_closing_entry.py b/erpnext/accounts/doctype/pos_closing_entry/pos_closing_entry.py
+index 7b2b9e9..b709ac0 100644
+--- a/erpnext/accounts/doctype/pos_closing_entry/pos_closing_entry.py
++++ b/erpnext/accounts/doctype/pos_closing_entry/pos_closing_entry.py
+@@ -291,7 +291,7 @@ def get_payments(invoices):
+ 			(SalesInvoicePayment.parenttype.isin(["Sales Invoice", "POS Invoice"]))
+ 			& (SalesInvoicePayment.parent.isin(invoices_name))
+ 		)
+-		.groupby(SalesInvoicePayment.mode_of_payment)
++		.groupby(SalesInvoicePayment.mode_of_payment, SalesInvoicePayment.account)
+ 		.select(
+ 			SalesInvoicePayment.mode_of_payment,
+ 			SalesInvoicePayment.account,
+@@ -418,7 +418,7 @@ def build_invoice_query(invoice_doctype, user, pos_profile, start, end):
+ 			InvoiceDocType.account_for_change_amount,
+ 			InvoiceDocType.is_return,
+ 			InvoiceDocType.return_against,
+-			fn.Timestamp(InvoiceDocType.posting_date, InvoiceDocType.posting_time).as_("timestamp"),
++			fn.CombineDatetime(InvoiceDocType.posting_date, InvoiceDocType.posting_time).as_("timestamp"),
+ 			ConstantColumn(invoice_doctype).as_("doctype"),
+ 		)
+ 		.where(
+@@ -427,8 +427,8 @@ def build_invoice_query(invoice_doctype, user, pos_profile, start, end):
+ 			& (InvoiceDocType.is_pos == 1)
+ 			& (InvoiceDocType.pos_profile == pos_profile)
+ 			& (
+-				(fn.Timestamp(InvoiceDocType.posting_date, InvoiceDocType.posting_time) >= start)
+-				& (fn.Timestamp(InvoiceDocType.posting_date, InvoiceDocType.posting_time) <= end)
++				(fn.CombineDatetime(InvoiceDocType.posting_date, InvoiceDocType.posting_time) >= start)
++				& (fn.CombineDatetime(InvoiceDocType.posting_date, InvoiceDocType.posting_time) <= end)
+ 			)
+ 		)
+ 	)
+diff --git a/erpnext/accounts/doctype/pos_profile/pos_profile.py b/erpnext/accounts/doctype/pos_profile/pos_profile.py
+old mode 100644
+new mode 100755
+index beaee30..b43d951
+--- a/erpnext/accounts/doctype/pos_profile/pos_profile.py
++++ b/erpnext/accounts/doctype/pos_profile/pos_profile.py
+@@ -309,7 +309,7 @@ def pos_profile_query(doctype, txt, searchfield, start, page_len, filters):
+ 			on
+ 				pf.name = pfu.parent
+ 			where
+-				ifnull(pfu.user, '') = ''
++				coalesce(pfu.user, '') = ''
+ 				and pf.company = %(company)s
+ 				and pf.name like %(txt)s
+ 				and pf.disabled = 0""",
+diff --git a/erpnext/accounts/doctype/sales_invoice/sales_invoice.py b/erpnext/accounts/doctype/sales_invoice/sales_invoice.py
+old mode 100644
+new mode 100755
+index d206ec0..a964e64
+--- a/erpnext/accounts/doctype/sales_invoice/sales_invoice.py
++++ b/erpnext/accounts/doctype/sales_invoice/sales_invoice.py
+@@ -1419,7 +1419,7 @@ class SalesInvoice(SellingController):
+ 	def get_warehouse(self):
+ 		user_pos_profile = frappe.db.sql(
+ 			"""select name, warehouse from `tabPOS Profile`
+-			where ifnull(user,'') = %s and company = %s""",
++			where coalesce(user,'') = %s and company = %s""",
+ 			(frappe.session["user"], self.company),
+ 		)
+ 		warehouse = user_pos_profile[0][1] if user_pos_profile else None
+diff --git a/erpnext/accounts/general_ledger.py b/erpnext/accounts/general_ledger.py
+index a4018f5..71b7926 100644
+--- a/erpnext/accounts/general_ledger.py
++++ b/erpnext/accounts/general_ledger.py
+@@ -842,7 +842,7 @@ def validate_against_pcv(is_opening, posting_date, company):
+ 		validate_opening_entry_against_pcv(company)
+ 
+ 	last_pcv_date = frappe.db.get_value(
+-		"Period Closing Voucher", {"docstatus": 1, "company": company}, [{"MAX": "period_end_date"}]
++		"Period Closing Voucher", {"docstatus": 1, "company": company}, "period_end_date", order_by="period_end_date desc"
+ 	)
+ 
+ 	if last_pcv_date and getdate(posting_date) <= getdate(last_pcv_date):
+diff --git a/erpnext/accounts/report/asset_depreciation_ledger/asset_depreciation_ledger.py b/erpnext/accounts/report/asset_depreciation_ledger/asset_depreciation_ledger.py
+old mode 100644
+new mode 100755
+index ed132d9..79ff29d
+--- a/erpnext/accounts/report/asset_depreciation_ledger/asset_depreciation_ledger.py
++++ b/erpnext/accounts/report/asset_depreciation_ledger/asset_depreciation_ledger.py
+@@ -17,7 +17,7 @@ def get_data(filters):
+ 	data = []
+ 	depreciation_accounts = frappe.db.sql_list(
+ 		""" select name from tabAccount
+-		where ifnull(account_type, '') = 'Depreciation' """
++		where coalesce(account_type, '') = 'Depreciation' """
+ 	)
+ 
+ 	filters_data = [
+diff --git a/erpnext/accounts/report/cash_flow/cash_flow.py b/erpnext/accounts/report/cash_flow/cash_flow.py
+old mode 100644
+new mode 100755
+index 35e5549..51f351b
+--- a/erpnext/accounts/report/cash_flow/cash_flow.py
++++ b/erpnext/accounts/report/cash_flow/cash_flow.py
+@@ -374,7 +374,7 @@ def get_net_income(company, period_list, filters):
+ 	for root_type in ["Income", "Expense"]:
+ 		for root in frappe.db.sql(
+ 			"""select lft, rgt from tabAccount
+-				where root_type=%s and ifnull(parent_account, '') = ''""",
++				where root_type=%s and coalesce(parent_account, '') = ''""",
+ 			root_type,
+ 			as_dict=1,
+ 		):
+diff --git a/erpnext/accounts/report/consolidated_financial_statement/consolidated_financial_statement.py b/erpnext/accounts/report/consolidated_financial_statement/consolidated_financial_statement.py
+old mode 100644
+new mode 100755
+index cee7822..802a39f
+--- a/erpnext/accounts/report/consolidated_financial_statement/consolidated_financial_statement.py
++++ b/erpnext/accounts/report/consolidated_financial_statement/consolidated_financial_statement.py
+@@ -349,7 +349,7 @@ def get_data(companies, root_type, balance_must_be, fiscal_year, filters=None, i
+ 	gl_entries_by_account = {}
+ 	for root in frappe.db.sql(
+ 		"""select lft, rgt from tabAccount
+-			where root_type=%s and ifnull(parent_account, '') = ''""",
++			where root_type=%s and coalesce(parent_account, '') = ''""",
+ 		root_type,
+ 		as_dict=1,
+ 	):
+diff --git a/erpnext/accounts/report/financial_statements.py b/erpnext/accounts/report/financial_statements.py
+old mode 100644
+new mode 100755
+index 478c603..a56f5ac
+--- a/erpnext/accounts/report/financial_statements.py
++++ b/erpnext/accounts/report/financial_statements.py
+@@ -181,7 +181,7 @@ def get_data(
+ 	gl_entries_by_account = {}
+ 	for root in frappe.db.sql(
+ 		"""select lft, rgt from tabAccount
+-			where root_type=%s and ifnull(parent_account, '') = ''""",
++			where root_type=%s and coalesce(parent_account, '') = ''""",
+ 		root_type,
+ 		as_dict=1,
+ 	):
+@@ -550,7 +550,10 @@ def get_accounting_entries(
+ 		query = query.select(gl_entry.posting_date, gl_entry.is_opening, gl_entry.fiscal_year)
+ 		query = query.where(gl_entry.is_cancelled == 0)
+ 		query = query.where(gl_entry.posting_date <= to_date)
+-		query = query.force_index("posting_date_company_index")
++		# `FORCE INDEX` is MariaDB/MySQL-only syntax; pypika emits it for every dialect,
++		# which is a hard syntax error on PostgreSQL.
++		if frappe.db.db_type == "mariadb":
++			query = query.force_index("posting_date_company_index")
+ 
+ 		if ignore_opening_entries and not ignore_is_opening:
+ 			query = query.where(gl_entry.is_opening == "No")
+diff --git a/erpnext/accounts/report/purchase_register/purchase_register.py b/erpnext/accounts/report/purchase_register/purchase_register.py
+old mode 100644
+new mode 100755
+index a54e4df..af29824
+--- a/erpnext/accounts/report/purchase_register/purchase_register.py
++++ b/erpnext/accounts/report/purchase_register/purchase_register.py
+@@ -345,7 +345,7 @@ def get_account_columns(invoice_list, include_payments):
+ 		unrealized_profit_loss_accounts = frappe.db.sql_list(
+ 			"""SELECT distinct unrealized_profit_loss_account
+ 			from `tabPurchase Invoice` where docstatus = 1 and name in (%s)
+-			and ifnull(unrealized_profit_loss_account, '') != ''
++			and coalesce(unrealized_profit_loss_account, '') != ''
+ 			order by unrealized_profit_loss_account"""
+ 			% ", ".join(["%s"] * len(invoice_list)),
+ 			tuple(inv.name for inv in invoice_list),
+@@ -512,7 +512,7 @@ def get_internal_invoice_map(invoice_list):
+ def get_invoice_tax_map(invoice_list, invoice_expense_map, expense_accounts, include_payments=False):
+ 	tax_details = frappe.db.sql(
+ 		"""
+-		select parent, account_head, case add_deduct_tax when "Add" then sum(base_tax_amount_after_discount_amount)
++		select parent, account_head, case add_deduct_tax when 'Add' then sum(base_tax_amount_after_discount_amount)
+ 		else sum(base_tax_amount_after_discount_amount) * -1 end as tax_amount
+ 		from `tabPurchase Taxes and Charges`
+ 		where parent in (%s) and category in ('Total', 'Valuation and Total')
+diff --git a/erpnext/accounts/report/sales_register/sales_register.py b/erpnext/accounts/report/sales_register/sales_register.py
+old mode 100644
+new mode 100755
+index d789bcd..fb2dcff
+--- a/erpnext/accounts/report/sales_register/sales_register.py
++++ b/erpnext/accounts/report/sales_register/sales_register.py
+@@ -390,7 +390,7 @@ def get_account_columns(invoice_list, include_payments):
+ 			"""SELECT distinct unrealized_profit_loss_account
+ 			from `tabSales Invoice` where docstatus = 1 and name in (%s)
+ 			and is_internal_customer = 1
+-			and ifnull(unrealized_profit_loss_account, '') != ''
++			and coalesce(unrealized_profit_loss_account, '') != ''
+ 			order by unrealized_profit_loss_account"""
+ 			% ", ".join(["%s"] * len(invoice_list)),
+ 			tuple(inv.name for inv in invoice_list),
+diff --git a/erpnext/accounts/utils.py b/erpnext/accounts/utils.py
+index c5feb86..aabe078 100644
+--- a/erpnext/accounts/utils.py
++++ b/erpnext/accounts/utils.py
+@@ -2330,7 +2330,7 @@ class QueryPaymentLedger:
+ 				.where(Criterion.all(self.common_filter))
+ 				.where(Criterion.all(self.dimensions_filter))
+ 				.where(Criterion.all(self.voucher_posting_date))
+-				.groupby(ple.against_voucher_type, ple.against_voucher_no, ple.party_type, ple.party)
++				.groupby(ple.account, ple.against_voucher_type, ple.against_voucher_no, ple.party_type, ple.party, ple.posting_date, ple.due_date, ple.account_currency)
+ 				.orderby(ple.invoice_date, ple.voucher_no)
+ 				.having(qb.Field("amount_in_account_currency") > 0)
+ 				.limit(self.limit)
+@@ -2364,7 +2364,7 @@ class QueryPaymentLedger:
+ 			.where(Criterion.all(self.common_filter))
+ 			.where(Criterion.all(self.dimensions_filter))
+ 			.where(Criterion.all(self.voucher_posting_date))
+-			.groupby(ple.voucher_type, ple.voucher_no, ple.party_type, ple.party)
++			.groupby(ple.account, ple.voucher_type, ple.voucher_no, ple.party_type, ple.party, ple.posting_date, ple.due_date, ple.account_currency, ple.cost_center, ple.remarks)
+ 		)
+ 
+ 		# build query for voucher outstanding
+@@ -2385,7 +2385,7 @@ class QueryPaymentLedger:
+ 			.where(ple.delinked == 0)
+ 			.where(Criterion.all(filter_on_against_voucher_no))
+ 			.where(Criterion.all(self.common_filter))
+-			.groupby(ple.against_voucher_type, ple.against_voucher_no, ple.party_type, ple.party)
++			.groupby(ple.account, ple.against_voucher_type, ple.against_voucher_no, ple.party_type, ple.party, ple.posting_date, ple.due_date, ple.account_currency)
+ 		)
+ 
+ 		# build CTE for combining voucher amount and outstanding
+diff --git a/erpnext/assets/doctype/asset/asset.py b/erpnext/assets/doctype/asset/asset.py
+index 0c677b8..b1cee17 100644
+--- a/erpnext/assets/doctype/asset/asset.py
++++ b/erpnext/assets/doctype/asset/asset.py
+@@ -1078,7 +1078,7 @@ def make_post_gl_entry():
+ 		if cint(asset_category.enable_cwip_accounting):
+ 			assets = frappe.db.sql_list(
+ 				""" select name from `tabAsset`
+-				where asset_category = %s and ifnull(booked_fixed_asset, 0) = 0
++				where asset_category = %s and coalesce(booked_fixed_asset, 0) = 0
+ 				and available_for_use_date = %s and docstatus = 1""",
+ 				(asset_category.name, nowdate()),
+ 			)
+diff --git a/erpnext/assets/doctype/location/location.py b/erpnext/assets/doctype/location/location.py
+index 684a158..5ff1bc6 100644
+--- a/erpnext/assets/doctype/location/location.py
++++ b/erpnext/assets/doctype/location/location.py
+@@ -223,7 +223,7 @@ def get_children(doctype, parent=None, location=None, is_root=False):
+ 		from
+ 			`tabLocation` comp
+ 		where
+-			ifnull(parent_location, "")={frappe.db.escape(parent)}
++			coalesce(parent_location, '')={frappe.db.escape(parent)}
+ 		""",
+ 		as_dict=1,
+ 	)
+diff --git a/erpnext/buying/dashboard_chart/purchase_order_trends/purchase_order_trends.json b/erpnext/buying/dashboard_chart/purchase_order_trends/purchase_order_trends.json
+index 751796b..bdd7f08 100644
+--- a/erpnext/buying/dashboard_chart/purchase_order_trends/purchase_order_trends.json
++++ b/erpnext/buying/dashboard_chart/purchase_order_trends/purchase_order_trends.json
+@@ -6,11 +6,11 @@
+  "docstatus": 0,
+  "doctype": "Dashboard Chart",
+  "dynamic_filters_json": "{\"company\":\"frappe.defaults.get_user_default(\\\"Company\\\")\",\"fiscal_year\":\"erpnext.utils.get_fiscal_year()\"}",
+- "filters_json": "{\"period\":\"Monthly\",\"period_based_on\":\"posting_date\",\"based_on\":\"Item\"}",
++ "filters_json": "{\"period\": \"Monthly\", \"period_based_on\": \"posting_date\", \"based_on\": \"Item\", \"company\": \"ULTRA MRF\"}",
+  "idx": 1,
+  "is_public": 1,
+  "is_standard": 1,
+- "modified": "2023-07-19 13:06:42.937941",
++ "modified": "2026-08-30 08:39:54.766928",
+  "modified_by": "Administrator",
+  "module": "Buying",
+  "name": "Purchase Order Trends",
+@@ -18,8 +18,9 @@
+  "owner": "Administrator",
+  "report_name": "Purchase Order Trends",
+  "roles": [],
++ "show_values_over_chart": 0,
+  "timeseries": 0,
+  "type": "Line",
+  "use_report_chart": 1,
+  "y_axis": []
+-}
+\ No newline at end of file
++}
+diff --git a/erpnext/buying/dashboard_chart/top_suppliers/top_suppliers.json b/erpnext/buying/dashboard_chart/top_suppliers/top_suppliers.json
+index f6b9717..6c641b3 100644
+--- a/erpnext/buying/dashboard_chart/top_suppliers/top_suppliers.json
++++ b/erpnext/buying/dashboard_chart/top_suppliers/top_suppliers.json
+@@ -5,11 +5,11 @@
+  "docstatus": 0,
+  "doctype": "Dashboard Chart",
+  "dynamic_filters_json": "{\"company\":\"frappe.defaults.get_user_default(\\\"Company\\\")\",\"fiscal_year\":\"erpnext.utils.get_fiscal_year()\"}",
+- "filters_json": "{\"period\":\"Monthly\",\"period_based_on\":\"posting_date\",\"based_on\":\"Supplier\"}",
++ "filters_json": "{\"period\": \"Monthly\", \"period_based_on\": \"posting_date\", \"based_on\": \"Supplier\", \"company\": \"ULTRA MRF\"}",
+  "idx": 0,
+  "is_public": 1,
+  "is_standard": 1,
+- "modified": "2023-07-19 13:07:41.753556",
++ "modified": "2026-08-30 08:39:54.534207",
+  "modified_by": "Administrator",
+  "module": "Buying",
+  "name": "Top Suppliers",
+@@ -17,8 +17,9 @@
+  "owner": "Administrator",
+  "report_name": "Purchase Receipt Trends",
+  "roles": [],
++ "show_values_over_chart": 0,
+  "timeseries": 0,
+  "type": "Bar",
+  "use_report_chart": 1,
+  "y_axis": []
+-}
+\ No newline at end of file
++}
+diff --git a/erpnext/controllers/queries.py b/erpnext/controllers/queries.py
+index ad8f069..220fada 100644
+--- a/erpnext/controllers/queries.py
++++ b/erpnext/controllers/queries.py
+@@ -48,7 +48,7 @@ def employee_query(
+ 	mcond = "" if ignore_permissions else get_match_cond(doctype)
+ 
+ 	return frappe.db.sql(
+-		"""select {fields} from `tabEmployee`
++		"""select {fields} from "tabEmployee"
+ 		where status in ('Active', 'Suspended')
+ 			and docstatus < 2
+ 			and ({key} like %(txt)s or {search_conditions})
+@@ -67,7 +67,7 @@ def employee_query(
+ 				"search_conditions": search_conditions,
+ 			}
+ 		),
+-		{"txt": "%%%s%%" % txt, "_txt": txt.replace("%", ""), "start": start, "page_len": page_len},
++		{"txt": "%%%s%%" % txt, "_txt": txt.replace("%", ""), "start": cint(start), "page_len": page_len},
+ 	)
+ 
+ 
+@@ -101,9 +101,9 @@ def lead_query(doctype, txt, searchfield, start, page_len, filters):
+ 	searchfields = " or ".join(field + " like %(txt)s" for field in searchfields)
+ 
+ 	return frappe.db.sql(
+-		"""select {fields} from `tabLead`
++		"""select {fields} from "tabLead"
+ 		where docstatus < 2
+-			and ifnull(status, '') != 'Converted'
++			and coalesce(status, '') != 'Converted'
+ 			and ({key} like %(txt)s
+ 				or lead_name like %(txt)s
+ 				or company_name like %(txt)s
+@@ -141,13 +141,13 @@ def tax_account_query(doctype, txt, searchfield, start, page_len, filters):
+ 		accounts = frappe.db.sql(
+ 			f"""
+ 			SELECT name, parent_account
+-			FROM `tabAccount`
+-			WHERE `tabAccount`.docstatus!=2
++			FROM "tabAccount"
++			WHERE "tabAccount".docstatus!=2
+ 				{account_type_condition}
+ 				AND is_group = 0
+ 				AND company = %(company)s
+ 				AND disabled = %(disabled)s
+-				AND (account_currency = %(currency)s or ifnull(account_currency, '') = '')
++				AND (account_currency = %(currency)s or coalesce(account_currency, '') = '')
+ 				AND `{searchfield}` LIKE %(txt)s
+ 				{get_match_cond(doctype)}
+ 			ORDER BY idx DESC, name
+@@ -194,8 +194,7 @@ def item_query(doctype, txt, searchfield, start, page_len, filters, as_dict=Fals
+ 		columns += ", " + ", ".join(extra_searchfields)
+ 
+ 	if "description" in searchfields:
+-		columns += """, if(length(tabItem.description) > 40, \
+-			concat(substr(tabItem.description, 1, 40), "..."), description) as description"""
++		columns += """, case when length("tabItem".description) > 40 then concat(substr("tabItem".description, 1, 40), '...') else "tabItem".description end as description"""
+ 
+ 	searchfields = searchfields + [
+ 		field
+@@ -257,30 +256,29 @@ def item_query(doctype, txt, searchfield, start, page_len, filters, as_dict=Fals
+ 				del filters["supplier"]
+ 		else:
+ 			filters.pop("customer", None)
+-			filters.pop("supplier", None)
++		filters.pop("supplier", None)
+ 
+ 	description_cond = ""
+ 	if frappe.db.estimate_count(doctype) < 50000:
+ 		# scan description only if items are less than 50000
+-		description_cond = "or tabItem.description LIKE %(txt)s"
++		description_cond = "or \"tabItem\".description LIKE %(txt)s"
+ 
+ 	return frappe.db.sql(
+ 		"""select
+-			tabItem.name {columns}
+-		from tabItem
+-		where tabItem.docstatus < 2
+-			and tabItem.disabled=0
+-			and tabItem.has_variants=0
+-			and (tabItem.end_of_life > %(today)s or ifnull(tabItem.end_of_life, '0000-00-00')='0000-00-00')
+-			and ({scond} or tabItem.item_code IN (select parent from `tabItem Barcode` where barcode LIKE %(txt)s)
++			"tabItem".name {columns}
++		from "tabItem"
++		where "tabItem".docstatus < 2
++			and "tabItem".disabled=0
++			and "tabItem".has_variants=0
++			and ("tabItem".end_of_life > %(today)s or coalesce("tabItem".end_of_life, '0001-01-01')='0001-01-01')
++			and ({scond} or "tabItem".item_code IN (select parent from "tabItem Barcode" where barcode LIKE %(txt)s)
+ 				{description_cond})
+ 			{fcond} {mcond}
+ 		order by
+-			if(locate(%(_txt)s, name), locate(%(_txt)s, name), 99999),
+-			if(locate(%(_txt)s, item_name), locate(%(_txt)s, item_name), 99999),
+-			idx desc,
++			case when locate(%(_txt)s, name) > 0 then locate(%(_txt)s, name) else 99999 end,
++			case when locate(%(_txt)s, item_name) > 0 then locate(%(_txt)s, item_name) else 99999 end,
+ 			name, item_name
+-		limit %(start)s, %(page_len)s """.format(
++		limit %(page_len)s offset %(start)s """.format(
+ 			columns=columns,
+ 			scond=searchfields,
+ 			fcond=get_filters_cond(doctype, filters, conditions).replace("%", "%%"),
+@@ -291,15 +289,12 @@ def item_query(doctype, txt, searchfield, start, page_len, filters, as_dict=Fals
+ 			"today": nowdate(),
+ 			"txt": "%%%s%%" % txt,
+ 			"_txt": txt.replace("%", ""),
+-			"start": start,
+-			"page_len": page_len,
++			"start": cint(start),
++			"page_len": cint(page_len),
+ 		},
+ 		as_dict=as_dict,
+ 	)
+ 
+-
+-@frappe.whitelist()
+-@frappe.validate_and_sanitize_search_inputs
+ def bom(doctype, txt, searchfield, start, page_len, filters):
+ 	doctype = "BOM"
+ 	conditions = []
+@@ -307,10 +302,10 @@ def bom(doctype, txt, searchfield, start, page_len, filters):
+ 
+ 	return frappe.db.sql(
+ 		"""select {fields}
+-		from `tabBOM`
+-		where `tabBOM`.docstatus=1
+-			and `tabBOM`.is_active=1
+-			and `tabBOM`.`{key}` like %(txt)s
++		from "tabBOM"
++		where "tabBOM".docstatus=1
++			and "tabBOM".is_active=1
++			and "tabBOM".`{key}` like %(txt)s
+ 			{fcond} {mcond}
+ 		order by
+ 			(case when locate(%(_txt)s, name) > 0 then locate(%(_txt)s, name) else 99999 end),
+@@ -800,14 +795,14 @@ def warehouse_query(doctype, txt, searchfield, start, page_len, filters):
+ 		searchfield = meta.get("title_field")
+ 		warehouse_field = meta.get("title_field")
+ 
+-	query = """select `tabWarehouse`.`{warehouse_field}`,
+-		CONCAT_WS(' : ', 'Actual Qty', ifnull(round(`tabBin`.actual_qty, 2), 0 )) actual_qty
+-		from `tabWarehouse` left join `tabBin`
+-		on `tabBin`.warehouse = `tabWarehouse`.name {bin_conditions}
++	query = """select "tabWarehouse".`{warehouse_field}`,
++		CONCAT_WS(' : ', 'Actual Qty', coalesce(round("tabBin".actual_qty, 2), 0 )) actual_qty
++		from "tabWarehouse" left join "tabBin"
++		on "tabBin".warehouse = "tabWarehouse".name {bin_conditions}
+ 		where
+-			`tabWarehouse`.`{key}` like {txt}
++			"tabWarehouse".`{key}` like {txt}
+ 			{fcond} {mcond}
+-		order by ifnull(`tabBin`.actual_qty, 0) desc, `tabWarehouse`.`{warehouse_field}` asc
++		order by coalesce("tabBin".actual_qty, 0) desc, "tabWarehouse".`{warehouse_field}` asc
+ 		limit
+ 			{page_len} offset {start}
+ 		""".format(
+@@ -837,7 +832,7 @@ def get_doctype_wise_filters(filters):
+ @frappe.whitelist()
+ @frappe.validate_and_sanitize_search_inputs
+ def get_batch_numbers(doctype, txt, searchfield, start, page_len, filters):
+-	query = """select batch_id from `tabBatch`
++	query = """select batch_id from "tabBatch"
+ 			where disabled = 0
+ 			and (expiry_date >= CURRENT_DATE or expiry_date IS NULL)
+ 			and name like {txt}""".format(txt=frappe.db.escape(f"%{txt}%"))
+@@ -872,7 +867,7 @@ def item_manufacturer_query(doctype, txt, searchfield, start, page_len, filters)
+ def get_purchase_receipts(doctype, txt, searchfield, start, page_len, filters):
+ 	query = """
+ 		select pr.name
+-		from `tabPurchase Receipt` pr, `tabPurchase Receipt Item` pritem
++		from "tabPurchase Receipt" pr, "tabPurchase Receipt Item" pritem
+ 		where pr.docstatus = 1 and pritem.parent = pr.name
+ 		and pr.name like {txt}""".format(txt=frappe.db.escape(f"%{txt}%"))
+ 
+@@ -889,7 +884,7 @@ def get_purchase_receipts(doctype, txt, searchfield, start, page_len, filters):
+ def get_purchase_invoices(doctype, txt, searchfield, start, page_len, filters):
+ 	query = """
+ 		select pi.name
+-		from `tabPurchase Invoice` pi, `tabPurchase Invoice Item` piitem
++		from "tabPurchase Invoice" pi, "tabPurchase Invoice Item" piitem
+ 		where pi.docstatus = 1 and piitem.parent = pi.name
+ 		and pi.name like {txt}""".format(txt=frappe.db.escape(f"%{txt}%"))
+ 
+diff --git a/erpnext/controllers/stock_controller.py b/erpnext/controllers/stock_controller.py
+index 32f3550..d27c249 100644
+--- a/erpnext/controllers/stock_controller.py
++++ b/erpnext/controllers/stock_controller.py
+@@ -1215,6 +1215,7 @@ class StockController(AccountsController):
+ 				frappe.qb.from_(lcv_item)
+ 				.select(Sum(lcv_item.applicable_charges), lcv_item.cost_center)
+ 				.where((lcv_item.docstatus == 1) & (lcv_item.receipt_document == self.name))
++					.groupby(lcv_item.cost_center)
+ 			)
+ 
+ 			if self.doctype == "Stock Entry":
+diff --git a/erpnext/controllers/trends.py b/erpnext/controllers/trends.py
+index 76a809c..ce9b203 100644
+--- a/erpnext/controllers/trends.py
++++ b/erpnext/controllers/trends.py
+@@ -1,3 +1,4 @@
++import re
+ # Copyright (c) 2015, Frappe Technologies Pvt. Ltd. and Contributors
+ # License: GNU General Public License v3. See license.txt
+ 
+@@ -10,6 +11,26 @@ import erpnext
+ from erpnext.accounts.utils import get_fiscal_year
+ 
+ 
++
++
++def get_group_by_augmented(query_details, base_group_by):
++	"""PostgreSQL requires all non-aggregated SELECT columns in GROUP BY.
++	MySQL allows loose grouping; augment base group_by with the other
++	bare table.column refs selected in query_details (excluding those that
++	only appear inside aggregate functions like SUM(...))."""
++	agg_cols = set(re.findall(r"(?:SUM|MAX|MIN|AVG|COUNT)\(\s*(?:DISTINCT\s+)?([^)]*)\)", query_details))
++	agg_tokens = set()
++	for a in agg_cols:
++		agg_tokens.update(re.findall(r"t\d+\.\w+", a))
++	all_cols = re.findall(r"t\d+\.\w+", query_details)
++	aug = []
++	for c in all_cols:
++		if c == base_group_by or c in agg_tokens:
++			continue
++		if c not in aug:
++			aug.append(c)
++	return ", ".join([base_group_by] + aug)
++
+ def get_columns(filters, trans):
+ 	validate_filters(filters)
+ 
+@@ -122,6 +143,7 @@ def get_data(filters, conditions):
+ 		else:
+ 			inc = 1
+ 
++		group_by_aug = get_group_by_augmented(query_details, conditions["group_by"])
+ 		data1 = frappe.db.sql(
+ 			""" select {} from `tab{}` t1, `tab{} Item` t2 {}
+ 					where t2.parent = t1.name and t1.company = {} and {} between {} and {} and
+@@ -138,7 +160,7 @@ def get_data(filters, conditions):
+ 				"%s",
+ 				conditions.get("addl_tables_relational_cond"),
+ 				cond,
+-				conditions["group_by"],
++				group_by_aug,
+ 			),
+ 			(filters.get("company"), year_start_date, year_end_date),
+ 			as_list=1,
+@@ -229,7 +251,7 @@ def get_data(filters, conditions):
+ 				"%s",
+ 				cond,
+ 				conditions.get("addl_tables_relational_cond", ""),
+-				conditions["group_by"],
++				get_group_by_augmented(query_details, conditions["group_by"]),
+ 			),
+ 			(filters.get("company"), year_start_date, year_end_date),
+ 			as_list=1,
+@@ -319,8 +341,8 @@ def get_period_wise_columns(bet_dates, period, pwc):
+ 
+ 
+ def get_period_wise_query(bet_dates, trans_date, query_details):
+-	query_details += """SUM(IF(t1.{trans_date} BETWEEN '{sd}' AND '{ed}', t2.stock_qty, NULL)),
+-					SUM(IF(t1.{trans_date} BETWEEN '{sd}' AND '{ed}', t2.base_net_amount, NULL)),
++	query_details += """SUM(CASE WHEN t1.{trans_date} BETWEEN '{sd}' AND '{ed}' THEN t2.stock_qty ELSE NULL END),
++					SUM(CASE WHEN t1.{trans_date} BETWEEN '{sd}' AND '{ed}' THEN t2.base_net_amount ELSE NULL END),
+ 				""".format(
+ 		trans_date=trans_date,
+ 		sd=bet_dates[0],
+diff --git a/erpnext/manufacturing/doctype/job_card/job_card.py b/erpnext/manufacturing/doctype/job_card/job_card.py
+index dbbb2e0..20c6fa9 100644
+--- a/erpnext/manufacturing/doctype/job_card/job_card.py
++++ b/erpnext/manufacturing/doctype/job_card/job_card.py
+@@ -1979,7 +1979,7 @@ def get_job_details(start: str, end: str, filters: str | None = None):
+ 
+ 	job_cards = frappe.db.sql(
+ 		f""" SELECT `tabJob Card`.name, `tabJob Card`.work_order,
+-			`tabJob Card`.status, ifnull(`tabJob Card`.remarks, ''),
++			`tabJob Card`.status, coalesce(`tabJob Card`.remarks, ''),
+ 			min(`tabJob Card Time Log`.from_time) as from_time,
+ 			max(`tabJob Card Time Log`.to_time) as to_time
+ 		FROM `tabJob Card` , `tabJob Card Time Log`
+diff --git a/erpnext/manufacturing/doctype/work_order/work_order.py b/erpnext/manufacturing/doctype/work_order/work_order.py
+index be202be..01d90a9 100644
+--- a/erpnext/manufacturing/doctype/work_order/work_order.py
++++ b/erpnext/manufacturing/doctype/work_order/work_order.py
+@@ -2491,7 +2491,7 @@ def get_item_details(item, project=None, skip_bom_info=False, throw=True):
+ 			include_item_in_manufacturing
+ 		from `tabItem`
+ 		where disabled=0
+-			and (end_of_life is null or end_of_life='0000-00-00' or end_of_life > %s)
++			and (end_of_life is null or end_of_life='0001-01-01' or end_of_life > %s)
+ 			and name=%s
+ 	""",
+ 		(nowdate(), item),
+diff --git a/erpnext/projects/doctype/activity_cost/activity_cost.py b/erpnext/projects/doctype/activity_cost/activity_cost.py
+index 257bcc4..2e2977b 100644
+--- a/erpnext/projects/doctype/activity_cost/activity_cost.py
++++ b/erpnext/projects/doctype/activity_cost/activity_cost.py
+@@ -55,7 +55,7 @@ class ActivityCost(Document):
+ 				)
+ 		else:
+ 			if frappe.db.sql(
+-				"""select name from `tabActivity Cost` where ifnull(employee, '')='' and activity_type= %s and name != %s""",
++				"""select name from `tabActivity Cost` where coalesce(employee, '')='' and activity_type= %s and name != %s""",
+ 				(self.activity_type, self.name),
+ 			):
+ 				frappe.throw(
+diff --git a/erpnext/selling/dashboard_chart/sales_order_trends/sales_order_trends.json b/erpnext/selling/dashboard_chart/sales_order_trends/sales_order_trends.json
+index 2f668a8..074a0af 100644
+--- a/erpnext/selling/dashboard_chart/sales_order_trends/sales_order_trends.json
++++ b/erpnext/selling/dashboard_chart/sales_order_trends/sales_order_trends.json
+@@ -6,11 +6,11 @@
+  "docstatus": 0,
+  "doctype": "Dashboard Chart",
+  "dynamic_filters_json": "{\"company\":\"frappe.defaults.get_user_default(\\\"Company\\\")\",\"fiscal_year\":\"erpnext.utils.get_fiscal_year()\"}",
+- "filters_json": "{\"period\":\"Monthly\",\"based_on\":\"Item\"}",
++ "filters_json": "{\"period\": \"Monthly\", \"based_on\": \"Item\", \"company\": \"ULTRA MRF\"}",
+  "idx": 1,
+  "is_public": 1,
+  "is_standard": 1,
+- "modified": "2023-07-19 13:09:45.341791",
++ "modified": "2026-08-30 08:39:54.827783",
+  "modified_by": "Administrator",
+  "module": "Selling",
+  "name": "Sales Order Trends",
+@@ -18,8 +18,9 @@
+  "owner": "Administrator",
+  "report_name": "Sales Order Trends",
+  "roles": [],
++ "show_values_over_chart": 0,
+  "timeseries": 0,
+  "type": "Line",
+  "use_report_chart": 1,
+  "y_axis": []
+-}
+\ No newline at end of file
++}
+diff --git a/erpnext/selling/dashboard_chart/top_customers/top_customers.json b/erpnext/selling/dashboard_chart/top_customers/top_customers.json
+index 2972980..2b75d3c 100644
+--- a/erpnext/selling/dashboard_chart/top_customers/top_customers.json
++++ b/erpnext/selling/dashboard_chart/top_customers/top_customers.json
+@@ -6,11 +6,11 @@
+  "docstatus": 0,
+  "doctype": "Dashboard Chart",
+  "dynamic_filters_json": "{\"company\":\"frappe.defaults.get_user_default(\\\"Company\\\")\",\"fiscal_year\":\"erpnext.utils.get_fiscal_year()\"}",
+- "filters_json": "{\"period\":\"Yearly\",\"based_on\":\"Customer\"}",
++ "filters_json": "{\"period\": \"Yearly\", \"based_on\": \"Customer\", \"company\": \"ULTRA MRF\"}",
+  "idx": 0,
+  "is_public": 1,
+  "is_standard": 1,
+- "modified": "2023-07-19 13:14:20.151502",
++ "modified": "2026-08-30 08:39:54.796366",
+  "modified_by": "Administrator",
+  "module": "Selling",
+  "name": "Top Customers",
+@@ -18,8 +18,9 @@
+  "owner": "Administrator",
+  "report_name": "Delivery Note Trends",
+  "roles": [],
++ "show_values_over_chart": 0,
+  "timeseries": 0,
+  "type": "Bar",
+  "use_report_chart": 1,
+  "y_axis": []
+-}
+\ No newline at end of file
++}
+diff --git a/erpnext/selling/doctype/customer/customer.py b/erpnext/selling/doctype/customer/customer.py
+index 0f77685..b84acac 100644
+--- a/erpnext/selling/doctype/customer/customer.py
++++ b/erpnext/selling/doctype/customer/customer.py
+@@ -849,8 +849,8 @@ def get_customer_outstanding(customer, company, ignore_outstanding_sales_order=F
+ 			dn.name = dn_item.parent
+ 			and dn.customer=%s and dn.company=%s
+ 			and dn.docstatus = 1 and dn.status not in ('Closed', 'Stopped')
+-			and ifnull(dn_item.against_sales_order, '') = ''
+-			and ifnull(dn_item.against_sales_invoice, '') = ''
++			and coalesce(dn_item.against_sales_order, '') = ''
++			and coalesce(dn_item.against_sales_invoice, '') = ''
+ 		""",
+ 		(customer, company),
+ 		as_dict=True,
+diff --git a/erpnext/selling/report/sales_analytics/sales_analytics.py b/erpnext/selling/report/sales_analytics/sales_analytics.py
+index e36690b..f0dfc38 100644
+--- a/erpnext/selling/report/sales_analytics/sales_analytics.py
++++ b/erpnext/selling/report/sales_analytics/sales_analytics.py
+@@ -152,6 +152,10 @@ class Analytics:
+ 		self.columns.append({"label": _("Total"), "fieldname": "total", "fieldtype": "Float", "width": 120})
+ 
+ 	def get_data(self):
++		# Always defined: an unknown / missing tree_type must yield an empty report
++		# instead of an AttributeError in get_chart_data().
++		self.data = []
++
+ 		if self.filters.tree_type in ["Customer", "Supplier"]:
+ 			self.get_sales_transactions_based_on_customers_or_suppliers()
+ 			self.get_rows()
+@@ -529,9 +533,9 @@ class Analytics:
+ 			frappe.throw(_("Invalid Document Type {0}").format(self.filters.doc_type))
+ 
+ 		self.group_entries = frappe.db.sql(
+-			f""" select * from (select "Order Types" as name, 0 as lft,
+-			2 as rgt, '' as parent union select distinct order_type as name, 1 as lft, 1 as rgt, "Order Types" as parent
+-			from `tab{self.filters.doc_type}` where ifnull(order_type, '') != '') as b order by lft, name
++			f""" select * from (select 'Order Types' as name, 0 as lft,
++			2 as rgt, '' as parent union select distinct order_type as name, 1 as lft, 1 as rgt, 'Order Types' as parent
++			from `tab{self.filters.doc_type}` where coalesce(order_type, '') != '') as b order by lft, name
+ 		""",
+ 			as_dict=1,
+ 		)
+diff --git a/erpnext/setup/doctype/company/company.py b/erpnext/setup/doctype/company/company.py
+index e08ac8d..ee3ec7f 100644
+--- a/erpnext/setup/doctype/company/company.py
++++ b/erpnext/setup/doctype/company/company.py
+@@ -943,7 +943,7 @@ def get_children(doctype, parent=None, company=None, is_root=False):
+ 		from
+ 			`tabCompany` comp
+ 		where
+-			ifnull(parent_company, "")={frappe.db.escape(parent)}
++			coalesce(parent_company, '')={frappe.db.escape(parent)}
+ 		""",
+ 		as_dict=1,
+ 	)
+@@ -1049,7 +1049,7 @@ def get_default_company_address(name, sort_key="is_primary_address", existing_ad
+ 			`tabAddress` addr, `tabDynamic Link` dl
+ 		WHERE
+ 			dl.parent = addr.name and dl.link_doctype = 'Company' and
+-			dl.link_name = {} and ifnull(addr.disabled, 0) = 0
++			dl.link_name = {} and coalesce(addr.disabled, 0) = 0
+ 		""".format(sort_key, "%s"),
+ 		(name),
+ 	)  # nosec
+diff --git a/erpnext/startup/boot.py b/erpnext/startup/boot.py
+index ca9fbfc..6deca76 100644
+--- a/erpnext/startup/boot.py
++++ b/erpnext/startup/boot.py
+@@ -57,7 +57,7 @@ def boot_session(bootinfo):
+ 			update={"doctype": ":Company"},
+ 		)
+ 
+-		party_account_types = frappe.db.sql(""" select name, ifnull(account_type, '') from `tabParty Type`""")
++		party_account_types = frappe.db.sql(""" select name, coalesce(account_type, '') from `tabParty Type`""")
+ 		bootinfo.party_account_types = frappe._dict(party_account_types)
+ 		fiscal_year = erpnext.accounts.utils.get_fiscal_years(
+ 			frappe.utils.nowdate(), company=get_user_default("company"), raise_on_missing=False
+diff --git a/erpnext/stock/doctype/delivery_note/delivery_note.py b/erpnext/stock/doctype/delivery_note/delivery_note.py
+index 440eda9..6314236 100644
+--- a/erpnext/stock/doctype/delivery_note/delivery_note.py
++++ b/erpnext/stock/doctype/delivery_note/delivery_note.py
+@@ -399,7 +399,7 @@ class DeliveryNote(SellingController):
+ 			res = frappe.db.sql(
+ 				"""select name from `tabProject`
+ 				where name = %s and (customer = %s or
+-					ifnull(customer,'')='')""",
++					coalesce(customer,'')='')""",
+ 				(self.project, self.customer),
+ 			)
+ 			if not res:
+diff --git a/erpnext/stock/doctype/stock_closing_entry/stock_closing_entry.py b/erpnext/stock/doctype/stock_closing_entry/stock_closing_entry.py
+index 30471ad..335f50a 100644
+--- a/erpnext/stock/doctype/stock_closing_entry/stock_closing_entry.py
++++ b/erpnext/stock/doctype/stock_closing_entry/stock_closing_entry.py
+@@ -27,9 +27,12 @@ def apply_unscoped_filters(filters):
+ 
+ 
+ def get_closing_entry_for_closed_period(company):
+-	closed_upto = frappe.db.get_value(
+-		"Period Closing Voucher", {"docstatus": 1, "company": company}, [{"MAX": "period_end_date"}]
++	res = frappe.db.sql(
++		'SELECT MAX(period_end_date) FROM "tabPeriod Closing Voucher" WHERE docstatus=1 AND company=%s',
++		company,
++		as_list=True,
+ 	)
++	closed_upto = res[0][0] if res else None
+ 	if not closed_upto:
+ 		return None
+ 
+diff --git a/erpnext/stock/doctype/stock_entry/stock_entry.py b/erpnext/stock/doctype/stock_entry/stock_entry.py
+index b8b874a..734fe03 100644
+--- a/erpnext/stock/doctype/stock_entry/stock_entry.py
++++ b/erpnext/stock/doctype/stock_entry/stock_entry.py
+@@ -1536,7 +1536,7 @@ class StockEntry(StockController, SubcontractingInwardController):
+ 				continue
+ 
+ 			# Zero-qty secondary items carry no inventory value; skip rate calculation
+-			if d.secondary_item_type and flt(d.transfer_qty) == 0:
++			if getattr(d, 'secondary_item_type', None) and flt(d.transfer_qty) == 0:
+ 				d.basic_rate = 0.0
+ 				d.basic_amount = 0.0
+ 				continue
+diff --git a/erpnext/stock/doctype/stock_entry_detail/stock_entry_detail.json b/erpnext/stock/doctype/stock_entry_detail/stock_entry_detail.json
+index 1c675ba..9a8c462 100644
+--- a/erpnext/stock/doctype/stock_entry_detail/stock_entry_detail.json
++++ b/erpnext/stock/doctype/stock_entry_detail/stock_entry_detail.json
+@@ -19,7 +19,7 @@
+   "col_break2",
+   "is_finished_item",
+   "is_legacy_scrap_item",
+-  "secondary_item_type",
++  "type",
+   "quality_inspection",
+   "subcontracted_item",
+   "against_fg",
+@@ -84,7 +84,8 @@
+   "column_break_51",
+   "reference_purchase_receipt",
+   "job_card_item",
+-  "bom_secondary_item"
++  "bom_secondary_item",
++  "secondary_item_type"
+  ],
+  "fields": [
+   {
+@@ -570,7 +571,7 @@
+   },
+   {
+    "default": "0",
+-   "depends_on": "eval:!doc.is_legacy_scrap_item && !doc.secondary_item_type",
++   "depends_on": "eval:!doc.is_legacy_scrap_item && !doc.type",
+    "fieldname": "is_finished_item",
+    "fieldtype": "Check",
+    "label": "Is Finished Item",
+@@ -663,11 +664,11 @@
+    "set_only_once": 1
+   },
+   {
+-   "depends_on": "eval:parent.purpose == \"Manufacture\" && doc.t_warehouse && !doc.is_finished_item && !doc.is_legacy_scrap_item",
+    "fieldname": "secondary_item_type",
+-   "fieldtype": "Select",
+-   "label": "Type",
+-   "options": "\nCo-Product\nBy-Product\nScrap\nAdditional Finished Good"
++   "fieldtype": "Data",
++   "hidden": 1,
++   "label": "Secondary Item Type",
++   "read_only": 1
+   },
+   {
+    "fieldname": "bom_secondary_item",
+@@ -683,6 +684,13 @@
+    "fieldtype": "Check",
+    "label": "Is Legacy Scrap Item",
+    "read_only": 1
++  },
++  {
++   "depends_on": "eval:parent.purpose == \"Manufacture\" && doc.t_warehouse && !doc.is_finished_item && !doc.is_legacy_scrap_item",
++   "fieldname": "type",
++   "fieldtype": "Select",
++   "label": "Type",
++   "options": "\nCo-Product\nBy-Product\nScrap\nAdditional Finished Good"
+   }
+  ],
+  "grid_page_length": 50,
+@@ -690,7 +698,7 @@
+  "index_web_pages_for_search": 1,
+  "istable": 1,
+  "links": [],
+- "modified": "2026-08-07 17:31:31.732720",
++ "modified": "2026-08-30 07:34:30.538593",
+  "modified_by": "Administrator",
+  "module": "Stock",
+  "name": "Stock Entry Detail",
+diff --git a/erpnext/stock/doctype/stock_entry_detail/stock_entry_detail.py b/erpnext/stock/doctype/stock_entry_detail/stock_entry_detail.py
+index aeebf02..a7148fd 100644
+--- a/erpnext/stock/doctype/stock_entry_detail/stock_entry_detail.py
++++ b/erpnext/stock/doctype/stock_entry_detail/stock_entry_detail.py
+@@ -59,6 +59,7 @@ class StockEntryDetail(Document):
+ 		sample_quantity: DF.Int
+ 		scio_detail: DF.Data | None
+ 		sco_rm_detail: DF.Data | None
++		secondary_item_type: DF.Data | None
+ 		serial_and_batch_bundle: DF.Link | None
+ 		serial_no: DF.Text | None
+ 		set_basic_rate_manually: DF.Check
+@@ -68,7 +69,7 @@ class StockEntryDetail(Document):
+ 		t_warehouse: DF.Link | None
+ 		transfer_qty: DF.Float
+ 		transferred_qty: DF.Float
+-		secondary_item_type: DF.Literal["", "Co-Product", "By-Product", "Scrap", "Additional Finished Good"]
++		type: DF.Literal["", "Co-Product", "By-Product", "Scrap", "Additional Finished Good"]
+ 		uom: DF.Link
+ 		use_serial_batch_fields: DF.Check
+ 		valuation_rate: DF.Currency
+diff --git a/erpnext/stock/doctype/stock_reconciliation/stock_reconciliation.py b/erpnext/stock/doctype/stock_reconciliation/stock_reconciliation.py
+index 12cda4c..0161489 100644
+--- a/erpnext/stock/doctype/stock_reconciliation/stock_reconciliation.py
++++ b/erpnext/stock/doctype/stock_reconciliation/stock_reconciliation.py
+@@ -1203,7 +1203,7 @@ def get_items_for_stock_reco(warehouse, company):
+ 			`tabBin` bin, `tabItem` i
+ 		where
+ 			i.name = bin.item_code
+-			and IFNULL(i.disabled, 0) = 0
++			and COALESCE(i.disabled, 0) = 0
+ 			and i.is_stock_item = 1
+ 			and i.has_variants = 0
+ 			and exists(
+@@ -1227,7 +1227,7 @@ def get_items_for_stock_reco(warehouse, company):
+ 			)
+ 			and i.is_stock_item = 1
+ 			and i.has_variants = 0
+-			and IFNULL(i.disabled, 0) = 0
++			and COALESCE(i.disabled, 0) = 0
+ 			and id.company = %s
+ 		group by i.name
+ 	""",
+diff --git a/erpnext/stock/stock_balance.py b/erpnext/stock/stock_balance.py
+index f6c3c05..3122fc3 100644
+--- a/erpnext/stock/stock_balance.py
++++ b/erpnext/stock/stock_balance.py
+@@ -97,7 +97,7 @@ def get_reserved_qty(item_code, warehouse):
+ 	reserved_qty = frappe.db.sql(
+ 		f"""
+ 		select
+-			sum(dnpi_qty * ((so_item_qty - so_item_delivered_qty - if(dont_reserve_qty_on_return, so_item_returned_qty, 0)) / so_item_qty))
++			sum(dnpi_qty * ((so_item_qty - so_item_delivered_qty - case when dont_reserve_qty_on_return then so_item_returned_qty else 0 end) / so_item_qty))
+ 		from
+ 			(
+ 				(select
+diff --git a/erpnext/stock/utils.py b/erpnext/stock/utils.py
+index 0e95ba0..29bb3f6 100644
+--- a/erpnext/stock/utils.py
++++ b/erpnext/stock/utils.py
+@@ -47,7 +47,7 @@ def get_stock_value_from_bin(warehouse=None, item_code=None):
+ 
+ 	query = (
+ 		"""select sum(stock_value) from `tabBin`, `tabItem` where 1 = 1
+-		and `tabItem`.name = `tabBin`.item_code and ifnull(`tabItem`.disabled, 0) = 0 %s"""
++		and `tabItem`.name = `tabBin`.item_code and coalesce(`tabItem`.disabled, 0) = 0 %s"""
+ 		% conditions
+ 	)
+ 
+diff --git a/erpnext/utilities/naming.py b/erpnext/utilities/naming.py
+index 84079ef..01f42a4 100644
+--- a/erpnext/utilities/naming.py
++++ b/erpnext/utilities/naming.py
+@@ -22,7 +22,7 @@ def set_by_naming_series(doctype, fieldname, naming_series, hide_name_field=True
+ 		try:
+ 			frappe.db.sql(
+ 				"""update `tab{doctype}` set naming_series={s} where
+-				ifnull(naming_series, '')=''""".format(doctype=doctype, s="%s"),
++				coalesce(naming_series, '')=''""".format(doctype=doctype, s="%s"),
+ 				get_default_naming_series(doctype),
+ 			)
+ 		except NamingSeriesNotSetError:
+@@ -44,5 +44,5 @@ def set_by_naming_series(doctype, fieldname, naming_series, hide_name_field=True
+ 			# set values for mandatory
+ 			frappe.db.sql(
+ 				f"""update `tab{doctype}` set `{fieldname}`=`name` where
+-				ifnull({fieldname}, '')=''"""
++				coalesce({fieldname}, '')=''"""
+ 			)

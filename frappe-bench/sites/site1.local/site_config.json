@@ -1,0 +1,17 @@
+{
+ "db_host": "erp-postgres",
+ "db_name": "site1_local",
+ "db_password": "admin",
+ "db_port": 5432,
+ "db_type": "postgres",
+ "db_user": "postgres",
+ "encryption_key": "KOh8f9bCfA9p56nZNm_1Rbzk86JUAsHuvSihJFc1naA=",
+ "host_name": "http://erp.localhost",
+ "installed_apps": [
+  "frappe",
+  "erpnext",
+  "vehicle_management"
+ ],
+ "server_script_enabled": 1,
+ "socketio_port": 9000
+}

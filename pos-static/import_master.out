@@ -1,0 +1,4 @@
+  Vehicle Make: batch 0 FAIL 409: frappe.exceptions.DuplicateEntryError: ('Vehicle Make', 'Subaru', IntegrityError(1062, "Duplicate entry 'Subaru' for key 'PRIMARY'"))
+DONE Vehicle Make: inserted=0 failed=71
+  Customer Vehicle: batch 0 FAIL 417: frappe.exceptions.LinkValidationError: Could not find Company / Branch: ULTRA MRF, Customer: NELSON L. CASTILLO, Make: Mitsubishi, Model: Mitsubishi-Strada / Triton
+DONE Customer Vehicle: inserted=0 failed=100

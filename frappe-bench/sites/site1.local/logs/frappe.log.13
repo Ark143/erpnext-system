@@ -1,0 +1,1478 @@
+2026-08-23 15:44:09,947 ERROR frappe Failed to capture exception
+Site: site1.local
+Form Dict: {}
+Traceback (most recent call last):
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\sentry.py", line 117, in capture_exception
+    set_scope(scope)
+    ~~~~~~~~~^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\sentry.py", line 70, in set_scope
+    path = frappe.request.path
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\local.py", line 66, in __getattr__
+    return getattr(self._get_current_object(), name)
+                   ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\local.py", line 55, in _get_current_object
+    raise RuntimeError("object is not bound") from None
+RuntimeError: object is not bound
+2026-08-24 00:28:42,022 ERROR frappe Failed to capture exception
+Site: site1.local
+Form Dict: {}
+Traceback (most recent call last):
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\sentry.py", line 117, in capture_exception
+    set_scope(scope)
+    ~~~~~~~~~^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\sentry.py", line 70, in set_scope
+    path = frappe.request.path
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\local.py", line 66, in __getattr__
+    return getattr(self._get_current_object(), name)
+                   ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\local.py", line 55, in _get_current_object
+    raise RuntimeError("object is not bound") from None
+RuntimeError: object is not bound
+2026-08-24 00:28:49,405 ERROR frappe Failed to capture exception
+Site: site1.local
+Form Dict: {}
+Traceback (most recent call last):
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\sentry.py", line 117, in capture_exception
+    set_scope(scope)
+    ~~~~~~~~~^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\sentry.py", line 70, in set_scope
+    path = frappe.request.path
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\local.py", line 66, in __getattr__
+    return getattr(self._get_current_object(), name)
+                   ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\local.py", line 55, in _get_current_object
+    raise RuntimeError("object is not bound") from None
+RuntimeError: object is not bound
+2026-08-24 00:56:08,193 ERROR frappe Could not take error snapshot: current transaction is aborted, commands ignored until end of transaction block
+
+Site: site1.local
+Form Dict: {'doctype': 'Company', 'docname': 'ULTRA MRF', 'title': 'Sales', 'goal_value_field': 'monthly_sales_target', 'goal_total_field': 'total_monthly_sales', 'goal_history_field': 'sales_monthly_history', 'goal_doctype': 'Sales Invoice', 'goal_doctype_link': 'company', 'goal_field': 'base_grand_total', 'date_field': 'posting_date', 'filters': '{"docstatus":1,"is_opening":["!=","Yes"]}', 'aggregation': 'sum', 'cmd': 'frappe.utils.goal.get_monthly_goal_graph_data'}
+Traceback (most recent call last):
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\app.py", line 121, in application
+    response = frappe.api.handle(request)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\api\__init__.py", line 63, in handle
+    data = endpoint(**arguments)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\api\v1.py", line 41, in handle_rpc_call
+    return frappe.handler.handle()
+           ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\handler.py", line 53, in handle
+    data = execute_cmd(cmd)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\handler.py", line 86, in execute_cmd
+    return frappe.call(method, **frappe.form_dict)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\__init__.py", line 1164, in call
+    return fn(*args, **newargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\typing_validations.py", line 36, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\goal.py", line 108, in get_monthly_goal_graph_data
+    month_to_value_dict = get_monthly_results(
+    	goal_doctype, goal_field, date_field, doc_filter, aggregation
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\goal.py", line 48, in get_monthly_results
+    .run()
+     ~~~^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\query_builder\utils.py", line 135, in execute_query
+    result = frappe.local.db.sql(query, params, *args, **kwargs)  # nosemgrep
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\postgres\database.py", line 234, in sql
+    return super().sql(modify_query(query), modify_values(values), *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 272, in sql
+    self.execute_query(query, values)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 372, in execute_query
+    return self._cursor.execute(query, values)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+psycopg2.errors.AmbiguousFunction: function sum(unknown) is not unique
+LINE 1: ...CT TO_CHAR("posting_date",'MM-YYYY') "month_year",sum('base_...
+                                                             ^
+HINT:  Could not choose a best candidate function. You might need to add explicit type casts.
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\error.py", line 175, in log_error_snapshot
+    log_error(title=str(exception), defer_insert=True)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\error.py", line 84, in log_error
+    error_log = frappe.get_doc(
+    	doctype="Error Log",
+    ...<6 lines>...
+    	fingerprint=fingerprint,
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\utils\__init__.py", line 224, in wrapper
+    return func(*args, **kw)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\document.py", line 130, in get_doc
+    return get_doc_from_dict(kwargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\document.py", line 159, in get_doc_from_dict
+    if controller := get_controller(data["doctype"]):
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\base_document.py", line 92, in get_controller
+    site_controllers[doctype] = import_controller(doctype)
+                                ~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\base_document.py", line 103, in import_controller
+    doctype_info = frappe.db.get_value("DocType", doctype, ("module", "custom", "is_tree"), as_dict=True)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 564, in get_value
+    result = self.get_values(
+    	doctype,
+    ...<13 lines>...
+    	wait=wait,
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 680, in get_values
+    out = query.run(as_dict=as_dict, debug=debug, update=update, run=run, pluck=pluck)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\query_builder\utils.py", line 135, in execute_query
+    result = frappe.local.db.sql(query, params, *args, **kwargs)  # nosemgrep
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\postgres\database.py", line 234, in sql
+    return super().sql(modify_query(query), modify_values(values), *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 272, in sql
+    self.execute_query(query, values)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 372, in execute_query
+    return self._cursor.execute(query, values)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+psycopg2.errors.InFailedSqlTransaction: current transaction is aborted, commands ignored until end of transaction block
+
+2026-08-24 00:56:08,193 ERROR frappe Could not take error snapshot: current transaction is aborted, commands ignored until end of transaction block
+
+Site: site1.local
+Form Dict: {'doctype': 'Company', 'docname': 'ULTRA MRF', 'title': 'Sales', 'goal_value_field': 'monthly_sales_target', 'goal_total_field': 'total_monthly_sales', 'goal_history_field': 'sales_monthly_history', 'goal_doctype': 'Sales Invoice', 'goal_doctype_link': 'company', 'goal_field': 'base_grand_total', 'date_field': 'posting_date', 'filters': '{"docstatus":1,"is_opening":["!=","Yes"]}', 'aggregation': 'sum', 'cmd': 'frappe.utils.goal.get_monthly_goal_graph_data'}
+Traceback (most recent call last):
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\app.py", line 121, in application
+    response = frappe.api.handle(request)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\api\__init__.py", line 63, in handle
+    data = endpoint(**arguments)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\api\v1.py", line 41, in handle_rpc_call
+    return frappe.handler.handle()
+           ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\handler.py", line 53, in handle
+    data = execute_cmd(cmd)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\handler.py", line 86, in execute_cmd
+    return frappe.call(method, **frappe.form_dict)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\__init__.py", line 1164, in call
+    return fn(*args, **newargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\typing_validations.py", line 36, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\goal.py", line 108, in get_monthly_goal_graph_data
+    month_to_value_dict = get_monthly_results(
+    	goal_doctype, goal_field, date_field, doc_filter, aggregation
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\goal.py", line 48, in get_monthly_results
+    .run()
+     ~~~^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\query_builder\utils.py", line 135, in execute_query
+    result = frappe.local.db.sql(query, params, *args, **kwargs)  # nosemgrep
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\postgres\database.py", line 234, in sql
+    return super().sql(modify_query(query), modify_values(values), *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 272, in sql
+    self.execute_query(query, values)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 372, in execute_query
+    return self._cursor.execute(query, values)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+psycopg2.errors.AmbiguousFunction: function sum(unknown) is not unique
+LINE 1: ...CT TO_CHAR("posting_date",'MM-YYYY') "month_year",sum('base_...
+                                                             ^
+HINT:  Could not choose a best candidate function. You might need to add explicit type casts.
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\error.py", line 175, in log_error_snapshot
+    log_error(title=str(exception), defer_insert=True)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\error.py", line 84, in log_error
+    error_log = frappe.get_doc(
+    	doctype="Error Log",
+    ...<6 lines>...
+    	fingerprint=fingerprint,
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\utils\__init__.py", line 224, in wrapper
+    return func(*args, **kw)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\document.py", line 130, in get_doc
+    return get_doc_from_dict(kwargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\document.py", line 159, in get_doc_from_dict
+    if controller := get_controller(data["doctype"]):
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\base_document.py", line 92, in get_controller
+    site_controllers[doctype] = import_controller(doctype)
+                                ~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\base_document.py", line 103, in import_controller
+    doctype_info = frappe.db.get_value("DocType", doctype, ("module", "custom", "is_tree"), as_dict=True)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 564, in get_value
+    result = self.get_values(
+    	doctype,
+    ...<13 lines>...
+    	wait=wait,
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 680, in get_values
+    out = query.run(as_dict=as_dict, debug=debug, update=update, run=run, pluck=pluck)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\query_builder\utils.py", line 135, in execute_query
+    result = frappe.local.db.sql(query, params, *args, **kwargs)  # nosemgrep
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\postgres\database.py", line 234, in sql
+    return super().sql(modify_query(query), modify_values(values), *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 272, in sql
+    self.execute_query(query, values)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 372, in execute_query
+    return self._cursor.execute(query, values)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+psycopg2.errors.InFailedSqlTransaction: current transaction is aborted, commands ignored until end of transaction block
+
+2026-08-24 00:56:08,194 ERROR frappe Could not take error snapshot: current transaction is aborted, commands ignored until end of transaction block
+
+Site: site1.local
+Form Dict: {'doctype': 'Company', 'docname': 'ULTRA MRF', 'title': 'Sales', 'goal_value_field': 'monthly_sales_target', 'goal_total_field': 'total_monthly_sales', 'goal_history_field': 'sales_monthly_history', 'goal_doctype': 'Sales Invoice', 'goal_doctype_link': 'company', 'goal_field': 'base_grand_total', 'date_field': 'posting_date', 'filters': '{"docstatus":1,"is_opening":["!=","Yes"]}', 'aggregation': 'sum', 'cmd': 'frappe.utils.goal.get_monthly_goal_graph_data'}
+Traceback (most recent call last):
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\app.py", line 121, in application
+    response = frappe.api.handle(request)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\api\__init__.py", line 63, in handle
+    data = endpoint(**arguments)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\api\v1.py", line 41, in handle_rpc_call
+    return frappe.handler.handle()
+           ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\handler.py", line 53, in handle
+    data = execute_cmd(cmd)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\handler.py", line 86, in execute_cmd
+    return frappe.call(method, **frappe.form_dict)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\__init__.py", line 1164, in call
+    return fn(*args, **newargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\typing_validations.py", line 36, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\goal.py", line 108, in get_monthly_goal_graph_data
+    month_to_value_dict = get_monthly_results(
+    	goal_doctype, goal_field, date_field, doc_filter, aggregation
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\goal.py", line 48, in get_monthly_results
+    .run()
+     ~~~^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\query_builder\utils.py", line 135, in execute_query
+    result = frappe.local.db.sql(query, params, *args, **kwargs)  # nosemgrep
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\postgres\database.py", line 234, in sql
+    return super().sql(modify_query(query), modify_values(values), *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 272, in sql
+    self.execute_query(query, values)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 372, in execute_query
+    return self._cursor.execute(query, values)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+psycopg2.errors.AmbiguousFunction: function sum(unknown) is not unique
+LINE 1: ...CT TO_CHAR("posting_date",'MM-YYYY') "month_year",sum('base_...
+                                                             ^
+HINT:  Could not choose a best candidate function. You might need to add explicit type casts.
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\error.py", line 175, in log_error_snapshot
+    log_error(title=str(exception), defer_insert=True)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\error.py", line 84, in log_error
+    error_log = frappe.get_doc(
+    	doctype="Error Log",
+    ...<6 lines>...
+    	fingerprint=fingerprint,
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\utils\__init__.py", line 224, in wrapper
+    return func(*args, **kw)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\document.py", line 130, in get_doc
+    return get_doc_from_dict(kwargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\document.py", line 159, in get_doc_from_dict
+    if controller := get_controller(data["doctype"]):
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\base_document.py", line 92, in get_controller
+    site_controllers[doctype] = import_controller(doctype)
+                                ~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\base_document.py", line 103, in import_controller
+    doctype_info = frappe.db.get_value("DocType", doctype, ("module", "custom", "is_tree"), as_dict=True)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 564, in get_value
+    result = self.get_values(
+    	doctype,
+    ...<13 lines>...
+    	wait=wait,
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 680, in get_values
+    out = query.run(as_dict=as_dict, debug=debug, update=update, run=run, pluck=pluck)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\query_builder\utils.py", line 135, in execute_query
+    result = frappe.local.db.sql(query, params, *args, **kwargs)  # nosemgrep
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\postgres\database.py", line 234, in sql
+    return super().sql(modify_query(query), modify_values(values), *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 272, in sql
+    self.execute_query(query, values)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 372, in execute_query
+    return self._cursor.execute(query, values)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+psycopg2.errors.InFailedSqlTransaction: current transaction is aborted, commands ignored until end of transaction block
+
+2026-08-24 00:56:08,194 ERROR frappe Could not take error snapshot: current transaction is aborted, commands ignored until end of transaction block
+
+Site: site1.local
+Form Dict: {'doctype': 'Company', 'docname': 'ULTRA MRF', 'title': 'Sales', 'goal_value_field': 'monthly_sales_target', 'goal_total_field': 'total_monthly_sales', 'goal_history_field': 'sales_monthly_history', 'goal_doctype': 'Sales Invoice', 'goal_doctype_link': 'company', 'goal_field': 'base_grand_total', 'date_field': 'posting_date', 'filters': '{"docstatus":1,"is_opening":["!=","Yes"]}', 'aggregation': 'sum', 'cmd': 'frappe.utils.goal.get_monthly_goal_graph_data'}
+Traceback (most recent call last):
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\app.py", line 121, in application
+    response = frappe.api.handle(request)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\api\__init__.py", line 63, in handle
+    data = endpoint(**arguments)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\api\v1.py", line 41, in handle_rpc_call
+    return frappe.handler.handle()
+           ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\handler.py", line 53, in handle
+    data = execute_cmd(cmd)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\handler.py", line 86, in execute_cmd
+    return frappe.call(method, **frappe.form_dict)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\__init__.py", line 1164, in call
+    return fn(*args, **newargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\typing_validations.py", line 36, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\goal.py", line 108, in get_monthly_goal_graph_data
+    month_to_value_dict = get_monthly_results(
+    	goal_doctype, goal_field, date_field, doc_filter, aggregation
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\goal.py", line 48, in get_monthly_results
+    .run()
+     ~~~^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\query_builder\utils.py", line 135, in execute_query
+    result = frappe.local.db.sql(query, params, *args, **kwargs)  # nosemgrep
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\postgres\database.py", line 234, in sql
+    return super().sql(modify_query(query), modify_values(values), *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 272, in sql
+    self.execute_query(query, values)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 372, in execute_query
+    return self._cursor.execute(query, values)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+psycopg2.errors.AmbiguousFunction: function sum(unknown) is not unique
+LINE 1: ...CT TO_CHAR("posting_date",'MM-YYYY') "month_year",sum('base_...
+                                                             ^
+HINT:  Could not choose a best candidate function. You might need to add explicit type casts.
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\error.py", line 175, in log_error_snapshot
+    log_error(title=str(exception), defer_insert=True)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\error.py", line 84, in log_error
+    error_log = frappe.get_doc(
+    	doctype="Error Log",
+    ...<6 lines>...
+    	fingerprint=fingerprint,
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\utils\__init__.py", line 224, in wrapper
+    return func(*args, **kw)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\document.py", line 130, in get_doc
+    return get_doc_from_dict(kwargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\document.py", line 159, in get_doc_from_dict
+    if controller := get_controller(data["doctype"]):
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\base_document.py", line 92, in get_controller
+    site_controllers[doctype] = import_controller(doctype)
+                                ~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\base_document.py", line 103, in import_controller
+    doctype_info = frappe.db.get_value("DocType", doctype, ("module", "custom", "is_tree"), as_dict=True)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 564, in get_value
+    result = self.get_values(
+    	doctype,
+    ...<13 lines>...
+    	wait=wait,
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 680, in get_values
+    out = query.run(as_dict=as_dict, debug=debug, update=update, run=run, pluck=pluck)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\query_builder\utils.py", line 135, in execute_query
+    result = frappe.local.db.sql(query, params, *args, **kwargs)  # nosemgrep
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\postgres\database.py", line 234, in sql
+    return super().sql(modify_query(query), modify_values(values), *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 272, in sql
+    self.execute_query(query, values)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 372, in execute_query
+    return self._cursor.execute(query, values)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+psycopg2.errors.InFailedSqlTransaction: current transaction is aborted, commands ignored until end of transaction block
+
+2026-08-24 00:56:33,640 ERROR frappe Could not take error snapshot: current transaction is aborted, commands ignored until end of transaction block
+
+Site: site1.local
+Form Dict: {'doctype': 'Company', 'name': 'ULTRA MRF', 'items': '["Quotation","Sales Order","Delivery Note","Sales Invoice","Issue","Project"]', 'cmd': 'frappe.desk.notifications.get_open_count'}
+Traceback (most recent call last):
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\app.py", line 121, in application
+    response = frappe.api.handle(request)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\api\__init__.py", line 63, in handle
+    data = endpoint(**arguments)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\api\v1.py", line 41, in handle_rpc_call
+    return frappe.handler.handle()
+           ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\handler.py", line 53, in handle
+    data = execute_cmd(cmd)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\handler.py", line 86, in execute_cmd
+    return frappe.call(method, **frappe.form_dict)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\__init__.py", line 1164, in call
+    return fn(*args, **newargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\typing_validations.py", line 36, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\__init__.py", line 525, in wrapper_fn
+    retval = fn(*args, **get_newargs(fn, kwargs))
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\desk\notifications.py", line 259, in get_open_count
+    return _get_linked_document_counts(doctype, name, items)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\desk\notifications.py", line 310, in _get_linked_document_counts
+    out["timeline_data"] = module.get_timeline_data(doctype, name)
+                           ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\erpnext\erpnext\setup\doctype\company\company.py", line 1033, in get_timeline_data
+    update_transactions_annual_history(name, True)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\erpnext\erpnext\setup\doctype\company\company.py", line 916, in update_transactions_annual_history
+    transactions_history = get_all_transactions_annual_history(company)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\erpnext\erpnext\setup\doctype\company\company.py", line 968, in get_all_transactions_annual_history
+    items = frappe.db.sql(
+    	"""
+    ...<41 lines>...
+    	as_dict=True,
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\postgres\database.py", line 234, in sql
+    return super().sql(modify_query(query), modify_values(values), *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 272, in sql
+    self.execute_query(query, values)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 372, in execute_query
+    return self._cursor.execute(query, values)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+psycopg2.errors.SyntaxError: syntax error at or near "1"
+LINE 36:    transaction_date > date_sub(curdate(), interval 1 year)
+                                                            ^
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\error.py", line 175, in log_error_snapshot
+    log_error(title=str(exception), defer_insert=True)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\error.py", line 84, in log_error
+    error_log = frappe.get_doc(
+    	doctype="Error Log",
+    ...<6 lines>...
+    	fingerprint=fingerprint,
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\utils\__init__.py", line 224, in wrapper
+    return func(*args, **kw)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\document.py", line 130, in get_doc
+    return get_doc_from_dict(kwargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\document.py", line 159, in get_doc_from_dict
+    if controller := get_controller(data["doctype"]):
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\base_document.py", line 92, in get_controller
+    site_controllers[doctype] = import_controller(doctype)
+                                ~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\base_document.py", line 103, in import_controller
+    doctype_info = frappe.db.get_value("DocType", doctype, ("module", "custom", "is_tree"), as_dict=True)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 564, in get_value
+    result = self.get_values(
+    	doctype,
+    ...<13 lines>...
+    	wait=wait,
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 680, in get_values
+    out = query.run(as_dict=as_dict, debug=debug, update=update, run=run, pluck=pluck)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\query_builder\utils.py", line 135, in execute_query
+    result = frappe.local.db.sql(query, params, *args, **kwargs)  # nosemgrep
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\postgres\database.py", line 234, in sql
+    return super().sql(modify_query(query), modify_values(values), *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 272, in sql
+    self.execute_query(query, values)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 372, in execute_query
+    return self._cursor.execute(query, values)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+psycopg2.errors.InFailedSqlTransaction: current transaction is aborted, commands ignored until end of transaction block
+
+2026-08-24 00:56:33,640 ERROR frappe Could not take error snapshot: current transaction is aborted, commands ignored until end of transaction block
+
+Site: site1.local
+Form Dict: {'doctype': 'Company', 'name': 'ULTRA MRF', 'items': '["Quotation","Sales Order","Delivery Note","Sales Invoice","Issue","Project"]', 'cmd': 'frappe.desk.notifications.get_open_count'}
+Traceback (most recent call last):
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\app.py", line 121, in application
+    response = frappe.api.handle(request)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\api\__init__.py", line 63, in handle
+    data = endpoint(**arguments)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\api\v1.py", line 41, in handle_rpc_call
+    return frappe.handler.handle()
+           ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\handler.py", line 53, in handle
+    data = execute_cmd(cmd)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\handler.py", line 86, in execute_cmd
+    return frappe.call(method, **frappe.form_dict)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\__init__.py", line 1164, in call
+    return fn(*args, **newargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\typing_validations.py", line 36, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\__init__.py", line 525, in wrapper_fn
+    retval = fn(*args, **get_newargs(fn, kwargs))
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\desk\notifications.py", line 259, in get_open_count
+    return _get_linked_document_counts(doctype, name, items)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\desk\notifications.py", line 310, in _get_linked_document_counts
+    out["timeline_data"] = module.get_timeline_data(doctype, name)
+                           ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\erpnext\erpnext\setup\doctype\company\company.py", line 1033, in get_timeline_data
+    update_transactions_annual_history(name, True)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\erpnext\erpnext\setup\doctype\company\company.py", line 916, in update_transactions_annual_history
+    transactions_history = get_all_transactions_annual_history(company)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\erpnext\erpnext\setup\doctype\company\company.py", line 968, in get_all_transactions_annual_history
+    items = frappe.db.sql(
+    	"""
+    ...<41 lines>...
+    	as_dict=True,
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\postgres\database.py", line 234, in sql
+    return super().sql(modify_query(query), modify_values(values), *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 272, in sql
+    self.execute_query(query, values)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 372, in execute_query
+    return self._cursor.execute(query, values)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+psycopg2.errors.SyntaxError: syntax error at or near "1"
+LINE 36:    transaction_date > date_sub(curdate(), interval 1 year)
+                                                            ^
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\error.py", line 175, in log_error_snapshot
+    log_error(title=str(exception), defer_insert=True)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\error.py", line 84, in log_error
+    error_log = frappe.get_doc(
+    	doctype="Error Log",
+    ...<6 lines>...
+    	fingerprint=fingerprint,
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\utils\__init__.py", line 224, in wrapper
+    return func(*args, **kw)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\document.py", line 130, in get_doc
+    return get_doc_from_dict(kwargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\document.py", line 159, in get_doc_from_dict
+    if controller := get_controller(data["doctype"]):
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\base_document.py", line 92, in get_controller
+    site_controllers[doctype] = import_controller(doctype)
+                                ~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\base_document.py", line 103, in import_controller
+    doctype_info = frappe.db.get_value("DocType", doctype, ("module", "custom", "is_tree"), as_dict=True)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 564, in get_value
+    result = self.get_values(
+    	doctype,
+    ...<13 lines>...
+    	wait=wait,
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 680, in get_values
+    out = query.run(as_dict=as_dict, debug=debug, update=update, run=run, pluck=pluck)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\query_builder\utils.py", line 135, in execute_query
+    result = frappe.local.db.sql(query, params, *args, **kwargs)  # nosemgrep
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\postgres\database.py", line 234, in sql
+    return super().sql(modify_query(query), modify_values(values), *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 272, in sql
+    self.execute_query(query, values)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 372, in execute_query
+    return self._cursor.execute(query, values)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+psycopg2.errors.InFailedSqlTransaction: current transaction is aborted, commands ignored until end of transaction block
+
+2026-08-24 00:56:33,641 ERROR frappe Could not take error snapshot: current transaction is aborted, commands ignored until end of transaction block
+
+Site: site1.local
+Form Dict: {'doctype': 'Company', 'name': 'ULTRA MRF', 'items': '["Quotation","Sales Order","Delivery Note","Sales Invoice","Issue","Project"]', 'cmd': 'frappe.desk.notifications.get_open_count'}
+Traceback (most recent call last):
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\app.py", line 121, in application
+    response = frappe.api.handle(request)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\api\__init__.py", line 63, in handle
+    data = endpoint(**arguments)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\api\v1.py", line 41, in handle_rpc_call
+    return frappe.handler.handle()
+           ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\handler.py", line 53, in handle
+    data = execute_cmd(cmd)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\handler.py", line 86, in execute_cmd
+    return frappe.call(method, **frappe.form_dict)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\__init__.py", line 1164, in call
+    return fn(*args, **newargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\typing_validations.py", line 36, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\__init__.py", line 525, in wrapper_fn
+    retval = fn(*args, **get_newargs(fn, kwargs))
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\desk\notifications.py", line 259, in get_open_count
+    return _get_linked_document_counts(doctype, name, items)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\desk\notifications.py", line 310, in _get_linked_document_counts
+    out["timeline_data"] = module.get_timeline_data(doctype, name)
+                           ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\erpnext\erpnext\setup\doctype\company\company.py", line 1033, in get_timeline_data
+    update_transactions_annual_history(name, True)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\erpnext\erpnext\setup\doctype\company\company.py", line 916, in update_transactions_annual_history
+    transactions_history = get_all_transactions_annual_history(company)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\erpnext\erpnext\setup\doctype\company\company.py", line 968, in get_all_transactions_annual_history
+    items = frappe.db.sql(
+    	"""
+    ...<41 lines>...
+    	as_dict=True,
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\postgres\database.py", line 234, in sql
+    return super().sql(modify_query(query), modify_values(values), *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 272, in sql
+    self.execute_query(query, values)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 372, in execute_query
+    return self._cursor.execute(query, values)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+psycopg2.errors.SyntaxError: syntax error at or near "1"
+LINE 36:    transaction_date > date_sub(curdate(), interval 1 year)
+                                                            ^
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\error.py", line 175, in log_error_snapshot
+    log_error(title=str(exception), defer_insert=True)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\error.py", line 84, in log_error
+    error_log = frappe.get_doc(
+    	doctype="Error Log",
+    ...<6 lines>...
+    	fingerprint=fingerprint,
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\utils\__init__.py", line 224, in wrapper
+    return func(*args, **kw)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\document.py", line 130, in get_doc
+    return get_doc_from_dict(kwargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\document.py", line 159, in get_doc_from_dict
+    if controller := get_controller(data["doctype"]):
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\base_document.py", line 92, in get_controller
+    site_controllers[doctype] = import_controller(doctype)
+                                ~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\base_document.py", line 103, in import_controller
+    doctype_info = frappe.db.get_value("DocType", doctype, ("module", "custom", "is_tree"), as_dict=True)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 564, in get_value
+    result = self.get_values(
+    	doctype,
+    ...<13 lines>...
+    	wait=wait,
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 680, in get_values
+    out = query.run(as_dict=as_dict, debug=debug, update=update, run=run, pluck=pluck)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\query_builder\utils.py", line 135, in execute_query
+    result = frappe.local.db.sql(query, params, *args, **kwargs)  # nosemgrep
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\postgres\database.py", line 234, in sql
+    return super().sql(modify_query(query), modify_values(values), *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 272, in sql
+    self.execute_query(query, values)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 372, in execute_query
+    return self._cursor.execute(query, values)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+psycopg2.errors.InFailedSqlTransaction: current transaction is aborted, commands ignored until end of transaction block
+
+2026-08-24 00:56:33,641 ERROR frappe Could not take error snapshot: current transaction is aborted, commands ignored until end of transaction block
+
+Site: site1.local
+Form Dict: {'doctype': 'Company', 'name': 'ULTRA MRF', 'items': '["Quotation","Sales Order","Delivery Note","Sales Invoice","Issue","Project"]', 'cmd': 'frappe.desk.notifications.get_open_count'}
+Traceback (most recent call last):
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\app.py", line 121, in application
+    response = frappe.api.handle(request)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\api\__init__.py", line 63, in handle
+    data = endpoint(**arguments)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\api\v1.py", line 41, in handle_rpc_call
+    return frappe.handler.handle()
+           ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\handler.py", line 53, in handle
+    data = execute_cmd(cmd)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\handler.py", line 86, in execute_cmd
+    return frappe.call(method, **frappe.form_dict)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\__init__.py", line 1164, in call
+    return fn(*args, **newargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\typing_validations.py", line 36, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\__init__.py", line 525, in wrapper_fn
+    retval = fn(*args, **get_newargs(fn, kwargs))
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\desk\notifications.py", line 259, in get_open_count
+    return _get_linked_document_counts(doctype, name, items)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\desk\notifications.py", line 310, in _get_linked_document_counts
+    out["timeline_data"] = module.get_timeline_data(doctype, name)
+                           ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\erpnext\erpnext\setup\doctype\company\company.py", line 1033, in get_timeline_data
+    update_transactions_annual_history(name, True)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\erpnext\erpnext\setup\doctype\company\company.py", line 916, in update_transactions_annual_history
+    transactions_history = get_all_transactions_annual_history(company)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\erpnext\erpnext\setup\doctype\company\company.py", line 968, in get_all_transactions_annual_history
+    items = frappe.db.sql(
+    	"""
+    ...<41 lines>...
+    	as_dict=True,
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\postgres\database.py", line 234, in sql
+    return super().sql(modify_query(query), modify_values(values), *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 272, in sql
+    self.execute_query(query, values)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 372, in execute_query
+    return self._cursor.execute(query, values)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+psycopg2.errors.SyntaxError: syntax error at or near "1"
+LINE 36:    transaction_date > date_sub(curdate(), interval 1 year)
+                                                            ^
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\error.py", line 175, in log_error_snapshot
+    log_error(title=str(exception), defer_insert=True)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\error.py", line 84, in log_error
+    error_log = frappe.get_doc(
+    	doctype="Error Log",
+    ...<6 lines>...
+    	fingerprint=fingerprint,
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\utils\__init__.py", line 224, in wrapper
+    return func(*args, **kw)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\document.py", line 130, in get_doc
+    return get_doc_from_dict(kwargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\document.py", line 159, in get_doc_from_dict
+    if controller := get_controller(data["doctype"]):
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\base_document.py", line 92, in get_controller
+    site_controllers[doctype] = import_controller(doctype)
+                                ~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\base_document.py", line 103, in import_controller
+    doctype_info = frappe.db.get_value("DocType", doctype, ("module", "custom", "is_tree"), as_dict=True)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 564, in get_value
+    result = self.get_values(
+    	doctype,
+    ...<13 lines>...
+    	wait=wait,
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 680, in get_values
+    out = query.run(as_dict=as_dict, debug=debug, update=update, run=run, pluck=pluck)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\query_builder\utils.py", line 135, in execute_query
+    result = frappe.local.db.sql(query, params, *args, **kwargs)  # nosemgrep
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\postgres\database.py", line 234, in sql
+    return super().sql(modify_query(query), modify_values(values), *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 272, in sql
+    self.execute_query(query, values)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 372, in execute_query
+    return self._cursor.execute(query, values)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+psycopg2.errors.InFailedSqlTransaction: current transaction is aborted, commands ignored until end of transaction block
+
+2026-08-24 00:56:33,642 ERROR frappe Could not take error snapshot: current transaction is aborted, commands ignored until end of transaction block
+
+Site: site1.local
+Form Dict: {'doctype': 'Company', 'name': 'ULTRA MRF', 'items': '["Quotation","Sales Order","Delivery Note","Sales Invoice","Issue","Project"]', 'cmd': 'frappe.desk.notifications.get_open_count'}
+Traceback (most recent call last):
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\app.py", line 121, in application
+    response = frappe.api.handle(request)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\api\__init__.py", line 63, in handle
+    data = endpoint(**arguments)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\api\v1.py", line 41, in handle_rpc_call
+    return frappe.handler.handle()
+           ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\handler.py", line 53, in handle
+    data = execute_cmd(cmd)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\handler.py", line 86, in execute_cmd
+    return frappe.call(method, **frappe.form_dict)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\__init__.py", line 1164, in call
+    return fn(*args, **newargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\typing_validations.py", line 36, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\__init__.py", line 525, in wrapper_fn
+    retval = fn(*args, **get_newargs(fn, kwargs))
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\desk\notifications.py", line 259, in get_open_count
+    return _get_linked_document_counts(doctype, name, items)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\desk\notifications.py", line 310, in _get_linked_document_counts
+    out["timeline_data"] = module.get_timeline_data(doctype, name)
+                           ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\erpnext\erpnext\setup\doctype\company\company.py", line 1033, in get_timeline_data
+    update_transactions_annual_history(name, True)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\erpnext\erpnext\setup\doctype\company\company.py", line 916, in update_transactions_annual_history
+    transactions_history = get_all_transactions_annual_history(company)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\erpnext\erpnext\setup\doctype\company\company.py", line 968, in get_all_transactions_annual_history
+    items = frappe.db.sql(
+    	"""
+    ...<41 lines>...
+    	as_dict=True,
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\postgres\database.py", line 234, in sql
+    return super().sql(modify_query(query), modify_values(values), *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 272, in sql
+    self.execute_query(query, values)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 372, in execute_query
+    return self._cursor.execute(query, values)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+psycopg2.errors.SyntaxError: syntax error at or near "1"
+LINE 36:    transaction_date > date_sub(curdate(), interval 1 year)
+                                                            ^
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\error.py", line 175, in log_error_snapshot
+    log_error(title=str(exception), defer_insert=True)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\error.py", line 84, in log_error
+    error_log = frappe.get_doc(
+    	doctype="Error Log",
+    ...<6 lines>...
+    	fingerprint=fingerprint,
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\utils\__init__.py", line 224, in wrapper
+    return func(*args, **kw)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\document.py", line 130, in get_doc
+    return get_doc_from_dict(kwargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\document.py", line 159, in get_doc_from_dict
+    if controller := get_controller(data["doctype"]):
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\base_document.py", line 92, in get_controller
+    site_controllers[doctype] = import_controller(doctype)
+                                ~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\base_document.py", line 103, in import_controller
+    doctype_info = frappe.db.get_value("DocType", doctype, ("module", "custom", "is_tree"), as_dict=True)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 564, in get_value
+    result = self.get_values(
+    	doctype,
+    ...<13 lines>...
+    	wait=wait,
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 680, in get_values
+    out = query.run(as_dict=as_dict, debug=debug, update=update, run=run, pluck=pluck)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\query_builder\utils.py", line 135, in execute_query
+    result = frappe.local.db.sql(query, params, *args, **kwargs)  # nosemgrep
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\postgres\database.py", line 234, in sql
+    return super().sql(modify_query(query), modify_values(values), *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 272, in sql
+    self.execute_query(query, values)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 372, in execute_query
+    return self._cursor.execute(query, values)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+psycopg2.errors.InFailedSqlTransaction: current transaction is aborted, commands ignored until end of transaction block
+
+2026-08-24 00:56:33,642 ERROR frappe Could not take error snapshot: current transaction is aborted, commands ignored until end of transaction block
+
+Site: site1.local
+Form Dict: {'doctype': 'Company', 'name': 'ULTRA MRF', 'items': '["Quotation","Sales Order","Delivery Note","Sales Invoice","Issue","Project"]', 'cmd': 'frappe.desk.notifications.get_open_count'}
+Traceback (most recent call last):
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\app.py", line 121, in application
+    response = frappe.api.handle(request)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\api\__init__.py", line 63, in handle
+    data = endpoint(**arguments)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\api\v1.py", line 41, in handle_rpc_call
+    return frappe.handler.handle()
+           ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\handler.py", line 53, in handle
+    data = execute_cmd(cmd)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\handler.py", line 86, in execute_cmd
+    return frappe.call(method, **frappe.form_dict)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\__init__.py", line 1164, in call
+    return fn(*args, **newargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\typing_validations.py", line 36, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\__init__.py", line 525, in wrapper_fn
+    retval = fn(*args, **get_newargs(fn, kwargs))
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\desk\notifications.py", line 259, in get_open_count
+    return _get_linked_document_counts(doctype, name, items)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\desk\notifications.py", line 310, in _get_linked_document_counts
+    out["timeline_data"] = module.get_timeline_data(doctype, name)
+                           ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\erpnext\erpnext\setup\doctype\company\company.py", line 1033, in get_timeline_data
+    update_transactions_annual_history(name, True)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\erpnext\erpnext\setup\doctype\company\company.py", line 916, in update_transactions_annual_history
+    transactions_history = get_all_transactions_annual_history(company)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\erpnext\erpnext\setup\doctype\company\company.py", line 968, in get_all_transactions_annual_history
+    items = frappe.db.sql(
+    	"""
+    ...<41 lines>...
+    	as_dict=True,
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\postgres\database.py", line 234, in sql
+    return super().sql(modify_query(query), modify_values(values), *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 272, in sql
+    self.execute_query(query, values)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 372, in execute_query
+    return self._cursor.execute(query, values)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+psycopg2.errors.SyntaxError: syntax error at or near "1"
+LINE 36:    transaction_date > date_sub(curdate(), interval 1 year)
+                                                            ^
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\error.py", line 175, in log_error_snapshot
+    log_error(title=str(exception), defer_insert=True)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\error.py", line 84, in log_error
+    error_log = frappe.get_doc(
+    	doctype="Error Log",
+    ...<6 lines>...
+    	fingerprint=fingerprint,
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\utils\__init__.py", line 224, in wrapper
+    return func(*args, **kw)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\document.py", line 130, in get_doc
+    return get_doc_from_dict(kwargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\document.py", line 159, in get_doc_from_dict
+    if controller := get_controller(data["doctype"]):
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\base_document.py", line 92, in get_controller
+    site_controllers[doctype] = import_controller(doctype)
+                                ~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\base_document.py", line 103, in import_controller
+    doctype_info = frappe.db.get_value("DocType", doctype, ("module", "custom", "is_tree"), as_dict=True)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 564, in get_value
+    result = self.get_values(
+    	doctype,
+    ...<13 lines>...
+    	wait=wait,
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 680, in get_values
+    out = query.run(as_dict=as_dict, debug=debug, update=update, run=run, pluck=pluck)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\query_builder\utils.py", line 135, in execute_query
+    result = frappe.local.db.sql(query, params, *args, **kwargs)  # nosemgrep
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\postgres\database.py", line 234, in sql
+    return super().sql(modify_query(query), modify_values(values), *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 272, in sql
+    self.execute_query(query, values)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 372, in execute_query
+    return self._cursor.execute(query, values)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+psycopg2.errors.InFailedSqlTransaction: current transaction is aborted, commands ignored until end of transaction block
+
+2026-08-24 00:56:33,644 ERROR frappe Could not take error snapshot: current transaction is aborted, commands ignored until end of transaction block
+
+Site: site1.local
+Form Dict: {'doctype': 'Company', 'name': 'ULTRA MRF', 'items': '["Quotation","Sales Order","Delivery Note","Sales Invoice","Issue","Project"]', 'cmd': 'frappe.desk.notifications.get_open_count'}
+Traceback (most recent call last):
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\app.py", line 121, in application
+    response = frappe.api.handle(request)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\api\__init__.py", line 63, in handle
+    data = endpoint(**arguments)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\api\v1.py", line 41, in handle_rpc_call
+    return frappe.handler.handle()
+           ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\handler.py", line 53, in handle
+    data = execute_cmd(cmd)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\handler.py", line 86, in execute_cmd
+    return frappe.call(method, **frappe.form_dict)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\__init__.py", line 1164, in call
+    return fn(*args, **newargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\typing_validations.py", line 36, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\__init__.py", line 525, in wrapper_fn
+    retval = fn(*args, **get_newargs(fn, kwargs))
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\desk\notifications.py", line 259, in get_open_count
+    return _get_linked_document_counts(doctype, name, items)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\desk\notifications.py", line 310, in _get_linked_document_counts
+    out["timeline_data"] = module.get_timeline_data(doctype, name)
+                           ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\erpnext\erpnext\setup\doctype\company\company.py", line 1033, in get_timeline_data
+    update_transactions_annual_history(name, True)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\erpnext\erpnext\setup\doctype\company\company.py", line 916, in update_transactions_annual_history
+    transactions_history = get_all_transactions_annual_history(company)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\erpnext\erpnext\setup\doctype\company\company.py", line 968, in get_all_transactions_annual_history
+    items = frappe.db.sql(
+    	"""
+    ...<41 lines>...
+    	as_dict=True,
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\postgres\database.py", line 234, in sql
+    return super().sql(modify_query(query), modify_values(values), *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 272, in sql
+    self.execute_query(query, values)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 372, in execute_query
+    return self._cursor.execute(query, values)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+psycopg2.errors.SyntaxError: syntax error at or near "1"
+LINE 36:    transaction_date > date_sub(curdate(), interval 1 year)
+                                                            ^
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\error.py", line 175, in log_error_snapshot
+    log_error(title=str(exception), defer_insert=True)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\error.py", line 84, in log_error
+    error_log = frappe.get_doc(
+    	doctype="Error Log",
+    ...<6 lines>...
+    	fingerprint=fingerprint,
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\utils\__init__.py", line 224, in wrapper
+    return func(*args, **kw)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\document.py", line 130, in get_doc
+    return get_doc_from_dict(kwargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\document.py", line 159, in get_doc_from_dict
+    if controller := get_controller(data["doctype"]):
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\base_document.py", line 92, in get_controller
+    site_controllers[doctype] = import_controller(doctype)
+                                ~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\base_document.py", line 103, in import_controller
+    doctype_info = frappe.db.get_value("DocType", doctype, ("module", "custom", "is_tree"), as_dict=True)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 564, in get_value
+    result = self.get_values(
+    	doctype,
+    ...<13 lines>...
+    	wait=wait,
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 680, in get_values
+    out = query.run(as_dict=as_dict, debug=debug, update=update, run=run, pluck=pluck)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\query_builder\utils.py", line 135, in execute_query
+    result = frappe.local.db.sql(query, params, *args, **kwargs)  # nosemgrep
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\postgres\database.py", line 234, in sql
+    return super().sql(modify_query(query), modify_values(values), *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 272, in sql
+    self.execute_query(query, values)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 372, in execute_query
+    return self._cursor.execute(query, values)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+psycopg2.errors.InFailedSqlTransaction: current transaction is aborted, commands ignored until end of transaction block
+
+2026-08-24 00:56:33,644 ERROR frappe Could not take error snapshot: current transaction is aborted, commands ignored until end of transaction block
+
+Site: site1.local
+Form Dict: {'doctype': 'Company', 'name': 'ULTRA MRF', 'items': '["Quotation","Sales Order","Delivery Note","Sales Invoice","Issue","Project"]', 'cmd': 'frappe.desk.notifications.get_open_count'}
+Traceback (most recent call last):
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\app.py", line 121, in application
+    response = frappe.api.handle(request)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\api\__init__.py", line 63, in handle
+    data = endpoint(**arguments)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\api\v1.py", line 41, in handle_rpc_call
+    return frappe.handler.handle()
+           ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\handler.py", line 53, in handle
+    data = execute_cmd(cmd)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\handler.py", line 86, in execute_cmd
+    return frappe.call(method, **frappe.form_dict)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\__init__.py", line 1164, in call
+    return fn(*args, **newargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\typing_validations.py", line 36, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\__init__.py", line 525, in wrapper_fn
+    retval = fn(*args, **get_newargs(fn, kwargs))
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\desk\notifications.py", line 259, in get_open_count
+    return _get_linked_document_counts(doctype, name, items)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\desk\notifications.py", line 310, in _get_linked_document_counts
+    out["timeline_data"] = module.get_timeline_data(doctype, name)
+                           ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\erpnext\erpnext\setup\doctype\company\company.py", line 1033, in get_timeline_data
+    update_transactions_annual_history(name, True)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\erpnext\erpnext\setup\doctype\company\company.py", line 916, in update_transactions_annual_history
+    transactions_history = get_all_transactions_annual_history(company)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\erpnext\erpnext\setup\doctype\company\company.py", line 968, in get_all_transactions_annual_history
+    items = frappe.db.sql(
+    	"""
+    ...<41 lines>...
+    	as_dict=True,
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\postgres\database.py", line 234, in sql
+    return super().sql(modify_query(query), modify_values(values), *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 272, in sql
+    self.execute_query(query, values)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 372, in execute_query
+    return self._cursor.execute(query, values)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+psycopg2.errors.SyntaxError: syntax error at or near "1"
+LINE 36:    transaction_date > date_sub(curdate(), interval 1 year)
+                                                            ^
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\error.py", line 175, in log_error_snapshot
+    log_error(title=str(exception), defer_insert=True)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\error.py", line 84, in log_error
+    error_log = frappe.get_doc(
+    	doctype="Error Log",
+    ...<6 lines>...
+    	fingerprint=fingerprint,
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\utils\__init__.py", line 224, in wrapper
+    return func(*args, **kw)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\document.py", line 130, in get_doc
+    return get_doc_from_dict(kwargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\document.py", line 159, in get_doc_from_dict
+    if controller := get_controller(data["doctype"]):
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\base_document.py", line 92, in get_controller
+    site_controllers[doctype] = import_controller(doctype)
+                                ~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\base_document.py", line 103, in import_controller
+    doctype_info = frappe.db.get_value("DocType", doctype, ("module", "custom", "is_tree"), as_dict=True)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 564, in get_value
+    result = self.get_values(
+    	doctype,
+    ...<13 lines>...
+    	wait=wait,
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 680, in get_values
+    out = query.run(as_dict=as_dict, debug=debug, update=update, run=run, pluck=pluck)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\query_builder\utils.py", line 135, in execute_query
+    result = frappe.local.db.sql(query, params, *args, **kwargs)  # nosemgrep
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\postgres\database.py", line 234, in sql
+    return super().sql(modify_query(query), modify_values(values), *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 272, in sql
+    self.execute_query(query, values)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 372, in execute_query
+    return self._cursor.execute(query, values)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+psycopg2.errors.InFailedSqlTransaction: current transaction is aborted, commands ignored until end of transaction block
+
+2026-08-24 00:56:33,646 ERROR frappe Could not take error snapshot: current transaction is aborted, commands ignored until end of transaction block
+
+Site: site1.local
+Form Dict: {'doctype': 'Company', 'name': 'ULTRA MRF', 'items': '["Quotation","Sales Order","Delivery Note","Sales Invoice","Issue","Project"]', 'cmd': 'frappe.desk.notifications.get_open_count'}
+Traceback (most recent call last):
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\app.py", line 121, in application
+    response = frappe.api.handle(request)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\api\__init__.py", line 63, in handle
+    data = endpoint(**arguments)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\api\v1.py", line 41, in handle_rpc_call
+    return frappe.handler.handle()
+           ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\handler.py", line 53, in handle
+    data = execute_cmd(cmd)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\handler.py", line 86, in execute_cmd
+    return frappe.call(method, **frappe.form_dict)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\__init__.py", line 1164, in call
+    return fn(*args, **newargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\typing_validations.py", line 36, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\__init__.py", line 525, in wrapper_fn
+    retval = fn(*args, **get_newargs(fn, kwargs))
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\desk\notifications.py", line 259, in get_open_count
+    return _get_linked_document_counts(doctype, name, items)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\desk\notifications.py", line 310, in _get_linked_document_counts
+    out["timeline_data"] = module.get_timeline_data(doctype, name)
+                           ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\erpnext\erpnext\setup\doctype\company\company.py", line 1033, in get_timeline_data
+    update_transactions_annual_history(name, True)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\erpnext\erpnext\setup\doctype\company\company.py", line 916, in update_transactions_annual_history
+    transactions_history = get_all_transactions_annual_history(company)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\erpnext\erpnext\setup\doctype\company\company.py", line 968, in get_all_transactions_annual_history
+    items = frappe.db.sql(
+    	"""
+    ...<41 lines>...
+    	as_dict=True,
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\postgres\database.py", line 234, in sql
+    return super().sql(modify_query(query), modify_values(values), *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 272, in sql
+    self.execute_query(query, values)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 372, in execute_query
+    return self._cursor.execute(query, values)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+psycopg2.errors.SyntaxError: syntax error at or near "1"
+LINE 36:    transaction_date > date_sub(curdate(), interval 1 year)
+                                                            ^
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\error.py", line 175, in log_error_snapshot
+    log_error(title=str(exception), defer_insert=True)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\error.py", line 84, in log_error
+    error_log = frappe.get_doc(
+    	doctype="Error Log",
+    ...<6 lines>...
+    	fingerprint=fingerprint,
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\utils\__init__.py", line 224, in wrapper
+    return func(*args, **kw)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\document.py", line 130, in get_doc
+    return get_doc_from_dict(kwargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\document.py", line 159, in get_doc_from_dict
+    if controller := get_controller(data["doctype"]):
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\base_document.py", line 92, in get_controller
+    site_controllers[doctype] = import_controller(doctype)
+                                ~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\base_document.py", line 103, in import_controller
+    doctype_info = frappe.db.get_value("DocType", doctype, ("module", "custom", "is_tree"), as_dict=True)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 564, in get_value
+    result = self.get_values(
+    	doctype,
+    ...<13 lines>...
+    	wait=wait,
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 680, in get_values
+    out = query.run(as_dict=as_dict, debug=debug, update=update, run=run, pluck=pluck)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\query_builder\utils.py", line 135, in execute_query
+    result = frappe.local.db.sql(query, params, *args, **kwargs)  # nosemgrep
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\postgres\database.py", line 234, in sql
+    return super().sql(modify_query(query), modify_values(values), *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 272, in sql
+    self.execute_query(query, values)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 372, in execute_query
+    return self._cursor.execute(query, values)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+psycopg2.errors.InFailedSqlTransaction: current transaction is aborted, commands ignored until end of transaction block
+
+2026-08-24 00:56:33,646 ERROR frappe Could not take error snapshot: current transaction is aborted, commands ignored until end of transaction block
+
+Site: site1.local
+Form Dict: {'doctype': 'Company', 'name': 'ULTRA MRF', 'items': '["Quotation","Sales Order","Delivery Note","Sales Invoice","Issue","Project"]', 'cmd': 'frappe.desk.notifications.get_open_count'}
+Traceback (most recent call last):
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\app.py", line 121, in application
+    response = frappe.api.handle(request)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\api\__init__.py", line 63, in handle
+    data = endpoint(**arguments)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\api\v1.py", line 41, in handle_rpc_call
+    return frappe.handler.handle()
+           ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\handler.py", line 53, in handle
+    data = execute_cmd(cmd)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\handler.py", line 86, in execute_cmd
+    return frappe.call(method, **frappe.form_dict)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\__init__.py", line 1164, in call
+    return fn(*args, **newargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\typing_validations.py", line 36, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\__init__.py", line 525, in wrapper_fn
+    retval = fn(*args, **get_newargs(fn, kwargs))
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\desk\notifications.py", line 259, in get_open_count
+    return _get_linked_document_counts(doctype, name, items)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\desk\notifications.py", line 310, in _get_linked_document_counts
+    out["timeline_data"] = module.get_timeline_data(doctype, name)
+                           ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\erpnext\erpnext\setup\doctype\company\company.py", line 1033, in get_timeline_data
+    update_transactions_annual_history(name, True)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\erpnext\erpnext\setup\doctype\company\company.py", line 916, in update_transactions_annual_history
+    transactions_history = get_all_transactions_annual_history(company)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\erpnext\erpnext\setup\doctype\company\company.py", line 968, in get_all_transactions_annual_history
+    items = frappe.db.sql(
+    	"""
+    ...<41 lines>...
+    	as_dict=True,
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\postgres\database.py", line 234, in sql
+    return super().sql(modify_query(query), modify_values(values), *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 272, in sql
+    self.execute_query(query, values)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 372, in execute_query
+    return self._cursor.execute(query, values)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+psycopg2.errors.SyntaxError: syntax error at or near "1"
+LINE 36:    transaction_date > date_sub(curdate(), interval 1 year)
+                                                            ^
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\error.py", line 175, in log_error_snapshot
+    log_error(title=str(exception), defer_insert=True)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\error.py", line 84, in log_error
+    error_log = frappe.get_doc(
+    	doctype="Error Log",
+    ...<6 lines>...
+    	fingerprint=fingerprint,
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\utils\__init__.py", line 224, in wrapper
+    return func(*args, **kw)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\document.py", line 130, in get_doc
+    return get_doc_from_dict(kwargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\document.py", line 159, in get_doc_from_dict
+    if controller := get_controller(data["doctype"]):
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\base_document.py", line 92, in get_controller
+    site_controllers[doctype] = import_controller(doctype)
+                                ~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\base_document.py", line 103, in import_controller
+    doctype_info = frappe.db.get_value("DocType", doctype, ("module", "custom", "is_tree"), as_dict=True)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 564, in get_value
+    result = self.get_values(
+    	doctype,
+    ...<13 lines>...
+    	wait=wait,
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 680, in get_values
+    out = query.run(as_dict=as_dict, debug=debug, update=update, run=run, pluck=pluck)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\query_builder\utils.py", line 135, in execute_query
+    result = frappe.local.db.sql(query, params, *args, **kwargs)  # nosemgrep
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\postgres\database.py", line 234, in sql
+    return super().sql(modify_query(query), modify_values(values), *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 272, in sql
+    self.execute_query(query, values)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 372, in execute_query
+    return self._cursor.execute(query, values)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+psycopg2.errors.InFailedSqlTransaction: current transaction is aborted, commands ignored until end of transaction block
+
+2026-08-24 01:00:09,438 ERROR frappe Could not take error snapshot: current transaction is aborted, commands ignored until end of transaction block
+
+Site: site1.local
+Form Dict: {'doctype': 'Company', 'docname': 'ULTRA MRF', 'title': 'Sales', 'goal_value_field': 'monthly_sales_target', 'goal_total_field': 'total_monthly_sales', 'goal_history_field': 'sales_monthly_history', 'goal_doctype': 'Sales Invoice', 'goal_doctype_link': 'company', 'goal_field': 'base_grand_total', 'date_field': 'posting_date', 'filters': '{"docstatus":1,"is_opening":["!=","Yes"]}', 'aggregation': 'sum', 'cmd': 'frappe.utils.goal.get_monthly_goal_graph_data'}
+Traceback (most recent call last):
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\app.py", line 121, in application
+    response = frappe.api.handle(request)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\api\__init__.py", line 63, in handle
+    data = endpoint(**arguments)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\api\v1.py", line 41, in handle_rpc_call
+    return frappe.handler.handle()
+           ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\handler.py", line 53, in handle
+    data = execute_cmd(cmd)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\handler.py", line 86, in execute_cmd
+    return frappe.call(method, **frappe.form_dict)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\__init__.py", line 1164, in call
+    return fn(*args, **newargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\typing_validations.py", line 36, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\goal.py", line 108, in get_monthly_goal_graph_data
+    month_to_value_dict = get_monthly_results(
+    	goal_doctype, goal_field, date_field, doc_filter, aggregation
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\goal.py", line 48, in get_monthly_results
+    .run()
+     ~~~^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\query_builder\utils.py", line 135, in execute_query
+    result = frappe.local.db.sql(query, params, *args, **kwargs)  # nosemgrep
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\postgres\database.py", line 234, in sql
+    return super().sql(modify_query(query), modify_values(values), *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 272, in sql
+    self.execute_query(query, values)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 372, in execute_query
+    return self._cursor.execute(query, values)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+psycopg2.errors.AmbiguousFunction: function sum(unknown) is not unique
+LINE 1: ...CT TO_CHAR("posting_date",'MM-YYYY') "month_year",sum('base_...
+                                                             ^
+HINT:  Could not choose a best candidate function. You might need to add explicit type casts.
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\error.py", line 175, in log_error_snapshot
+    log_error(title=str(exception), defer_insert=True)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\utils\error.py", line 84, in log_error
+    error_log = frappe.get_doc(
+    	doctype="Error Log",
+    ...<6 lines>...
+    	fingerprint=fingerprint,
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\utils\__init__.py", line 224, in wrapper
+    return func(*args, **kw)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\document.py", line 130, in get_doc
+    return get_doc_from_dict(kwargs)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\document.py", line 159, in get_doc_from_dict
+    if controller := get_controller(data["doctype"]):
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\base_document.py", line 92, in get_controller
+    site_controllers[doctype] = import_controller(doctype)
+                                ~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\model\base_document.py", line 103, in import_controller
+    doctype_info = frappe.db.get_value("DocType", doctype, ("module", "custom", "is_tree"), as_dict=True)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 564, in get_value
+    result = self.get_values(
+    	doctype,
+    ...<13 lines>...
+    	wait=wait,
+    )
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 680, in get_values
+    out = query.run(as_dict=as_dict, debug=debug, update=update, run=run, pluck=pluck)
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\query_builder\utils.py", line 135, in execute_query
+    result = frappe.local.db.sql(query, params, *args, **kwargs)  # nosemgrep
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\postgres\database.py", line 234, in sql
+    return super().sql(modify_query(query), modify_values(values), *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 272, in sql
+    self.execute_query(query, values)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\frappe-bench\apps\frappe\frappe\database\database.py", line 372, in execute_query
+    return self._cursor.execute(query, values)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+psycopg2.errors.InFailedSqlTransaction: current transaction is aborted, commands ignored until end of transaction block
+

@@ -1,0 +1,33 @@
+login OK
+
+=== Cost Center: 37 records from Cost_Center.json ===
+  RESULT Cost Center: ok=11 dup=13 linkfail=0 perm=0 err=13
+
+=== Warehouse: 76 records from Warehouse.json ===
+  RESULT Warehouse: ok=11 dup=65 linkfail=0 perm=0 err=0
+
+=== Mode of Payment: 5 records from Mode_of_Payment.json ===
+  RESULT Mode of Payment: ok=1 dup=4 linkfail=0 perm=0 err=0
+
+=== POS Profile: 2 records from POS_Profile.json ===
+  RESULT POS Profile: ok=0 dup=0 linkfail=2 perm=0 err=0
+
+=== Item Group: 33 records from Item_Group.json ===
+  RESULT Item Group: ok=26 dup=6 linkfail=0 perm=0 err=1
+
+=== Customer Group: 5 records from Customer_Group.json ===
+  RESULT Customer Group: ok=0 dup=5 linkfail=0 perm=0 err=0
+
+=== Supplier Group: 8 records from Supplier_Group.json ===
+  RESULT Supplier Group: ok=0 dup=8 linkfail=0 perm=0 err=0
+
+=== Price List: 3 records from Price_List.json ===
+  RESULT Price List: ok=1 dup=2 linkfail=0 perm=0 err=0
+
+=== Vehicle Make: 71 records from Vehicle_Make.json ===
+  RESULT Vehicle Make: ok=0 dup=71 linkfail=0 perm=0 err=0
+
+=== Vehicle Model: 21 records from Vehicle_Model.json ===
+  RESULT Vehicle Model: ok=21 dup=0 linkfail=0 perm=0 err=0
+
+DONE medium doctypes

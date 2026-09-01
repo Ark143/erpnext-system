@@ -1,0 +1,13 @@
+2026-08-23 14:36:50,046 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --version
+2026-08-23 14:37:41,870 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench init --help
+2026-08-23 14:37:51,109 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench init --frappe-branch version-16 --python C:\Users\josem\AppData\Local\Programs\Python\Python311\python.exe --skip-assets --no-procfile --verbose frappe-bench
+2026-08-23 14:37:51,113 ERROR Bench instance already exists at frappe-bench
+2026-08-23 14:39:24,320 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench init --frappe-branch version-16 --python C:\Users\josem\AppData\Local\Programs\Python\Python311\python.exe --skip-assets --no-procfile --verbose frappe-bench
+2026-08-23 14:39:24,323 ERROR Bench instance already exists at frappe-bench
+2026-08-23 14:39:33,602 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench init --frappe-branch version-16 --python C:\Users\josem\AppData\Local\Programs\Python\Python311\python.exe --skip-assets --no-procfile --ignore-exist --verbose frappe-bench
+2026-08-23 14:39:33,610 DEBUG cd frappe-bench && uv venv env --seed --python C:/Users/josem/AppData/Local/Programs/Python/Python311/python.exe
+2026-08-23 14:39:36,908 LOG Getting frappe
+2026-08-23 14:39:36,909 DEBUG cd frappe-bench\apps && git clone https://github.com/frappe/frappe.git --branch version-16 --depth 1 --origin upstream
+2026-08-23 14:39:50,315 LOG Installing frappe
+2026-08-23 14:39:51,419 ERROR There was a problem while creating frappe-bench
+2026-08-23 14:40:04,223 WARNING C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench init --frappe-branch version-16 --python C:\Users\josem\AppData\Local\Programs\Python\Python311\python.exe --skip-assets --no-procfile --ignore-exist --verbose frappe-bench executed with exit code 1

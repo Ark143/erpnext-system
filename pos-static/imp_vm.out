@@ -1,0 +1,4 @@
+Vehicle Make: export=71 existing_on_cloud=0
+  to_insert=71
+  batch 0 FAIL 409: frappe.exceptions.DuplicateEntryError: ('Vehicle Make', 'Subaru', IntegrityError(1062, "Duplicate entry 'Subaru' for key 'PRIMARY'"))
+DONE Vehicle Make: inserted=0 failed=71

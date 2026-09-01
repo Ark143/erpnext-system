@@ -1,0 +1,260 @@
+{
+ "doctype": "DocType",
+ "name": "Customer Vehicle",
+ "module": "Vehicle Management",
+ "custom": 0,
+ "is_submittable": 0,
+ "istable": 0,
+ "editable_grid": 0,
+ "track_changes": 1,
+ "engine": "InnoDB",
+ "autoname": "field:plate_no",
+ "naming_rule": "By fieldname",
+ "search_fields": "customer,customer_name,make,model,vin,contact_no",
+ "title_field": "plate_no",
+ "fields": [
+  {
+   "fieldname": "tab_details",
+   "fieldtype": "Tab Break",
+   "label": "Vehicle Details"
+  },
+  {
+   "fieldname": "sec_id",
+   "fieldtype": "Section Break",
+   "label": "Identification & Ownership"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "options": "Company",
+   "label": "Company / Branch",
+   "default": "ULTRA MRF",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "plate_no",
+   "fieldtype": "Data",
+   "label": "Plate No / Conduction Sticker",
+   "reqd": 1,
+   "unique": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "options": "Customer",
+   "label": "Customer",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "label": "Customer Name",
+   "fetch_from": "customer.customer_name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "col_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "contact_no",
+   "fieldtype": "Data",
+   "label": "Contact No",
+   "fetch_from": "customer.mobile_no",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "label": "Email",
+   "fetch_from": "customer.email_id"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "options": "Active\nIn Service\nInactive",
+   "default": "Active",
+   "label": "Status"
+  },
+  {
+   "fieldname": "sec_specs",
+   "fieldtype": "Section Break",
+   "label": "Vehicle Specifications"
+  },
+  {
+   "fieldname": "make",
+   "fieldtype": "Link",
+   "options": "Vehicle Make",
+   "label": "Make",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "model",
+   "fieldtype": "Link",
+   "options": "Vehicle Model",
+   "label": "Model",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "year_model",
+   "fieldtype": "Int",
+   "label": "Year Model"
+  },
+  {
+   "fieldname": "color",
+   "fieldtype": "Data",
+   "label": "Color"
+  },
+  {
+   "fieldname": "col_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "vin",
+   "fieldtype": "Data",
+   "label": "VIN / Chassis No",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "engine_no",
+   "fieldtype": "Data",
+   "label": "Engine No"
+  },
+  {
+   "fieldname": "transmission",
+   "fieldtype": "Select",
+   "options": "Automatic\nManual\nCVT\nDual Clutch\nEV / Single Speed",
+   "label": "Transmission"
+  },
+  {
+   "fieldname": "cylinders",
+   "fieldtype": "Int",
+   "label": "Cylinders",
+   "default": "4"
+  },
+  {
+   "fieldname": "fuel_type",
+   "fieldtype": "Select",
+   "options": "Gasoline\nDiesel\nHybrid\nElectric",
+   "default": "Gasoline",
+   "label": "Fuel Type"
+  },
+  {
+   "fieldname": "sec_mileage",
+   "fieldtype": "Section Break",
+   "label": "Mileage & Service Info"
+  },
+  {
+   "fieldname": "current_mileage",
+   "fieldtype": "Float",
+   "label": "Current Odometer Reading"
+  },
+  {
+   "fieldname": "mileage_unit",
+   "fieldtype": "Select",
+   "options": "km\nmi",
+   "default": "km",
+   "label": "Mileage Unit"
+  },
+  {
+   "fieldname": "last_service_date",
+   "fieldtype": "Date",
+   "label": "Last Service Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "col_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "registration_type",
+   "fieldtype": "Select",
+   "options": "Private\nCommercial\nGovernment",
+   "default": "Private",
+   "label": "Registration Type"
+  },
+  {
+   "fieldname": "insurance_company",
+   "fieldtype": "Data",
+   "label": "Insurance Provider"
+  },
+  {
+   "fieldname": "insurance_expiry_date",
+   "fieldtype": "Date",
+   "label": "Insurance Expiry Date"
+  },
+  {
+   "fieldname": "sec_notes",
+   "fieldtype": "Section Break",
+   "label": "Notes & Remarks"
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Small Text",
+   "label": "Notes / Special Instructions"
+  },
+  {
+   "fieldname": "tab_history",
+   "fieldtype": "Tab Break",
+   "label": "Transaction & Service History"
+  },
+  {
+   "fieldname": "sec_history_summary",
+   "fieldtype": "Section Break",
+   "label": "Vehicle Lifetime Overview"
+  },
+  {
+   "fieldname": "total_spent",
+   "fieldtype": "Currency",
+   "label": "Lifetime Invoiced (PHP)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_visits",
+   "fieldtype": "Int",
+   "label": "Total Service Visits",
+   "read_only": 1
+  },
+  {
+   "fieldname": "col_history_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "unpaid_balance",
+   "fieldtype": "Currency",
+   "label": "Outstanding Balance (PHP)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "latest_odometer",
+   "fieldtype": "Float",
+   "label": "Latest Recorded Mileage",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sec_history_table",
+   "fieldtype": "Section Break",
+   "label": "All Related Transactions"
+  },
+  {
+   "fieldname": "transaction_history_html",
+   "fieldtype": "HTML",
+   "label": "Transaction History Log"
+  }
+ ],
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1
+  }
+ ]
+}

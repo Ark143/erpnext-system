@@ -1,0 +1,4 @@
+FAIL vehicle_estimate: 417 frappe.core.doctype.doctype.doctype.WrongOptionsDoctypeLinkError: Vehicle Estimate: Options must be a valid DocType for field Converted Vehicle Job Order in row
+FAIL vehicle_job_order: 417 frappe.core.doctype.doctype.doctype.WrongOptionsDoctypeLinkError: Vehicle Job Order: Options must be a valid DocType for field Original Estimate / Quotation in 
+OK Cashier Profile: 200 
+DONE

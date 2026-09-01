@@ -1,0 +1,52 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-08-24 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "brand_or_oem",
+  "part_number",
+  "reference_type",
+  "remarks"
+ ],
+ "fields": [
+  {
+   "fieldname": "brand_or_oem",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Brand / OEM Manufacturer",
+   "reqd": 1
+  },
+  {
+   "fieldname": "part_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Part Number / Interchange Code",
+   "reqd": 1
+  },
+  {
+   "default": "OEM Genuine",
+   "fieldname": "reference_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Reference Type",
+   "options": "OEM Genuine\nAftermarket Equivalent\nInterchangeable\nSuperseded"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Remarks"
+  }
+ ],
+ "istable": 1,
+ "module": "Vehicle Management",
+ "name": "Item Part Cross Reference",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

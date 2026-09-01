@@ -1,0 +1,161 @@
+.vpos-keypad { position: fixed; inset: 0; background: rgba(8,20,18,.6); display: none; align-items: center; justify-content: center; z-index: 1100; padding: 16px; }
+.vpos-keypad.open { display: flex; }
+.vpos-kp-box { background: #fff; border-radius: 24px; padding: 22px; width: 320px; max-width: 100%; box-shadow: 0 24px 60px rgba(0,0,0,.4); }
+.vpos-kp-val { font-family: var(--font-head); font-weight: 800; font-size: 32px; text-align: right; color: var(--ink); padding: 10px 14px; background: #eef7f3; border-radius: 14px; margin-bottom: 14px; overflow: hidden; }
+.vpos-kp-keys { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.vpos-kp-keys button { height: 56px; border: 1.5px solid var(--line); background: #fbfdfc; border-radius: 14px; font-size: 20px; font-weight: 800; cursor: pointer; font-family: var(--font-head); touch-action: manipulation; transition: background .12s; }
+.vpos-kp-keys button:active { background: #eef7f3; border-color: var(--mint); }
+.vpos-kp-actions { display: flex; gap: 10px; margin-top: 14px; }
+.vpos-kp-clr { flex: 1; height: 48px; border: 1.5px solid var(--line); background: #fff; border-radius: 14px; font-weight: 700; cursor: pointer; font-size: 14px; }
+.vpos-kp-ok { flex: 1; height: 48px; border: none; background: var(--mint); color: #04201a; border-radius: 14px; font-weight: 800; font-size: 16px; cursor: pointer; font-family: var(--font-head); }
+
+/* History & Profile Screens */
+.vpos-hist { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; margin-bottom: 12px; cursor: pointer; }
+.vpos-hist-top { display: flex; justify-content: space-between; font-family: var(--font-head); font-weight: 700; color: var(--ink); font-size: 14px; }
+.vpos-hist-sub { color: var(--muted); font-size: 12px; margin: 4px 0; font-weight: 500; }
+.vpos-hist-foot { display: flex; justify-content: space-between; font-weight: 700; color: var(--mint-d); margin-top: 6px; font-size: 13.5px; }
+
+.vpos-prof { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 10px 0 30px; }
+.vpos-prof-card { background: #fff; border: 1px solid var(--line); border-radius: 22px; padding: 24px; width: 340px; max-width: 100%; text-align: center; box-shadow: 0 8px 24px rgba(0,0,0,.06); }
+.vpos-prof-logo { width: 50px; height: 50px; border-radius: 14px; background: var(--mint); color: #04201a; font-family: var(--font-head); font-weight: 800; font-size: 26px; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; }
+.vpos-prof-card h3 { font-family: var(--font-head); margin: 4px 0 14px; color: var(--ink); font-size: 18px; }
+.vpos-prof-row { display: flex; justify-content: space-between; font-size: 13px; padding: 7px 0; border-bottom: 1px dashed var(--line); }
+.vpos-prof-qr { margin: 16px 0; display: flex; justify-content: center; }
+.vpos-prof-qr svg { width: 190px; height: 190px; }
+.vpos-prof-hint { color: var(--muted); font-size: 11.5px; line-height: 1.4; margin-top: 6px; }
+.vpos-prof-code { margin-top: 8px; font-size: 11.5px; color: var(--muted); background: #eef7f3; border-radius: 10px; padding: 8px; word-break: break-all; font-family: monospace; }
+.vpos-prof-print { border: none; background: var(--mint); color: #04201a; font-weight: 800; padding: 12px 24px; border-radius: 14px; cursor: pointer; font-family: var(--font-head); font-size: 14.5px; }
+
+/* Tooltip & ID Card */
+.vpos-tip { position: fixed; z-index: 999; max-width: 320px; background: var(--ink); color: #eafff6; font-size: 11.5px; line-height: 1.5; border: 1px solid var(--mint-d); border-radius: 12px; padding: 10px 14px; box-shadow: 0 10px 26px rgba(0,0,0,.35); pointer-events: none; opacity: 0; transition: opacity .1s; display: none; white-space: pre-line; }
+.vpos-tip b { color: var(--mint); }
+.vpos-idcard { width: 85.6mm; height: 54mm; background: #fff; border: 1px solid var(--line); border-radius: 6px; box-shadow: 0 8px 22px rgba(0,0,0,.10); overflow: hidden; display: flex; flex-direction: column; box-sizing: border-box; font-family: var(--font-base); color: #0c1a18; margin-top: 14px; }
+.vpos-id-head { display: flex; align-items: center; gap: 8px; background: linear-gradient(160deg, #0c1a18, #123b33); color: #fff; padding: 6px 10px; }
+.vpos-id-logo { width: 26px; height: 26px; border-radius: 7px; background: var(--mint); color: #04201a; font-family: var(--font-head); font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; }
+.vpos-id-co { flex: 1; font-size: 10px; font-weight: 700; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vpos-id-title { font-size: 9px; font-weight: 800; letter-spacing: 1px; opacity: .85; }
+.vpos-id-body { flex: 1; display: flex; gap: 8px; padding: 7px 10px; align-items: center; }
+.vpos-id-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1.5px; }
+.vpos-id-name { font-family: var(--font-head); font-weight: 700; font-size: 13px; line-height: 1.1; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vpos-id-line { display: flex; justify-content: space-between; font-size: 8.5px; line-height: 1.25; }
+.vpos-id-line span { color: #5b6b68; font-weight: 600; }
+.vpos-id-line b { color: #13302b; font-weight: 700; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 62%; }
+.vpos-id-qr { width: 42mm; height: 42mm; flex: 0 0 42mm; display: flex; align-items: center; justify-content: center; }
+.vpos-id-qr svg { width: 100%; height: 100%; }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   RESPONSIVE: TABLET (768px to 1024px)
+   ───────────────────────────────────────────────────────────────────────────── */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .vpos-app { grid-template-columns: 60px 1fr 1fr; }
+  .vpos-main { padding: 12px 14px; }
+  .vpos-ticket { width: auto; padding: 12px; }
+  .vpos-grid { grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); gap: 10px; }
+  .vpos-card { padding: 12px; }
+  .vpos-card-name { font-size: 12px; }
+  .vpos-card-rate { font-size: 13px; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   RESPONSIVE: MOBILE PHONES (< 768px)
+   ───────────────────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .vpos-app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  /* Top Navigation Bar */
+  .vpos-rail {
+    flex-direction: row;
+    width: 100%;
+    height: 54px;
+    padding: 0 12px;
+    gap: 12px;
+    justify-content: space-between;
+    flex: 0 0 54px;
+  }
+  .vpos-logo { width: 36px; height: 36px; font-size: 18px; margin-bottom: 0; border-radius: 10px; }
+  .vpos-rail-nav { display: flex; gap: 8px; align-items: center; }
+  .vpos-rail-ic { width: 38px; height: 38px; font-size: 18px; border-radius: 10px; }
+  .vpos-rail-foot { display: none; }
+  .vpos-rail-ic.logout { margin-top: 0; }
+
+  /* Mobile Tabs Switching Container */
+  .vpos-main {
+    flex: 1;
+    padding: 12px;
+    gap: 10px;
+    padding-bottom: 74px; /* Clearance for floating checkout bar */
+    overflow-y: auto;
+  }
+
+  .vpos-bar { flex-direction: column; align-items: stretch; gap: 8px; }
+  .vpos-scan { flex: 1 1 auto; width: 100%; height: 44px; }
+  .vpos-branch-row { display: flex; gap: 8px; width: 100%; }
+  .vpos-branch { flex: 1; }
+  .vpos-branch select { width: 100%; height: 42px; font-size: 12px; }
+  .vpos-stock-toggle { flex: 0 0 auto; height: 42px; font-size: 11.5px; padding: 0 10px; }
+  .vpos-branch { min-width: 0; }
+  .vpos-branch select { min-width: 0; width: 100%; }
+  .vpos-main { overflow-x: hidden; }
+  .vpos-bar { width: 100%; }
+
+
+  .vpos-cats { padding-bottom: 4px; }
+  .vpos-cat { padding: 6px 14px; font-size: 12px; }
+
+  /* 2-column Product Grid on Mobile */
+  .vpos-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding-bottom: 80px;
+  }
+  .vpos-card { padding: 10px; border-radius: 14px; }
+  .vpos-thumb { width: 36px; height: 36px; font-size: 16px; border-radius: 10px; }
+  .vpos-card-name { font-size: 12px; min-height: 2.3em; }
+  .vpos-card-code { font-size: 9.5px; }
+  .vpos-card-stock { font-size: 9.5px; }
+  .vpos-card-rate { font-size: 13px; }
+  .vpos-card-add { font-size: 11px; padding: 5px 10px; }
+
+  /* Ticket / Cart Screen on Mobile */
+  .vpos-ticket {
+    display: none; /* Toggled on mobile via view switcher or floating cart button */
+    position: fixed;
+    inset: 54px 0 0 0;
+    width: 100%;
+    height: calc(100% - 54px);
+    z-index: 50;
+    border-left: none;
+    padding: 14px;
+    padding-bottom: 30px;
+  }
+  .vpos-ticket.mobile-active { display: flex; }
+  .vpos-mobile-back { display: inline-flex; align-items: center; }
+
+  /* Floating Bottom Cart Bar */
+  .vpos-mobile-cart-bar { display: flex; }
+
+  .vpos-paid { font-size: 18px; height: 44px; }
+  .vpos-quick button { height: 36px; font-size: 11.5px; }
+  .vpos-clear { height: 46px; font-size: 13px; }
+  .vpos-charge { height: 46px; font-size: 15px; }
+}
+
+@media print {
+  @page { size: 85.6mm 54mm; margin: 0; }
+  body * { visibility: hidden !important; }
+  .vpos-idcard, .vpos-idcard * { visibility: visible !important; }
+  .vpos-idcard { position: fixed; left: 0; top: 0; margin: 0; box-shadow: none; border: 1px solid #000; width: 85.6mm !important; height: 54mm !important; }
+}
+</style>
+
+<script id="vpos-libs">(function webpackUniversalModuleDefinition(root, factory) {
+	if(typeof exports === 'object' && typeof module === 'object')
+		module.exports = factory();
+	else if(typeof define === 'function' && define.amd)
+		define([], factory);

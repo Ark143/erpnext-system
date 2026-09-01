@@ -1,0 +1,294 @@
+{
+ "doctype": "DocType",
+ "name": "Vehicle Job Order",
+ "module": "Vehicle Management",
+ "custom": 0,
+ "is_submittable": 1,
+ "istable": 0,
+ "editable_grid": 0,
+ "track_changes": 1,
+ "engine": "InnoDB",
+ "autoname": "naming_series:",
+ "naming_rule": null,
+ "search_fields": "vehicle,plate_no,customer,customer_name",
+ "title_field": "plate_no",
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "options": "JO-.YYYY.-.#####",
+   "default": "JO-.YYYY.-.#####",
+   "label": "Series"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "options": "Company",
+   "label": "Company / Branch",
+   "default": "ULTRA MRF",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "sec_header",
+   "fieldtype": "Section Break",
+   "label": "Customer & Vehicle Information"
+  },
+  {
+   "fieldname": "vehicle",
+   "fieldtype": "Link",
+   "options": "Customer Vehicle",
+   "label": "Vehicle",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "plate_no",
+   "fieldtype": "Data",
+   "label": "Plate No",
+   "fetch_from": "vehicle.plate_no",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "options": "Customer",
+   "label": "Customer",
+   "fetch_from": "vehicle.customer",
+   "read_only": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "label": "Customer Name",
+   "fetch_from": "vehicle.customer_name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "contact_no",
+   "fieldtype": "Data",
+   "label": "Contact No",
+   "fetch_from": "vehicle.contact_no",
+   "read_only": 1
+  },
+  {
+   "fieldname": "col_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "job_order_date",
+   "fieldtype": "Date",
+   "label": "Job Order Date",
+   "default": "Today",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "posting_time",
+   "fieldtype": "Time",
+   "label": "Time",
+   "default": "Now"
+  },
+  {
+   "fieldname": "promised_date",
+   "fieldtype": "Datetime",
+   "label": "Promised Delivery Date"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "options": "Draft\nIn Progress\nPending Parts\nCompleted\nInvoiced\nReleased\nCancelled",
+   "default": "Draft",
+   "label": "Status",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "allow_on_submit": 1
+  },
+  {
+   "fieldname": "service_advisor",
+   "fieldtype": "Link",
+   "options": "User",
+   "label": "Service Advisor"
+  },
+  {
+   "fieldname": "mileage",
+   "fieldtype": "Float",
+   "label": "Odometer (In)"
+  },
+  {
+   "fieldname": "mileage_unit",
+   "fieldtype": "Select",
+   "options": "km\nmi",
+   "default": "km",
+   "label": "Unit"
+  },
+  {
+   "fieldname": "sec_timestamps",
+   "fieldtype": "Section Break",
+   "label": "Time & Material Timestamps"
+  },
+  {
+   "fieldname": "time_in",
+   "fieldtype": "Datetime",
+   "label": "Time In (Arrival Timestamp)",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "work_start_time",
+   "fieldtype": "Datetime",
+   "label": "Work Started Timestamp"
+  },
+  {
+   "fieldname": "col_break_time",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "work_end_time",
+   "fieldtype": "Datetime",
+   "label": "Work Completed Timestamp",
+   "allow_on_submit": 1
+  },
+  {
+   "fieldname": "time_out",
+   "fieldtype": "Datetime",
+   "label": "Time Out (Release Timestamp)",
+   "allow_on_submit": 1
+  },
+  {
+   "fieldname": "sec_complaint",
+   "fieldtype": "Section Break",
+   "label": "Customer Request / Complaints"
+  },
+  {
+   "fieldname": "customer_complaint",
+   "fieldtype": "Small Text",
+   "label": "Customer Request & Problem Description"
+  },
+  {
+   "fieldname": "sec_services",
+   "fieldtype": "Section Break",
+   "label": "Labor & Services (Time)"
+  },
+  {
+   "fieldname": "services",
+   "fieldtype": "Table",
+   "options": "Job Order Service Item",
+   "label": "Labor & Service Items"
+  },
+  {
+   "fieldname": "sec_parts",
+   "fieldtype": "Section Break",
+   "label": "Parts & Materials (Material)"
+  },
+  {
+   "fieldname": "parts",
+   "fieldtype": "Table",
+   "options": "Job Order Part Item",
+   "label": "Replacement Parts & Consumables"
+  },
+  {
+   "fieldname": "sec_totals",
+   "fieldtype": "Section Break",
+   "label": "Totals & Accounting Summary"
+  },
+  {
+   "fieldname": "total_labor",
+   "fieldtype": "Currency",
+   "label": "Total Labor Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_parts",
+   "fieldtype": "Currency",
+   "label": "Total Parts Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "col_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "net_total",
+   "fieldtype": "Currency",
+   "label": "Subtotal",
+   "read_only": 1
+  },
+  {
+   "fieldname": "discount_amount",
+   "fieldtype": "Currency",
+   "label": "Additional Overall Discount",
+   "default": "0"
+  },
+  {
+   "fieldname": "grand_total",
+   "fieldtype": "Currency",
+   "label": "Total Amount Due",
+   "read_only": 1
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks / Payment Terms",
+   "default": "CASH"
+  },
+  {
+   "fieldname": "sec_billing",
+   "fieldtype": "Section Break",
+   "label": "Invoicing & Payment Status"
+  },
+  {
+   "fieldname": "estimate",
+   "fieldtype": "Link",
+   "options": "Vehicle Estimate",
+   "label": "Original Estimate / Quotation",
+   "read_only": 1,
+   "allow_on_submit": 1
+  },
+  {
+   "fieldname": "sales_invoice",
+   "fieldtype": "Link",
+   "options": "Sales Invoice",
+   "label": "Linked Sales Invoice",
+   "read_only": 1,
+   "allow_on_submit": 1
+  },
+  {
+   "fieldname": "payment_status",
+   "fieldtype": "Select",
+   "options": "Unpaid\nPartially Paid\nPaid",
+   "default": "Unpaid",
+   "label": "Payment Status",
+   "read_only": 1,
+   "allow_on_submit": 1
+  },
+  {
+   "fieldname": "paid_amount",
+   "fieldtype": "Currency",
+   "label": "Paid Amount",
+   "read_only": 1,
+   "allow_on_submit": 1
+  },
+  {
+   "fieldname": "outstanding_amount",
+   "fieldtype": "Currency",
+   "label": "Outstanding Balance",
+   "read_only": 1,
+   "allow_on_submit": 1
+  }
+ ],
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "submit": 1,
+   "cancel": 1,
+   "delete": 1
+  }
+ ]
+}

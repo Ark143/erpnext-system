@@ -1,0 +1,7 @@
+Company: export=13
+DONE Company: ok=0 skip=0 fail=13
+  FAIL ('My Company', 417, 'frappe.exceptions.LinkValidationError: Could not find Default Cash Account: Cash - MC, Default Receivable Account: Debtors - MC, Default Payable Accou')
+  FAIL ('ULTRA MRF', 417, 'frappe.exceptions.LinkValidationError: Could not find Default Cash Account: Cash - UM, Default Receivable Account: Debtors - UM, Default Payable Accou')
+  FAIL ('Ultra MRF Dau Annex', 417, 'frappe.exceptions.LinkValidationError: Could not find Parent Company: ULTRA MRF, Existing Company : ULTRA MRF, Default Cash Account: Cash - UMDA, Defa')
+  FAIL ('Ultra MRF Dau Main', 417, 'frappe.exceptions.LinkValidationError: Could not find Parent Company: ULTRA MRF, Existing Company : ULTRA MRF, Default Cash Account: Cash - UMDM, Defa')
+  FAIL ('Ultra MRF Warehouse Dau', 417, 'frappe.exceptions.LinkValidationError: Could not find Parent Company: ULTRA MRF, Existing Company : ULTRA MRF, Default Cash Account: Cash - UMDW, Defa')

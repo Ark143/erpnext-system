@@ -41,7 +41,7 @@ html, body { margin: 0; padding: 0; min-height: 100%; font-family: var(--font-ba
 /* ─────────────────────────────────────────────────────────────────────────────
    MAIN POS APP LAYOUT (DESKTOP & TABLET DEFAULT)
    ───────────────────────────────────────────────────────────────────────────── */
-.vpos-app { display: grid; grid-template-columns: 68px 1fr 380px; grid-template-areas: "rail main ticket"; height: 100vh; height: 100dvh; overflow: hidden; }
+.vpos-app { display: grid; grid-template-columns: 68px 1fr 1fr; grid-template-areas: "rail main ticket"; height: 100vh; height: 100dvh; overflow: hidden; }
 
 /* Left Navigation Rail */
 .vpos-rail { grid-area: rail; background: var(--ink); display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px 0; z-index: 20; }
@@ -75,7 +75,7 @@ html, body { margin: 0; padding: 0; min-height: 100%; font-family: var(--font-ba
 
 /* Product Grid Cards */
 .vpos-grid { flex: 1; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 14px; align-items: stretch; padding: 4px 2px 24px; -webkit-overflow-scrolling: touch; }
-.vpos-card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 14px; display: flex; flex-direction: column; gap: 6px; cursor: pointer; transition: transform .15s, border-color .15s, box-shadow .15s; position: relative; height: 100%; box-shadow: 0 2px 6px rgba(0,0,0,.02); }
+.vpos-card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 14px; display: flex; flex-direction: column; gap: 6px; cursor: pointer; transition: transform .15s, border-color .15s, box-shadow .15s; position: relative; min-width: 0; height: 100%; box-shadow: 0 2px 6px rgba(0,0,0,.02); }
 .vpos-card:hover { border-color: var(--mint); box-shadow: 0 8px 22px rgba(22,199,132,.16); transform: translateY(-2px); }
 .vpos-card:active { transform: scale(0.98); }
 .vpos-thumb { width: 44px; height: 44px; border-radius: 12px; background: #e7f6f0; color: var(--mint-d); font-family: var(--font-head); font-weight: 800; font-size: 19px; display: flex; align-items: center; justify-content: center; margin-bottom: 2px; }
@@ -93,7 +93,7 @@ html, body { margin: 0; padding: 0; min-height: 100%; font-family: var(--font-ba
 /* ─────────────────────────────────────────────────────────────────────────────
    RIGHT TICKET & CHECKOUT PANEL
    ───────────────────────────────────────────────────────────────────────────── */
-.vpos-ticket { grid-area: ticket; background: var(--card); border-left: 1px solid var(--line); display: flex; flex-direction: column; padding: 16px; gap: 12px; height: 100%; overflow-y: auto; z-index: 10; box-shadow: -4px 0 16px rgba(0,0,0,.02); }
+.vpos-ticket { grid-area: ticket; background: var(--card); border-left: 1px solid var(--line); display: flex; flex-direction: column; min-width: 0; padding: 16px; gap: 12px; height: 100%; overflow-y: auto; z-index: 10; box-shadow: -4px 0 16px rgba(0,0,0,.02); }
 .vpos-tk-head { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); padding-bottom: 12px; }
 .vpos-tk-title { font-family: var(--font-head); font-weight: 800; font-size: 17px; color: var(--ink); }
 .vpos-tk-sub { font-size: 11.5px; color: var(--muted); font-weight: 600; }
@@ -206,9 +206,9 @@ html, body { margin: 0; padding: 0; min-height: 100%; font-family: var(--font-ba
    RESPONSIVE: TABLET (768px to 1024px)
    ───────────────────────────────────────────────────────────────────────────── */
 @media (min-width: 769px) and (max-width: 1024px) {
-  .vpos-app { grid-template-columns: 60px 1fr 340px; }
+  .vpos-app { grid-template-columns: 60px 1fr 1fr; }
   .vpos-main { padding: 12px 14px; }
-  .vpos-ticket { width: 340px; padding: 12px; }
+  .vpos-ticket { width: auto; padding: 12px; }
   .vpos-grid { grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); gap: 10px; }
   .vpos-card { padding: 12px; }
   .vpos-card-name { font-size: 12px; }
@@ -13018,7 +13018,9 @@ const POS = {
     });
 
     const comp = r.querySelector(".vpos-company");
+    comp.disabled = false;
     comp.value = this.company || "";
+    comp.onchange = () => { this.company = comp.value || null; this.totals(); };
 
     const st = r.querySelector("#vpos-stock-toggle");
     st.onclick = () => {
@@ -13072,6 +13074,22 @@ const POS = {
       this.cat(box, "", "All Categories", true);
       (meta.categories || []).forEach(g => this.cat(box, g, g, false));
     }
+    // Populate the Company (Branch) select so Charge & Pay can enable even if
+    // the cashier profile returned no company. Default to cashier company or
+    // the first available company.
+    const comp = document.querySelector(".vpos-company");
+    if (meta && comp) {
+      const companies = meta.companies || [];
+      comp.innerHTML = "";
+      companies.forEach(c => {
+        const o = document.createElement("option");
+        o.value = c; o.textContent = c;
+        comp.appendChild(o);
+      });
+      if (!this.company && companies.length) this.company = companies[0];
+      comp.value = this.company || "";
+    }
+    this.totals();
     this.search();
     this.history = await api("vehicle_management.vehicle_management.pos_api.get_history") || [];
   },

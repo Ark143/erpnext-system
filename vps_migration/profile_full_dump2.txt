@@ -1,0 +1,46 @@
+renderProfile first at 345770
+  'renderProfile(main)' at 346561
+  'renderProfile()' at 345770
+  'renderProfile(' at 345770
+using 346561
+renderProfile(main){
+    const view=document.getElementById("vpos-view-profile");
+    if(!view)return;
+    const qrData=(this.email||this.cashier||"")+"|"+(window.__vposPwd||"");
+    let svg="";
+    try{
+      const qr=window.qrcode(0,"M");qr.addData(qrData);qr.make();
+      svg=qr.createSvgTag({cellSize:6,margin:8,scalable:true});
+    }catch(e){svg="<div style='color:#b91c1c'>QR unavailable</div>";}
+    view.innerHTML=`<div class="vpos-prof">
+      <div class="vpos-prof-card" id="vpos-prof-card">
+        <div class="vpos-prof-logo"><img src="/files/ultra_mrf_logo.png" alt="company logo"></div>
+        <h3>Cashier Badge</h3>
+        <div class="vpos-prof-row"><span>Employee #</span><b>${this.empNo||"—"}</b></div>
+        <div class="vpos-prof-row"><span>Employee</span><b>${this.empName||this.employee||"—"}</b></div>
+        <div class="vpos-prof-row"><span>Designation</span><b>${this.designation||"—"}</b></div>
+        <div class="vpos-prof-row"><span>Company</span><b>${this.company||""}</b></div>
+        <div class="vpos-prof-row"><span>Branch</span><b>${this.branch||"—"}</b></div>
+        <div class="vpos-prof-row"><span>Department</span><b>${this.department||"—"}</b></div>
+        <div class="vpos-prof-row"><span>Reports To</span><b>${this.reportsTo||"—"}</b></div>
+        <div class="vpos-prof-row"><span>Email</span><b>${this.email||this.cashier||""}</b></div>
+        <div class="vpos-prof-qr">${svg}</div>
+        <div class="vpos-prof-hint">Badge is generated from this cashier's Employee record (Company Details). To log in on any device: upload the image or paste the code.</div>
+        <div class="vpos-prof-code" id="vpos-prof-code">${qrData}</div>
+        <button class="vpos-li-qr" id="vpos-prof-dl" style="margin-top:10px">&#11015; Download ID badge (SVG)</button>
+        <button class="vpos-li-qr" id="vpos-prof-copy" style="margin-top:8px">&#128203; Copy badge code</button>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="vpos-prof-print" onclick="window.print()" style="flex:1">&#128424; Print</button>
+      </div>
+      </div>
+      <div class="vpos-idcard" id="vpos-idcard">
+        <div class="vpos-id-head">
+          <div class="vpos-id-logo"><img src="/files/ultra_mrf_logo.png" alt="company logo"></div>
+          <div class="vpos-id-co">${this.company||""}</div>
+          <div class="vpos-id-title">CASHIER ID</div>
+        </div>
+        <div class="vpos-id-body">
+          <div class="vpos-id-info">
+            <div class="vpos-id-name">${this.empName||this.employee||"—"}</div>
+            <div clas

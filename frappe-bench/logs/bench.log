@@ -1,0 +1,132 @@
+2026-08-23 14:39:33,610 DEBUG cd frappe-bench && uv venv env --seed --python C:/Users/josem/AppData/Local/Programs/Python/Python311/python.exe
+2026-08-23 14:39:36,908 LOG Getting frappe
+2026-08-23 14:39:36,909 DEBUG cd frappe-bench\apps && git clone https://github.com/frappe/frappe.git --branch version-16 --depth 1 --origin upstream
+2026-08-23 14:39:50,315 LOG Installing frappe
+2026-08-23 14:39:51,419 ERROR There was a problem while creating frappe-bench
+2026-08-23 14:40:04,223 WARNING C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench init --frappe-branch version-16 --python C:\Users\josem\AppData\Local\Programs\Python\Python311\python.exe --skip-assets --no-procfile --ignore-exist --verbose frappe-bench executed with exit code 1
+2026-08-23 15:06:38,280 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --version
+2026-08-23 15:07:37,013 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench get-app erpnext --branch version-16
+2026-08-23 15:07:38,234 LOG Getting erpnext
+2026-08-23 15:07:38,234 DEBUG cd .\apps && git clone https://github.com/frappe/erpnext.git --branch version-16 --depth 1 --origin upstream
+2026-08-23 15:08:01,064 LOG Installing erpnext
+2026-08-23 15:08:01,066 DEBUG cd C:\Users\josem\erpnext-system\frappe-bench && uv pip install --quiet --upgrade -e C:/Users/josem/erpnext-system/frappe-bench/apps/erpnext  --python C:/Users/josem/erpnext-system/frappe-bench/env/Scripts/python.exe
+2026-08-23 15:08:04,195 WARNING cd C:\Users\josem\erpnext-system\frappe-bench && uv pip install --quiet --upgrade -e C:/Users/josem/erpnext-system/frappe-bench/apps/erpnext  --python C:/Users/josem/erpnext-system/frappe-bench/env/Scripts/python.exe executed with exit code 1
+2026-08-23 15:08:04,196 WARNING C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench get-app erpnext --branch version-16 executed with exit code 1
+2026-08-23 15:08:05,684 INFO A newer version of bench is available: 5.29.1 → 5.31.0
+2026-08-23 15:08:39,613 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench get-app erpnext --branch version-16
+2026-08-23 15:08:39,664 WARNING C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench get-app erpnext --branch version-16 executed with exit code 1
+2026-08-23 15:08:41,008 INFO A newer version of bench is available: 5.29.1 → 5.31.0
+2026-08-23 15:20:59,012 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench version
+2026-08-23 15:21:00,649 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site site1.local list-apps
+2026-08-23 15:21:45,319 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench version
+2026-08-23 15:22:14,148 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench version
+2026-08-23 15:22:35,737 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site site1.local version
+2026-08-23 15:27:20,761 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench new-site site1.local --db-type postgres --db-host 127.0.0.1 --db-port 5432 --admin-password admin --no-mariadb-socket
+2026-08-23 15:28:03,468 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench new-site --help
+2026-08-23 15:28:19,314 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench new-site site1.local --db-type postgres --db-host 127.0.0.1 --db-port 5432 --db-root-username postgres --db-root-password postgres --admin-password admin
+2026-08-23 15:29:07,498 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench new-site site1.local --db-type postgres --db-host 127.0.0.1 --db-port 5432 --db-root-username postgres --db-root-password postgres --admin-password admin
+2026-08-23 15:35:29,510 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench new-site site1.local --db-type postgres --db-host 127.0.0.1 --db-port 5432 --db-root-username postgres --db-root-password postgres --admin-password admin
+2026-08-23 15:38:30,344 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench new-site site1.local --db-type postgres --db-host 127.0.0.1 --db-port 5432 --db-root-username postgres --db-root-password postgres --admin-password admin
+2026-08-23 15:39:29,382 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench new-site site1.local --db-type postgres --db-host 127.0.0.1 --db-port 5432 --db-root-username postgres --db-root-password postgres --admin-password admin
+2026-08-23 15:41:02,403 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench new-site site1.local --db-type postgres --db-host 127.0.0.1 --db-port 5432 --db-root-username postgres --db-root-password postgres --admin-password admin
+2026-08-23 15:41:54,248 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site site1.local version
+2026-08-23 15:42:08,334 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site site1.local install-app erpnext --force
+2026-08-23 15:42:08,862 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site site1.local migrate
+2026-08-23 15:42:27,522 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site site1.local list-apps
+2026-08-23 15:44:05,592 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site site1.local install-app erpnext --force
+2026-08-23 15:44:06,260 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site site1.local migrate
+2026-08-23 15:44:06,907 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site site1.local list-apps
+2026-08-23 15:44:30,889 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench build
+2026-08-23 15:45:56,029 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench build
+2026-08-23 15:55:39,235 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench build
+2026-08-23 16:05:07,685 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench build
+2026-08-23 16:11:49,877 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench build
+2026-08-23 16:12:59,837 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench build
+2026-08-23 16:15:31,005 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench serve --noreload --port 8000
+2026-08-23 16:17:56,886 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench serve --noreload --port 8000
+2026-08-23 16:18:32,296 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site site1.local version
+2026-08-23 17:51:01,852 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench serve --noreload --port 8000
+2026-08-23 17:53:10,800 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench serve --noreload --port 8000
+2026-08-23 17:55:40,123 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench serve --noreload --port 8000
+2026-08-23 23:50:37,941 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench serve --noreload --port 8000
+2026-08-25 19:39:15,496 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --version
+2026-08-25 19:41:10,230 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site erp.localhost execute vehicle_management.seed_report.main
+2026-08-25 19:42:30,621 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site erp.localhost execute vehicle_management.seed_probe.main
+2026-08-25 19:43:20,356 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site erp.localhost execute vehicle_management.seed_addfields.main
+2026-08-25 19:43:25,731 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site erp.localhost migrate
+2026-08-25 23:23:23,507 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site site1.local restart
+2026-08-25 23:23:23,525 WARNING C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site site1.local restart executed with exit code 2
+2026-08-25 23:23:24,367 INFO A newer version of bench is available: 5.29.1 → 5.31.0
+2026-08-25 23:23:36,699 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench restart
+2026-08-25 23:23:37,278 INFO A newer version of bench is available: 5.29.1 → 5.31.0
+2026-08-25 23:24:34,749 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench start
+2026-08-25 23:25:50,076 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench serve --noreload --port 8000
+2026-08-25 23:27:00,549 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench serve --noreload --port 8000
+2026-08-25 23:37:58,753 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site site1.local backup --with-files
+2026-08-25 23:40:15,500 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site site1.local backup --with-files --backup-path sites/site1.local/private/backups
+2026-08-25 23:44:20,201 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site site1.local clear-cache
+2026-08-25 23:44:36,115 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench serve --noreload --port 8000
+2026-08-26 00:28:05,510 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench serve --noreload --port 8000
+2026-08-26 01:12:46,722 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench serve --noreload --port 8000
+2026-08-26 01:14:12,262 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench serve --noreload --port 8000
+2026-08-26 01:16:00,343 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench serve --noreload --port 8000
+2026-08-26 01:17:44,634 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench serve --noreload --port 8000
+2026-08-26 01:18:40,463 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench serve --noreload --port 8000
+2026-08-26 01:21:46,038 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench serve --noreload --port 8000
+2026-08-26 01:36:25,064 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --version
+2026-08-26 01:36:25,657 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench serve --noreload --port 8000
+2026-08-26 01:38:41,534 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench serve --noreload --port 8000
+2026-08-26 01:54:38,510 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site site1.local python -c 
+import py_compile
+py_compile.compile('apps/vehicle_management/vehicle_management/vehicle_management/dashboard_api.py', doraise=True)
+print('COMPILE OK')
+import frappe
+from vehicle_management.vehicle_management.dashboard_api import get_inventory_logistics
+co = frappe.get_single('Global Defaults').default_company
+print('company=', co)
+rows = get_inventory_logistics(company=co, limit=5)
+print('rows returned:', len(rows))
+for r in rows[:3]:
+    print(dict(r))
+
+2026-08-26 02:11:50,057 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench serve --noreload --port 8000
+2026-08-26 11:13:26,389 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site erp.localhost execute vehicle_management._vmcron.run
+2026-08-26 11:14:13,850 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site erp.localhost execute vehicle_management._vmcron.run
+2026-08-26 11:20:36,394 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site erp.localhost execute vehicle_management._vmprobe2.run
+2026-08-26 11:21:29,557 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site erp.localhost execute import vehicle_management._vmprobe2 as m; m.run()
+2026-08-26 11:21:42,667 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site erp.localhost execute vehicle_management._vmprobe2.run
+2026-08-26 11:23:27,916 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site erp.localhost execute vehicle_management.seed_addfields.main
+2026-08-26 11:26:41,349 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site erp.localhost execute vehicle_management._vmcreate.run
+2026-08-27 23:42:35,467 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site site1.local version
+2026-08-27 23:43:11,556 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench serve --port 8000 --noreload
+2026-08-28 00:02:55,039 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site site1.local migrate
+2026-08-28 04:32:36,262 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site erp.localhost execute print('APPS', frappe.get_installed_apps()); print('Company', frappe.db.count('Company')); print('VEst', frappe.db.count('Vehicle Estimate')); print('SP', frappe.db.count('Sales Person'))
+2026-08-28 04:32:37,524 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site site1.local execute print('APPS', frappe.get_installed_apps()); print('Company', frappe.db.count('Company')); print('VEst', frappe.db.count('Vehicle Estimate')); print('SP', frappe.db.count('Sales Person'))
+2026-08-28 04:34:22,269 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site erp.localhost execute print("Company", frappe.db.count("Company")); print("VEst", frappe.db.count("Vehicle Estimate")); print("SP", frappe.db.count("Sales Person")); print("CV", frappe.db.count("Customer Vehicle"))
+2026-08-28 04:34:23,456 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site site1.local execute print("Company", frappe.db.count("Company")); print("VEst", frappe.db.count("Vehicle Estimate")); print("SP", frappe.db.count("Sales Person")); print("CV", frappe.db.count("Customer Vehicle"))
+2026-08-28 04:34:47,671 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site erp.localhost run-python probe2.py
+2026-08-28 04:35:14,671 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site erp.localhost console
+2026-08-28 04:51:55,136 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site erp.localhost execute print("connected", frappe.db.count("Company"))
+2026-08-28 04:52:43,369 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site erp.localhost migrate
+2026-08-28 04:53:04,793 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site erp.localhost reinstall --yes --admin-password admin
+2026-08-28 04:53:19,683 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench reinstall --help
+2026-08-28 04:53:25,985 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site erp.localhost reinstall --yes --admin-password admin --db-root-username postgres --db-root-password postgres
+2026-08-28 04:54:17,810 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site erp.localhost execute frappe.get_installed_apps
+2026-08-28 04:54:47,437 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site erp.localhost install-app erpnext
+2026-08-28 04:58:11,819 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site erp.localhost migrate
+2026-08-28 00:30:24,241 INFO /usr/local/bin/bench --site site1.local backup
+2026-08-28 11:00:36,174 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench ps
+2026-08-28 11:00:51,195 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench build
+2026-08-28 11:04:56,073 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site erp.localhost clear-cache
+2026-08-28 11:05:01,889 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench restart
+2026-08-28 11:05:03,298 INFO A newer version of bench is available: 5.29.1 → 5.31.0
+2026-08-28 11:41:49,040 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --version
+2026-08-28 11:41:49,821 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench build --force
+2026-08-28 11:46:06,243 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench start
+2026-08-28 03:47:41,374 INFO /usr/local/bin/bench build --force
+2026-08-28 03:48:07,082 INFO /usr/local/bin/bench build --force
+2026-08-28 05:46:30,317 INFO /usr/local/bin/bench --site erp.localhost build --app vehicle_management
+2026-08-28 09:15:17,892 INFO /usr/local/bin/bench serve --port 8000 --noreload
+2026-08-28 14:28:21,440 INFO /usr/local/bin/bench --site site1.local backup --with-files
+2026-08-29 04:31:21,540 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --version
+2026-08-29 04:36:03,222 INFO C:\Users\josem\AppData\Local\Programs\Python\Python311\Scripts\bench --site site1.local migrate

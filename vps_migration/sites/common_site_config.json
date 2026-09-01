@@ -1,0 +1,12 @@
+{
+  "redis_cache": "redis://redis:6379",
+  "redis_queue": "redis://redis:6379",
+  "redis_socketio": "redis://redis:6379",
+  "db_host": "postgres",
+  "db_port": 5432,
+  "db_password": "postgres",
+  "db_type": "postgres",
+  "allow_cors": ["*"],
+  "sites_path": "/workspace/frappe-bench/sites",
+  "server_script_enabled": true
+}

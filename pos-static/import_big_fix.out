@@ -1,0 +1,41 @@
+login OK
+
+-- ensure missing leaf groups --
+  create Item Group TRANSMISSION: 200 {'name': 'TRANSMISSION', 'owner': 'josemangiliman.xansux.kun@gmail.com', 'creati
+
+=== Customer: 39466 records ===
+  progress 2000/39466 ok=2000 dup=0 link=0 err=0
+  progress 4000/39466 ok=4000 dup=0 link=0 err=0
+  progress 6000/39466 ok=6000 dup=0 link=0 err=0
+  progress 8000/39466 ok=8000 dup=0 link=0 err=0
+  progress 10000/39466 ok=10000 dup=0 link=0 err=0
+  progress 12000/39466 ok=12000 dup=0 link=0 err=0
+  progress 14000/39466 ok=14000 dup=0 link=0 err=0
+  progress 16000/39466 ok=16000 dup=0 link=0 err=0
+  progress 18000/39466 ok=18000 dup=0 link=0 err=0
+  progress 20000/39466 ok=20000 dup=0 link=0 err=0
+  progress 22000/39466 ok=22000 dup=0 link=0 err=0
+  progress 24000/39466 ok=24000 dup=0 link=0 err=0
+  progress 26000/39466 ok=26000 dup=0 link=0 err=0
+  progress 28000/39466 ok=28000 dup=0 link=0 err=0
+  progress 30000/39466 ok=30000 dup=0 link=0 err=0
+  progress 32000/39466 ok=32000 dup=0 link=0 err=0
+  progress 34000/39466 ok=34000 dup=0 link=0 err=0
+  progress 36000/39466 ok=35770 dup=0 link=0 err=230
+  progress 38000/39466 ok=37509 dup=0 link=0 err=491
+  RESULT Customer: ok=38974 dup=0 linkfail=1 perm=0 err=491
+  sample failures: ['ERR <urlopen error [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connecti', 'ERR <urlopen error [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connecti', 'ERR <urlopen error [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connecti', 'ERR <urlopen error [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connecti', 'ERR <urlopen error [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connecti']
+
+=== Supplier: 832 records ===
+  RESULT Supplier: ok=0 dup=832 linkfail=0 perm=0 err=0
+
+=== Item: 10531 records ===
+  progress 2000/10531 ok=0 dup=513 link=1487 err=0
+  progress 4000/10531 ok=0 dup=642 link=3358 err=0
+  progress 6000/10531 ok=0 dup=753 link=5247 err=0
+  progress 8000/10531 ok=0 dup=813 link=7187 err=0
+  progress 10000/10531 ok=0 dup=914 link=9086 err=0
+  RESULT Item: ok=0 dup=924 linkfail=9607 perm=0 err=0
+  sample failures: ['frappe.exceptions.LinkValidationError: Could not find Default Unit of Measure: PC', 'frappe.exceptions.LinkValidationError: Could not find Default Unit of Measure: PC', 'frappe.exceptions.LinkValidationError: Could not find Default Unit of Measure: PC', 'frappe.exceptions.LinkValidationError: Could not find Default Unit of Measure: PC', 'frappe.exceptions.LinkValidationError: Could not find Default Unit of Measure: PC']
+
+DONE batch (fixed)

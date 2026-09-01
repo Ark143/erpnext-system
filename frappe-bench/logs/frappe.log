@@ -1,0 +1,107 @@
+2026-08-28 20:58:36,987 ERROR frappe Could not take error snapshot: connection to server at "127.0.0.1", port 5433 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+Site: site1.local
+Form Dict: {'doctype': 'Web Page', 'fields': '["`tabWeb Page`.`name`","`tabWeb Page`.`owner`","`tabWeb Page`.`creation`","`tabWeb Page`.`modified`","`tabWeb Page`.`modified_by`","`tabWeb Page`.`_user_tags`","`tabWeb Page`.`_comments`","`tabWeb Page`.`_assign`","`tabWeb Page`.`_liked_by`","`tabWeb Page`.`docstatus`","`tabWeb Page`.`idx`","`tabWeb Page`.`title`","`tabWeb Page`.`route`","`tabWeb Page`.`published`"]', 'filters': '[]', 'order_by': '`tabWeb Page`.`creation` desc', 'start': '0', 'page_length': '20', 'view': 'List', 'group_by': '', 'with_comment_count': '1', 'cmd': 'frappe.desk.reportview.get'}
+Traceback (most recent call last):
+  File "/workspace/frappe-bench/apps/frappe/frappe/app.py", line 121, in application
+    response = frappe.api.handle(request)
+  File "/workspace/frappe-bench/apps/frappe/frappe/api/__init__.py", line 63, in handle
+    data = endpoint(**arguments)
+  File "/workspace/frappe-bench/apps/frappe/frappe/api/v1.py", line 41, in handle_rpc_call
+    return frappe.handler.handle()
+           ~~~~~~~~~~~~~~~~~~~~~^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/handler.py", line 53, in handle
+    data = execute_cmd(cmd)
+  File "/workspace/frappe-bench/apps/frappe/frappe/handler.py", line 86, in execute_cmd
+    return frappe.call(method, **frappe.form_dict)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/__init__.py", line 1168, in call
+    return fn(*args, **newargs)
+  File "/workspace/frappe-bench/apps/frappe/frappe/utils/typing_validations.py", line 36, in wrapper
+    return func(*args, **kwargs)
+  File "/workspace/frappe-bench/apps/frappe/frappe/__init__.py", line 529, in wrapper_fn
+    retval = fn(*args, **get_newargs(fn, kwargs))
+  File "/workspace/frappe-bench/apps/frappe/frappe/desk/reportview.py", line 35, in get
+    data = compress(execute(**args), args=args)
+                    ~~~~~~~^^^^^^^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/desk/reportview.py", line 101, in execute
+    return DatabaseQuery(doctype).execute(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/model/qb_query.py", line 212, in execute
+    result = query.run(debug=debug, as_dict=not as_list, update=update)
+  File "/workspace/frappe-bench/apps/frappe/frappe/query_builder/utils.py", line 135, in execute_query
+    result = frappe.local.db.sql(query, params, *args, **kwargs)  # nosemgrep
+  File "/workspace/frappe-bench/apps/frappe/frappe/database/postgres/database.py", line 234, in sql
+    return super().sql(modify_query(query), modify_values(values), *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/database/database.py", line 249, in sql
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/database/postgres/database.py", line 179, in connect
+    super().connect()
+    ~~~~~~~~~~~~~~~^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/database/database.py", line 147, in connect
+    self.get_connection()
+    ~~~~~~~~~~~~~~~~~~~^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/database/postgres/database.py", line 195, in get_connection
+    conn = psycopg2.connect(**conn_settings)
+  File "/usr/local/lib/python3.14/site-packages/psycopg2/__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+psycopg2.OperationalError: connection to server at "127.0.0.1", port 5433 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/frappe-bench/apps/frappe/frappe/utils/error.py", line 175, in log_error_snapshot
+    log_error(title=str(exception), defer_insert=True)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/utils/error.py", line 84, in log_error
+    error_log = frappe.get_doc(
+    	doctype="Error Log",
+    ...<6 lines>...
+    	fingerprint=fingerprint,
+    )
+  File "/workspace/frappe-bench/apps/frappe/frappe/model/utils/__init__.py", line 224, in wrapper
+    return func(*args, **kw)
+  File "/workspace/frappe-bench/apps/frappe/frappe/model/document.py", line 130, in get_doc
+    return get_doc_from_dict(kwargs)
+  File "/workspace/frappe-bench/apps/frappe/frappe/model/document.py", line 159, in get_doc_from_dict
+    if controller := get_controller(data["doctype"]):
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/model/base_document.py", line 92, in get_controller
+    site_controllers[doctype] = import_controller(doctype)
+                                ~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/model/base_document.py", line 103, in import_controller
+    doctype_info = frappe.db.get_value("DocType", doctype, ("module", "custom", "is_tree"), as_dict=True)
+  File "/workspace/frappe-bench/apps/frappe/frappe/database/database.py", line 564, in get_value
+    result = self.get_values(
+    	doctype,
+    ...<13 lines>...
+    	wait=wait,
+    )
+  File "/workspace/frappe-bench/apps/frappe/frappe/database/database.py", line 680, in get_values
+    out = query.run(as_dict=as_dict, debug=debug, update=update, run=run, pluck=pluck)
+  File "/workspace/frappe-bench/apps/frappe/frappe/query_builder/utils.py", line 135, in execute_query
+    result = frappe.local.db.sql(query, params, *args, **kwargs)  # nosemgrep
+  File "/workspace/frappe-bench/apps/frappe/frappe/database/postgres/database.py", line 234, in sql
+    return super().sql(modify_query(query), modify_values(values), *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/database/database.py", line 249, in sql
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/database/postgres/database.py", line 179, in connect
+    super().connect()
+    ~~~~~~~~~~~~~~~^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/database/database.py", line 147, in connect
+    self.get_connection()
+    ~~~~~~~~~~~~~~~~~~~^^
+  File "/workspace/frappe-bench/apps/frappe/frappe/database/postgres/database.py", line 195, in get_connection
+    conn = psycopg2.connect(**conn_settings)
+  File "/usr/local/lib/python3.14/site-packages/psycopg2/__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+psycopg2.OperationalError: connection to server at "127.0.0.1", port 5433 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+

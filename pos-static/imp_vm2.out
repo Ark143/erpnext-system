@@ -1,0 +1,7 @@
+Vehicle Make: export=71
+DONE Vehicle Make: ok=0 skip=0 fail=71
+  FAIL ('BAW', 500, "Error: No module named 'frappe.core.doctype.vehicle%20make'")
+  FAIL ('VOLVO', 500, "Error: No module named 'frappe.core.doctype.vehicle%20make'")
+  FAIL ('MAXUS', 500, "Error: No module named 'frappe.core.doctype.vehicle%20make'")
+  FAIL ('SUBARU', 500, "Error: No module named 'frappe.core.doctype.vehicle%20make'")
+  FAIL ('TOYOTA', 500, "Error: No module named 'frappe.core.doctype.vehicle%20make'")

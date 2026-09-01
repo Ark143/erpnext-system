@@ -1,0 +1,3 @@
+# Build context exclusions — keep the image build lean.
+.git
+dump.err

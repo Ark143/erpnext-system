@@ -1,0 +1,77 @@
+=== CUSTOM DOCTYPES (created on cloud) ===
+  Vehicle Make: 60
+  Vehicle Model: 0
+  Customer Vehicle: 0
+  Cashier Profile: 0
+  Inspection Template: ERR403
+  Inspection Template Item: ERR403
+  Item Part Cross Reference: ERR403
+  Item Vehicle Compatibility: ERR403
+  Bin Location: 0
+  Vehicle Service Reminder: 0
+  Vehicle POS Invoice: ERR403
+  Vehicle POS Invoice Item: ERR403
+  Vehicle Inspection: ERR403
+  Vehicle Inspection Item: ERR403
+  Job Order Part Item: ERR403
+  Job Order Service Item: ERR403
+  Vehicle Estimate: ERR404
+  Vehicle Job Order: ERR404
+=== BASE / STANDARD MODULES ===
+  Company: 3
+  Customer: 41
+  Supplier: 679
+  Item: 94
+  Item Group: 17
+  Customer Group: 7
+  Supplier Group: 9
+  Warehouse: 31
+  Account: 363
+  Cost Center: 30
+  POS Profile: 1
+  Mode of Payment: 5
+  Price List: 2
+  Sales Invoice: 430
+  Purchase Invoice: 115
+  Stock Entry: 119
+  Lead: 0
+  Opportunity: 0
+  Quotation: 48
+  Sales Order: 74
+=== WEB PAGES / SERVER SCRIPTS / DESK PAGES ===
+  Web Page: 9
+  Server Script: 16
+  Page: 24
+  DocType: 1495
+  Module Def: 62
+=== CHECK vehicle-related web/page artifacts ===
+Traceback (most recent call last):
+  File "C:\Users\josem\erpnext-system\pos-static\verify_cloud_sweep.py", line 58, in <module>
+    s,j = post("/api/resource/Web Page", {"filters":["title","like","%Vehicle%"],"fields":["name","title"]}, csrf)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\erpnext-system\pos-static\verify_cloud_sweep.py", line 11, in post
+    try: r = op.open(req, timeout=60); return r.status, json.loads(r.read().decode())
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\AppData\Local\Programs\Python\Python311\Lib\urllib\request.py", line 519, in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\AppData\Local\Programs\Python\Python311\Lib\urllib\request.py", line 536, in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\AppData\Local\Programs\Python\Python311\Lib\urllib\request.py", line 496, in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+  File "C:\Users\josem\AppData\Local\Programs\Python\Python311\Lib\urllib\request.py", line 1391, in https_open
+    return self.do_open(http.client.HTTPSConnection, req,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\josem\AppData\Local\Programs\Python\Python311\Lib\urllib\request.py", line 1348, in do_open
+    h.request(req.get_method(), req.selector, req.data, headers,
+  File "C:\Users\josem\AppData\Local\Programs\Python\Python311\Lib\http\client.py", line 1303, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+  File "C:\Users\josem\AppData\Local\Programs\Python\Python311\Lib\http\client.py", line 1314, in _send_request
+    self.putrequest(method, url, **skips)
+  File "C:\Users\josem\AppData\Local\Programs\Python\Python311\Lib\http\client.py", line 1148, in putrequest
+    self._validate_path(url)
+  File "C:\Users\josem\AppData\Local\Programs\Python\Python311\Lib\http\client.py", line 1248, in _validate_path
+    raise InvalidURL(f"URL can't contain control characters. {url!r} "
+http.client.InvalidURL: URL can't contain control characters. '/api/resource/Web Page' (found at least ' ')

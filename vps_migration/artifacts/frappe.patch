@@ -1,0 +1,71 @@
+diff --git a/frappe/build.py b/frappe/build.py
+index f388ef2..f994183 100644
+--- a/frappe/build.py
++++ b/frappe/build.py
+@@ -13,6 +13,7 @@ import click
+ from semantic_version import Version
+ 
+ import frappe
++import frappe.commands
+ 
+ timestamps = {}
+ app_paths = None
+diff --git a/frappe/database/postgres/database.py b/frappe/database/postgres/database.py
+index 7e759d5..94920a8 100644
+--- a/frappe/database/postgres/database.py
++++ b/frappe/database/postgres/database.py
+@@ -518,6 +518,8 @@ def modify_query(query):
+ 	""" "Modifies query according to the requirements of postgres"""
+ 	# replace ` with " for definitions
+ 	query = str(query).replace("`", '"')
++	# MariaDB -> PostgreSQL compatibility: CURDATE() is not a PostgreSQL function
++	query = re.sub(r"CURDATE\s*\(\s*\)", "CURRENT_DATE", query)
+ 	query = replace_locate_with_strpos(query)
+ 	# select from requires ""
+ 	query = FROM_TAB_PATTERN.sub(r'from "tab\1"', query)
+diff --git a/frappe/public/js/bootstrap-4-web.bundle.js b/frappe/public/js/bootstrap-4-web.bundle.js
+index 0d37b74..4c84ce3 100644
+--- a/frappe/public/js/bootstrap-4-web.bundle.js
++++ b/frappe/public/js/bootstrap-4-web.bundle.js
+@@ -1,3 +1,4 @@
++import "./jquery-bootstrap.js";
+ // multilevel dropdown
+ $(".dropdown-menu a.dropdown-toggle").on("click", function (e) {
+ 	e.preventDefault();
+diff --git a/frappe/public/js/jquery-bootstrap.js b/frappe/public/js/jquery-bootstrap.js
+index 45291a2..30ba56a 100644
+--- a/frappe/public/js/jquery-bootstrap.js
++++ b/frappe/public/js/jquery-bootstrap.js
+@@ -15,6 +15,32 @@ import Util from "bootstrap/js/dist/util";
+ window.jQuery = jQuery;
+ window.$ = jQuery;
+ 
++function registerPlugin(name, Plugin) {
++	if (Plugin && typeof Plugin._jQueryInterface === "function") {
++		$.fn[name] = function (config) {
++			return Plugin._jQueryInterface.call(this, config);
++		};
++		$.fn[name].Constructor = Plugin;
++		$.fn[name].noConflict = function () {
++			$.fn[name] = undefined;
++			return Plugin._jQueryInterface;
++		};
++	}
++}
++
++registerPlugin("alert", Alert);
++registerPlugin("button", Button);
++registerPlugin("carousel", Carousel);
++registerPlugin("collapse", Collapse);
++registerPlugin("dropdown", Dropdown);
++registerPlugin("modal", Modal);
++registerPlugin("popover", Popover);
++registerPlugin("scrollspy", Scrollspy);
++registerPlugin("tab", Tab);
++registerPlugin("toast", Toast);
++registerPlugin("tooltip", Tooltip);
++registerPlugin("util", Util);
++
+ export {
+ 	Util,
+ 	Alert,

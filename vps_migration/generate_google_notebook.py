@@ -245,14 +245,49 @@ for title, code in code_reviews.items():
     print(f"\\n--- {title} ---")
     print(code.strip())""")
 
-    # CELL 6: Live Fleet & Job Orders Analytics Visualization
-    add_markdown("""### Step 5: Live Fleet & Operations Analytics
+    # CELL 6: ERPNext Deployment Implementation Plan for ULTRA MRF
+    add_markdown("""### Step 5: ERPNext Production Deployment Implementation Plan
+Comprehensive deployment plan detailing cloud hosting, multi-company configuration, branch hardware setups, UAT scenarios, and cutover protocols.""")
+
+    add_code("""from IPython.display import display, Markdown
+
+deployment_plan_summary = \"\"\"
+# 🚀 ERPNext Production Deployment Implementation Plan (ULTRA MRF)
+
+### 1. Cloud Production Infrastructure
+* **Production VPS Host**: Dedicated Linux server at `38.247.138.224:10017`.
+* **Database Backend**: PostgreSQL 15+ (`site1.local` with 49MB schema).
+* **Reverse Proxy**: Caddy v2 / Nginx terminating SSL on ports 80/443.
+* **Process Orchestration**: Supervisor / Podman systemd zero-downtime worker restarts.
+
+### 2. Multi-Company Deployment (12 Entities)
+* **Corporate HQ**: `ULTRA MRF`
+* **8 Retail & Automotive Centers**: `Ultra MRF Dau Main`, `Ultra MRF Dau Annex`, `Ultra MRF San Fernando`, `Wheel Core`, `Automan Car Care Center`, `The Wheelhub`, `Ultra MRF Telebastagan`, `Ultra MRF Telebastagan 2`.
+* **3 Distribution Warehouses**: `Ultra MRF Warehouse Dau`, `San Fernando Warehouse`, `Ultra MRF Mexico Warehouse`.
+
+### 3. Branch Hardware Architecture
+* **Counter Stations**: Touchscreen PC, 80mm ESC/POS thermal receipt printer, 2D USB/Bluetooth barcode gun, cashier camera for QR badge scan, electronic cash drawer.
+* **Workshop Bays**: Rugged bay tablets/laptops for vehicle inspection and job order execution.
+
+### 4. Cutover Weekend Protocol
+* **T-48h (Fri 18:00)**: Cutover freeze; legacy systems set to read-only.
+* **T-36h (Sat 08:00)**: Wall-to-wall physical inventory audit across branch stores.
+* **T-24h (Sat 14:00)**: Ingest opening stock into `tabBin` via Stock Reconciliation.
+* **T-16h (Sat 18:00)**: Ingest opening AR/AP and trial balance journals.
+* **T-12h (Sun 09:00)**: Hardware sanity dry-run: 5 test counter sales.
+* **T-4h (Sun 16:00)**: Formal executive Go/No-Go sign-off.
+* **T-0 (Mon 07:30)**: Live production release across branch cashiers.
+\"\"\"
+
+display(Markdown(deployment_plan_summary))""")
+
+    # CELL 7: Live Fleet & Job Orders Analytics Visualization
+    add_markdown("""### Step 6: Live Fleet & Operations Analytics
 Query real-time database records and generate interactive visual charts for executive review.""")
 
     add_code("""# Visual Analytics: Fleet and Operational Overview
 import matplotlib.pyplot as plt
 
-# Fetch top vehicle makes from database
 try:
     url = f"{BASE_URL}/api/resource/Customer Vehicle?fields=[\\"make\\"]&limit_page_length=500"
     r = client.session.get(url, timeout=10)
@@ -275,16 +310,18 @@ try:
 except Exception as e:
     print(f"Analytics query notice: {e}")""")
 
-    # CELL 7: Backup & Synchronization to Google Drive
-    add_markdown("""### Step 6: Backup All Documentation & Code Reviews to Google Drive
-Execute this cell to copy all documentation files, the Word (`.docx`) manual, project plans, and code reviews directly into your **Google Drive**.""")
+    # CELL 8: Backup & Synchronization to Google Drive
+    add_markdown("""### Step 7: Backup All Documentation, Plans & Word Manuals to Google Drive
+Execute this cell to copy all documentation files, the Word (`.docx`) manuals, deployment plans, and code reviews directly into your **Google Drive**.""")
 
     add_code("""import os, shutil
 
 local_docs = [
     r'c:\\Users\\josem\\erpnext-system\\docs\\FULL_TECHNICAL_AND_FUNCTIONAL_DOCUMENTATION.md',
+    r'c:\\Users\\josem\\erpnext-system\\docs\\ERPNEXT_DEPLOYMENT_IMPLEMENTATION_PLAN_ULTRA_MRF.md',
     r'c:\\Users\\josem\\erpnext-system\\docs\\ULTRA_MRF_IMPLEMENTATION_PROJECT_PLAN.md',
-    r'c:\\Users\\josem\\erpnext-system\\docs\\ERPNext_Vehicle_Management_System_Documentation_Complete.docx'
+    r'c:\\Users\\josem\\erpnext-system\\docs\\ERPNext_Vehicle_Management_System_Documentation_Complete.docx',
+    r'c:\\Users\\josem\\erpnext-system\\docs\\ERPNEXT_DEPLOYMENT_IMPLEMENTATION_PLAN_ULTRA_MRF.docx'
 ]
 
 print(f"Target Google Drive Folder: {GOOGLE_DRIVE_PATH}")
@@ -301,7 +338,6 @@ for file_path in local_docs:
         except Exception as e:
             print(f"⚠️ Error copying {base_name}: {e}")
     else:
-        # Fallback if running remotely on Colab
         base_name = os.path.basename(file_path)
         dest_path = os.path.join(GOOGLE_DRIVE_PATH, base_name)
         with open(dest_path, 'w', encoding='utf-8') as f:

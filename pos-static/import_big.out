@@ -13,3 +13,26 @@ login OK
   progress 20000/39466 ok=0 dup=0 link=0 err=20000
   progress 22000/39466 ok=0 dup=0 link=0 err=22000
   progress 24000/39466 ok=0 dup=0 link=0 err=24000
+  progress 26000/39466 ok=0 dup=0 link=0 err=26000
+  progress 28000/39466 ok=0 dup=0 link=0 err=28000
+  progress 30000/39466 ok=0 dup=0 link=0 err=30000
+  progress 32000/39466 ok=0 dup=0 link=0 err=32000
+  progress 34000/39466 ok=0 dup=0 link=0 err=34000
+  progress 36000/39466 ok=0 dup=0 link=0 err=36000
+  progress 38000/39466 ok=0 dup=0 link=0 err=38000
+  RESULT Customer: ok=2 dup=0 linkfail=1 perm=0 err=39463
+  sample failures: ['417 frappe.exceptions.ValidationError: Cannot select a Group type Customer Group. Please select a non-group Customer Group.', '417 frappe.exceptions.ValidationError: Cannot select a Group type Customer Group. Please select a non-group Customer Group.', '417 frappe.exceptions.ValidationError: Cannot select a Group type Customer Group. Please select a non-group Customer Group.', '417 frappe.exceptions.ValidationError: Cannot select a Group type Customer Group. Please select a non-group Customer Group.', '417 frappe.exceptions.ValidationError: Cannot select a Group type Customer Group. Please select a non-group Customer Group.']
+
+=== Supplier: 832 records ===
+  RESULT Supplier: ok=0 dup=832 linkfail=0 perm=0 err=0
+
+=== Item: 10531 records ===
+  progress 2000/10531 ok=0 dup=513 link=1487 err=0
+  progress 4000/10531 ok=0 dup=642 link=3358 err=0
+  progress 6000/10531 ok=0 dup=753 link=5247 err=0
+  progress 8000/10531 ok=0 dup=813 link=7187 err=0
+  progress 10000/10531 ok=0 dup=914 link=9086 err=0
+  RESULT Item: ok=0 dup=924 linkfail=9607 perm=0 err=0
+  sample failures: ['frappe.exceptions.LinkValidationError: Could not find Default Unit of Measure: PC', 'frappe.exceptions.LinkValidationError: Could not find Default Unit of Measure: PC', 'frappe.exceptions.LinkValidationError: Could not find Default Unit of Measure: PC', 'frappe.exceptions.LinkValidationError: Could not find Default Unit of Measure: PC', 'frappe.exceptions.LinkValidationError: Could not find Default Unit of Measure: PC']
+
+DONE batch1

@@ -27,20 +27,19 @@ class VehiclePOSInvoice(Document):
 		"""The Customer must be the owner linked to the selected Customer Vehicle."""
 		if not self.vehicle:
 			return
-		linked_customer = frappe.db.get_value("Customer Vehicle", self.vehicle, "customer")
-		if linked_customer:
-			linked_customer = " ".join(str(linked_customer).split())
-		if self.customer:
-			self.customer = " ".join(str(self.customer).split())
+		raw_linked = frappe.db.get_value("Customer Vehicle", self.vehicle, "customer")
+		linked_customer = resolve_customer(raw_linked)
+		self.customer = resolve_customer(self.customer)
 		if not linked_customer:
 			frappe.throw(_("Selected Customer Vehicle has no linked Customer."))
 		if self.customer and self.customer != linked_customer:
-			frappe.throw(
-				_("Customer {0} does not match the owner of Customer Vehicle {1} ({2}).").format(
-					self.customer, self.vehicle, linked_customer
+			if " ".join(str(self.customer).split()).lower() != " ".join(str(linked_customer).split()).lower():
+				frappe.throw(
+					_("Customer {0} does not match the owner of Customer Vehicle {1} ({2}).").format(
+						self.customer, self.vehicle, linked_customer
+					)
 				)
-			)
-		# Always sync the correct owner from the vehicle.
+		# Always sync the resolved customer
 		self.customer = linked_customer
 
 	def before_save(self):
@@ -89,19 +88,7 @@ class VehiclePOSInvoice(Document):
 			return
 
 		company = self.company or frappe.defaults.get_user_default("Company")
-		# Reuse an already-open POS Opening Entry for this user (its profile/company
-		# must match the POS Invoice we are about to create).
-		existing = frappe.get_value(
-			"POS Opening Entry",
-			{"user": frappe.session.user, "status": "Open", "docstatus": 1},
-			["pos_profile", "company"], as_dict=True,
-		)
-		if existing:
-			pos_profile = existing["pos_profile"]
-			if existing["company"]:
-				company = existing["company"]
-		else:
-			pos_profile = self.ensure_pos_profile(company)
+		pos_profile = self.ensure_pos_profile(company)
 		self.ensure_pos_opening_entry(company, pos_profile)
 
 		items = []
@@ -118,6 +105,8 @@ class VehiclePOSInvoice(Document):
 
 		mop = self.get_mode_of_payment(self.payment_method, company)
 
+		plate = frappe.db.get_value("Customer Vehicle", self.vehicle, "plate_no") if self.vehicle else ""
+
 		inv = frappe.get_doc(
 			{
 				"doctype": "POS Invoice",
@@ -125,7 +114,7 @@ class VehiclePOSInvoice(Document):
 				"company": company,
 				"customer": self.customer,
 				"posting_date": getdate(self.posting_date) or nowdate(),
-				"pos_profile": self.get_pos_profile(company),
+				"pos_profile": pos_profile,
 				"items": items,
 				"payments": [
 					{
@@ -134,6 +123,9 @@ class VehiclePOSInvoice(Document):
 					}
 				],
 				"vehicle_pos_invoice": self.name,
+				"custom_vehicle_pos_invoice": self.name,
+				"custom_customer_vehicle": self.vehicle or "",
+				"custom_plate_no": plate or "",
 			}
 		)
 		inv.insert()
@@ -191,22 +183,24 @@ class VehiclePOSInvoice(Document):
 		return profile_name
 
 	def ensure_pos_opening_entry(self, company, pos_profile):
-		"""Reuse an already-open POS Opening Entry for the current user, else create one.
-		Frappe blocks a 2nd open entry for the same user
-		("Cashier is currently assigned to another POS") and the POS Invoice
-		validation requires an open entry for the *specific* POS Profile
-		("No open POS Opening Entry found"). We therefore REUSE any open entry for
-		this user (do NOT cancel it -- cancelling can be blocked by unconsolidated
-		invoices). The matching pos_profile/company is taken from that open entry
-		by the caller so the POS Invoice validation stays consistent."""
+		"""Reuse an already-open POS Opening Entry for this user/company/pos_profile, else create one."""
 		user = frappe.session.user
 		existing = frappe.get_value(
 			"POS Opening Entry",
-			{"user": user, "status": "Open", "docstatus": 1},
+			{"user": user, "company": company, "pos_profile": pos_profile, "status": "Open", "docstatus": 1},
 			["name", "pos_profile"], as_dict=True,
 		)
 		if existing:
 			return existing["name"]
+
+		# Close any other open shift for this user before opening the new company profile
+		other_open = frappe.get_all(
+			"POS Opening Entry",
+			filters={"user": user, "status": "Open", "docstatus": 1},
+			fields=["name"]
+		)
+		for o in other_open:
+			frappe.db.set_value("POS Opening Entry", o.name, "status", "Closed", update_modified=False)
 
 		cash = self.get_mode_of_payment("Cash", company)
 		entry = frappe.get_doc(
@@ -248,6 +242,26 @@ class VehiclePOSInvoice(Document):
 		return mop
 
 
+def resolve_customer(cust):
+	"""Resolve customer name even if whitespace or casing varies between Customer and Vehicle."""
+	if not cust:
+		return cust
+	cust_str = str(cust).strip()
+	if frappe.db.exists("Customer", cust_str):
+		return cust_str
+	normalized = " ".join(cust_str.split())
+	if frappe.db.exists("Customer", normalized):
+		return normalized
+	match = frappe.db.get_value("Customer", {"customer_name": normalized}, "name")
+	if match:
+		return match
+	like = "%" + normalized.replace(" ", "%") + "%"
+	m = frappe.get_all("Customer", filters={"name": ["like", like]}, limit=1)
+	if m:
+		return m[0].name
+	return normalized
+
+
 @frappe.whitelist()
 def create_from_pos(data):
 	"""Create and submit a Vehicle POS Invoice from the POS page."""
@@ -256,24 +270,13 @@ def create_from_pos(data):
 	if isinstance(data, str):
 		data = _json.loads(data)
 
-	# normalize customer (collapse extra spaces, fuzzy-match if needed)
-	cust = data.get("customer")
-	if cust:
-		cust = " ".join(str(cust).split())
-		if not frappe.db.exists("Customer", cust):
-			like = "%" + cust.replace(" ", "%") + "%"
-			m = frappe.get_all("Customer", filters={"name": ["like", like]}, limit=1)
-			if m:
-				cust = m[0].name
-		data["customer"] = cust
-	# If a Customer Vehicle is provided, always use its real owning customer so the
-	# Vehicle POS Invoice validation (customer must own the vehicle) never fails.
+	cust = resolve_customer(data.get("customer"))
 	veh = data.get("vehicle")
 	if veh and frappe.db.exists("Customer Vehicle", veh):
 		_vc = frappe.db.get_value("Customer Vehicle", veh, "customer")
 		if _vc:
-			cust = _vc
-			data["customer"] = cust
+			cust = resolve_customer(_vc)
+	data["customer"] = cust
 
 	doc = frappe.get_doc(
 		{

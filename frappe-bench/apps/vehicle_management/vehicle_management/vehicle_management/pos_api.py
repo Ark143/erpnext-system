@@ -29,43 +29,63 @@ def get_meta():
 
 
 @frappe.whitelist()
-def get_items(txt=None, category=None, company=None, start=0, limit=80):
-	"""Search sellable items for the POS catalog grid."""
-	filters = [["Item", "disabled", "=", 0], ["Item", "is_sales_item", "=", 1]]
-	if category:
-		filters.append(["Item", "item_group", "=", category])
+def get_items(txt=None, category=None, company=None, only_stock=0, start=0, limit=80):
+	"""Search sellable items for the POS catalog grid, with optional in-stock filter."""
+	only_stock = cint_safe(only_stock)
+	where_clauses = ["i.disabled = 0", "i.is_sales_item = 1"]
+	params = []
 
-	or_filters = None
+	if category:
+		where_clauses.append("i.item_group = %s")
+		params.append(category)
+
 	if txt:
 		like = "%{}%".format(txt)
-		or_filters = [
-			["Item", "name", "like", like],
-			["Item", "item_name", "like", like],
-			["Item", "barcode", "like", like],
-		]
+		where_clauses.append("(i.name LIKE %s OR i.item_name LIKE %s OR i.barcode LIKE %s)")
+		params.extend([like, like, like])
 
-	items = frappe.get_all(
-		"Item",
-		filters=filters,
-		or_filters=or_filters,
-		fields=["name", "item_name", "standard_rate", "stock_uom", "item_group"],
-		order_by="item_name asc",
-		start=cint_safe(start),
-		limit=cint_safe(limit),
-	)
+	wh_join = ""
+	if company:
+		wh_join = 'JOIN "tabWarehouse" w ON w.name = b.warehouse AND w.company = %s'
+		params.append(company)
 
-	out = []
-	for it in items:
-		out.append(
-			{
-				"code": it.name,
-				"name": it.item_name or it.name,
-				"rate": flt(it.standard_rate) or 0.0,
-				"uom": it.stock_uom or "",
-				"group": it.item_group or "",
-			}
-		)
-	return out
+	if only_stock:
+		sql = f"""
+			SELECT i.name as code, i.item_name as name, i.standard_rate as rate,
+			       i.stock_uom as uom, i.item_group as `group`,
+			       COALESCE(SUM(b.actual_qty), 0) as stock
+			FROM "tabItem" i
+			JOIN "tabBin" b ON b.item_code = i.name AND b.actual_qty > 0
+			{wh_join}
+			WHERE {" AND ".join(where_clauses)}
+			GROUP BY i.name, i.item_name, i.standard_rate, i.stock_uom, i.item_group
+			HAVING SUM(b.actual_qty) > 0
+			ORDER BY stock DESC, i.item_name ASC
+			LIMIT {cint_safe(limit)} OFFSET {cint_safe(start)}
+		"""
+		rows = frappe.db.sql(sql, tuple(params), as_dict=True)
+		for r in rows:
+			r["stock"] = round(flt(r["stock"]), 2)
+			r["rate"] = round(flt(r["rate"]), 2)
+		return rows
+
+	sql = f"""
+		SELECT i.name as code, i.item_name as name, i.standard_rate as rate,
+		       i.stock_uom as uom, i.item_group as `group`,
+		       COALESCE((
+		           SELECT SUM(b.actual_qty) FROM "tabBin" b 
+		           WHERE b.item_code = i.name AND b.actual_qty > 0
+		       ), 0) as stock
+		FROM "tabItem" i
+		WHERE {" AND ".join(where_clauses)}
+		ORDER BY i.item_name ASC
+		LIMIT {cint_safe(limit)} OFFSET {cint_safe(start)}
+	"""
+	rows = frappe.db.sql(sql, tuple(params), as_dict=True)
+	for r in rows:
+		r["stock"] = round(flt(r["stock"]), 2)
+		r["rate"] = round(flt(r["rate"]), 2)
+	return rows
 
 
 @frappe.whitelist()
@@ -370,9 +390,9 @@ def get_stock(codes=None):
 
 
 @frappe.whitelist()
-def vm_pos_items(txt=None, category=None, company=None):
+def vm_pos_items(txt=None, category=None, company=None, only_stock=0):
     """POS catalog search (client calls this)."""
-    return get_items(txt=txt, category=category, company=company)
+    return get_items(txt=txt, category=category, company=company, only_stock=only_stock)
 
 
 @frappe.whitelist()
@@ -385,3 +405,75 @@ def vm_pos_vehicles(txt=None):
 def vm_pos_vehicle_customer(vehicle=None):
     """Resolve Customer Vehicle -> Customer (client calls this)."""
     return get_customer_vehicle(vehicle=vehicle)
+
+
+@frappe.whitelist()
+def vm_post_asset_depreciations(posting_date=None):
+    """Run depreciation scheduler to post all due depreciation entries."""
+    from erpnext.assets.doctype.asset.depreciation import post_depreciation_entries
+    date = posting_date or frappe.utils.nowdate()
+    post_depreciation_entries(date=date)
+    
+    jes = frappe.get_all(
+        "Journal Entry",
+        filters={"voucher_type": "Depreciation Entry"},
+        fields=["name", "posting_date", "total_debit", "user_remark"],
+        order_by="creation desc",
+        limit=50
+    )
+    assets = frappe.get_all(
+        "Asset",
+        fields=["name", "asset_name", "gross_purchase_amount", "value_after_depreciation", "status"],
+        order_by="creation desc",
+        limit=20
+    )
+    
+    return {
+        "status": "success",
+        "posted_date": date,
+        "journal_entries_count": len(jes),
+        "recent_journal_entries": jes,
+        "assets": assets
+    }
+
+
+# Compatibility patch: ensure Exporter and BaseDocument gracefully handle list-valued metadata fields
+try:
+    import json
+    from frappe.model.base_document import BaseDocument
+    from frappe.core.doctype.data_import.exporter import Exporter
+
+    _orig_get_valid_dict = BaseDocument.get_valid_dict
+
+    def _safe_get_valid_dict(self, convert_dates_to_str=False, ignore_nulls=False, ignore_virtual=False):
+        for df in self.meta.get("fields"):
+            val = self.get(df.fieldname)
+            if isinstance(val, (list, dict)) and df.fieldtype not in frappe.model.table_fields:
+                if df.fieldtype in ("Code", "Small Text", "Data", "Text", "Long Text", "JSON"):
+                    self.set(df.fieldname, json.dumps(val, separators=(",", ":")))
+        return _orig_get_valid_dict(self, convert_dates_to_str, ignore_nulls, ignore_virtual)
+
+    BaseDocument.get_valid_dict = _safe_get_valid_dict
+
+    def _safe_serialize_exportable_fields(self):
+        fields = []
+        for key, exportable_fields in self.exportable_fields.items():
+            for _df in exportable_fields:
+                if hasattr(_df, "as_dict"):
+                    try:
+                        df = _df.as_dict()
+                    except Exception:
+                        df = frappe._dict(_df.__dict__)
+                else:
+                    df = _df.copy()
+
+                df.is_child_table_field = key != self.doctype
+                if df.is_child_table_field:
+                    df.child_table_df = self.meta.get_field(key)
+                fields.append(df)
+        return fields
+
+    Exporter.serialize_exportable_fields = _safe_serialize_exportable_fields
+except Exception:
+    pass
+

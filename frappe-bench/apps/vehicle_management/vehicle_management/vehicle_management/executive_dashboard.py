@@ -588,14 +588,48 @@ def get_approvals(company):
                     oldest_days = 0
 
             avg_wait = cint(drafts.get('avg_wait') or 0)
-            
+
+            items = []
+            try:
+                party_col = "supplier" if dt in ["Purchase Order", "Purchase Invoice"] else ("customer" if dt in ["Sales Order", "Sales Invoice"] else "name")
+                has_party = frappe.db.has_column(dt, party_col)
+                party_expr = party_col if has_party else "name"
+                if has_company:
+                    items_sql = f"""
+                        SELECT name, {amt_expr} as amount, {date_expr} as date, {party_expr} as party
+                        FROM "tab{dt}"
+                        WHERE company = %s AND docstatus = 0
+                        ORDER BY {date_expr} DESC, creation DESC
+                        LIMIT 5
+                    """
+                    raw_items = frappe.db.sql(items_sql, (company,), as_dict=True)
+                else:
+                    items_sql = f"""
+                        SELECT name, {amt_expr} as amount, {date_expr} as date, {party_expr} as party
+                        FROM "tab{dt}"
+                        WHERE docstatus = 0
+                        ORDER BY {date_expr} DESC, creation DESC
+                        LIMIT 5
+                    """
+                    raw_items = frappe.db.sql(items_sql, as_dict=True)
+                for ri in raw_items:
+                    items.append({
+                        "name": ri["name"],
+                        "amount": flt(ri.get("amount") or 0.0),
+                        "date": str(ri.get("date") or "")[:10],
+                        "party": str(ri.get("party") or "")
+                    })
+            except Exception:
+                items = []
+
             cards.append({
                 "doctype": dt,
                 "count": cint(drafts['cnt']),
                 "oldest_days": oldest_days,
                 "avg_wait_days": avg_wait,
                 "highest": flt(drafts['high']),
-                "total": flt(drafts['tot'])
+                "total": flt(drafts['tot']),
+                "items": items
             })
         except Exception as e:
             cards.append({
@@ -604,7 +638,8 @@ def get_approvals(company):
                 "oldest_days": 0,
                 "avg_wait_days": 0,
                 "highest": 0.0,
-                "total": 0.0
+                "total": 0.0,
+                "items": []
             })
     return cards
 

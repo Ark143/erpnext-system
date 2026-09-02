@@ -13020,14 +13020,14 @@ const POS = {
     const comp = r.querySelector(".vpos-company");
     comp.disabled = false;
     comp.value = this.company || "";
-    comp.onchange = () => { this.company = comp.value || null; this.totals(); };
+    comp.onchange = () => { this.company = comp.value || null; this.totals(); this.search(); };
 
     const st = r.querySelector("#vpos-stock-toggle");
     st.onclick = () => {
       self.onlyStock = !self.onlyStock;
       st.classList.toggle("on", self.onlyStock);
       st.textContent = "In Stock: " + (self.onlyStock ? "ON" : "OFF");
-      self.render(self._items || []);
+      self.search();
     };
 
     r.querySelector(".vpos-paid").addEventListener("click", () => self.openKeypad());
@@ -13425,7 +13425,17 @@ const POS = {
 
   async search() {
     const txt = (document.querySelector(".vpos-search") || {}).value || "";
-    const items = await api("vm_pos_items", { txt: txt, category: this.category || "", company: this.company || "" }) || [];
+    const items = await api("vm_pos_get_items", {
+      txt: txt,
+      category: this.category || "",
+      company: this.company || "",
+      only_stock: this.onlyStock ? 1 : 0
+    }) || [];
+    items.forEach(it => {
+      if (it.stock != null) {
+        this.STOCK[it.code] = { stock: flt(it.stock), bins: [] };
+      }
+    });
     this.render(items);
   },
 
@@ -13433,12 +13443,21 @@ const POS = {
     const box = document.getElementById("vpos-products");
     if (!box) return;
     box.innerHTML = "";
-    if (!items.length) { box.innerHTML = '<div class="vpos-empty">No matching products or services.</div>'; return; }
+    if (!items.length) {
+      box.innerHTML = this.onlyStock
+        ? '<div class="vpos-empty">No items currently in stock for the selected company/filter.</div>'
+        : '<div class="vpos-empty">No matching products or services.</div>';
+      return;
+    }
     this._items = items;
-    await this.loadStock(items);
     let visible = items;
-    if (this.onlyStock) { visible = items.filter(it => flt((this.STOCK[it.code] || {}).stock) > 0); }
-    if (!visible.length) { box.innerHTML = '<div class="vpos-empty">No items currently in stock.</div>'; return; }
+    if (this.onlyStock) {
+      visible = items.filter(it => flt(it.stock != null ? it.stock : ((this.STOCK[it.code] || {}).stock)) > 0);
+    }
+    if (!visible.length) {
+      box.innerHTML = '<div class="vpos-empty">No items currently in stock for the selected company/filter.</div>';
+      return;
+    }
     const shown = this.showAll ? visible : visible.slice(0, this.PROD_LIMIT);
     const self = this;
     shown.forEach(it => self.card(it, box));
@@ -13451,6 +13470,7 @@ const POS = {
       more.onclick = () => { self.showAll = !self.showAll; self.render(items); };
       box.appendChild(more);
     }
+    this.loadStock(shown);
   },
 
   async loadStock(list) {

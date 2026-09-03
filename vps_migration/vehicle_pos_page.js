@@ -694,6 +694,9 @@ function inject_pos_styles() {
 		.vpos-clear:hover { background: #f0faf8; }
 		.vpos-charge { flex: 1; background: #16a34a; border: none; color: #fff; font-weight: 800; font-size: 14px; border-radius: 10px; padding: 12px; cursor: pointer; transition: .12s; }
 		.vpos-charge:hover { background: #15803d; }
+		.vpos-print { flex: 0 0 120px; background: #f5a623; border: none; color: #1a1a1a; font-weight: 800; font-size: 13px; border-radius: 10px; padding: 12px; cursor: pointer; transition: .12s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+		.vpos-print:hover { background: #e0961a; }
+		.vpos-print:disabled { opacity: .4; cursor: not-allowed; }
 		/* RESPONSIVE: tablet + mobile (fix overlap + 50/50 on all sizes) */
 		@media (max-width: 1024px) {
 			.vpos-app { grid-template-columns: 1fr 1fr; }

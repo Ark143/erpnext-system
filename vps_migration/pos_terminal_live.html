@@ -402,7 +402,12 @@ html, body { margin: 0; padding: 0; min-height: 100%; font-family: var(--font-ba
   .vpos-charge { height: 46px; font-size: 15px; }
 }
 
-
+@media print {
+  @page { size: 85.6mm 54mm; margin: 0; }
+  body * { visibility: hidden !important; }
+  .vpos-idcard, .vpos-idcard * { visibility: visible !important; }
+  .vpos-idcard { position: fixed; left: 0; top: 0; margin: 0; box-shadow: none; border: 1px solid #000; width: 85.6mm !important; height: 54mm !important; }
+}
 
 /* Non-POS full-width layout for History & Profile */
 .vpos-app.non-pos {
@@ -897,582 +902,6 @@ html, body { margin: 0; padding: 0; min-height: 100%; font-family: var(--font-ba
 .vpos-summary-row .amt { font-weight: 700; color: #f0f6fc; }
 .vpos-summary-row .amt.pos { color: #16c784; }
 .vpos-summary-row .amt.neg { color: #f85149; }
-
-/* Receipt Modal Overlay & Print Styling */
-.vpos-receipt-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(12, 26, 24, 0.75);
-  backdrop-filter: blur(4px);
-  z-index: 10000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-}
-.vpos-receipt-dialog {
-  background: #ffffff;
-  color: #0c1a18;
-  border-radius: 16px;
-  width: 100%;
-  max-width: 480px;
-  max-height: 90vh;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
-}
-.vpos-receipt-dialog-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 20px;
-  background: #f4f7f6;
-  border-bottom: 1px solid #e2e8e6;
-  font-family: var(--font-head);
-  font-weight: 700;
-  font-size: 14px;
-  color: #13302b;
-}
-.vpos-receipt-dialog-close {
-  background: none;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-  color: #5b6b68;
-  line-height: 1;
-  padding: 4px;
-}
-.vpos-receipt-dialog-body {
-  padding: 20px 24px;
-  overflow-y: auto;
-  flex: 1;
-  background: #fff;
-}
-.vpos-receipt-dialog-foot {
-  display: flex;
-  gap: 10px;
-  padding: 14px 20px;
-  background: #f4f7f6;
-  border-top: 1px solid #e2e8e6;
-}
-.vpos-receipt-btn-print {
-  flex: 2;
-  background: var(--mint);
-  color: #04201a;
-  border: none;
-  border-radius: 10px;
-  padding: 12px 16px;
-  font-weight: 800;
-  font-size: 14px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  transition: background 0.15s;
-}
-.vpos-receipt-btn-print:hover {
-  background: var(--mint-d);
-}
-.vpos-receipt-btn-desk {
-  background: #e2e8e6;
-  color: #13302b;
-  border: none;
-  border-radius: 10px;
-  padding: 12px 14px;
-  font-weight: 700;
-  font-size: 13px;
-  cursor: pointer;
-}
-.vpos-receipt-btn-desk:hover {
-  background: #d0dad7;
-}
-.vpos-receipt-btn-close {
-  flex: 1;
-  background: #e2e8e6;
-  color: #13302b;
-  border: none;
-  border-radius: 10px;
-  padding: 12px 14px;
-  font-weight: 700;
-  font-size: 13px;
-  cursor: pointer;
-}
-.vpos-receipt-btn-close:hover {
-  background: #d0dad7;
-}
-.vpos-hist-print-btn {
-  background: rgba(22, 199, 132, 0.12);
-  color: #0fa76d;
-  border: 1px solid rgba(22, 199, 132, 0.3);
-  border-radius: 6px;
-  padding: 5px 12px;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  transition: all 0.15s;
-}
-.vpos-hist-print-btn:hover {
-  background: var(--mint);
-  color: #04201a;
-  border-color: var(--mint);
-}
-
-
-
-/* ── Aggressively Hide ERPNext Default Website Header, Navbar, Footer, Breadcrumbs ── */
-header, footer, nav, .navbar, .web-footer, .page-header, .page-breadcrumbs, .footer-powered, .page-head, .page-footer, .standard-sidebar, .page-sidebar, .sidebar-column, .web-footer-powered {
-  display: none !important;
-  visibility: hidden !important;
-  height: 0 !important;
-  max-height: 0 !important;
-  min-height: 0 !important;
-  overflow: hidden !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  border: none !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
-
-body, html {
-  margin: 0 !important;
-  padding: 0 !important;
-  overflow: hidden !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  max-width: 100vw !important;
-  max-height: 100vh !important;
-  background: #0c1a18 !important;
-}
-
-.page-content-wrapper, .page-container, #page-vehicle-pos-terminal, .main-column, .container {
-  margin: 0 !important;
-  padding: 0 !important;
-  max-width: 100vw !important;
-  width: 100vw !important;
-  height: 100vh !important;
-}
-
-/* ── Standard 1-Page Thermal POS Receipt Layout (80mm & Screen) ── */
-.vpos-receipt {
-  width: 100%;
-  max-width: 330px;
-  margin: 0 auto;
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 11.5px;
-  line-height: 1.35;
-  color: #000;
-  background: #fff;
-  padding: 12px 14px;
-  box-sizing: border-box;
-}
-
-.vpos-receipt-co {
-  font-family: var(--font-head, sans-serif);
-  font-size: 16px;
-  font-weight: 800;
-  text-align: center;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: #0c1a18;
-}
-
-.vpos-receipt-sub {
-  font-size: 10.5px;
-  text-align: center;
-  color: #444;
-  margin-top: 1px;
-}
-
-.vpos-receipt-not-official {
-  margin: 7px 0;
-  padding: 4px 6px;
-  border-top: 1px dashed #000;
-  border-bottom: 1px dashed #000;
-  text-align: center;
-  font-weight: 800;
-  font-size: 10.5px;
-  letter-spacing: 0.5px;
-  color: #000;
-  background: #f8f8f8;
-}
-
-.vpos-receipt-sep {
-  border-top: 1px dashed #555;
-  margin: 6px 0;
-}
-
-.vpos-receipt-sep-solid {
-  border-top: 1.5px solid #000;
-  margin: 7px 0;
-}
-
-.vpos-receipt-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin: 2px 0;
-  font-size: 11px;
-}
-
-.vpos-receipt-row b {
-  color: #000;
-  font-weight: 700;
-}
-
-.vpos-receipt-tbl {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 5px 0;
-}
-
-.vpos-receipt-tbl th {
-  border-bottom: 1px dashed #000;
-  padding: 3px 0;
-  font-size: 10.5px;
-  text-align: left;
-  font-weight: 700;
-}
-
-.vpos-receipt-tbl th.r, .vpos-receipt-tbl td.r {
-  text-align: right;
-}
-
-.vpos-receipt-tbl td {
-  padding: 3px 0;
-  font-size: 11px;
-  vertical-align: top;
-}
-
-.vpos-receipt-grand-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 14.5px;
-  font-weight: 900;
-  color: #000;
-  padding: 4px 0;
-}
-
-.vpos-receipt-foot-msg {
-  text-align: center;
-  font-size: 9.5px;
-  color: #555;
-  margin-top: 8px;
-}
-
-
-
-
-/* ── High Legibility, Crisp POS Receipt Modal & Thermal / Standard Print Layout ── */
-.vpos-receipt-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(12, 26, 24, 0.82);
-  backdrop-filter: blur(5px);
-  z-index: 10000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-.vpos-receipt-dialog {
-  background: #ffffff;
-  color: #111827;
-  border-radius: 18px;
-  width: 100%;
-  max-width: 520px;
-  max-height: 92vh;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-}
-.vpos-receipt-dialog-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 24px;
-  background: #f8fafc;
-  border-bottom: 1px solid #e2e8f0;
-  font-family: var(--font-head, -apple-system, BlinkMacSystemFont, sans-serif);
-  font-weight: 800;
-  font-size: 16px;
-  color: #0f172a;
-}
-.vpos-receipt-dialog-close {
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: #64748b;
-  line-height: 1;
-  padding: 4px;
-  border-radius: 6px;
-}
-.vpos-receipt-dialog-close:hover {
-  background: #e2e8f0;
-  color: #0f172a;
-}
-.vpos-receipt-dialog-body {
-  padding: 24px 28px;
-  overflow-y: auto;
-  flex: 1;
-  background: #ffffff;
-}
-.vpos-receipt-dialog-foot {
-  display: flex;
-  gap: 12px;
-  padding: 16px 24px;
-  background: #f8fafc;
-  border-top: 1px solid #e2e8f0;
-}
-.vpos-receipt-btn-print {
-  flex: 2;
-  background: #10b981;
-  color: #ffffff;
-  border: none;
-  border-radius: 12px;
-  padding: 14px 20px;
-  font-weight: 800;
-  font-size: 15px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3);
-  transition: all 0.15s ease;
-}
-.vpos-receipt-btn-print:hover {
-  background: #059669;
-  transform: translateY(-1px);
-}
-.vpos-receipt-btn-desk {
-  background: #e2e8f0;
-  color: #1e293b;
-  border: none;
-  border-radius: 12px;
-  padding: 14px 16px;
-  font-weight: 700;
-  font-size: 14px;
-  cursor: pointer;
-}
-.vpos-receipt-btn-desk:hover {
-  background: #cbd5e1;
-}
-.vpos-receipt-btn-close {
-  flex: 1;
-  background: #e2e8f0;
-  color: #1e293b;
-  border: none;
-  border-radius: 12px;
-  padding: 14px 16px;
-  font-weight: 700;
-  font-size: 14px;
-  cursor: pointer;
-}
-.vpos-receipt-btn-close:hover {
-  background: #cbd5e1;
-}
-
-/* ── Receipt Content Inside Box ── */
-.vpos-receipt-box {
-  width: 100%;
-  max-width: 440px;
-  margin: 0 auto;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Courier New', monospace;
-  font-size: 13.5px;
-  line-height: 1.5;
-  color: #111827;
-  background: #ffffff;
-}
-
-.vpos-receipt-co {
-  font-size: 20px;
-  font-weight: 900;
-  text-align: center;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: #0f172a;
-}
-
-.vpos-receipt-sub {
-  font-size: 12px;
-  text-align: center;
-  color: #475569;
-  margin-top: 2px;
-  font-weight: 500;
-}
-
-.vpos-receipt-not-official {
-  margin: 12px 0;
-  padding: 8px 10px;
-  border: 1.5px dashed #dc2626;
-  background: #fef2f2;
-  text-align: center;
-  font-weight: 800;
-  font-size: 13px;
-  letter-spacing: 0.5px;
-  color: #b91c1c;
-  border-radius: 6px;
-}
-
-.vpos-receipt-sep {
-  border-top: 1px dashed #cbd5e1;
-  margin: 10px 0;
-}
-
-.vpos-receipt-sep-solid {
-  border-top: 2px solid #0f172a;
-  margin: 12px 0;
-}
-
-.vpos-receipt-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin: 4px 0;
-  font-size: 13.5px;
-}
-
-.vpos-receipt-row span:first-child {
-  color: #475569;
-}
-
-.vpos-receipt-row b, .vpos-receipt-row span:last-child {
-  color: #0f172a;
-  font-weight: 700;
-  text-align: right;
-}
-
-.vpos-receipt-item-block {
-  margin: 8px 0;
-  padding: 6px 0;
-  border-bottom: 1px dashed #e2e8f0;
-}
-.vpos-receipt-item-block:last-child {
-  border-bottom: none;
-}
-
-.vpos-receipt-item-header {
-  display: flex;
-  justify-content: space-between;
-  font-weight: 700;
-  font-size: 14px;
-  color: #0f172a;
-}
-
-.vpos-receipt-item-sub {
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  color: #64748b;
-  margin-top: 2px;
-}
-
-.vpos-receipt-grand-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 20px;
-  font-weight: 900;
-  color: #0f172a;
-  padding: 6px 0;
-}
-
-.vpos-receipt-foot-msg {
-  text-align: center;
-  font-size: 11.5px;
-  color: #64748b;
-  margin-top: 12px;
-  line-height: 1.4;
-}
-
-/* ── Print Stylesheet: Crisp, Standard 1-Page Thermal or Full Sheet ── */
-
-
-
-/* ── Direct Page Print Stylesheet: 100% Reliable across all browsers & iframes ── */
-@media screen {
-  #vpos-direct-print-area {
-    display: none !important;
-  }
-}
-
-@media print {
-  @page {
-    size: 80mm auto;
-    margin: 0;
-  }
-  html, body {
-    margin: 0 !important;
-    padding: 0 !important;
-    background: #ffffff !important;
-    color: #000000 !important;
-    width: 80mm !important;
-    height: auto !important;
-    overflow: visible !important;
-  }
-  
-  /* Force hide every UI element except the dedicated print container */
-  #vpos-root, #vpos-receipt-modal-overlay, .vpos-receipt-overlay, .navbar, .web-footer, header, footer, nav, .page-header, .page-breadcrumbs, .modal, .modal-backdrop {
-    display: none !important;
-    visibility: hidden !important;
-  }
-  
-  #vpos-direct-print-area, #vpos-direct-print-area * {
-    visibility: visible !important;
-  }
-  
-  #vpos-direct-print-area {
-    display: block !important;
-    position: static !important;
-    width: 76mm !important;
-    max-width: 76mm !important;
-    margin: 0 auto !important;
-    padding: 3mm 2mm !important;
-    box-sizing: border-box !important;
-    color: #000000 !important;
-    background: #ffffff !important;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Courier New', monospace !important;
-    font-size: 12px !important;
-    line-height: 1.35 !important;
-    page-break-inside: avoid !important;
-    page-break-after: avoid !important;
-  }
-  
-  #vpos-direct-print-area .vpos-receipt-co {
-    font-size: 16px !important;
-    font-weight: 900 !important;
-    text-align: center !important;
-    text-transform: uppercase !important;
-    color: #000 !important;
-  }
-  
-  #vpos-direct-print-area .vpos-receipt-not-official {
-    margin: 6px 0 !important;
-    padding: 4px 6px !important;
-    border: 1.5px dashed #000 !important;
-    text-align: center !important;
-    font-weight: 800 !important;
-    font-size: 11px !important;
-    color: #000 !important;
-    background: #fff !important;
-  }
-  
-  #vpos-direct-print-area .vpos-receipt-grand-row {
-    font-size: 16px !important;
-    font-weight: 900 !important;
-    color: #000 !important;
-  }
-}
-
 </style>
 
 <script id="vpos-libs">(function webpackUniversalModuleDefinition(root, factory) {
@@ -1533,7 +962,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
 /******/ 	__webpack_require__.n = function(module) {
-/******/ 		var getter = module && module["__esModule"] ?
+/******/ 		var getter = module && module.__esModule ?
 /******/ 			function getDefault() { return module['default']; } :
 /******/ 			function getModuleExports() { return module; };
 /******/ 		__webpack_require__.d(getter, 'a', getter);
@@ -13959,7 +13388,7 @@ var POS = {
 
   logout() {
     try { fetch("/api/method/logout", { method: "POST", headers: { "X-Requested-With": "XMLHttpRequest" } }); } catch (e) {}
-    window._vposPwd = null;
+    window.__vposPwd = null;
     this.loggedIn = false; this.cart = []; this.customer = null; this.vehicle = null; this.company = null;
     this.cashier = null; this.email = null; this.employee = null; this.loggedOutMsg = "You have been logged out. Sign in again to continue.";
     this.buildLogin();
@@ -14036,7 +13465,7 @@ var POS = {
     try {
       const j = await frappeLogin(usr, pwd);
       if (j && (j.message === "Logged In" || j.full_name || j.home_route || (j && !j.exc))) {
-        this.user = usr; window._vposPwd = pwd;
+        this.user = usr; window.__vposPwd = pwd;
         await this.afterLogin();
       } else {
         err.textContent = (j && j.message) ? j.message : "Login failed.";
@@ -14613,7 +14042,6 @@ var POS = {
     const printBtn = r.querySelector("#vpos-print-btn");
     if (printBtn) {
       printBtn.onclick = () => self.printReceipt();
-      printBtn.disabled = !(self.cart.length || self._recentSale);
     }
 
     const vin = r.querySelector(".vpos-vin");
@@ -14876,7 +14304,6 @@ var POS = {
         <div class="vpos-hist-foot">
           <div class="vpos-hist-amt">${peso(t.total_amount)}</div>
           <div class="vpos-hist-tags">
-            <button class="vpos-hist-print-btn" type="button" onclick="event.stopPropagation(); POS.showReceiptForInvoice('${t.name}')">🖨 Print Receipt</button>
             <span class="vpos-hist-tag">${t.payment_method || "Cash"}</span>
             <span class="vpos-hist-tag ${isPaid ? 'paid' : ''}">${isPaid ? '✓ Paid' : 'Draft'}</span>
           </div>
@@ -14888,7 +14315,7 @@ var POS = {
   renderProfile() {
     const view = document.getElementById("vpos-view-profile");
     if (!view) return;
-    const qrData = (this.email || this.cashier || "") + "|" + (window._vposPwd || "");
+    const qrData = (this.email || this.cashier || "") + "|" + (window.__vposPwd || "");
     let svg = "";
     try {
       const qr = window.qrcode(0, "M");
@@ -14948,7 +14375,7 @@ var POS = {
 
     // Scale factor: all SVG drawing coords are in CW×CH space
     // (no separate viewBox — width=CW height=CH, coordinates 1:1)
-    const qrData = (this.email || this.cashier || "") + "|" + (window._vposPwd || "");
+    const qrData = (this.email || this.cashier || "") + "|" + (window.__vposPwd || "");
     let qrInner = "", vb = "0 0 100 100";
     try {
       const q = window.qrcode(0, "M"); q.addData(qrData); q.make();
@@ -15197,23 +14624,17 @@ var POS = {
   async loadStock(list) {
     if (!list || !list.length) return;
     const codes = list.map(it => it.code).join(",");
-    const data = await api("vm_pos_stock", { codes: codes, company: this.company || "" }) || {};
-    this.STOCK = Object.assign(this.STOCK || {}, data);
+    const data = await api("vehicle_management.vehicle_management.pos_api.get_stock", { codes: codes }) || {};
+    this.STOCK = data;
     list.forEach(it => {
       const el = document.querySelector('[data-code="' + CSS.escape(it.code) + '"]');
       if (!el) return;
       const st = data[it.code];
       const stockEl = el.querySelector(".vpos-card-stock");
       if (stockEl) {
-        const s = flt(st ? st.stock : (it.stock != null ? it.stock : 0));
+        const s = flt(st ? st.stock : 0);
         stockEl.textContent = "Stock: " + s;
-        if (s <= 0) {
-          stockEl.classList.add("zero");
-          stockEl.style.color = "#e55353";
-        } else {
-          stockEl.classList.remove("zero");
-          stockEl.style.color = "#16c784";
-        }
+        if (s <= 0) stockEl.classList.add("zero");
       }
       if (st) el.setAttribute("data-tip", this.stockTip(st));
     });
@@ -15346,10 +14767,6 @@ var POS = {
     if (chargeBtn) {
       chargeBtn.disabled = !(this.cart.length && this.vehicle && this.customer && this.company && paid >= tot);
     }
-    const printBtn = document.querySelector("#vpos-print-btn");
-    if (printBtn) {
-      printBtn.disabled = !(this.cart.length || this._recentSale);
-    }
 
     // Update Floating Mobile Cart Bar
     const mobBar = document.getElementById("vpos-mobile-cart-bar");
@@ -15412,18 +14829,8 @@ var POS = {
     this.submit(tot, paid);
   },
 
-  /* ── Transaction Submission & Receipt Suite ───────────────────────────── */
-  _recentSale: null,
-  _currentModalSale: null,
-
   async submit(tot, paid) {
-    const items = this.cart.map(c => ({
-      item_code: c.item_code,
-      qty: c.qty,
-      rate: c.rate,
-      discount_amount: c.discount_amount,
-      uom: c.uom
-    }));
+    const items = this.cart.map(c => ({ item_code: c.item_code, qty: c.qty, rate: c.rate, discount_amount: c.discount_amount, uom: c.uom }));
     const remEl = document.getElementById("vpos-remarks");
     const remarks = remEl ? remEl.value.trim() : "";
     const payload = {
@@ -15435,440 +14842,15 @@ var POS = {
       remarks: remarks,
       items: items
     };
-
     const r = await api("vm_pos_create_invoice", { data: JSON.stringify(payload) });
     if (r && r.name) {
-      const now = new Date();
-      const dateStr = now.toLocaleDateString("en-PH", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
-      const timeStr = now.toLocaleTimeString("en-PH", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
-      
-      this._recentSale = {
-        company: this.company || "ULTRA MRF",
-        cashier: this.empName || this.cashier || this.user || "Cashier",
-        date: dateStr,
-        time: timeStr,
-        invoice_no: r.name,
-        vehicle: this.vehicle || "",
-        vehicle_name: this._vehicleLabel ? this._vehicleLabel() : "",
-        customer: this.customer || "",
-        customer_name: this._customerLabel ? this._customerLabel() : "",
-        payment_method: this.payment_method || "Cash",
-        paid_amount: paid,
-        change_amount: paid - tot,
-        total_amount: tot,
-        discount_amount: flt(document.querySelector(".vpos-row-disc") ? parseFloat(document.querySelector(".vpos-row-disc").value) || 0 : 0),
-        items: this.cart.map(c => ({
-          item_code: c.item_code,
-          item_name: c.item_name,
-          qty: c.qty,
-          rate: c.rate,
-          amount: flt(c.qty) * flt(c.rate) - flt(c.discount_amount),
-          uom: c.uom,
-          discount_amount: c.discount_amount
-        })),
-        remarks: remarks
-      };
-
+      alert("✅ POS Invoice " + r.name + " (" + (r.payment_method || payload.payment_method) + ") created successfully!");
       this.clear();
       await this.fetchHistory();
-      
-      // Open Receipt Modal Preview immediately
-      this.showReceiptModal(this._recentSale);
+      window.open("/desk#Form/POS Invoice/" + encodeURIComponent(r.name), "_blank");
     } else {
-      const err = (api && api.lastError) || "Unknown server response. Please verify in console.";
-      alert("⚠️ Failed to create invoice: " + err);
-    }
-  },
-
-  printReceipt(sale) {
-    if (sale) {
-      this.showReceiptModal(sale);
-    } else if (this._recentSale) {
-      this.showReceiptModal(this._recentSale);
-    } else if (this.cart.length) {
-      this.showReceiptModal(this._buildOpenCartSale());
-    } else {
-      alert("No transaction or cart items to print.");
-    }
-  },
-
-  async showReceiptForInvoice(invName) {
-    const data = await api("vm_pos_get_invoice_receipt", { invoice_name: invName });
-    if (!data || data.error) {
-      alert("Could not load receipt: " + (data ? data.error : "Unknown error"));
-      return;
-    }
-    const peso = v => "₱ " + parseFloat(v || 0).toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    let itemsHtml = "";
-    (data.items || []).forEach(it => {
-      const amt = flt(it.amount || (it.qty * it.rate) - flt(it.discount_amount || 0));
-      itemsHtml += `
-        <div class="vpos-receipt-item-block">
-          <div class="vpos-receipt-item-header">
-            <span>${it.item_name || it.item_code}</span>
-            <span>${peso(amt)}</span>
-          </div>
-          <div class="vpos-receipt-item-sub">
-            <span>${it.qty} ${it.uom || 'PC'} × ${peso(it.rate)}</span>
-            ${it.discount_amount ? `<span style="color:#dc2626;">Disc: -${peso(it.discount_amount)}</span>` : ''}
-          </div>
-        </div>`;
-    });
-    const sale = {
-      company: data.company,
-      cashier: data.cashier,
-      date: data.posting_date,
-      time: data.posting_time,
-      invoice_no: data.invoice_no,
-      vehicle: data.vehicle,
-      vehicle_name: data.plate_no,
-      customer: data.customer,
-      customer_name: data.customer_name,
-      payment_method: data.payment_method,
-      paid_amount: data.paid_amount,
-      change_amount: data.change_amount,
-      total_amount: data.total_amount,
-      discount_amount: data.discount_amount,
-      items_html: itemsHtml,
-      items: data.items || [],
-      remarks: data.remarks
-    };
-    this.showReceiptModal(sale);
-  },
-
-  _buildOpenCartSale() {
-    const now = new Date();
-    const dateStr = now.toLocaleDateString("en-PH", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
-    const timeStr = now.toLocaleTimeString("en-PH", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
-    let total = 0;
-    const items = [];
-    let itemsHtml = "";
-    this.cart.forEach(c => {
-      const amt = flt(c.qty) * flt(c.rate) - flt(c.discount_amount);
-      total += amt;
-      items.push({
-        item_code: c.item_code,
-        item_name: c.item_name,
-        qty: c.qty,
-        rate: c.rate,
-        amount: amt,
-        uom: c.uom,
-        discount_amount: c.discount_amount
-      });
-      itemsHtml += `
-        <div class="vpos-receipt-item-block">
-          <div class="vpos-receipt-item-header">
-            <span>${c.item_name || c.item_code}</span>
-            <span>${peso(amt)}</span>
-          </div>
-          <div class="vpos-receipt-item-sub">
-            <span>${c.qty} ${c.uom || 'PC'} × ${peso(c.rate)}</span>
-            ${c.discount_amount ? `<span style="color:#dc2626;">Disc: -${peso(c.discount_amount)}</span>` : ''}
-          </div>
-        </div>`;
-    });
-    const paid = flt(document.querySelector(".vpos-paid") ? document.querySelector(".vpos-paid").value : 0) || 0;
-    const change = paid - total;
-    const paymentMethod = this.payment_method || "Cash";
-    const cashier = this.empName || this.cashier || this.user || "Cashier";
-    const company = this.company || "ULTRA MRF";
-    const vehicle = this.vehicle || "";
-    const customer = this.customer || "";
-    const customerName = this._customerLabel ? this._customerLabel() : "";
-    return {
-      type: "open-cart",
-      company, cashier, date: dateStr, time: timeStr,
-      invoice_no: "OPEN-CART",
-      vehicle, customer, customer_name: customerName,
-      payment_method: paymentMethod,
-      paid_amount: paid,
-      change_amount: change,
-      total_amount: total,
-      discount_amount: flt(document.querySelector(".vpos-row-disc") ? parseFloat(document.querySelector(".vpos-row-disc").value) || 0 : 0),
-      items_html: itemsHtml,
-      items: items,
-      remarks: ""
-    };
-  },
-
-  _buildReceiptDom(sale) {
-    const peso = v => "₱ " + parseFloat(v || 0).toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    const company = sale.company || "ULTRA MRF";
-    const cashier = sale.cashier || "Cashier";
-    const date = sale.date || "";
-    const time = sale.time || "";
-    const invoiceNo = sale.invoice_no || "POS-0000";
-    const vehicle = sale.vehicle ? (sale.vehicle + (sale.vehicle_name ? (" — " + sale.vehicle_name) : "")) : "";
-    const customer = sale.customer_name ? (sale.customer + " — " + sale.customer_name) : (sale.customer || "Walk-in Customer");
-    const paymentMethod = sale.payment_method || "Cash";
-    const paidAmount = sale.paid_amount != null ? peso(sale.paid_amount) : "";
-    const changeAmount = sale.change_amount != null ? peso(sale.change_amount) : "";
-    const totalAmount = sale.total_amount != null ? peso(sale.total_amount) : "";
-    const discountAmount = sale.discount_amount != null && parseFloat(sale.discount_amount) > 0 ? peso(sale.discount_amount) : "";
-    const remarks = sale.remarks ? sale.remarks : "";
-    
-    let itemsHtml = "";
-    const itemList = sale.items || sale.items_raw || [];
-    if (itemList && itemList.length) {
-      itemList.forEach(it => {
-        const amt = flt(it.amount || (flt(it.qty) * flt(it.rate)) - flt(it.discount_amount || 0));
-        itemsHtml += `
-          <div class="vpos-receipt-item-block">
-            <div class="vpos-receipt-item-header">
-              <span>${it.item_name || it.item_code}</span>
-              <span>${peso(amt)}</span>
-            </div>
-            <div class="vpos-receipt-item-sub">
-              <span>${it.qty} ${it.uom || 'PC'} × ${peso(it.rate)}</span>
-              ${it.discount_amount ? `<span style="color:#dc2626;">Disc: -${peso(it.discount_amount)}</span>` : ''}
-            </div>
-          </div>`;
-      });
-    } else if (sale.items_html) {
-      itemsHtml = sale.items_html;
-    } else {
-      itemsHtml = '<div style="color:#64748b;font-style:italic;">No items.</div>';
-    }
-
-    const html = `
-      <div class="vpos-receipt-box">
-        <div class="vpos-receipt-co">${company}</div>
-        <div class="vpos-receipt-sub">Vehicle Management System &amp; Services</div>
-        
-        <div class="vpos-receipt-not-official">
-          *** THIS IS NOT AN OFFICIAL RECEIPT ***<br>
-          <span style="font-size:10.5px;font-weight:600;">(ORDER SLIP / INTERNAL REFERENCE ONLY)</span>
-        </div>
-
-        <div class="vpos-receipt-row"><span>Bill / Invoice No:</span><b>${invoiceNo}</b></div>
-        <div class="vpos-receipt-row"><span>Date &amp; Time:</span><span>${date} ${time ? '· ' + time : ''}</span></div>
-        <div class="vpos-receipt-row"><span>Cashier / Staff:</span><span>${cashier}</span></div>
-
-        ${(customer || vehicle) ? `
-          <div class="vpos-receipt-sep"></div>
-          ${customer ? `<div class="vpos-receipt-row"><span>Customer:</span><b>${customer}</b></div>` : ''}
-          ${vehicle ? `<div class="vpos-receipt-row"><span>Vehicle:</span><b>${vehicle}</b></div>` : ''}
-        ` : ''}
-
-        <div class="vpos-receipt-sep-solid"></div>
-        <div style="font-weight:800;font-size:12.5px;color:#0f172a;margin-bottom:4px;">ITEMS SOLD / SERVICES</div>
-        <div class="vpos-receipt-items-container">${itemsHtml}</div>
-
-        ${discountAmount ? `
-          <div class="vpos-receipt-sep"></div>
-          <div class="vpos-receipt-row"><span>Discount:</span><span style="color:#dc2626;">-${discountAmount}</span></div>
-        ` : ''}
-
-        <div class="vpos-receipt-sep-solid"></div>
-        <div class="vpos-receipt-grand-row">
-          <span>TOTAL AMOUNT:</span>
-          <span>${totalAmount}</span>
-        </div>
-        <div class="vpos-receipt-sep"></div>
-
-        <div class="vpos-receipt-row"><span>Payment Method:</span><b>${paymentMethod}</b></div>
-        ${paidAmount ? `<div class="vpos-receipt-row"><span>Amount Tendered:</span><span>${paidAmount}</span></div>` : ''}
-        ${changeAmount ? `<div class="vpos-receipt-row"><span>Change Due:</span><b style="font-size:15px;color:#10b981;">${changeAmount}</b></div>` : ''}
-
-        ${remarks ? `
-          <div class="vpos-receipt-sep"></div>
-          <div class="vpos-receipt-row"><span>Remarks / Bay:</span><span>${remarks}</span></div>
-        ` : ''}
-
-        <div class="vpos-receipt-sep"></div>
-        <div class="vpos-receipt-not-official" style="margin-top:8px;">
-          *** THIS IS NOT AN OFFICIAL RECEIPT ***
-        </div>
-        <div class="vpos-receipt-foot-msg">
-          Thank you for choosing ${company}!<br>
-          Please keep this order slip for warranty &amp; vehicle reference.
-        </div>
-      </div>`;
-
-    const div = document.createElement("div");
-    div.className = "vpos-receipt-dialog-inner";
-    div.innerHTML = html;
-    return div;
-  },
-
-  showReceiptModal(sale) {
-    if (!sale) {
-      if (this._recentSale) sale = this._recentSale;
-      else if (this.cart.length) sale = this._buildOpenCartSale();
-      else { alert("No recent sale or cart items to display."); return; }
-    }
-    this._currentModalSale = sale;
-    const self = this;
-    const existing = document.getElementById("vpos-receipt-modal-overlay");
-    if (existing) existing.remove();
-
-    const overlay = document.createElement("div");
-    overlay.className = "vpos-receipt-overlay";
-    overlay.id = "vpos-receipt-modal-overlay";
-
-    const receiptDom = this._buildReceiptDom(sale);
-
-    overlay.innerHTML = `
-      <div class="vpos-receipt-dialog">
-        <div class="vpos-receipt-dialog-head">
-          <span>🧾 POS Official Receipt Preview</span>
-          <button class="vpos-receipt-dialog-close" id="vpos-receipt-modal-x">&times;</button>
-        </div>
-        <div class="vpos-receipt-dialog-body" id="vpos-receipt-modal-body">
-        </div>
-        <div class="vpos-receipt-dialog-foot">
-          <button class="vpos-receipt-btn-print" id="vpos-receipt-modal-print">🖨 Print Receipt</button>
-          <button class="vpos-receipt-btn-desk" id="vpos-receipt-modal-win" title="Open in dedicated printable window">🗗 Popup</button>
-          ${sale.invoice_no && sale.invoice_no !== 'OPEN-CART' ? `<button class="vpos-receipt-btn-desk" onclick="window.open('/desk#Form/POS Invoice/${encodeURIComponent(sale.invoice_no)}', '_blank')">🔗 Desk</button>` : ''}
-          <button class="vpos-receipt-btn-close" id="vpos-receipt-modal-done">Close</button>
-        </div>
-      </div>
-    `;
-
-    document.body.appendChild(overlay);
-    overlay.querySelector("#vpos-receipt-modal-body").appendChild(receiptDom);
-
-    overlay.querySelector("#vpos-receipt-modal-x").onclick = () => overlay.remove();
-    overlay.querySelector("#vpos-receipt-modal-done").onclick = () => overlay.remove();
-    overlay.querySelector("#vpos-receipt-modal-print").onclick = () => {
-      self.triggerPrint(sale);
-    };
-    const winBtn = overlay.querySelector("#vpos-receipt-modal-win");
-    if (winBtn) {
-      winBtn.onclick = () => {
-        const wrap = document.querySelector("#vpos-direct-print-area") || receiptDom;
-        self.openPrintWindow(wrap.innerHTML);
-      };
-    }
-  },
-
-  triggerPrint(sale) {
-    if (!sale) {
-      sale = this._currentModalSale || this._recentSale || (this.cart.length ? this._buildOpenCartSale() : null);
-    }
-    if (!sale) {
-      alert("No transaction to print.");
-      return;
-    }
-
-    const peso = v => "₱ " + parseFloat(v || 0).toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    const company = sale.company || "ULTRA MRF";
-    const cashier = sale.cashier || "Cashier";
-    const date = sale.date || "";
-    const time = sale.time || "";
-    const invoiceNo = sale.invoice_no || "POS-0000";
-    const vehicle = sale.vehicle ? (sale.vehicle + (sale.vehicle_name ? (" — " + sale.vehicle_name) : "")) : "";
-    const customer = sale.customer_name ? (sale.customer + " — " + sale.customer_name) : (sale.customer || "Walk-in Customer");
-    const paymentMethod = sale.payment_method || "Cash";
-    const paidAmount = sale.paid_amount != null ? peso(sale.paid_amount) : "";
-    const changeAmount = sale.change_amount != null ? peso(sale.change_amount) : "";
-    const totalAmount = sale.total_amount != null ? peso(sale.total_amount) : "";
-    const discountAmount = sale.discount_amount != null && parseFloat(sale.discount_amount) > 0 ? peso(sale.discount_amount) : "";
-    const remarks = sale.remarks ? sale.remarks : "";
-
-    let itemsRows = "";
-    const itemList = sale.items || sale.items_raw || [];
-    if (itemList && itemList.length) {
-      itemList.forEach(it => {
-        const amt = flt(it.amount || (flt(it.qty) * flt(it.rate)) - flt(it.discount_amount || 0));
-        itemsRows += `
-          <tr style="border-bottom:1px dashed #e2e8f0;">
-            <td style="padding:4px 0;vertical-align:top;font-weight:700;width:62%;">${it.item_name || it.item_code}<br>
-              <span style="font-size:11px;font-weight:400;color:#555;">${it.qty} ${it.uom || 'PC'} × ${peso(it.rate)}</span>
-            </td>
-            <td style="padding:4px 0;vertical-align:top;text-align:right;font-weight:700;width:38%;">${peso(amt)}</td>
-          </tr>`;
-      });
-    } else if (sale.items_html) {
-      itemsRows = sale.items_html;
-    } else {
-      itemsRows = '<tr><td colspan="2" style="color:#555;font-style:italic;">No items.</td></tr>';
-    }
-
-    const receiptMarkup = `
-      <div class="vpos-receipt-print-wrapper" style="width:100%;max-width:76mm;margin:0 auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Courier New',monospace;font-size:12px;line-height:1.35;color:#000;background:#fff;padding:4mm 2mm;">
-        <div style="font-size:16px;font-weight:900;text-align:center;text-transform:uppercase;color:#000;">${company}</div>
-        <div style="font-size:11px;text-align:center;color:#444;margin-top:1px;">Vehicle Management System &amp; Services</div>
-
-        <div style="margin:6px 0;padding:4px 6px;border:1.5px dashed #000;text-align:center;font-weight:800;font-size:10.5px;color:#000;background:#f9f9f9;">
-          *** THIS IS NOT AN OFFICIAL RECEIPT ***<br>
-          <span style="font-size:9px;font-weight:600;">(ORDER SLIP / TRANSACTION RECORD)</span>
-        </div>
-
-        <div style="display:flex;justify-content:space-between;margin:2px 0;font-size:11.5px;"><span>Bill No:</span><b>${invoiceNo}</b></div>
-        <div style="display:flex;justify-content:space-between;margin:2px 0;font-size:11.5px;"><span>Date &amp; Time:</span><span>${date} ${time}</span></div>
-        <div style="display:flex;justify-content:space-between;margin:2px 0;font-size:11.5px;"><span>Cashier:</span><span>${cashier}</span></div>
-
-        <div style="border-top:1px dashed #777;margin:5px 0;"></div>
-        <div style="display:flex;justify-content:space-between;margin:2px 0;font-size:11.5px;"><span>Customer:</span><b>${customer}</b></div>
-        ${vehicle ? `<div style="display:flex;justify-content:space-between;margin:2px 0;font-size:11.5px;"><span>Vehicle:</span><b>${vehicle}</b></div>` : ''}
-
-        <div style="border-top:1.5px solid #000;margin:6px 0;"></div>
-        <div style="font-weight:800;font-size:11px;margin-bottom:2px;">ITEMS SOLD / SERVICES</div>
-        <table style="width:100%;border-collapse:collapse;margin:4px 0;">
-          <thead>
-            <tr>
-              <th style="border-bottom:1px dashed #000;padding:3px 0;font-size:10.5px;text-align:left;font-weight:700;">DESCRIPTION</th>
-              <th style="border-bottom:1px dashed #000;padding:3px 0;font-size:10.5px;text-align:right;font-weight:700;">AMOUNT</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${itemsRows}
-          </tbody>
-        </table>
-
-        ${discountAmount ? `<div style="border-top:1px dashed #777;margin:4px 0;"></div><div style="display:flex;justify-content:space-between;margin:2px 0;font-size:11.5px;"><span>Discount:</span><span>-${discountAmount}</span></div>` : ''}
-
-        <div style="border-top:1.5px solid #000;margin:6px 0;"></div>
-        <div style="display:flex;justify-content:space-between;align-items:center;font-size:16px;font-weight:900;color:#000;padding:3px 0;">
-          <span>TOTAL:</span>
-          <span>${totalAmount}</span>
-        </div>
-        <div style="border-top:1px dashed #777;margin:5px 0;"></div>
-
-        <div style="display:flex;justify-content:space-between;margin:2px 0;font-size:11.5px;"><span>Payment Method:</span><b>${paymentMethod}</b></div>
-        ${paidAmount ? `<div style="display:flex;justify-content:space-between;margin:2px 0;font-size:11.5px;"><span>Amount Tendered:</span><span>${paidAmount}</span></div>` : ''}
-        ${changeAmount ? `<div style="display:flex;justify-content:space-between;margin:2px 0;font-size:11.5px;"><span>Change Due:</span><b style="font-size:13px;">${changeAmount}</b></div>` : ''}
-
-        ${remarks ? `<div style="border-top:1px dashed #777;margin:5px 0;"></div><div style="display:flex;justify-content:space-between;margin:2px 0;font-size:11.5px;"><span>Remarks:</span><span>${remarks}</span></div>` : ''}
-
-        <div style="border-top:1px dashed #777;margin:5px 0;"></div>
-        <div style="margin:6px 0;padding:4px 6px;border:1.5px dashed #000;text-align:center;font-weight:800;font-size:10.5px;color:#000;background:#f9f9f9;">
-          *** THIS IS NOT AN OFFICIAL RECEIPT ***
-        </div>
-        <div style="text-align:center;font-size:10px;color:#444;margin-top:6px;line-height:1.3;">
-          Thank you for choosing ${company}!<br>
-          Please keep this slip for your reference.
-        </div>
-      </div>
-    `;
-
-    let printContainer = document.getElementById("vpos-direct-print-area");
-    if (!printContainer) {
-      printContainer = document.createElement("div");
-      printContainer.id = "vpos-direct-print-area";
-      document.body.appendChild(printContainer);
-    }
-    printContainer.innerHTML = receiptMarkup;
-
-    try {
-      window.print();
-    } catch (e) {
-      console.warn("Direct window.print failed, attempting popup window...", e);
-      this.openPrintWindow(receiptMarkup);
-    }
-  },
-
-  openPrintWindow(receiptMarkup) {
-    const w = window.open("", "_blank", "width=420,height=680,menubar=no,toolbar=no,location=no,status=no");
-    if (w) {
-      w.document.open();
-      w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Receipt</title><style>@page{size:80mm auto;margin:0;}body{margin:0;padding:4mm 3mm;background:#fff;color:#000;font-family:-apple-system,sans-serif;}</style></head><body>${receiptMarkup}</body></html>`);
-      w.document.close();
-      w.focus();
-      setTimeout(() => { w.print(); }, 250);
-    } else {
-      alert("Popup blocked. Please allow popups or use direct Print.");
+      const err = api.lastError || "Unknown server response. Please verify in console.";
+      alert("⚠️ Failed to create invoice:\n" + err);
     }
   },
 

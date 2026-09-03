@@ -1,0 +1,34 @@
+[
+  {
+    "doctype": "Workspace Link",
+    "name": "r54gkhijeu",
+    "parent": "Invoicing",
+    "parenttype": "Workspace",
+    "parentfield": "links",
+    "label": "Plaid Settings",
+    "link_to": "Plaid Settings",
+    "link_type": "DocType",
+    "type": "Link",
+    "idx": 31,
+    "hidden": 0,
+    "backed_up_at": "2026-09-03T12:56:45"
+  },
+  {
+    "doctype": "Workspace Sidebar Item",
+    "name": "rp8g6bhj97",
+    "parent": "Banking",
+    "parenttype": "Workspace Sidebar",
+    "parentfield": "items",
+    "label": "Plaid Settings",
+    "link_to": "Plaid Settings",
+    "link_type": "DocType",
+    "type": "Link",
+    "idx": 12,
+    "child": 1,
+    "collapsible": 1,
+    "indent": 0,
+    "keep_closed": 0,
+    "show_arrow": 0,
+    "backed_up_at": "2026-09-03T12:56:45"
+  }
+]

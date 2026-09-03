@@ -126,6 +126,7 @@ class VehiclePOSInvoice(Document):
 				"custom_vehicle_pos_invoice": self.name,
 				"custom_customer_vehicle": self.vehicle or "",
 				"custom_plate_no": plate or "",
+				"remarks": self.remarks or f"Vehicle POS Invoice: {self.name}",
 			}
 		)
 		inv.insert()
@@ -216,30 +217,117 @@ class VehiclePOSInvoice(Document):
 		)
 		entry.insert()
 		entry.submit()
-		frappe.db.commit()
-		return entry.name
+def get_mode_of_payment(method, company):
+	"""Map a Vehicle POS payment method to an existing Mode of Payment."""
+	mapping = {
+		"Cash": "Cash",
+		"Card": "Credit Card",
+		"Credit Card": "Credit Card",
+		"Debit Card": "Credit Card",
+		"GCash": "Cash",
+		"Maya": "Cash",
+		"BDO": "Wire Transfer",
+		"Bank Transfer": "Wire Transfer",
+		"Cheque": "Bank Draft",
+		"Check": "Check",
+	}
+	mop = mapping.get(method, "Cash")
+	if not frappe.db.exists("Mode of Payment", mop):
+		mop = frappe.db.get_value("Mode of Payment", {"type": "Cash"}, "name") or "Cash"
+	if not frappe.db.exists("Mode of Payment", mop):
+		frappe.throw(_("Mode of Payment '{0}' is not configured.").format(mop))
+	return mop
 
-	def get_pos_profile(self, company):
-		return frappe.db.get_value(
-			"POS Profile", {"company": company, "disabled": 0}, "name"
-		) or frappe.db.get_value("POS Profile", {"company": company}, "name")
 
-	def get_mode_of_payment(self, method, company):
-		"""Map a Vehicle POS payment method to an existing Mode of Payment."""
-		mapping = {
-			"Cash": "Cash",
-			"Bank Transfer": "Wire Transfer",
-			"Credit Card": "Credit Card",
-			"GCash": "Cash",
-			"Maya": "Cash",
-			"Cheque": "Bank Draft",
+def get_pos_profile(company):
+	return frappe.db.get_value(
+		"POS Profile", {"company": company, "disabled": 0}, "name"
+	) or frappe.db.get_value("POS Profile", {"company": company}, "name")
+
+
+def ensure_pos_profile(company):
+	"""Create a default POS Profile for the company if none exists."""
+	profile_name = get_pos_profile(company)
+	if profile_name:
+		return profile_name
+
+	default_warehouse = (
+		frappe.db.get_value("Company", company, "default_fg_warehouse")
+		or frappe.db.get_value("Company", company, "default_in_transit_warehouse")
+		or frappe.db.get_value("Warehouse", {"company": company, "is_group": 0}, "name")
+	)
+	if not default_warehouse:
+		frappe.throw(_("Please set a default warehouse for company {0}.").format(company))
+
+	cash = get_mode_of_payment("Cash", company)
+	income_account = frappe.db.get_value("Company", company, "default_income_account")
+	if not income_account:
+		frappe.throw(_("Please set a default income account for company {0}.").format(company))
+
+	cost_center = (
+		frappe.db.get_value("Company", company, "cost_center")
+		or frappe.db.get_value("Cost Center", {"company": company, "is_group": 0}, "name")
+	)
+	if not cost_center:
+		frappe.throw(_("Please set a Cost Center for company {0}.").format(company))
+
+	profile_name = f"Vehicle POS - {company}"
+	if frappe.db.exists("POS Profile", profile_name):
+		return profile_name
+	doc = frappe.get_doc(
+		{
+			"doctype": "POS Profile",
+			"name": profile_name,
+			"pos_profile_name": profile_name,
+			"company": company,
+			"warehouse": default_warehouse,
+			"currency": frappe.db.get_value("Company", company, "default_currency") or "PHP",
+			"income_account": income_account,
+			"cost_center": cost_center,
+			"payments": [{"default": 1, "mode_of_payment": cash}],
+			"write_off_account": income_account,
+			"write_off_cost_center": cost_center,
 		}
-		mop = mapping.get(method, "Cash")
-		if not frappe.db.exists("Mode of Payment", mop):
-			mop = frappe.db.get_value("Mode of Payment", {"type": "Cash"}, "name") or "Cash"
-		if not frappe.db.exists("Mode of Payment", mop):
-			frappe.throw(_("Mode of Payment '{0}' is not configured.").format(mop))
-		return mop
+	)
+	doc.insert()
+	return profile_name
+
+
+def ensure_pos_opening_entry(company, pos_profile):
+	"""Reuse an already-open POS Opening Entry for this user/company/pos_profile, else create one."""
+	user = frappe.session.user
+	existing = frappe.get_value(
+		"POS Opening Entry",
+		{"user": user, "company": company, "pos_profile": pos_profile, "status": "Open", "docstatus": 1},
+		["name", "pos_profile"], as_dict=True,
+	)
+	if existing:
+		return existing["name"]
+
+	other_open = frappe.get_all(
+		"POS Opening Entry",
+		filters={"user": user, "status": "Open", "docstatus": 1},
+		fields=["name"]
+	)
+	for o in other_open:
+		frappe.db.set_value("POS Opening Entry", o.name, "status", "Closed", update_modified=False)
+
+	cash = get_mode_of_payment("Cash", company)
+	entry = frappe.get_doc(
+		{
+			"doctype": "POS Opening Entry",
+			"company": company,
+			"pos_profile": pos_profile,
+			"user": user,
+			"posting_date": frappe.utils.nowdate(),
+			"period_start_date": frappe.utils.now_datetime(),
+			"balance_details": [{"mode_of_payment": cash, "opening_amount": 0}],
+		}
+	)
+	entry.insert()
+	entry.submit()
+	frappe.db.commit()
+	return entry.name
 
 
 def resolve_customer(cust):
@@ -264,7 +352,7 @@ def resolve_customer(cust):
 
 @frappe.whitelist()
 def create_from_pos(data):
-	"""Create and submit a Vehicle POS Invoice from the POS page."""
+	"""Create and submit an official ERPNext POS Invoice directly from POS terminal."""
 	import json as _json
 
 	if isinstance(data, str):
@@ -272,38 +360,55 @@ def create_from_pos(data):
 
 	cust = resolve_customer(data.get("customer"))
 	veh = data.get("vehicle")
+	plate = ""
 	if veh and frappe.db.exists("Customer Vehicle", veh):
-		_vc = frappe.db.get_value("Customer Vehicle", veh, "customer")
-		if _vc:
-			cust = resolve_customer(_vc)
+		veh_row = frappe.db.get_value("Customer Vehicle", veh, ["customer", "plate_no"], as_dict=True)
+		if veh_row:
+			if veh_row.get("customer"):
+				cust = resolve_customer(veh_row["customer"])
+			plate = veh_row.get("plate_no") or ""
 	data["customer"] = cust
 
-	doc = frappe.get_doc(
+	company = data.get("company") or frappe.defaults.get_user_default("Company")
+	pos_profile = ensure_pos_profile(company)
+	ensure_pos_opening_entry(company, pos_profile)
+
+	items = [
 		{
-			"doctype": "Vehicle POS Invoice",
-			"naming_series": "VMSPOS-.YYYY.-.#####",
-			"customer": data.get("customer"),
-			"vehicle": data.get("vehicle"),
-			"company": data.get("company"),
-			"paid_amount": flt(data.get("paid_amount")),
-			"payment_method": data.get("payment_method") or "Cash",
-			"cashier": frappe.session.user,
-			"items": [
+			"item_code": it.get("item_code"),
+			"qty": flt(it.get("qty")),
+			"rate": flt(it.get("rate")),
+			"discount_amount": flt(it.get("discount_amount")),
+			"uom": it.get("uom"),
+		}
+		for it in (data.get("items") or [])
+	]
+
+	method = data.get("payment_method") or "Cash"
+	mop = get_mode_of_payment(method, company)
+	paid_amount = flt(data.get("paid_amount"))
+	remarks = (data.get("remarks") or data.get("notes") or "").strip()
+
+	inv = frappe.get_doc(
+		{
+			"doctype": "POS Invoice",
+			"naming_series": "ACC-PSINV-.YYYY.-",
+			"company": company,
+			"customer": cust,
+			"posting_date": frappe.utils.nowdate(),
+			"pos_profile": pos_profile,
+			"items": items,
+			"payments": [
 				{
-					"item_code": it.get("item_code"),
-					"qty": flt(it.get("qty")),
-					"rate": flt(it.get("rate")),
-					"discount_amount": flt(it.get("discount_amount")),
-					"uom": it.get("uom"),
+					"mode_of_payment": mop,
+					"amount": paid_amount,
 				}
-				for it in (data.get("items") or [])
 			],
+			"custom_customer_vehicle": veh or "",
+			"custom_plate_no": plate,
+			"remarks": remarks,
 		}
 	)
-	doc.insert()
-	doc.submit()
-	if flt(doc.paid_amount) >= flt(doc.total_amount):
-		doc.db_set("status", "Paid")
-	else:
-		doc.db_set("status", "Unpaid")
-	return {"name": doc.name, "pos_invoice": doc.pos_invoice}
+	inv.insert()
+	inv.submit()
+	return {"name": inv.name, "pos_invoice": inv.name}

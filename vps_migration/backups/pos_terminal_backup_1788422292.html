@@ -311,480 +311,6 @@ html, body { margin: 0; padding: 0; min-height: 100%; font-family: var(--font-ba
   .vpos-idcard, .vpos-idcard * { visibility: visible !important; }
   .vpos-idcard { position: fixed; left: 0; top: 0; margin: 0; box-shadow: none; border: 1px solid #000; width: 85.6mm !important; height: 54mm !important; }
 }
-
-/* Non-POS full-width layout for History & Profile */
-.vpos-app.non-pos {
-  grid-template-columns: 68px 1fr !important;
-  grid-template-areas: "rail main" !important;
-}
-.vpos-app.non-pos #vpos-ticket-panel {
-  display: none !important;
-}
-.vpos-view {
-  width: 100%;
-  min-width: 0;
-}
-.vpos-idcard {
-  display: none !important;
-}
-
-/* Branch Locked Badge (No dropdown) */
-.vpos-branch-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 46px;
-  padding: 0 16px;
-  background: #eef7f3;
-  border: 1.5px solid #cce8dd;
-  border-radius: 14px;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--txt);
-  white-space: nowrap;
-}
-.vpos-branch-lbl {
-  font-size: 11px;
-  font-weight: 800;
-  color: var(--slate);
-  letter-spacing: 0.5px;
-}
-.vpos-branch-val {
-  color: #0fa76d;
-  font-weight: 800;
-}
-
-/* Payment Method Quick Buttons */
-.vpos-pay-methods {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
-  margin-top: 4px;
-}
-.vpos-pay-btn {
-  height: 38px;
-  border: 1.5px solid var(--line);
-  background: #fff;
-  border-radius: 10px;
-  font-family: var(--font-base);
-  font-size: 11.5px;
-  font-weight: 700;
-  color: var(--txt);
-  cursor: pointer;
-  transition: all .15s;
-  touch-action: manipulation;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-}
-.vpos-pay-btn:hover {
-  border-color: var(--mint);
-  background: #f0faf5;
-}
-.vpos-pay-btn.active {
-  background: var(--mint);
-  border-color: var(--mint);
-  color: #04201a;
-  box-shadow: 0 2px 8px rgba(22,199,132,0.3);
-}
-
-/* Notes & Remarks input */
-.vpos-remarks {
-  width: 100%;
-  height: 42px;
-  border: 1.5px solid var(--line);
-  border-radius: 12px;
-  padding: 0 14px;
-  font-size: 13px;
-  font-family: var(--font-base);
-  background: #fff;
-  outline: none;
-  transition: border-color .15s;
-}
-.vpos-remarks:focus {
-  border-color: var(--mint);
-}
-
-
-/* Product Card Image & Standardized Footer */
-.vpos-thumb {
-  width: 100%;
-  height: 110px;
-  border-radius: 14px;
-  background: #f1f7f4;
-  color: var(--mint-d);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 6px;
-  overflow: hidden;
-  border: 1px solid #e2ebe6;
-  position: relative;
-}
-.vpos-thumb img {
-  width: 100%;
-  height: 110px;
-  object-fit: cover;
-  border-radius: 14px;
-  display: block;
-}
-.vpos-thumb-placeholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  color: #64748b;
-  font-size: 11px;
-  font-weight: 700;
-}
-.vpos-thumb-placeholder span.ico {
-  font-size: 36px;
-  line-height: 1;
-}
-
-.vpos-card-foot {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: auto;
-  padding-top: 8px;
-  gap: 6px;
-  border-top: 1px solid #f0f4f2;
-}
-.vpos-card-rate {
-  color: var(--mint-d);
-  font-weight: 800;
-  font-size: 13.5px;
-  font-family: var(--font-head);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  letter-spacing: -0.3px;
-  flex: 1;
-  min-width: 0;
-  line-height: 1.2;
-}
-.vpos-card-add {
-  border: none;
-  background: var(--mint);
-  color: #04201a;
-  font-weight: 800;
-  font-size: 11.5px;
-  height: 34px;
-  min-width: 72px;
-  padding: 0 14px;
-  border-radius: 999px;
-  cursor: pointer;
-  transition: all .12s;
-  touch-action: manipulation;
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-.vpos-card-add:hover {
-  background: var(--mint-d);
-  color: #fff;
-}
-
-/* History Toolbar & Interactive List */
-.vpos-hist-box {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 4px 0 24px;
-}
-.vpos-hist-bar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  padding: 12px 18px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.02);
-}
-.vpos-hist-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.vpos-hist-title h3 {
-  margin: 0;
-  font-family: var(--font-head);
-  font-size: 18px;
-  font-weight: 800;
-  color: var(--ink);
-}
-.vpos-hist-badge {
-  background: #eef7f3;
-  color: var(--mint-d);
-  font-size: 12px;
-  font-weight: 800;
-  padding: 3px 10px;
-  border-radius: 999px;
-}
-.vpos-hist-controls {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.vpos-hist-pills {
-  display: flex;
-  gap: 4px;
-  background: #f1f5f3;
-  padding: 3px;
-  border-radius: 12px;
-}
-.vpos-hist-pill {
-  border: none;
-  background: transparent;
-  padding: 6px 14px;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--slate);
-  border-radius: 9px;
-  cursor: pointer;
-  transition: all .15s;
-}
-.vpos-hist-pill.active {
-  background: #fff;
-  color: var(--ink);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.06);
-}
-.vpos-hist-dates {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.vpos-hist-dt {
-  height: 34px;
-  border: 1.5px solid var(--line);
-  border-radius: 10px;
-  padding: 0 8px;
-  font-size: 12px;
-  font-family: var(--font-base);
-  color: var(--txt);
-  background: #fff;
-}
-.vpos-hist-btn {
-  height: 34px;
-  padding: 0 14px;
-  border-radius: 10px;
-  border: 1.5px solid var(--line);
-  background: #fff;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--txt);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  transition: all .12s;
-}
-.vpos-hist-btn:hover {
-  border-color: var(--mint);
-  background: #f0faf5;
-}
-.vpos-hist-btn.primary {
-  background: var(--mint);
-  border-color: var(--mint);
-  color: #04201a;
-  font-weight: 800;
-}
-.vpos-hist-search-box {
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 0 14px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.vpos-hist-search-box input {
-  border: none;
-  outline: none;
-  width: 100%;
-  font-size: 13.5px;
-  font-family: var(--font-base);
-}
-.vpos-hist-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.vpos-hist-card {
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  padding: 14px 18px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.02);
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  transition: transform .12s, box-shadow .12s, border-color .12s;
-}
-.vpos-hist-card:hover {
-  border-color: var(--mint);
-  box-shadow: 0 6px 18px rgba(22,199,132,0.14);
-  transform: translateY(-1px);
-}
-.vpos-hist-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.vpos-hist-code {
-  font-family: var(--font-head);
-  font-weight: 800;
-  font-size: 14.5px;
-  color: #1e3a8a;
-  cursor: pointer;
-}
-.vpos-hist-code:hover {
-  text-decoration: underline;
-}
-.vpos-hist-time {
-  font-size: 11.5px;
-  color: var(--muted);
-  font-weight: 600;
-}
-.vpos-hist-mid {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.vpos-hist-cust {
-  font-size: 13.5px;
-  font-weight: 700;
-  color: var(--ink);
-}
-.vpos-hist-sub {
-  font-size: 12px;
-  color: var(--slate);
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-.vpos-hist-foot {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-top: 1px dashed var(--line);
-  padding-top: 8px;
-  margin-top: 4px;
-}
-.vpos-hist-amt {
-  font-family: var(--font-head);
-  font-weight: 800;
-  font-size: 16px;
-  color: var(--mint-d);
-}
-.vpos-hist-tags {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.vpos-hist-tag {
-  font-size: 11px;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 6px;
-  background: #f1f5f9;
-  color: #475569;
-}
-.vpos-hist-tag.paid {
-  background: #dcfce7;
-  color: #166534;
-}
-.vpos-hist-tag.desk-link {
-  background: #eff6ff;
-  color: #1e40af;
-  cursor: pointer;
-}
-.vpos-hist-tag.desk-link:hover {
-  background: #dbeafe;
-}
-
-
-/* ─────────── POS SHIFT SCREEN ─────────── */
-.vpos-shift-screen {
-  position: fixed; inset: 0; z-index: 9999;
-  display: flex; align-items: center; justify-content: center;
-  background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
-}
-.vpos-shift-card {
-  background: #1c2128; border: 1px solid #30363d; border-radius: 20px;
-  padding: 40px 36px; max-width: 440px; width: 96%; text-align: center;
-  box-shadow: 0 24px 64px rgba(0,0,0,.5);
-}
-.vpos-shift-icon {
-  width: 72px; height: 72px; border-radius: 50%;
-  background: linear-gradient(135deg,#16c784,#0fa76d);
-  margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;
-  font-size: 32px; box-shadow: 0 8px 24px rgba(22,199,132,.3);
-}
-.vpos-shift-title { font-size: 22px; font-weight: 800; color: #f0f6fc; margin-bottom: 4px; }
-.vpos-shift-sub   { font-size: 13px; color: #8b949e; margin-bottom: 28px; }
-.vpos-shift-label { text-align: left; font-size: 12px; font-weight: 600; color: #8b949e;
-                    text-transform: uppercase; letter-spacing: .6px; margin-bottom: 6px; margin-top: 18px; }
-.vpos-shift-input {
-  width: 100%; background: #0d1117; border: 1px solid #30363d; border-radius: 10px;
-  color: #f0f6fc; font-size: 16px; padding: 12px 16px; outline: none;
-  transition: border-color .2s; box-sizing: border-box;
-}
-.vpos-shift-input:focus { border-color: #16c784; }
-.vpos-shift-select {
-  width: 100%; background: #0d1117; border: 1px solid #30363d; border-radius: 10px;
-  color: #f0f6fc; font-size: 14px; padding: 12px 16px; outline: none; box-sizing: border-box;
-}
-.vpos-shift-btn {
-  width: 100%; margin-top: 24px; padding: 14px; border-radius: 12px;
-  border: none; font-size: 16px; font-weight: 700; cursor: pointer;
-  background: linear-gradient(135deg,#16c784,#0fa76d); color: #fff;
-  box-shadow: 0 4px 16px rgba(22,199,132,.3); transition: transform .1s, box-shadow .1s;
-}
-.vpos-shift-btn:hover  { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(22,199,132,.4); }
-.vpos-shift-btn:active { transform: translateY(0); }
-.vpos-shift-btn.danger { background: linear-gradient(135deg,#f85149,#c93c35); box-shadow: 0 4px 16px rgba(248,81,73,.3); }
-.vpos-shift-info {
-  background: rgba(22,199,132,.08); border: 1px solid rgba(22,199,132,.2); border-radius: 12px;
-  padding: 14px 16px; text-align: left; margin-top: 16px; font-size: 13px; color: #8b949e;
-}
-.vpos-shift-info strong { color: #16c784; }
-.vpos-shift-err { color: #f85149; font-size: 13px; margin-top: 10px; min-height: 20px; }
-.vpos-shift-ok  { color: #16c784; font-size: 13px; margin-top: 10px; min-height: 20px; }
-
-/* Close-Shift button on nav rail */
-.vpos-rail-ic.close-shift { color: #f85149 !important; }
-.vpos-rail-ic.close-shift:hover { background: rgba(248,81,73,.15) !important; }
-
-/* Closing modal overlay */
-.vpos-closing-overlay {
-  position: fixed; inset: 0; z-index: 9998;
-  background: rgba(0,0,0,.7); display: flex; align-items: center; justify-content: center;
-}
-.vpos-closing-modal {
-  background: #1c2128; border: 1px solid #30363d; border-radius: 20px;
-  padding: 36px 32px; max-width: 420px; width: 96%; box-shadow: 0 24px 64px rgba(0,0,0,.6);
-}
-.vpos-closing-title { font-size: 20px; font-weight: 800; color: #f0f6fc; margin-bottom: 6px; }
-.vpos-closing-sub   { font-size: 13px; color: #8b949e; margin-bottom: 22px; }
-.vpos-summary-row   { display: flex; justify-content: space-between; padding: 8px 0;
-                       border-bottom: 1px solid #30363d; font-size: 14px; color: #c9d1d9; }
-.vpos-summary-row:last-child { border-bottom: none; }
-.vpos-summary-row .lbl { color: #8b949e; }
-.vpos-summary-row .amt { font-weight: 700; color: #f0f6fc; }
-.vpos-summary-row .amt.pos { color: #16c784; }
-.vpos-summary-row .amt.neg { color: #f85149; }
 </style>
 
 <script id="vpos-libs">(function webpackUniversalModuleDefinition(root, factory) {
@@ -13196,33 +12722,16 @@ function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").repla
 
 async function api(method, params) {
   let url = "/api/method/" + method;
-  const p = Object.assign({}, params || {}, { _: Date.now() });
-  const qs = Object.keys(p).map(k => encodeURIComponent(k) + "=" + encodeURIComponent(p[k] == null ? "" : p[k])).join("&");
-  if (qs) url += "?" + qs;
+  if (params) {
+    const qs = Object.keys(params).map(k => encodeURIComponent(k) + "=" + encodeURIComponent(params[k] == null ? "" : params[k])).join("&");
+    if (qs) url += "?" + qs;
+  }
   try {
-    const r = await fetch(url, {
-      cache: "no-store",
-      headers: { "X-Requested-With": "XMLHttpRequest" }
-    });
+    const r = await fetch(url, { headers: { "X-Requested-With": "XMLHttpRequest" } });
     const j = await r.json();
-    if (!r.ok) {
-      console.error("API error", method, j);
-      let errMsg = j.exception || j.exc || "Server error (" + r.status + ")";
-      if (j._server_messages) {
-        try {
-          const msgs = JSON.parse(j._server_messages);
-          const parsed = msgs.map(m => typeof m === "string" ? (JSON.parse(m).message || m) : (m.message || m)).join("\n");
-          if (parsed) errMsg = parsed;
-        } catch(ex) {}
-      }
-      api.lastError = errMsg;
-      return null;
-    }
-    api.lastError = null;
     return j.message;
   } catch (e) {
     console.error("api", method, e);
-    api.lastError = e.message || String(e);
     return null;
   }
 }
@@ -13243,17 +12752,6 @@ const POS = {
 
   async init() {
     this.hideChrome();
-    this.initTip();
-    try {
-      const u = await api("frappe.auth.get_logged_user");
-      if (u && u !== "Guest") {
-        this.user = u;
-        await this.afterLogin();
-        return;
-      }
-    } catch (e) {
-      console.warn("Session check fallback to login:", e);
-    }
     this.buildLogin();
   },
 
@@ -13368,237 +12866,8 @@ const POS = {
       this.empNo = ""; this.designation = ""; this.branch = ""; this.department = ""; this.reportsTo = "";
     }
     this.loggedIn = true;
-    // Check if there is already an open POS shift for this cashier
-    await this.checkOrOpenShift();
-  },
-
-  // ── Shift Management ─────────────────────────────────────────────────────
-  async checkOrOpenShift() {
-    const shift = await api("vm_pos_get_shift", {
-      company: this.company || "",
-      user: this.cashier || this.user || ""
-    });
-    if (shift && shift.has_open_shift) {
-      // Cashier already has an active open shift — RESUME CASHIERING DIRECTLY
-      this.openingEntry = shift.shift.name;
-      this.openingAmount = parseFloat(shift.shift.opening_amount || 0);
-      this.shiftMop = shift.shift.mode_of_payment || "Cash";
-      this.posProfile = shift.shift.pos_profile;
-      if (shift.shift.company) this.company = shift.shift.company;
-      this.build();
-      this.load();
-    } else {
-      // No active shift — prompt for opening float
-      this._shiftMeta = shift;
-      this.buildOpeningEntry(shift);
-    }
-  },
-
-  buildOpeningEntry(meta) {
-    const r = document.getElementById("vpos-root");
-    const profiles = (meta && meta.profiles) || [];
-    const mops = (meta && meta.modes_of_payment) || [{ name: "Cash", type: "Cash" }];
-    const company = this.company || (meta && meta.company) || "";
-
-    const profilesHtml = profiles.length > 1
-      ? `<div class="vpos-shift-label">POS Profile</div>
-         <select class="vpos-shift-select" id="shift-profile">
-           ${profiles.map(p => `<option value="${p.name}">${p.name}</option>`).join("")}
-         </select>`
-      : profiles.length === 1
-        ? `<input type="hidden" id="shift-profile" value="${profiles[0].name}">`
-        : `<input type="hidden" id="shift-profile" value="">`;
-
-    const mopsHtml = `<select class="vpos-shift-select" id="shift-mop">
-      ${mops.map(m => `<option value="${m.name}" ${m.type === 'Cash' ? 'selected' : ''}>${m.name}</option>`).join("")}
-    </select>`;
-
-    r.innerHTML = `<div class="vpos-shift-screen">
-      <div class="vpos-shift-card">
-        <div class="vpos-shift-icon">🏪</div>
-        <div class="vpos-shift-title">Open Cash Drawer</div>
-        <div class="vpos-shift-sub">Enter your opening cash amount to start the shift</div>
-
-        <div class="vpos-shift-info">
-          <strong>👤 Cashier:</strong> ${this.empName || this.cashier || this.user}<br>
-          <strong>🏢 Branch:</strong> ${company || "—"}<br>
-          <strong>📅 Date:</strong> ${new Date().toLocaleDateString("en-PH", { weekday:"long", year:"numeric", month:"long", day:"numeric" })}
-        </div>
-
-        ${profilesHtml}
-
-        <div class="vpos-shift-label">Mode of Payment</div>
-        ${mopsHtml}
-
-        <div class="vpos-shift-label">Opening Cash Amount (₱)</div>
-        <input class="vpos-shift-input" id="shift-opening-amount" type="number" min="0" step="0.01" placeholder="0.00" value="0">
-
-        <button class="vpos-shift-btn" id="shift-open-btn">🟢 Open Shift & Start POS</button>
-        <div class="vpos-shift-err" id="shift-err"></div>
-      </div>
-    </div>`;
-
-    const self = this;
-    document.getElementById("shift-open-btn").onclick = async () => {
-      const btn = document.getElementById("shift-open-btn");
-      const errEl = document.getElementById("shift-err");
-      btn.disabled = true; btn.textContent = "⏳ Opening shift...";
-      errEl.textContent = "";
-      try {
-        const opening_amount = parseFloat(document.getElementById("shift-opening-amount").value) || 0;
-        const pos_profile = (document.getElementById("shift-profile") || {}).value || "";
-        const mop = document.getElementById("shift-mop").value;
-        const result = await api("vm_pos_open_shift", {
-          data: JSON.stringify({ company: self.company, pos_profile, opening_amount, mode_of_payment: mop })
-        });
-        if (result && result.name) {
-          self.openingEntry = result.name;
-          self.openingAmount = result.opening_amount;
-          self.shiftMop = result.mode_of_payment;
-          self.posProfile = result.pos_profile;
-          self.build();
-          self.load();
-        } else {
-          errEl.textContent = "Failed to open shift. Please try again.";
-          btn.disabled = false; btn.textContent = "🟢 Open Shift & Start POS";
-        }
-      } catch(e) {
-        errEl.textContent = "Error: " + (e.message || e);
-        btn.disabled = false; btn.textContent = "🟢 Open Shift & Start POS";
-      }
-    };
-    // Enter key on amount input
-    document.getElementById("shift-opening-amount").addEventListener("keydown", e => {
-      if (e.key === "Enter") document.getElementById("shift-open-btn").click();
-    });
-  },
-
-  async showCloseShiftModal() {
-    const self = this;
-    const overlay = document.createElement("div");
-    overlay.className = "vpos-closing-overlay";
-    overlay.innerHTML = `<div class="vpos-closing-modal" style="text-align:center;padding:36px;color:#c9d1d9;">⏳ Calculating cashier's daily sales...</div>`;
-    document.body.appendChild(overlay);
-
-    const cashierId = this.cashier || this.user || "Administrator";
-    const cashierDisplayName = this.empName || this.cashier || this.user || "Administrator";
-
-    // Fetch live shift & today's sales metrics for THIS cashier
-    const shiftRes = await api("vm_pos_get_shift", {
-      company: this.company || "ULTRA MRF",
-      user: cashierId
-    });
-
-    if (!shiftRes || !shiftRes.has_open_shift) {
-      overlay.remove();
-      alert("No active shift found. Please enter your opening cash amount to start your shift.");
-      await this.checkOrOpenShift();
-      return;
-    }
-
-    const shift = shiftRes.shift;
-    self.openingEntry = shift.name;
-    self.openingAmount = parseFloat(shift.opening_amount || 0);
-    self.shiftMop = shift.mode_of_payment || "Cash";
-    self.posProfile = shift.pos_profile;
-
-    // Strict cashier daily metrics
-    const totalCollected = parseFloat(shift.total_sales || 0);
-    const invoiceCount = parseInt(shift.total_invoices || 0);
-    const expectedClose = parseFloat(shift.expected_closing || (self.openingAmount + totalCollected));
-    const peso = v => "₱ " + parseFloat(v||0).toLocaleString("en-PH", {minimumFractionDigits:2, maximumFractionDigits:2});
-    const todayFormatted = new Date().toLocaleDateString("en-PH", { month: "short", day: "numeric", year: "numeric" });
-    const branchName = this.company || shift.company || "ULTRA MRF";
-
-    overlay.innerHTML = `<div class="vpos-closing-modal">
-      <div class="vpos-closing-title">🔴 Close Shift & Daily Reconciliation</div>
-      <div class="vpos-closing-sub">Daily Shift Summary (${todayFormatted})</div>
-
-      <div class="vpos-shift-info" style="margin-bottom:14px;background:#161b22;border:1px solid #30363d;border-radius:10px;padding:10px 14px;font-size:12px;line-height:1.6;">
-        <div><strong>👤 Cashier:</strong> ${cashierDisplayName} <span style="opacity:0.6">(${cashierId})</span></div>
-        <div><strong>🏢 Branch:</strong> ${branchName}</div>
-        <div><strong>🎫 Shift Entry:</strong> ${shift.name}</div>
-      </div>
-
-      <div class="vpos-summary-row"><span class="lbl">Opening Cash Float</span><span class="amt">${peso(self.openingAmount)}</span></div>
-      <div class="vpos-summary-row"><span class="lbl">Cashier's Today Sales</span><span class="amt pos" style="font-size:16px;font-weight:700;">${peso(totalCollected)}</span></div>
-      <div class="vpos-summary-row"><span class="lbl">Cashier's Today Invoices</span><span class="amt">${invoiceCount} invoice${invoiceCount === 1 ? '' : 's'}</span></div>
-      <div class="vpos-summary-row"><span class="lbl">Expected Cash in Drawer</span><span class="amt" style="font-size:16px;color:#16c784;font-weight:800;">${peso(expectedClose)}</span></div>
-
-      <div class="vpos-shift-label" style="margin-top:18px">Actual Cash Count (₱)</div>
-      <input class="vpos-shift-input" id="closing-amount" type="number" min="0" step="0.01"
-             placeholder="Count your cash drawer and enter total" value="${expectedClose.toFixed(2)}">
-
-      <div id="closing-diff-row" style="margin-top:10px;font-size:13px;font-weight:700;color:#16c784;text-align:right;">
-        Difference: <span id="closing-diff-val">₱ 0.00 (Balanced)</span>
-      </div>
-
-      <div style="display:flex;gap:10px;margin-top:20px">
-        <button class="vpos-shift-btn" id="shift-close-confirm">🔴 Submit & Close Shift</button>
-        <button class="vpos-shift-btn" id="shift-close-cancel" style="background:#30363d;box-shadow:none;flex:0 0 auto;width:auto;padding:14px 20px">Cancel</button>
-      </div>
-      <div class="vpos-shift-err" id="closing-err"></div>
-    </div>`;
-
-    const countInput = overlay.querySelector("#closing-amount");
-    const diffVal = overlay.querySelector("#closing-diff-val");
-    
-    const updateDiff = () => {
-      const act = parseFloat(countInput.value) || 0;
-      const diff = act - expectedClose;
-      if (Math.abs(diff) < 0.01) {
-        diffVal.textContent = "₱ 0.00 (Balanced)";
-        diffVal.style.color = "#16c784";
-      } else if (diff > 0) {
-        diffVal.textContent = "+ " + peso(diff) + " (Overage)";
-        diffVal.style.color = "#38bdf8";
-      } else {
-        diffVal.textContent = "- " + peso(Math.abs(diff)) + " (Shortage)";
-        diffVal.style.color = "#f85149";
-      }
-    };
-    countInput.oninput = updateDiff;
-    updateDiff();
-
-    overlay.querySelector("#shift-close-cancel").onclick = () => overlay.remove();
-    overlay.querySelector("#shift-close-confirm").onclick = async () => {
-      const btn = overlay.querySelector("#shift-close-confirm");
-      const errEl = overlay.querySelector("#closing-err");
-      btn.disabled = true; btn.textContent = "⏳ Closing shift...";
-      errEl.textContent = "";
-      try {
-        const closing_amount = parseFloat(countInput.value) || 0;
-        const result = await api("vm_pos_close_shift", {
-          data: JSON.stringify({
-            opening_entry: self.openingEntry,
-            closing_amount,
-            mode_of_payment: self.shiftMop || "Cash",
-            user: cashierId
-          })
-        });
-        if (result && result.name) {
-          overlay.remove();
-          alert("✅ Shift Closed Successfully!\n\n" +
-            "Closing Entry: " + result.name + "\n" +
-            "Cashier: " + (result.cashier || cashierDisplayName) + "\n" +
-            "Invoices by Cashier Today: " + result.total_invoices + "\n" +
-            "Today's Sales: " + peso(result.grand_total) + "\n" +
-            "Opening Float: " + peso(result.opening_amount) + "\n" +
-            "Cash Counted: " + peso(result.closing_amount) + "\n" +
-            "Difference: " + peso(result.difference));
-          self.openingEntry = null;
-          self.openingAmount = 0;
-          self.logout();
-        } else {
-          const err = api.lastError || "Failed to close shift. Check ERPNext logs.";
-          errEl.textContent = "Error: " + err;
-          btn.disabled = false; btn.textContent = "🔴 Submit & Close Shift";
-        }
-      } catch(e) {
-        errEl.textContent = "Error: " + (e.message || e);
-        btn.disabled = false; btn.textContent = "🔴 Submit & Close Shift";
-      }
-    };
+    this.build();
+    this.load();
   },
 
   openScanner() {
@@ -13633,11 +12902,11 @@ const POS = {
       <aside class="vpos-rail">
         <div class="vpos-logo" title="ULTRA MRF POS">V</div>
         <div class="vpos-rail-nav">
-          <div class="vpos-rail-ic active" data-view="pos" title="Point of Sale (Catalog & Ticket)">&#128722;</div>
+          <div class="vpos-rail-ic active" data-view="pos" title="Catalog / Point of Sale">&#128722;</div>
+          <div class="vpos-rail-ic" data-view="ticket" id="vpos-rail-ticket-btn" title="Cart & Ticket">&#129534;</div>
           <div class="vpos-rail-ic" data-view="history" title="Transaction History">&#128202;</div>
-          <div class="vpos-rail-ic" data-view="profile" title="Cashier ID Profile">&#128100;</div>
+          <div class="vpos-rail-ic" data-view="profile" title="Cashier ID Badge">&#128100;</div>
         </div>
-        <div class="vpos-rail-ic close-shift" data-action="close-shift" title="Close Shift / End of Day">&#128274;</div>
         <div class="vpos-rail-ic logout" data-action="logout" title="Log out / Close">&#9211;</div>
         <div class="vpos-rail-foot" id="vpos-co">${this.company || ""}<br>${this.cashier || ""}</div>
       </aside>
@@ -13650,16 +12919,7 @@ const POS = {
               <input class="vpos-search" placeholder="Scan barcode or search item name/code..." autocomplete="off">
             </div>
             <div class="vpos-branch-row">
-              <div class="vpos-branch-badge" title="Assigned Cashier Branch">
-                <span class="vpos-branch-lbl">🏢 BRANCH:</span>
-                <span class="vpos-branch-val" id="vpos-branch-name">${this.company || "ULTRA MRF"}</span>
-              </div>
-              <div class="vpos-shift-badge" id="vpos-shift-badge" title="Active Shift & Opening Cash" style="display:flex;align-items:center;gap:6px;background:rgba(22,199,132,0.12);border:1px solid rgba(22,199,132,0.3);border-radius:10px;padding:4px 10px;font-size:11.5px;color:#16c784;font-weight:700;">
-                <span>🟢 SHIFT: <span id="vpos-shift-name-top">${this.openingEntry || 'Active'}</span></span>
-                <span style="opacity:0.4">|</span>
-                <span>Drawer: <span id="vpos-shift-drawer-top">₱${(this.openingAmount || 0).toLocaleString('en-US', {minimumFractionDigits:2})}</span></span>
-                <button type="button" id="vpos-btn-top-close-shift" style="margin-left:4px;background:#f85149;color:#fff;border:none;border-radius:6px;padding:3px 8px;font-size:11px;font-weight:700;cursor:pointer;">Close Shift</button>
-              </div>
+              <div class="vpos-branch"><label>Branch</label><select class="vpos-company" disabled></select></div>
               <button class="vpos-stock-toggle" id="vpos-stock-toggle" title="Toggle in-stock filter">In Stock: OFF</button>
             </div>
           </div>
@@ -13697,23 +12957,6 @@ const POS = {
           <div class="vpos-tot-row"><span>Items Count</span><span class="vpos-tqty">0</span></div>
           <div class="vpos-tot-row"><span>Discount Amount</span><span class="vpos-tdisc">₱0.00</span></div>
           <div class="vpos-tot-row vpos-tot-grand"><span>Total</span><span class="vpos-total">₱0.00</span></div>
-        </div>
-
-        <div class="vpos-field">
-          <label>Payment Method</label>
-          <div class="vpos-pay-methods" id="vpos-pay-methods">
-            <button type="button" class="vpos-pay-btn active" data-pay="Cash">💵 Cash</button>
-            <button type="button" class="vpos-pay-btn" data-pay="Card">💳 Card</button>
-            <button type="button" class="vpos-pay-btn" data-pay="GCash">📱 GCash</button>
-            <button type="button" class="vpos-pay-btn" data-pay="Maya">💳 Maya</button>
-            <button type="button" class="vpos-pay-btn" data-pay="BDO">🏦 BDO</button>
-            <button type="button" class="vpos-pay-btn" data-pay="Bank Transfer">🏦 Bank Transfer</button>
-          </div>
-        </div>
-
-        <div class="vpos-field">
-          <label>Notes / Remarks</label>
-          <input class="vpos-remarks" id="vpos-remarks" placeholder="Add order notes, bay reference, check #..." autocomplete="off">
         </div>
 
         <div class="vpos-tender">
@@ -13765,7 +13008,6 @@ const POS = {
     r.querySelectorAll(".vpos-rail-ic").forEach(b => b.onclick = () => {
       const act = b.getAttribute("data-action");
       if (act === "logout") { self.logout(); return; }
-      if (act === "close-shift") { self.showCloseShiftModal(); return; }
       self.switchView(b.getAttribute("data-view"));
     });
 
@@ -13775,30 +13017,10 @@ const POS = {
       self._searchT = setTimeout(() => self.search(), 280);
     });
 
-    // Auto-selected branch (no dropdown)
-    const bVal = r.querySelector("#vpos-branch-name");
-    if (bVal) bVal.textContent = this.company || "All Branches";
-
-    // Payment method quick buttons
-    this.payment_method = "Cash";
-    r.querySelectorAll(".vpos-pay-btn").forEach(btn => {
-      btn.onclick = () => {
-        r.querySelectorAll(".vpos-pay-btn").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        self.payment_method = btn.getAttribute("data-pay");
-        if (self.payment_method !== "Cash") {
-          const tot = self.total || 0;
-          const pInput = document.querySelector(".vpos-paid");
-          if (pInput && (flt(pInput.value) <= 0 || flt(pInput.value) < tot)) {
-            pInput.value = tot;
-            self.totals();
-          }
-        }
-      };
-    });
-
-    const topCloseBtn = r.querySelector("#vpos-btn-top-close-shift");
-    if (topCloseBtn) topCloseBtn.onclick = () => self.showCloseShiftModal();
+    const comp = r.querySelector(".vpos-company");
+    comp.disabled = false;
+    comp.value = this.company || "";
+    comp.onchange = () => { this.company = comp.value || null; this.totals(); this.search(); };
 
     const st = r.querySelector("#vpos-stock-toggle");
     st.onclick = () => {
@@ -13852,17 +13074,24 @@ const POS = {
       this.cat(box, "", "All Categories", true);
       (meta.categories || []).forEach(g => this.cat(box, g, g, false));
     }
-    // Ensure company is set from cashier employee record or default to ULTRA MRF
-    if (!this.company) {
-      this.company = "ULTRA MRF";
+    // Populate the Company (Branch) select so Charge & Pay can enable even if
+    // the cashier profile returned no company. Default to cashier company or
+    // the first available company.
+    const comp = document.querySelector(".vpos-company");
+    if (meta && comp) {
+      const companies = meta.companies || [];
+      comp.innerHTML = "";
+      companies.forEach(c => {
+        const o = document.createElement("option");
+        o.value = c; o.textContent = c;
+        comp.appendChild(o);
+      });
+      if (!this.company && companies.length) this.company = companies[0];
+      comp.value = this.company || "";
     }
-    const bName = document.getElementById("vpos-branch-name");
-    if (bName) bName.textContent = this.company || "All Branches";
-    const coFoot = document.getElementById("vpos-co");
-    if (coFoot) coFoot.innerHTML = (this.company || "") + "<br>" + (this.cashier || "");
     this.totals();
     this.search();
-    this.history = await api("vm_pos_history") || [];
+    this.history = await api("vehicle_management.vehicle_management.pos_api.get_history") || [];
   },
 
   cat(box, val, label, active) {
@@ -13881,18 +13110,15 @@ const POS = {
 
   switchView(v) {
     document.querySelectorAll(".vpos-rail-ic").forEach(x => x.classList.toggle("active", x.getAttribute("data-view") === v));
-    const app = document.querySelector(".vpos-app");
-    const ticketPanel = document.getElementById("vpos-ticket-panel");
-
-    if (v === "pos") {
-      if (app) app.classList.remove("non-pos");
-      if (ticketPanel) ticketPanel.style.display = "";
+    const map = { pos: "vpos-view-pos", history: "vpos-view-history", profile: "vpos-view-profile" };
+    
+    if (v === "ticket") {
+      this.toggleMobileTicket(true);
+      return;
     } else {
-      if (app) app.classList.add("non-pos");
-      if (ticketPanel) ticketPanel.style.display = "none";
+      this.toggleMobileTicket(false);
     }
 
-    const map = { pos: "vpos-view-pos", history: "vpos-view-history", profile: "vpos-view-profile" };
     Object.keys(map).forEach(k => {
       const el = document.getElementById(map[k]);
       if (el) el.style.display = (k === v ? "block" : "none");
@@ -13910,175 +13136,18 @@ const POS = {
     if (!grid.innerHTML) this.search();
   },
 
-  async fetchHistory(params = {}) {
-    const view = document.getElementById("vpos-view-history");
-    const countEl = document.getElementById("vpos-hist-count");
-    const listEl = document.getElementById("vpos-hist-list");
-    const refBtn = document.getElementById("vpos-hist-refresh");
-
-    if (refBtn) { refBtn.disabled = true; refBtn.textContent = "⏳ Syncing..."; }
-    if (listEl) listEl.innerHTML = '<div class="vpos-empty" style="padding:24px;">🔄 Fetching real-time transactions...</div>';
-
-    this.histPeriod = params.period !== undefined ? params.period : (this.histPeriod || "all");
-    this.histFromDate = params.from_date !== undefined ? params.from_date : (this.histFromDate || "");
-    this.histToDate = params.to_date !== undefined ? params.to_date : (this.histToDate || "");
-    this.histSearch = params.search !== undefined ? params.search : (this.histSearch || "");
-
-    const histCo = (this.company === "All Branches" || !this.company) ? "" : this.company;
-    const queryParams = {
-      period: this.histPeriod,
-      from_date: this.histFromDate,
-      to_date: this.histToDate,
-      search: this.histSearch,
-      company: histCo
-    };
-
-    let list = [];
-    try {
-      list = await api("vm_pos_history", queryParams) || [];
-    } catch (e) {
-      console.error("fetchHistory error:", e);
-    }
-    this.history = list;
-    if (refBtn) { refBtn.disabled = false; refBtn.textContent = "🔄 Refresh"; }
-    this.renderHistoryList();
-    return list;
-  },
-
   renderHistory() {
     const view = document.getElementById("vpos-view-history");
     if (!view) return;
-
-    // Render history container shell if not already built
-    if (!view.querySelector(".vpos-hist-bar")) {
-      const todayIso = new Date().toISOString().split("T")[0];
-      view.innerHTML = `
-      <div class="vpos-hist-box">
-        <div class="vpos-hist-bar">
-          <div class="vpos-hist-title">
-            <h3>Transaction History</h3>
-            <span class="vpos-hist-badge" id="vpos-hist-count">0 invoices</span>
-          </div>
-          <div class="vpos-hist-controls">
-            <div class="vpos-hist-pills" id="vpos-hist-pills">
-              <button class="vpos-hist-pill active" data-period="all">All</button>
-              <button class="vpos-hist-pill" data-period="today">Today</button>
-              <button class="vpos-hist-pill" data-period="month">This Month</button>
-            </div>
-            <select class="vpos-hist-dt" id="vpos-hist-branch-filter" style="height:34px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:0 8px;font-size:12px;font-weight:600;color:var(--txt);" title="Filter by Branch">
-              <option value="">🏢 All Branches</option>
-              <option value="ULTRA MRF" selected>ULTRA MRF</option>
-              <option value="Ultra MRF Dau Main">Ultra MRF Dau Main</option>
-              <option value="Ultra MRF Dau Annex">Ultra MRF Dau Annex</option>
-            </select>
-            <div class="vpos-hist-dates">
-              <input type="date" id="vpos-hist-from" class="vpos-hist-dt" title="From Date">
-              <span style="font-size:12px;color:var(--muted)">to</span>
-              <input type="date" id="vpos-hist-to" class="vpos-hist-dt" title="To Date">
-              <button class="vpos-hist-btn primary" id="vpos-hist-apply" style="height:34px">Apply</button>
-            </div>
-            <button class="vpos-hist-btn" id="vpos-hist-refresh">🔄 Refresh</button>
-          </div>
-        </div>
-
-        <div class="vpos-hist-search-box">
-          <span style="font-size:16px;opacity:.6">🔍</span>
-          <input type="text" id="vpos-hist-search" placeholder="Search customer name, vehicle plate, or invoice #...">
-        </div>
-
-        <div class="vpos-hist-list" id="vpos-hist-list"></div>
-      </div>`;
-
-      // Bind filter pill buttons
-      const self = this;
-      view.querySelectorAll(".vpos-hist-pill").forEach(p => {
-        p.onclick = () => {
-          view.querySelectorAll(".vpos-hist-pill").forEach(x => x.classList.remove("active"));
-          p.classList.add("active");
-          const per = p.getAttribute("data-period");
-          self.fetchHistory({ period: per, from_date: "", to_date: "" });
-        };
-      });
-
-      // Bind date range apply
-      const applyBtn = view.querySelector("#vpos-hist-apply");
-      if (applyBtn) {
-        applyBtn.onclick = () => {
-          view.querySelectorAll(".vpos-hist-pill").forEach(x => x.classList.remove("active"));
-          const f = (view.querySelector("#vpos-hist-from") || {}).value || "";
-          const t = (view.querySelector("#vpos-hist-to") || {}).value || "";
-          self.fetchHistory({ period: "custom", from_date: f, to_date: t });
-        };
-      }
-
-      // Bind refresh button
-      const refBtn = view.querySelector("#vpos-hist-refresh");
-      if (refBtn) refBtn.onclick = () => self.fetchHistory();
-
-      // Bind branch filter change
-      const brSelect = view.querySelector("#vpos-hist-branch-filter");
-      if (brSelect) {
-        brSelect.value = self.company || "ULTRA MRF";
-        brSelect.onchange = () => {
-          self.fetchHistory({ company: brSelect.value });
-        };
-      }
-
-      // Bind search input with debounce
-      const sInput = view.querySelector("#vpos-hist-search");
-      if (sInput) {
-        sInput.oninput = () => {
-          clearTimeout(self._histST);
-          self._histST = setTimeout(() => {
-            self.fetchHistory({ search: sInput.value });
-          }, 300);
-        };
-      }
-    }
-
-    // Always trigger a real-time fetch when opening the tab
-    this.fetchHistory({ period: this.histPeriod || "all" });
-  },
-
-  renderHistoryList() {
-    const listEl = document.getElementById("vpos-hist-list");
-    const countEl = document.getElementById("vpos-hist-count");
-    if (!listEl) return;
-
-    const list = this.history || [];
-    if (countEl) countEl.textContent = list.length + (list.length === 1 ? " invoice" : " invoices");
-
-    if (!list.length) {
-      listEl.innerHTML = '<div class="vpos-empty" style="padding:40px;background:#fff;border-radius:16px;border:1px solid var(--line);">No transactions found matching the selected filter/date range.</div>';
-      return;
-    }
-
-    listEl.innerHTML = list.map(t => {
-      const isPaid = (t.status === "Paid" || flt(t.paid_amount) >= flt(t.total_amount));
-      const posLink = t.pos_invoice ? `<span class="vpos-hist-tag desk-link" onclick="window.open('/desk#Form/POS Invoice/${encodeURIComponent(t.pos_invoice)}', '_blank')">🔗 ${t.pos_invoice}</span>` : "";
-      const vehDisplay = (t.plate_no || t.vehicle) ? `🚗 <b>${t.plate_no || t.vehicle}</b>` : "";
-      const remDisplay = t.remarks ? `<div style="font-size:11px;color:var(--muted);margin-top:2px;">📝 ${t.remarks}</div>` : "";
-
-      return `
-      <div class="vpos-hist-card">
-        <div class="vpos-hist-top">
-          <div class="vpos-hist-code" onclick="window.open('/desk#Form/POS Invoice/${encodeURIComponent(t.name)}', '_blank')" title="Open POS Invoice in Desk">${t.name}</div>
-          <div class="vpos-hist-time">${t.timestamp || t.posting_date || ""}</div>
-        </div>
-        <div class="vpos-hist-mid">
-          <div class="vpos-hist-cust">${t.customer_name || "Walk-in Customer"}</div>
-          <div class="vpos-hist-sub">${vehDisplay} ${t.company ? "· 🏢 " + t.company : ""}</div>
-        </div>
-        ${remDisplay}
-        <div class="vpos-hist-foot">
-          <div class="vpos-hist-amt">${peso(t.total_amount)}</div>
-          <div class="vpos-hist-tags">
-            <span class="vpos-hist-tag">${t.payment_method || "Cash"}</span>
-            <span class="vpos-hist-tag ${isPaid ? 'paid' : ''}">${isPaid ? '✓ Paid' : 'Draft'}</span>
-          </div>
-        </div>
-      </div>`;
-    }).join("");
+    const h = this.history || [];
+    if (!h.length) { view.innerHTML = '<div class="vpos-empty">No transactions yet recorded.</div>'; return; }
+    view.innerHTML = h.map(t => `
+      <div class="vpos-hist">
+        <div class="vpos-hist-top"><b>${t.name}</b><span>${t.posting_date || ""}</span></div>
+        <div class="vpos-hist-sub">${t.customer_name || ""} ${t.vehicle ? "· " + t.vehicle : ""}</div>
+        <div class="vpos-hist-foot"><span>${peso(t.total_amount)}</span><span>${t.payment_method || "Cash"}</span></div>
+      </div>
+    `).join("");
   },
 
   renderProfile() {
@@ -14097,24 +13166,38 @@ const POS = {
     <div class="vpos-prof">
       <div class="vpos-prof-card" id="vpos-prof-card">
         <div class="vpos-prof-logo">V</div>
-        <h3 style="margin:2px 0 4px">Official Cashier ID Profile</h3>
-        <div style="font-size:11.5px;color:var(--muted);margin-bottom:14px;font-weight:700;letter-spacing:0.5px">ULTRA MRF AUTHORIZED PERSONNEL</div>
-        <div class="vpos-prof-row"><span>Employee Name</span><b>${this.empName || this.employee || "—"}</b></div>
+        <h3>Cashier ID Badge</h3>
         <div class="vpos-prof-row"><span>Employee #</span><b>${this.empNo || "—"}</b></div>
-        <div class="vpos-prof-row"><span>Designation</span><b>${this.designation || "Cashier"}</b></div>
-        <div class="vpos-prof-row"><span>Assigned Company</span><b>${this.company || "—"}</b></div>
+        <div class="vpos-prof-row"><span>Employee</span><b>${this.empName || this.employee || "—"}</b></div>
+        <div class="vpos-prof-row"><span>Designation</span><b>${this.designation || "—"}</b></div>
+        <div class="vpos-prof-row"><span>Company</span><b>${this.company || ""}</b></div>
         <div class="vpos-prof-row"><span>Branch</span><b>${this.branch || "—"}</b></div>
-        <div class="vpos-prof-row"><span>Department</span><b>${this.department || "Front Desk"}</b></div>
+        <div class="vpos-prof-row"><span>Department</span><b>${this.department || "—"}</b></div>
         <div class="vpos-prof-row"><span>Reports To</span><b>${this.reportsTo || "—"}</b></div>
-        <div class="vpos-prof-row"><span>User Account</span><b>${this.email || this.cashier || ""}</b></div>
+        <div class="vpos-prof-row"><span>Email</span><b>${this.email || this.cashier || ""}</b></div>
         <div class="vpos-prof-qr">${svg}</div>
-        <div class="vpos-prof-hint">Scan badge with device camera for instant shift sign-in and warehouse material handover verification.</div>
+        <div class="vpos-prof-hint">Scan badge with any camera to log in instantly.</div>
         <div class="vpos-prof-code" id="vpos-prof-code">${qrData}</div>
-        <div style="display:flex;gap:8px;margin-top:14px;width:100%">
-          <button class="vpos-li-qr" id="vpos-prof-dl" style="flex:1">&#11015; Download SVG</button>
-          <button class="vpos-li-qr" id="vpos-prof-copy" style="flex:1">&#128203; Copy Code</button>
-          <button class="vpos-prof-print" onclick="window.print()" style="flex:1;padding:10px 14px">&#128424; Print Badge</button>
+        <button class="vpos-li-qr" id="vpos-prof-dl" style="margin-top:12px">&#11015; Download Badge (SVG)</button>
+        <button class="vpos-li-qr" id="vpos-prof-copy" style="margin-top:8px">&#128203; Copy Badge Code</button>
+      </div>
+      <button class="vpos-prof-print" onclick="window.print()">&#128424; Print Badge</button>
+    </div>
+    <div class="vpos-idcard" id="vpos-idcard">
+      <div class="vpos-id-head">
+        <div class="vpos-id-logo">V</div>
+        <div class="vpos-id-co">${this.company || ""}</div>
+        <div class="vpos-id-title">CASHIER ID</div>
+      </div>
+      <div class="vpos-id-body">
+        <div class="vpos-id-info">
+          <div class="vpos-id-name">${this.empName || this.employee || "—"}</div>
+          <div class="vpos-id-line"><span>Emp #</span><b>${this.empNo || "—"}</b></div>
+          <div class="vpos-id-line"><span>Designation</span><b>${this.designation || "—"}</b></div>
+          <div class="vpos-id-line"><span>Branch</span><b>${this.branch || "—"}</b></div>
+          <div class="vpos-id-line"><span>Email</span><b>${this.email || this.cashier || ""}</b></div>
         </div>
+        <div class="vpos-id-qr">${svg}</div>
       </div>
     </div>`;
 
@@ -14415,17 +13498,6 @@ const POS = {
     return s.trim();
   },
 
-  getCategoryIcon(group, name) {
-    const s = ((group || "") + " " + (name || "")).toLowerCase();
-    if (s.includes("tire") || s.includes("tyre") || s.includes("wheel") || s.includes("rim") || s.includes("mag")) return "🛞";
-    if (s.includes("oil") || s.includes("lube") || s.includes("lubricant") || s.includes("fluid")) return "🛢️";
-    if (s.includes("service") || s.includes("labor") || s.includes("alignment") || s.includes("pms") || s.includes("repair")) return "🔧";
-    if (s.includes("battery")) return "🔋";
-    if (s.includes("brake") || s.includes("pad") || s.includes("rotor")) return "🛑";
-    if (s.includes("filter")) return "🌪️";
-    return "📦";
-  },
-
   card(it, box) {
     const self = this;
     const name = it.name || it.code;
@@ -14436,21 +13508,14 @@ const POS = {
     const stock = this.STOCK && this.STOCK[it.code] ? this.STOCK[it.code].stock : null;
     const tip = this.STOCK && this.STOCK[it.code] ? this.stockTip(this.STOCK[it.code]) : "";
 
-    let thumbHtml = "";
-    if (it.image) {
-      thumbHtml = `<div class="vpos-thumb"><img src="${it.image}" alt="${name}" loading="lazy" onerror="this.onerror=null;this.parentElement.innerHTML='<div class=\'vpos-thumb-placeholder\'><span class=\'ico\'>${self.getCategoryIcon(it.group, name)}</span><span>${it.group || 'Product'}</span></div>';"></div>`;
-    } else {
-      thumbHtml = `<div class="vpos-thumb"><div class="vpos-thumb-placeholder"><span class="ico">${self.getCategoryIcon(it.group, name)}</span><span>${it.group || 'Item'}</span></div></div>`;
-    }
-
     card.innerHTML = `
-      ${thumbHtml}
-      <div class="vpos-card-name" title="${name}">${name}</div>
+      <div class="vpos-thumb">${name.charAt(0).toUpperCase()}</div>
+      <div class="vpos-card-name">${name}</div>
       <div class="vpos-card-code">${it.code}</div>
       <div class="vpos-card-stock">${stock == null ? "Stock: …" : "Stock: " + flt(stock)}</div>
       <div class="vpos-card-foot">
-        <div class="vpos-card-rate" title="${peso(rate)}">${peso(rate)}</div>
-        <button class="vpos-card-add" type="button">+ ADD</button>
+        <div class="vpos-card-rate">${peso(rate)}</div>
+        <button class="vpos-card-add">+ ADD</button>
       </div>`;
 
     if (tip) card.setAttribute("data-tip", tip);
@@ -14574,9 +13639,6 @@ const POS = {
 
   clear() {
     this.cart = []; this.customer = null; this.vehicle = null;
-    this.payment_method = "Cash";
-    document.querySelectorAll(".vpos-pay-btn").forEach(b => b.classList.toggle("active", b.getAttribute("data-pay") === "Cash"));
-    const remEl = document.getElementById("vpos-remarks"); if (remEl) remEl.value = "";
     const cEl = document.querySelector(".vpos-cust"); if (cEl) cEl.textContent = "";
     const vEl = document.querySelector(".vpos-vin"); if (vEl) vEl.value = "";
     const pEl = document.querySelector(".vpos-paid"); if (pEl) pEl.value = 0;
@@ -14600,26 +13662,16 @@ const POS = {
 
   async submit(tot, paid) {
     const items = this.cart.map(c => ({ item_code: c.item_code, qty: c.qty, rate: c.rate, discount_amount: c.discount_amount, uom: c.uom }));
-    const remEl = document.getElementById("vpos-remarks");
-    const remarks = remEl ? remEl.value.trim() : "";
-    const payload = {
-      customer: this.customer,
-      vehicle: this.vehicle || null,
-      company: this.company,
-      paid_amount: paid,
-      payment_method: this.payment_method || "Cash",
-      remarks: remarks,
-      items: items
-    };
-    const r = await api("vm_pos_create_invoice", { data: JSON.stringify(payload) });
+    const r = await api("vehicle_management.vehicle_management.doctype.vehicle_pos_invoice.vehicle_pos_invoice.create_from_pos", {
+      data: JSON.stringify({ customer: this.customer, vehicle: this.vehicle || null, company: this.company, paid_amount: paid, payment_method: this.payment_method, items: items })
+    });
     if (r && r.name) {
-      alert("✅ POS Invoice " + r.name + " (" + (r.payment_method || payload.payment_method) + ") created successfully!");
+      alert("POS Invoice " + r.name + " created successfully!");
       this.clear();
-      await this.fetchHistory();
-      window.open("/desk#Form/POS Invoice/" + encodeURIComponent(r.name), "_blank");
+      this.history = await api("vehicle_management.vehicle_management.pos_api.get_history") || this.history;
+      if (r.pos_invoice) window.open("/desk#Form/POS Invoice/" + r.pos_invoice, "_blank");
     } else {
-      const err = api.lastError || "Unknown server response. Please verify in console.";
-      alert("⚠️ Failed to create invoice:\n" + err);
+      alert("Failed to create invoice. See console.");
     }
   },
 

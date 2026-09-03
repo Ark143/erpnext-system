@@ -52,13 +52,13 @@ def get_items(txt=None, category=None, company=None, only_stock=0, start=0, limi
 	if only_stock:
 		sql = f"""
 			SELECT i.name as code, i.item_name as name, i.standard_rate as rate,
-			       i.stock_uom as uom, i.item_group as `group`,
+			       i.stock_uom as uom, i.item_group as `group`, i.image as image,
 			       COALESCE(SUM(b.actual_qty), 0) as stock
 			FROM "tabItem" i
 			JOIN "tabBin" b ON b.item_code = i.name AND b.actual_qty > 0
 			{wh_join}
 			WHERE {" AND ".join(where_clauses)}
-			GROUP BY i.name, i.item_name, i.standard_rate, i.stock_uom, i.item_group
+			GROUP BY i.name, i.item_name, i.standard_rate, i.stock_uom, i.item_group, i.image
 			HAVING SUM(b.actual_qty) > 0
 			ORDER BY stock DESC, i.item_name ASC
 			LIMIT {cint_safe(limit)} OFFSET {cint_safe(start)}
@@ -71,7 +71,7 @@ def get_items(txt=None, category=None, company=None, only_stock=0, start=0, limi
 
 	sql = f"""
 		SELECT i.name as code, i.item_name as name, i.standard_rate as rate,
-		       i.stock_uom as uom, i.item_group as `group`,
+		       i.stock_uom as uom, i.item_group as `group`, i.image as image,
 		       COALESCE((
 		           SELECT SUM(b.actual_qty) FROM "tabBin" b 
 		           WHERE b.item_code = i.name AND b.actual_qty > 0
@@ -178,19 +178,65 @@ def get_cashier():
 
 
 @frappe.whitelist()
-def get_history():
-	"""Recent Vehicle POS Invoices created by the logged-in cashier (real-time)."""
+def get_history(period=None, from_date=None, to_date=None, company=None, search=None):
+	"""Recent standard ERPNext POS Invoices (ACC-PSINV-...) with real-time filters."""
 	user = frappe.session.user
+	roles = frappe.get_roles(user)
+	is_manager = "System Manager" in roles or "Accounts Manager" in roles or user == "Administrator"
+
+	filters = [["docstatus", "<", 2]]
+
+	# If not manager, restrict to cashier or cashier's company
+	if not is_manager:
+		cashier_company = frappe.db.get_value("Employee", {"user_id": user}, "company") or frappe.db.get_value("Cashier Profile", user, "company")
+		if cashier_company:
+			filters.append(["company", "=", cashier_company])
+		else:
+			filters.append(["owner", "=", user])
+	elif company:
+		filters.append(["company", "=", company])
+
+	# Date filtering
+	today_str = frappe.utils.today()
+	if period == "today":
+		filters.append(["posting_date", "=", today_str])
+	elif period == "month":
+		import datetime
+		now = datetime.date.today()
+		first_day = now.replace(day=1).strftime("%Y-%m-%d")
+		filters.append(["posting_date", ">=", first_day])
+		filters.append(["posting_date", "<=", today_str])
+	elif from_date or to_date:
+		if from_date:
+			filters.append(["posting_date", ">=", from_date])
+		if to_date:
+			filters.append(["posting_date", "<=", to_date])
+
+	or_filters = None
+	if search:
+		like = f"%{search.strip()}%"
+		or_filters = [
+			["name", "like", like],
+			["customer_name", "like", like],
+			["custom_plate_no", "like", like],
+			["custom_customer_vehicle", "like", like],
+		]
+
 	rows = frappe.get_all(
-		"Vehicle POS Invoice",
-		filters=[["Vehicle POS Invoice", "cashier", "=", user], ["Vehicle POS Invoice", "docstatus", "=", 1]],
-		fields=["name", "posting_date", "customer_name", "vehicle", "plate_no", "total_amount", "paid_amount",
-		        "payment_method", "company", "pos_invoice", "creation"],
+		"POS Invoice",
+		filters=filters,
+		or_filters=or_filters,
+		fields=["name", "posting_date", "customer_name", "custom_customer_vehicle as vehicle",
+		        "custom_plate_no as plate_no", "grand_total as total_amount", "paid_amount",
+		        "company", "creation", "status", "remarks", "owner as cashier"],
 		order_by="creation desc",
 		limit_page_length=200,
 	)
 	for r in rows:
 		r["timestamp"] = _fmt_ts(r)
+		r["pos_invoice"] = r["name"]
+		mop = frappe.db.get_value("Sales Invoice Payment", {"parent": r["name"]}, "mode_of_payment")
+		r["payment_method"] = mop or "Cash"
 	return rows
 
 
@@ -266,22 +312,154 @@ def get_cashier_shift():
 
 
 @frappe.whitelist()
-def open_cashier(company=None, opening_amount=0):
-	"""Open a POS Opening Entry for the logged-in cashier."""
+def get_pos_profiles_for_user(company=None):
+	"""Return available POS Profiles the logged-in user can use.
+
+	Each profile record in ERPNext contains an optional child table 'applicable_for_users'
+	(Has Role). If it is empty the profile is available to everyone; if it has rows the user
+	must appear in at least one row.  We also restrict to profiles for the given company when
+	`company` is supplied.
+
+	Returns a list of {name, company, warehouse} dicts, plus a flat list of the distinct
+	companies across all returned profiles so the UI can build its company selector.
+	"""
+	user = frappe.session.user
+	filters = {"disabled": 0}
+	if company:
+		filters["company"] = company
+
+	profiles = frappe.get_all(
+		"POS Profile",
+		filters=filters,
+		fields=["name", "company", "warehouse"],
+		order_by="company asc, name asc",
+	)
+
+	visible = []
+	for p in profiles:
+		# Check if the profile is restricted to specific users
+		applicable_users = frappe.get_all(
+			"POS Profile User",
+			filters={"parent": p.name},
+			fields=["user"],
+		)
+		# If no users set → available to all; else user must be in the list
+		if not applicable_users or any(u.user == user for u in applicable_users):
+			visible.append(p)
+
+	companies = sorted({p.company for p in visible if p.company})
+	return {"profiles": [dict(p) for p in visible], "companies": companies}
+
+
+@frappe.whitelist()
+def get_cashier_today_sales():
+	"""Total sales (paid_amount) for the current cashier today, scoped to their company.
+
+	Used by the Closing Entry modal to display an informational 'Today Sales' amount.
+	Looks at POS Invoice records posted today where the cashier (owner) is the current user.
+	"""
+	user = frappe.session.user
+	today = frappe.utils.today()
+
+	# Determine the cashier's active company from the open shift, employee, or cashier profile
+	company = None
+	open_entry = frappe.db.get_value(
+		"POS Opening Entry",
+		{"user": user, "status": "Open", "docstatus": 1},
+		"company",
+	)
+	if open_entry:
+		company = open_entry
+	else:
+		emp_company = frappe.db.get_value("Employee", {"user_id": user}, "company")
+		company = emp_company or frappe.db.get_value("Cashier Profile", user, "company")
+
+	filters = [
+		["posting_date", "=", today],
+		["docstatus", "<", 2],
+		["owner", "=", user],
+	]
+	if company:
+		filters.append(["company", "=", company])
+
+	rows = frappe.get_all(
+		"POS Invoice",
+		filters=filters,
+		fields=["grand_total", "paid_amount", "status"],
+	)
+	total_sales = sum(flt(r.get("grand_total") or 0) for r in rows)
+	total_paid = sum(flt(r.get("paid_amount") or 0) for r in rows)
+	return {
+		"company": company or "",
+		"today": today,
+		"total_invoices": len(rows),
+		"total_sales": round(total_sales, 2),
+		"total_paid": round(total_paid, 2),
+	}
+
+
+@frappe.whitelist()
+def open_cashier(company=None, opening_amount=0, pos_profile=None):
+	"""Open a POS Opening Entry for the logged-in cashier.
+
+	Parameters
+	----------
+	company        : Company name (auto-resolved from employee/cashier profile if omitted)
+	opening_amount : Cash amount the cashier counted at shift start
+	pos_profile    : Explicit POS Profile to use.  When supplied, company is derived from
+	                 the profile if not also supplied.  When omitted, the profile is
+	                 auto-resolved via ensure_pos_profile().
+
+	Returns {status, name} where status is one of:
+	  - "already_open"  : shift already open for this user
+	  - "opened"        : new POS Opening Entry created and submitted
+	  - throws          : no company, no pos_profile found
+	"""
 	user = frappe.session.user
 	existing = frappe.db.get_value(
 		"POS Opening Entry", {"user": user, "status": "Open", "docstatus": 1}, "name"
 	)
 	if existing:
 		return {"status": "already_open", "name": existing}
+
+	# ── Resolve company ───────────────────────────────────────────────────────────
+	if pos_profile and not company:
+		company = frappe.db.get_value("POS Profile", pos_profile, "company")
 	if not company:
 		company = (get_cashier() or {}).get("company")
 	if not company:
 		frappe.throw("Could not resolve a company for this cashier.")
-	from vehicle_management.vehicle_management.doctype.vehicle_pos_invoice.vehicle_pos_invoice import VehiclePOSInvoice
-	vpi = VehiclePOSInvoice({"doctype": "Vehicle POS Invoice"})
-	pos_profile = vpi.ensure_pos_profile(company)
-	cash = vpi.get_mode_of_payment("Cash", company)
+
+	# ── Resolve POS Profile ───────────────────────────────────────────────────────
+	if not pos_profile:
+		# Try to find one via the VehiclePOSInvoice helper (existing behaviour)
+		try:
+			from vehicle_management.vehicle_management.doctype.vehicle_pos_invoice.vehicle_pos_invoice import VehiclePOSInvoice
+			vpi = VehiclePOSInvoice({"doctype": "Vehicle POS Invoice"})
+			pos_profile = vpi.ensure_pos_profile(company)
+		except Exception:
+			pos_profile = None
+	if not pos_profile:
+		pos_profile = frappe.db.get_value(
+			"POS Profile",
+			{"company": company, "disabled": 0},
+			"name",
+		)
+	if not pos_profile:
+		frappe.throw(
+			"No POS Profile found for company <b>{}</b>. "
+			"Please create a POS Profile for this company first.".format(company)
+		)
+
+	# ── Resolve Cash mode of payment ─────────────────────────────────────────────
+	try:
+		from vehicle_management.vehicle_management.doctype.vehicle_pos_invoice.vehicle_pos_invoice import VehiclePOSInvoice
+		vpi = VehiclePOSInvoice({"doctype": "Vehicle POS Invoice"})
+		cash = vpi.get_mode_of_payment("Cash", company)
+	except Exception:
+		cash = "Cash"
+
+	# ── Create and submit the POS Opening Entry ───────────────────────────────────
 	entry = frappe.get_doc({
 		"doctype": "POS Opening Entry",
 		"company": company,
@@ -294,7 +472,7 @@ def open_cashier(company=None, opening_amount=0):
 	entry.insert()
 	entry.submit()
 	frappe.db.commit()
-	return {"status": "opened", "name": entry.name}
+	return {"status": "opened", "name": entry.name, "pos_profile": pos_profile, "company": company}
 
 
 @frappe.whitelist()

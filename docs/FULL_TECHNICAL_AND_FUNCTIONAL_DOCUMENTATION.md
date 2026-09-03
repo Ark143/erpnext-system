@@ -853,13 +853,38 @@ The system provides an exhaustive suite of real-time management reports accessib
 
 ---
 
-### SOP-04: Material Issue / Handover Safety Check
-To eliminate unauthorized stock withdrawals from warehouse stores:
-1. When a warehouse keeper creates a `Stock Entry` (Material Issue) for workshop tools, parts, or lubricants:
-2. The **Receiver QC Safety Modal** intercepts submission.
-3. The technician receiving the items must scan their badge QR code or verify badge credentials.
-4. The system requires an on-camera photo proof of physical item handover.
-5. Transaction submits only when receiver verification status is validated as `Verified`.
+### SOP-04: Material Issue / Handover Safety Check & Employee QR Badge Guide
+To eliminate unauthorized stock withdrawals and establish clear accountability across warehouse stores:
+
+#### 1. Where Does the Employee / Technician Get Their QR Code Badge?
+There are **three convenient ways** for employees to obtain and present their official QR code:
+
+* **Method 1: Self-Service on POS Terminal (Mobile or Desktop)**:
+  1. Open `http://38.247.138.224:10017/pos-terminal` on any smartphone, tablet, or PC.
+  2. Click the **👤 Cashier Profile** icon on the left navigation rail.
+  3. The system renders their **Official Digital ID Badge** showing Name, Employee #, Designation, Company, Branch, and high-resolution **Vector QR Code**.
+  4. The employee can:
+     * **Save to Phone**: Take a screenshot or keep the badge open on their phone screen to present to the warehouse camera.
+     * **Download SVG**: Click **⬇️ Download Badge (SVG)**.
+     * **Print Badge**: Click **🖨️ Print Badge** to print a hardcopy lanyard ID.
+
+* **Method 2: HR / Manager Printout in ERPNext Desk (`Employee` DocType)**:
+  1. In ERPNext Desk, go to **Employee** (`/desk/employee`).
+  2. Open any employee record (e.g. `HR-EMP-00184 Jayson Dagpin`).
+  3. Click the top action button **🖨️ Print QR Badge** (or select the print format `Employee ID Badge with QR Code`).
+  4. Print on standard cardstock, PVC ID card, or laminate for the technician's shop uniform lanyard.
+
+* **Method 3: Direct Manual Entry / Barcode Gun Scan (Fallback)**:
+  * If a technician does not have their physical badge on hand, the warehouse custodian can simply type or scan the technician's **Employee ID** (e.g. `HR-EMP-00184`) or **User Email** (e.g. `jayson.dagpin@ultramrf.ph`) into the input box and click **Verify**.
+
+#### 2. Warehouse Handover Verification Process:
+1. When a warehouse keeper creates a `Stock Entry` (Material Issue) for workshop tires, parts, or lubricants:
+2. The **Receiver Verification & Handover Safety Check** box appears at the top.
+3. Click **📷 Scan Receiver QR & Photo**:
+   * **Step 1 (Scan Badge)**: Point the device camera at the recipient's printed badge or smartphone screen (or scan with a 2D barcode gun). The system verifies the employee against ERPNext database and displays their photo, name, employee ID, and branch.
+   * **Step 2 (Handover Photo)**: Click **📷 Take Handover Photo / Upload** to snap a photo of the recipient holding the issued items.
+4. Click **Save & Apply Verification**.
+5. The `Stock Entry` marks the receiver as `VERIFIED` with timestamp and attached photo evidence, permitting clean submission. Material Issues without receiver verification are blocked by the system safety validator.
 
 ---
 

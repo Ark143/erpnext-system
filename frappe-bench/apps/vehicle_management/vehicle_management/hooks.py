@@ -26,7 +26,10 @@ add_to_apps_screen = [
 
 # include js, css files in header of desk.html
 app_include_css = "/assets/vehicle_management/css/vehicle_management_desk.css"
-app_include_js = "/assets/vehicle_management/js/vehicle_management_desk.js"
+app_include_js = [
+	"/assets/vehicle_management/js/vehicle_relationship_map.js",
+	"/assets/vehicle_management/js/vehicle_management_desk.js"
+]
 
 # include js, css files in header of web template
 # web_include_css = "/assets/vehicle_management/css/vehicle_management.css"
@@ -40,15 +43,27 @@ app_include_js = "/assets/vehicle_management/js/vehicle_management_desk.js"
 # webform_include_css = {"doctype": "public/css/doctype.css"}
 
 # include js in page
-# page_js = {"page" : "public/js/file.js"}
+page_js = {
+	"vehicle_pos": "public/js/vehicle_pos.js",
+	"vehicle_analytics": "public/js/vehicle_analytics.js",
+	"vehicle_relationship_map": "public/js/vehicle_relationship_map.js"
+}
 
 doctype_js = {
 	"Item": "public/js/item.js",
 	"Customer": "public/js/customer.js",
+	"Customer Vehicle": "public/js/vehicle_transaction.js",
+	"Vehicle Job Order": "public/js/vehicle_transaction.js",
+	"Vehicle Estimate": "public/js/vehicle_transaction.js",
+	"Vehicle Inspection": "public/js/vehicle_transaction.js",
+	"Vehicle POS Invoice": "public/js/vehicle_transaction.js",
 	"Quotation": "public/js/vehicle_transaction.js",
 	"Sales Order": "public/js/vehicle_transaction.js",
 	"Delivery Note": "public/js/vehicle_transaction.js",
 	"Sales Invoice": "public/js/vehicle_transaction.js",
+	"POS Invoice": "public/js/vehicle_transaction.js",
+	"Stock Entry": "public/js/vehicle_transaction.js",
+	"Payment Entry": "public/js/vehicle_transaction.js"
 }
 
 # Svg Icons

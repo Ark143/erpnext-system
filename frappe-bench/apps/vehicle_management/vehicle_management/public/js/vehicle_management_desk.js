@@ -1,6 +1,7 @@
 (function() {
   const VM_SIDEBAR_ITEMS = [
     { label: "Vehicle Management", link_to: "Vehicle Management", link_type: "Workspace", type: "Link", icon: "home", child: 0, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0 },
+    { label: "SAP Relationship Map", link_to: "vehicle_relationship_map", link_type: "Page", type: "Link", icon: "sitemap", child: 0, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0 },
     { label: "Vehicle POS Terminal", link_to: "vehicle_pos", link_type: "Page", type: "Link", icon: "panel-top", child: 0, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0 },
     { label: "Vehicle Analytics", link_to: "vehicle_analytics", link_type: "Page", type: "Link", icon: "bar-chart", child: 0, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0 },
     { label: "Operations & Workshop", type: "Section Break", link_type: "DocType", child: 0, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0 },
@@ -33,19 +34,10 @@
     { label: "Sales Invoice Trends", link_to: "Sales Invoice Trends", link_type: "Report", type: "Link", icon: "table", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0, report: { report_type: "Script Report", ref_doctype: "Sales Invoice" } },
     { label: "POS Register", link_to: "POS Register", link_type: "Report", type: "Link", icon: "table", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0, report: { report_type: "Script Report", ref_doctype: "POS Invoice" } },
     { label: "Daily Collection Report", link_to: "Daily Collection Report", link_type: "Report", type: "Link", icon: "table", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0, report: { report_type: "Script Report", ref_doctype: "POS Invoice" } },
-    { label: "Product Purchases", link_to: "Product Purchases", link_type: "Report", type: "Link", icon: "table", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0, report: { report_type: "Script Report", ref_doctype: "Purchase Invoice" } },
-    { label: "Purchase Order Report", link_to: "Purchase Order Report", link_type: "Report", type: "Link", icon: "table", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0, report: { report_type: "Script Report", ref_doctype: "Purchase Order" } },
-    { label: "Purchase Analytics", link_to: "Purchase Analytics", link_type: "Report", type: "Link", icon: "table", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0, report: { report_type: "Script Report", ref_doctype: "Purchase Order" } },
-    { label: "Top Suppliers", link_to: "Top Suppliers", link_type: "Report", type: "Link", icon: "table", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0, report: { report_type: "Script Report", ref_doctype: "Purchase Order" } },
-    { label: "Stock Balance", link_to: "Stock Balance", link_type: "Report", type: "Link", icon: "table", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0, report: { report_type: "Script Report", ref_doctype: "Stock Ledger Entry" } },
-    { label: "Warehouse Wise Stock Balance", link_to: "Warehouse Wise Stock Balance", link_type: "Report", type: "Link", icon: "table", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0, report: { report_type: "Script Report", ref_doctype: "Stock Ledger Entry" } },
-    { label: "Inventory Summary", link_to: "Inventory Summary", link_type: "Report", type: "Link", icon: "table", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0, report: { report_type: "Script Report", ref_doctype: "Stock Ledger Entry" } },
     { label: "Monthly Job Orders", link_to: "Monthly Job Orders", link_type: "Report", type: "Link", icon: "table", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0, report: { report_type: "Script Report", ref_doctype: "Vehicle Job Order" } },
     { label: "Detailed Job Orders", link_to: "Detailed Job Orders", link_type: "Report", type: "Link", icon: "table", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0, report: { report_type: "Script Report", ref_doctype: "Vehicle Job Order" } },
     { label: "Top Vehicles Served", link_to: "Top Vehicles Served", link_type: "Report", type: "Link", icon: "table", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0, report: { report_type: "Script Report", ref_doctype: "Vehicle Job Order" } },
-    { label: "Statement of Account", link_to: "Statement of Account", link_type: "Report", type: "Link", icon: "table", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0, report: { report_type: "Script Report", ref_doctype: "Customer" } },
     { label: "Check Register", link_to: "Check Register", link_type: "Report", type: "Link", icon: "table", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0, report: { report_type: "Script Report", ref_doctype: "Payment Entry" } },
-    { label: "Profit and Loss Statement", link_to: "Profit and Loss Statement", link_type: "Report", type: "Link", icon: "table", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0, report: { report_type: "Script Report", ref_doctype: "GL Entry" } },
     { label: "General Ledger", link_to: "General Ledger", link_type: "Report", type: "Link", icon: "table", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0, report: { report_type: "Script Report", ref_doctype: "GL Entry" } }
   ];
 
@@ -62,4 +54,53 @@
   ensureVMBootSidebar();
   $(document).ready(ensureVMBootSidebar);
   $(document).on("toolbar_setup page-change", ensureVMBootSidebar);
+
+  // ─────────────────────────────────────────────
+  // Inject SAP Relationship Map Button on Forms
+  // ─────────────────────────────────────────────
+  const MAP_SUPPORTED_DOCTYPES = [
+    "Vehicle Job Order",
+    "Vehicle Estimate",
+    "Vehicle Inspection",
+    "Customer Vehicle",
+    "Vehicle POS Invoice",
+    "Sales Invoice",
+    "POS Invoice",
+    "Stock Entry",
+    "Payment Entry",
+    "Quotation"
+  ];
+
+  function injectRelationshipMapButton(frm) {
+    if (!frm || !frm.doc || !frm.doc.name || frm.doc.__islocal) return;
+    if (!MAP_SUPPORTED_DOCTYPES.includes(frm.doctype)) return;
+
+    // Check if button already added
+    if (frm.page && !frm.page.has_sap_map_btn) {
+      frm.page.add_inner_button(__('🗺️ SAP Relationship Map'), function() {
+        if (window.SAPRelationshipMap && window.SAPRelationshipMap.open) {
+          window.SAPRelationshipMap.open({
+            doctype: frm.doctype,
+            docname: frm.doc.name,
+            vehicle: frm.doc.vehicle || frm.doc.plate_no || frm.doc.custom_vehicle_plate || "",
+            customer: frm.doc.customer || frm.doc.party_name || ""
+          });
+        } else {
+          frappe.msgprint(__('Loading Relationship Map module...'));
+        }
+      }, __('View')).addClass('btn-sap-relationship-map');
+
+      frm.page.has_sap_map_btn = true;
+    }
+  }
+
+  // Hook into frappe.ui.form.on for all supported doctypes
+  MAP_SUPPORTED_DOCTYPES.forEach(function(dt) {
+    frappe.ui.form.on(dt, {
+      refresh: function(frm) {
+        injectRelationshipMapButton(frm);
+      }
+    });
+  });
+
 })();

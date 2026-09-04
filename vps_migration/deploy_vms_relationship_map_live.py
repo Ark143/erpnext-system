@@ -390,7 +390,53 @@ try:
 
     accounting_vouchers = [n.get("name") for n in nodes_dict.values() if n.get("doctype") in ("Sales Invoice", "Payment Entry", "POS Invoice", "Vehicle POS Invoice", "Journal Entry")]
     gl_entries_list = []
-    
+
+    # Build a strict map: voucher_no -> expected doctype from our relationship graph.
+    # This is used to discard cross-type GL entries (e.g. Payment Entry clearing rows
+    # that ERPNext stores under the Sales Invoice voucher_no).
+    voucher_doctype_map = {
+        n.get("name"): n.get("doctype")
+        for n in nodes_dict.values()
+        if n.get("doctype") in ("Sales Invoice", "Payment Entry", "POS Invoice", "Vehicle POS Invoice", "Journal Entry")
+    }
+
+    # -----------------------------------------------------------------------
+    # POS Invoice -> Sales Invoice consolidation guard
+    # -----------------------------------------------------------------------
+    # ERPNext posts FULL GL entries on the POS Invoice AND again on the
+    # consolidated Sales Invoice (via POS Closing Entry).
+    # Showing both doubles every revenue/receivable line.
+    # Rule: exclude POS Invoice GL entries that have already been consolidated
+    # into a Sales Invoice present in our graph.
+    consolidated_pos_to_skip = set()
+    si_names_in_graph = {
+        n.get("name") for n in nodes_dict.values()
+        if n.get("doctype") == "Sales Invoice"
+    }
+    pos_names_in_graph = {
+        n.get("name") for n in nodes_dict.values()
+        if n.get("doctype") in ("POS Invoice", "Vehicle POS Invoice")
+    }
+    if pos_names_in_graph and si_names_in_graph:
+        try:
+            pos_si_links = frappe.get_all(
+                "POS Invoice Merge Log Detail",
+                filters={"pos_invoice": ["in", list(pos_names_in_graph)]},
+                fields=["pos_invoice", "parent"]
+            )
+            for link in pos_si_links:
+                merge_log = frappe.db.get_value(
+                    "POS Invoice Merge Log", link.get("parent"), "consolidated_invoice"
+                )
+                if merge_log and merge_log in si_names_in_graph:
+                    consolidated_pos_to_skip.add(link.get("pos_invoice"))
+        except Exception:
+            pass
+
+    accounting_vouchers = [v for v in accounting_vouchers if v not in consolidated_pos_to_skip]
+    for pos_name in consolidated_pos_to_skip:
+        voucher_doctype_map.pop(pos_name, None)
+
     if accounting_vouchers:
         gles = frappe.get_all("GL Entry", 
             filters={"voucher_no": ["in", accounting_vouchers], "is_cancelled": 0}, 
@@ -398,6 +444,12 @@ try:
             order_by="posting_date asc, creation asc"
         )
         for gl in gles:
+            # Skip GL entries whose voucher_type doesn't match the expected doctype
+            # for that voucher_no.  ERPNext can store Payment Entry reconciliation
+            # rows under the Sales Invoice's voucher_no which would double the total.
+            expected_doctype = voucher_doctype_map.get(gl.get("voucher_no"))
+            if expected_doctype and gl.get("voucher_type") != expected_doctype:
+                continue
             gl_entries_list.append({
                 "id": gl.get("name"),
                 "voucher_type": gl.get("voucher_type"),
@@ -469,7 +521,30 @@ try:
         "vouchers_count": len(accounting_vouchers)
     }
 
+    comp_name = ""
+    for n in nodes_dict.values():
+        if n.get("company"):
+            comp_name = n.get("company")
+            break
+    if not comp_name:
+        try:
+            comp_name = frappe.defaults.get_user_default("Company") or frappe.db.get_single_value("Global Defaults", "default_company") or "ULTRA MRF"
+        except Exception:
+            comp_name = "ULTRA MRF"
+
+    comp_address = ""
+    try:
+        addr_links = frappe.get_all("Dynamic Link", filters={"link_doctype": "Company", "link_name": comp_name, "parenttype": "Address"}, fields=["parent"], limit=1)
+        if addr_links:
+            addr_doc = frappe.get_doc("Address", addr_links[0].parent)
+            addr_parts = [addr_doc.address_line1, addr_doc.address_line2, addr_doc.city, addr_doc.state, addr_doc.pincode, addr_doc.country]
+            comp_address = ", ".join([p for p in addr_parts if p])
+    except Exception:
+        comp_address = ""
+
     summary_obj = {
+        "company": comp_name,
+        "company_address": comp_address,
         "focal_doctype": doctype,
         "focal_docname": docname,
         "vehicle_plate": plate,
@@ -531,25 +606,47 @@ if (!$('#sap-rel-map-styles').length) {{
 {js_code}
 """
 
-client_script_payload = {
-    "name": "VM SAP Relationship Map Client",
-    "dt": "Vehicle Job Order",
-    "view": "Form",
-    "script_type": "DocType Event",
-    "enabled": 1,
-    "script": full_client_script
-}
+# 2. Client Scripts for all supported DocTypes
+target_doctypes = [
+    "Vehicle Job Order",
+    "Sales Invoice",
+    "POS Invoice",
+    "Vehicle POS Invoice",
+    "Payment Entry",
+    "Customer Vehicle",
+    "Vehicle Estimate",
+    "Vehicle Inspection",
+    "Stock Entry"
+]
 
+for dt in target_doctypes:
+    # Update both naming formats if they exist
+    for cs_name in [f"SAP Relationship Map - {dt}", f"VM SAP Relationship Map Client - {dt}" if dt != "Vehicle Job Order" else "VM SAP Relationship Map Client"]:
+        payload = {
+            "name": cs_name,
+            "dt": dt,
+            "view": "Form",
+            "script_type": "DocType Event",
+            "enabled": 1,
+            "script": full_client_script
+        }
+        try:
+            check_cs = s.get(f'{URL}/api/resource/Client%20Script/{cs_name}', timeout=45)
+            if check_cs.status_code == 200:
+                cs_res = s.put(f'{URL}/api/resource/Client%20Script/{cs_name}', json=payload, timeout=45)
+                print(f"[OK] Updated Client Script: {cs_name} ({cs_res.status_code})")
+            else:
+                cs_res = s.post(f'{URL}/api/resource/Client%20Script', json=payload, timeout=45)
+                print(f"[OK] Created Client Script: {cs_name} ({cs_res.status_code})")
+        except Exception as e:
+            print(f"Client Script error for {cs_name}:", str(e))
+
+# 3. Clear cache on live server
 try:
-    check_cs = s.get(f'{URL}/api/resource/Client%20Script/VM%20SAP%20Relationship%20Map%20Client', timeout=45)
-    if check_cs.status_code == 200:
-        cs_res = s.put(f'{URL}/api/resource/Client%20Script/VM%20SAP%20Relationship%20Map%20Client', json=client_script_payload, timeout=45)
-        print("Updated Client Script:", cs_res.status_code)
-    else:
-        cs_res = s.post(f'{URL}/api/resource/Client%20Script', json=client_script_payload, timeout=45)
-        print("Created Client Script:", cs_res.status_code)
-except Exception as e:
-    print("Client Script error:", str(e))
+    s.post(f'{URL}/api/method/frappe.desk.doctype.route_history.route_history.clear_cache', timeout=15)
+    s.post(f'{URL}/api/method/frappe.sessions.clear', timeout=15)
+except Exception:
+    pass
 
 # 3. Test API Call
 test_res = s.get(f'{URL}/api/method/vm_relationship_map', params={'doctype': 'Sales Invoice', 'docname': 'ACC-SINV-2026-00166'}, timeout=45)

@@ -423,7 +423,60 @@ def get_relationship_map(doctype=None, docname=None, vehicle=None, customer=None
     # -------------------------------------------------------------
     accounting_vouchers = [n["name"] for n in nodes_dict.values() if n.get("doctype") in ("Sales Invoice", "Payment Entry", "POS Invoice", "Vehicle POS Invoice", "Journal Entry")]
     gl_entries_list = []
-    
+
+    # Build a strict map: voucher_no -> expected doctype from our relationship graph.
+    # This is used to discard cross-type GL entries (e.g. Payment Entry clearing rows
+    # that ERPNext stores under the Sales Invoice voucher_no).
+    voucher_doctype_map = {
+        n["name"]: n["doctype"]
+        for n in nodes_dict.values()
+        if n.get("doctype") in ("Sales Invoice", "Payment Entry", "POS Invoice", "Vehicle POS Invoice", "Journal Entry")
+    }
+
+    # -----------------------------------------------------------------------
+    # POS Invoice → Sales Invoice consolidation guard
+    # -----------------------------------------------------------------------
+    # ERPNext posts FULL GL entries on the POS Invoice AND again on the
+    # consolidated Sales Invoice (created via POS Closing Entry).
+    # Showing both doubles every revenue/receivable line.
+    # Rule: if a POS Invoice has already been consolidated into a Sales Invoice
+    # that exists in our graph, exclude that POS Invoice from the GL fetch —
+    # the Sales Invoice is the authoritative accounting document.
+    # Standalone POS Invoices (not yet consolidated) are kept as-is.
+    consolidated_pos_to_skip = set()
+    si_names_in_graph = {
+        n["name"] for n in nodes_dict.values()
+        if n.get("doctype") == "Sales Invoice"
+    }
+    pos_names_in_graph = {
+        n["name"] for n in nodes_dict.values()
+        if n.get("doctype") in ("POS Invoice", "Vehicle POS Invoice")
+    }
+    if pos_names_in_graph and si_names_in_graph:
+        # Check if any POS Invoice in our graph is referenced by a Sales Invoice
+        # in our graph (i.e. it was consolidated already).
+        try:
+            pos_si_links = frappe.get_all(
+                "POS Invoice Merge Log Detail",
+                filters={"pos_invoice": ["in", list(pos_names_in_graph)]},
+                fields=["pos_invoice", "parent"]
+            )
+            for link in pos_si_links:
+                # 'parent' is the POS Invoice Merge Log; follow to the SI
+                merge_log = frappe.db.get_value(
+                    "POS Invoice Merge Log", link.parent, "consolidated_invoice"
+                )
+                if merge_log and merge_log in si_names_in_graph:
+                    consolidated_pos_to_skip.add(link.pos_invoice)
+        except Exception:
+            pass  # Doctype may not exist; safe to skip
+
+    # Remove consolidated POS Invoices from accounting_vouchers
+    accounting_vouchers = [v for v in accounting_vouchers if v not in consolidated_pos_to_skip]
+    # Also remove them from the type map so the voucher_type filter works correctly
+    for pos_name in consolidated_pos_to_skip:
+        voucher_doctype_map.pop(pos_name, None)
+
     if accounting_vouchers:
         gles = frappe.get_all("GL Entry", 
             filters={"voucher_no": ["in", accounting_vouchers], "is_cancelled": 0}, 
@@ -431,6 +484,12 @@ def get_relationship_map(doctype=None, docname=None, vehicle=None, customer=None
             order_by="posting_date asc, creation asc"
         )
         for gl in gles:
+            # Skip GL entries whose voucher_type doesn't match the expected doctype
+            # for that voucher_no.  ERPNext can store Payment Entry reconciliation
+            # rows under the Sales Invoice's voucher_no which would double the total.
+            expected_doctype = voucher_doctype_map.get(gl.voucher_no)
+            if expected_doctype and gl.voucher_type != expected_doctype:
+                continue
             gl_entries_list.append({
                 "id": gl.name,
                 "voucher_type": gl.voucher_type,
@@ -505,7 +564,31 @@ def get_relationship_map(doctype=None, docname=None, vehicle=None, customer=None
         "vouchers_count": len(accounting_vouchers)
     }
 
+    # Company Info & Registered Address for Audit / Print
+    company_name = ""
+    for n in nodes_dict.values():
+        if n.get("company"):
+            company_name = n.get("company")
+            break
+    if not company_name:
+        try:
+            company_name = frappe.defaults.get_user_default("Company") or frappe.db.get_single_value("Global Defaults", "default_company") or "ULTRA MRF"
+        except Exception:
+            company_name = "ULTRA MRF"
+
+    company_address = ""
+    try:
+        addr_links = frappe.get_all("Dynamic Link", filters={"link_doctype": "Company", "link_name": company_name, "parenttype": "Address"}, fields=["parent"], limit=1)
+        if addr_links:
+            addr_doc = frappe.get_doc("Address", addr_links[0].parent)
+            addr_parts = [addr_doc.address_line1, addr_doc.address_line2, addr_doc.city, addr_doc.state, addr_doc.pincode, addr_doc.country]
+            company_address = ", ".join([p for p in addr_parts if p])
+    except Exception:
+        company_address = ""
+
     summary = {
+        "company": company_name,
+        "company_address": company_address,
         "focal_doctype": doctype,
         "focal_docname": docname,
         "vehicle_plate": plate_no,

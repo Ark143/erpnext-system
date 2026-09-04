@@ -70,6 +70,25 @@
     renderSkeleton() {
       const html = `
         <div class="sap-map-container ${this.isModal ? 'sap-map-modal-mode' : ''}">
+          <!-- Print-Only Audit Header -->
+          <div class="sap-print-header" id="sapPrintHeader">
+            <div class="sap-print-header-left">
+              <h3 class="sap-print-company" id="sapPrintCompany">ULTRA MRF</h3>
+              <div class="sap-print-address text-muted" id="sapPrintAddress"></div>
+              <div class="sap-print-doc-meta mt-1">
+                <strong>VMS Relationship Map & Audit Trace:</strong>
+                <span id="sapPrintDocTitle"></span>
+              </div>
+            </div>
+            <div class="sap-print-header-right">
+              <div class="sap-print-audit-box">
+                <div><strong>Printed By:</strong> <span id="sapPrintUser"></span></div>
+                <div><strong>Date Generated:</strong> <span id="sapPrintDate"></span></div>
+                <div><strong>Flow Status:</strong> <span id="sapPrintStatus"></span></div>
+              </div>
+            </div>
+          </div>
+
           <!-- Top VMS Toolbar -->
           <div class="sap-map-header">
             <div class="sap-map-title-bar">
@@ -378,11 +397,29 @@
       $c.find('#sapMetricOutst').text(format_currency(sum.total_outstanding_value || 0, 'PHP'));
 
       const $status = $c.find('#sapMetricStatus');
+      const statusText = sum.status_flow_complete ? 'Completed & Reconciled' : 'Open / In Progress';
       if (sum.status_flow_complete) {
-        $status.text('Completed & Reconciled').removeClass('sap-status-open').addClass('sap-status-paid');
+        $status.text(statusText).removeClass('sap-status-open').addClass('sap-status-paid');
       } else {
-        $status.text('Open / In Progress').removeClass('sap-status-paid').addClass('sap-status-open');
+        $status.text(statusText).removeClass('sap-status-paid').addClass('sap-status-open');
       }
+
+      // Populate Print Audit Header
+      const userName = (frappe.session && (frappe.session.user_fullname || frappe.session.user)) || 'Authorized User';
+      const nowFormatted = frappe.datetime && frappe.datetime.now_datetime ? frappe.datetime.str_to_user(frappe.datetime.now_datetime()) : new Date().toLocaleString();
+      const compName = sum.company || 'ULTRA MRF';
+      const compAddr = sum.company_address || '';
+
+      $c.find('#sapPrintCompany').text(compName);
+      if (compAddr) {
+        $c.find('#sapPrintAddress').text(compAddr).show();
+      } else {
+        $c.find('#sapPrintAddress').hide();
+      }
+      $c.find('#sapPrintDocTitle').text(`${sum.focal_doctype || this.doctype}: ${sum.focal_docname || this.docname || sum.vehicle_plate || 'Workflow'}`);
+      $c.find('#sapPrintUser').text(userName);
+      $c.find('#sapPrintDate').text(nowFormatted);
+      $c.find('#sapPrintStatus').text(statusText);
     }
 
     renderGraph() {
@@ -791,18 +828,16 @@
         voucherKeys.forEach(vKey => {
           const [vType, vNo] = vKey.split('::');
           const entries = vouchersGlMap[vKey] || [];
-          const vDebit = entries.reduce((a, b) => a + (b.debit || 0), 0);
-          const vCredit = entries.reduce((a, b) => a + (b.credit || 0), 0);
           const postDate = entries[0]?.posting_date || '';
 
           let glRows = '';
           entries.forEach(gl => {
             glRows += `
               <tr>
-                <td><strong>${gl.account}</strong></td>
-                <td><small class="text-muted">${gl.cost_center || '-'}</small></td>
-                <td class="text-right font-weight-bold ${gl.debit > 0 ? 'text-primary' : 'text-muted'}">${gl.debit > 0 ? format_currency(gl.debit, 'PHP') : '-'}</td>
-                <td class="text-right font-weight-bold ${gl.credit > 0 ? 'text-success' : 'text-muted'}">${gl.credit > 0 ? format_currency(gl.credit, 'PHP') : '-'}</td>
+                <td style="white-space: nowrap !important;"><strong>${gl.account}</strong></td>
+                <td style="white-space: nowrap !important;"><small class="text-muted">${gl.cost_center || '-'}</small></td>
+                <td class="text-right font-weight-bold ${gl.debit > 0 ? 'text-primary' : 'text-muted'}" style="white-space: nowrap !important; min-width: 120px;">${gl.debit > 0 ? format_currency(gl.debit, 'PHP') : '-'}</td>
+                <td class="text-right font-weight-bold ${gl.credit > 0 ? 'text-success' : 'text-muted'}" style="white-space: nowrap !important; min-width: 120px;">${gl.credit > 0 ? format_currency(gl.credit, 'PHP') : '-'}</td>
                 <td><small class="text-muted">${gl.remarks || ''}</small></td>
               </tr>
             `;
@@ -811,35 +846,26 @@
           voucherCardsHtml += `
             <div class="card mb-4 shadow-sm border" style="border-radius: 10px; overflow: hidden;">
               <div class="card-header bg-light d-flex justify-content-between align-items-center py-2 px-3 border-bottom">
-                <div>
+                <div style="white-space: nowrap !important;">
                   <span class="badge ${vType === 'Sales Invoice' ? 'badge-primary' : 'badge-success'} mr-2 font-size-sm">${vType}</span>
                   <a href="javascript:void(0)" class="sap-doc-link font-weight-bold text-dark" data-dt="${vType}" data-dn="${vNo}">${vNo}</a>
-                  <span class="text-muted ml-2"><i class="fa fa-calendar-alt"></i> ${postDate}</span>
                 </div>
-                <div>
-                  <span class="badge badge-light border">Balanced Journal: <strong>${format_currency(vDebit, 'PHP')}</strong></span>
+                <div style="white-space: nowrap !important;">
+                  <span class="text-muted"><i class="fa fa-calendar-alt mr-1"></i> Posting Date: <strong>${postDate || '-'}</strong></span>
                 </div>
               </div>
               <div class="table-responsive mb-0">
                 <table class="table table-sm table-hover mb-0">
                   <thead class="thead-light">
                     <tr>
-                      <th style="width: 35%;">Ledger Account</th>
-                      <th style="width: 15%;">Cost Center</th>
-                      <th class="text-right" style="width: 15%;">Debit (Dr)</th>
-                      <th class="text-right" style="width: 15%;">Credit (Cr)</th>
-                      <th style="width: 20%;">Remarks</th>
+                      <th style="width: 35%; white-space: nowrap !important;">Ledger Account</th>
+                      <th style="width: 15%; white-space: nowrap !important;">Cost Center</th>
+                      <th class="text-right" style="width: 15%; white-space: nowrap !important; min-width: 120px;">Debit (Dr)</th>
+                      <th class="text-right" style="width: 15%; white-space: nowrap !important; min-width: 120px;">Credit (Cr)</th>
+                      <th style="width: 20%; white-space: nowrap !important;">Remarks</th>
                     </tr>
                   </thead>
                   <tbody>${glRows}</tbody>
-                  <tfoot class="bg-light font-weight-bold">
-                    <tr>
-                      <td colspan="2" class="text-right text-uppercase font-size-xs text-muted">Voucher Total:</td>
-                      <td class="text-right text-primary">${format_currency(vDebit, 'PHP')}</td>
-                      <td class="text-right text-success">${format_currency(vCredit, 'PHP')}</td>
-                      <td></td>
-                    </tr>
-                  </tfoot>
                 </table>
               </div>
             </div>
@@ -852,11 +878,11 @@
       pleList.forEach(p => {
         pleRowsHtml += `
           <tr>
-            <td><span class="badge badge-info">${p.voucher_type}</span> <strong>${p.voucher_no}</strong></td>
-            <td><span class="badge badge-secondary">${p.against_voucher_type || '-'}</span> ${p.against_voucher_no || '-'}</td>
-            <td>${p.account}</td>
-            <td>${p.party || '-'}</td>
-            <td class="text-right font-weight-bold ${p.amount < 0 ? 'text-success' : 'text-primary'}">${format_currency(p.amount, 'PHP')}</td>
+            <td style="white-space: nowrap !important;"><span class="badge badge-info mr-1">${p.voucher_type}</span> <strong>${p.voucher_no}</strong></td>
+            <td style="white-space: nowrap !important;"><span class="badge badge-secondary mr-1">${p.against_voucher_type || '-'}</span> ${p.against_voucher_no || '-'}</td>
+            <td style="white-space: nowrap !important;">${p.account}</td>
+            <td style="white-space: nowrap !important;">${p.party || '-'}</td>
+            <td class="text-right font-weight-bold ${p.amount < 0 ? 'text-success' : 'text-primary'}" style="white-space: nowrap !important; min-width: 120px;">${format_currency(p.amount, 'PHP')}</td>
           </tr>
         `;
       });
@@ -872,7 +898,7 @@
               <h4 class="font-weight-bold m-0 text-dark"><i class="fa fa-balance-scale text-success mr-2"></i> Accounting & General Ledger Postings</h4>
               <p class="text-muted mb-0 font-size-sm">Double-entry accounting journal entries, debit/credit ledger breakdown, and reconciliation flow.</p>
             </div>
-            <div>
+            <div style="white-space: nowrap !important;">
               <span class="badge ${acct.is_balanced ? 'badge-success' : 'badge-danger'} p-2 font-size-sm" title="Gross GL Turnover: Dr ${format_currency(acct.total_debit || 0, 'PHP')} | Cr ${format_currency(acct.total_credit || 0, 'PHP')}">
                 <i class="fa ${acct.is_balanced ? 'fa-check-circle' : 'fa-exclamation-triangle'} mr-1"></i>
                 ${acct.is_balanced ? 'Double-Entry Balanced' : 'Ledger Imbalance Detected'}
@@ -885,19 +911,19 @@
             <div class="col-md-4">
               <div class="p-3 border rounded bg-light text-center">
                 <small class="text-muted text-uppercase font-weight-bold">Total Invoiced / GL Revenue</small>
-                <div class="font-weight-bold text-primary font-size-lg">${format_currency(totalRevenueVal, 'PHP')}</div>
+                <div class="font-weight-bold text-primary font-size-lg" style="white-space: nowrap !important;">${format_currency(totalRevenueVal, 'PHP')}</div>
               </div>
             </div>
             <div class="col-md-4">
               <div class="p-3 border rounded bg-light text-center">
                 <small class="text-muted text-uppercase font-weight-bold">Total Collections (Cash/Bank)</small>
-                <div class="font-weight-bold text-success font-size-lg">${format_currency(totalCollectedVal, 'PHP')}</div>
+                <div class="font-weight-bold text-success font-size-lg" style="white-space: nowrap !important;">${format_currency(totalCollectedVal, 'PHP')}</div>
               </div>
             </div>
             <div class="col-md-4">
               <div class="p-3 border rounded bg-light text-center">
                 <small class="text-muted text-uppercase font-weight-bold">Party Net Receivable Balance</small>
-                <div class="font-weight-bold ${outstandingVal === 0 ? 'text-success' : 'text-danger'} font-size-lg">
+                <div class="font-weight-bold ${outstandingVal === 0 ? 'text-success' : 'text-danger'} font-size-lg" style="white-space: nowrap !important;">
                   ${format_currency(outstandingVal, 'PHP')}
                 </div>
               </div>
@@ -916,11 +942,11 @@
                 <table class="table table-sm table-hover mb-0">
                   <thead class="thead-light">
                     <tr>
-                      <th>Voucher</th>
-                      <th>Against Voucher</th>
-                      <th>Account</th>
-                      <th>Party</th>
-                      <th class="text-right">Allocated Amount</th>
+                      <th style="white-space: nowrap !important;">Voucher</th>
+                      <th style="white-space: nowrap !important;">Against Voucher</th>
+                      <th style="white-space: nowrap !important;">Account</th>
+                      <th style="white-space: nowrap !important;">Party</th>
+                      <th class="text-right" style="white-space: nowrap !important; min-width: 120px;">Allocated Amount</th>
                     </tr>
                   </thead>
                   <tbody>${pleRowsHtml}</tbody>

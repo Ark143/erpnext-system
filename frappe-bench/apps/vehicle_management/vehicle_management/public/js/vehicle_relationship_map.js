@@ -10,11 +10,11 @@
   window.SAPRelationshipMap = window.SAPRelationshipMap || {};
 
   const DOCTYPE_COLORS = {
-    "Customer": { bg: "#f1f5f9", border: "#64748b", text: "#0f172a", icon: "octicon octicon-person", tag: "Customer Master" },
-    "Customer Vehicle": { bg: "#e0f2fe", border: "#0284c7", text: "#0369a1", icon: "fa fa-car", tag: "Vehicle Master" },
+    "Customer": { bg: "#f1f5f9", border: "#64748b", text: "#0f172a", icon: "fa fa-user", tag: "Customer Profile" },
+    "Customer Vehicle": { bg: "#e0f2fe", border: "#0284c7", text: "#0369a1", icon: "fa fa-car", tag: "Customer Vehicle" },
     "Vehicle Estimate": { bg: "#f3e8ff", border: "#9333ea", text: "#7e22ce", icon: "fa fa-calculator", tag: "Estimate / Quote" },
     "Vehicle Inspection": { bg: "#e0e7ff", border: "#4f46e5", text: "#3730a3", icon: "fa fa-check-circle", tag: "Multi-Point Inspection" },
-    "Vehicle Job Order": { bg: "#fef3c7", border: "#d97706", text: "#b45309", icon: "fa fa-wrench", tag: "Job Order" },
+    "Vehicle Job Order": { bg: "#fef3c7", border: "#d97706", text: "#b45309", icon: "fa fa-wrench", tag: "Vehicle Job Order" },
     "Vehicle POS Invoice": { bg: "#ccfbf1", border: "#0d9488", text: "#0f766e", icon: "fa fa-receipt", tag: "Vehicle POS Invoice" },
     "POS Invoice": { bg: "#dcfce7", border: "#16a34a", text: "#15803d", icon: "fa fa-cash-register", tag: "POS Invoice" },
     "Sales Invoice": { bg: "#d1fae5", border: "#059669", text: "#047857", icon: "fa fa-file-invoice-dollar", tag: "Sales Invoice" },
@@ -55,6 +55,8 @@
       this.startX = 0;
       this.startY = 0;
       this.currentMode = "flow"; // "flow" | "items" | "accounting"
+      this.itemFilter = "all";
+      this.itemSearchTerm = "";
       this.data = null;
       this.selectedNode = null;
       this.init();
@@ -84,13 +86,13 @@
               <!-- Mode Selector -->
               <div class="btn-group sap-mode-toggle" role="group">
                 <button type="button" class="btn btn-default btn-xs active" data-mode="flow">
-                  <i class="fa fa-sitemap"></i> <span>Document Flow</span>
+                  <i class="fa fa-sitemap mr-1"></i> <span>Document Flow</span>
                 </button>
                 <button type="button" class="btn btn-default btn-xs" data-mode="items">
-                  <i class="fa fa-list-alt"></i> <span>Related Items</span>
+                  <i class="fa fa-list-alt mr-1"></i> <span>Related Items</span>
                 </button>
                 <button type="button" class="btn btn-default btn-xs" data-mode="accounting">
-                  <i class="fa fa-balance-scale"></i> <span>Accounting Flow</span>
+                  <i class="fa fa-balance-scale mr-1"></i> <span>Accounting Flow</span>
                 </button>
               </div>
 
@@ -116,12 +118,12 @@
           <!-- Summary Financial Metric Ribbon -->
           <div class="sap-map-metrics" id="sapMapMetrics">
             <div class="sap-metric-item">
-              <span class="sap-metric-lbl">Vehicle:</span>
+              <span class="sap-metric-lbl">Vehicle Plate:</span>
               <span class="sap-metric-val font-weight-bold" id="sapMetricPlate">-</span>
             </div>
             <div class="sap-metric-item">
               <span class="sap-metric-lbl">Customer:</span>
-              <span class="sap-metric-val" id="sapMetricCust">-</span>
+              <span class="sap-metric-val font-weight-bold" id="sapMetricCust">-</span>
             </div>
             <div class="sap-metric-item">
               <span class="sap-metric-lbl">Total Flow Value:</span>
@@ -136,50 +138,48 @@
               <span class="sap-metric-val text-danger" id="sapMetricOutst">₱ 0.00</span>
             </div>
             <div class="sap-metric-item ml-auto">
-              <span class="sap-metric-lbl">Flow Status:</span>
+              <span class="sap-metric-lbl">Settlement Status:</span>
               <span class="sap-status-pill" id="sapMetricStatus">In Progress</span>
             </div>
           </div>
 
-          <!-- Interactive Workspace Canvas & Drawer -->
+          <!-- Main Interactive Viewport & Drawer -->
           <div class="sap-map-workspace">
             <div class="sap-map-viewport" id="sapViewport">
               <div class="sap-map-canvas" id="sapCanvas">
-                <svg class="sap-map-svg-layer" id="sapSvgLayer">
+                <!-- SVG Layer for Bezier Connectors -->
+                <svg class="sap-map-svg-layer" id="sapSvgLayer" width="3000" height="2000">
                   <defs>
-                    <marker id="sapArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                      <path d="M 0 0 L 10 5 L 0 10 z" fill="#0284c7" />
+                    <marker id="sapArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                      <path d="M 0 1 L 10 5 L 0 9 z" fill="#0284c7" />
                     </marker>
-                    <marker id="sapArrowGold" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                      <path d="M 0 0 L 10 5 L 0 10 z" fill="#d97706" />
+                    <marker id="sapArrowGreen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                      <path d="M 0 1 L 10 5 L 0 9 z" fill="#16a34a" />
                     </marker>
-                    <marker id="sapArrowGreen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                      <path d="M 0 0 L 10 5 L 0 10 z" fill="#16a34a" />
+                    <marker id="sapArrowGold" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                      <path d="M 0 1 L 10 5 L 0 9 z" fill="#d97706" />
                     </marker>
                   </defs>
                   <g id="sapSvgEdges"></g>
                 </svg>
-                <div class="sap-map-nodes-layer" id="sapNodesLayer">
-                  <div class="sap-loading-spinner text-center p-5">
-                    <i class="fa fa-spinner fa-spin fa-2x text-muted"></i>
-                    <p class="mt-2 text-muted">Tracing document relations and journal entries...</p>
-                  </div>
-                </div>
+
+                <!-- HTML Nodes Layer -->
+                <div class="sap-map-nodes-layer" id="sapNodesLayer"></div>
               </div>
             </div>
 
-            <!-- Side Inspector Drawer -->
+            <!-- Right Inspector Drawer -->
             <div class="sap-map-drawer" id="sapDrawer">
               <div class="sap-drawer-header">
                 <div class="sap-drawer-title" id="sapDrawerTitle">Document Details</div>
-                <button type="button" class="close sap-drawer-close" id="sapDrawerClose">&times;</button>
+                <button type="button" class="close" id="sapDrawerClose">&times;</button>
               </div>
               <div class="sap-drawer-body" id="sapDrawerBody">
-                <div class="text-muted p-3 text-center">Click on any card to view detailed breakdown & line items</div>
+                <p class="text-muted">Click any document card to inspect items, financial postings, and full history.</p>
               </div>
               <div class="sap-drawer-footer" id="sapDrawerFooter" style="display:none;">
                 <button class="btn btn-primary btn-sm btn-block" id="sapOpenDocBtn">
-                  <i class="fa fa-external-link-alt"></i> Open Full Document
+                  <i class="fa fa-external-link-alt mr-1"></i> Open Full Document Form
                 </button>
               </div>
             </div>
@@ -236,7 +236,7 @@
       const viewport = $c.find('#sapViewport')[0];
       if (viewport) {
         $(viewport).on('mousedown', (e) => {
-          if ($(e.target).closest('.sap-node-card, .sap-map-drawer, button, input').length) return;
+          if ($(e.target).closest('.sap-node-card, .sap-map-drawer, button, input, .sap-items-container, .sap-accounting-container').length) return;
           this.isDragging = true;
           this.startX = e.clientX - this.panX;
           this.startY = e.clientY - this.panY;
@@ -257,8 +257,8 @@
           }
         });
 
-        // Mousewheel zoom
         viewport.addEventListener('wheel', (e) => {
+          if (this.currentMode !== "flow") return;
           e.preventDefault();
           const delta = e.deltaY < 0 ? 0.08 : -0.08;
           this.adjustZoom(delta);
@@ -283,7 +283,6 @@
       const q = $(this.container || document).find('#sapSearchDoc').val().trim();
       if (!q) return;
 
-      // Detect search type
       if (q.startsWith('JO-') || q.startsWith('jo-')) {
         this.doctype = 'Vehicle Job Order';
         this.docname = q.toUpperCase();
@@ -303,7 +302,6 @@
         this.doctype = 'Payment Entry';
         this.docname = q.toUpperCase();
       } else {
-        // Assume Vehicle Plate or Customer
         this.doctype = 'Customer Vehicle';
         this.docname = q;
         this.vehicle = q;
@@ -317,7 +315,7 @@
       $c.find('#sapNodesLayer').html(`
         <div class="sap-loading-spinner text-center p-5">
           <i class="fa fa-spinner fa-spin fa-2x text-primary"></i>
-          <p class="mt-2 text-muted">Building relationship graph for ${this.doctype}: ${this.docname}...</p>
+          <p class="mt-2 text-muted">Building relationship graph for ${this.doctype}: ${this.docname || this.vehicle}...</p>
         </div>
       `);
       $c.find('#sapSvgEdges').empty();
@@ -348,7 +346,7 @@
         error: () => {
           $c.find('#sapNodesLayer').html(`
             <div class="alert alert-danger m-4">
-              <strong>Error loading SAP Relationship Map.</strong> Please check backend connection.
+              <strong>Error loading Relationship Map.</strong> Please check backend connection.
             </div>
           `);
         }
@@ -401,17 +399,16 @@
       const nodes = this.data.nodes || [];
       const edges = this.data.edges || [];
 
-      // Group nodes by Level / Column
-      // Level 0: Masters (Customer, Vehicle)
-      // Level 1: Inquiries / Diagnostics (Estimate, Inspection)
-      // Level 2: Execution (Job Order, Stock Entry)
-      // Level 3: Invoicing (Sales Invoice, Vehicle POS Invoice, POS Invoice)
-      // Level 4: Settlement (Payment Entry, GL Entry)
-
+      // Group nodes by 5 Sequential Columns:
+      // Column 0: Master Records (Customer, Customer Vehicle)
+      // Column 1: Estimates & Diagnostics (Vehicle Estimate, Vehicle Inspection)
+      // Column 2: Workshop Execution (Vehicle Job Order, Stock Entry)
+      // Column 3: Billing & Invoicing (Sales Invoice, Vehicle POS Invoice, POS Invoice)
+      // Column 4: Payments & Settlements (Payment Entry, GL Entry)
       const columns = { 0: [], 1: [], 2: [], 3: [], 4: [] };
       const levelTitles = {
         0: "Master Profiles",
-        1: "Estimates & Inspections",
+        1: "Estimates & Diagnostics",
         2: "Workshop Execution",
         3: "Billing & Invoicing",
         4: "Payments & General Ledger"
@@ -434,14 +431,13 @@
       const cardWidth = 260;
       const colGap = 120;
       const rowGap = 35;
-      const cardHeight = 155;
+      const cardHeight = 160;
       const startX = 60;
       const startY = 80;
 
       const nodeCoords = {};
-
-      // Render columns
       let colIndex = 0;
+
       for (let lvl = 0; lvl <= 4; lvl++) {
         const colNodes = columns[lvl] || [];
         if (colNodes.length === 0) continue;
@@ -478,7 +474,7 @@
         colIndex++;
       }
 
-      // Draw SVG Connecting Lines
+      // Draw SVG Bezier Connecting Lines
       setTimeout(() => {
         edges.forEach((edge) => {
           const fromCoord = nodeCoords[edge.from];
@@ -488,7 +484,6 @@
           const p1 = { x: fromCoord.right, y: fromCoord.cy };
           const p2 = { x: toCoord.left, y: toCoord.cy };
 
-          // If reverse flow, adjust start & end
           let startPt = p1;
           let endPt = p2;
           if (fromCoord.x > toCoord.x) {
@@ -519,34 +514,25 @@
           const edgeSvg = `
             <g class="sap-edge-group">
               <path d="${pathD}" fill="none" stroke="${strokeColor}" stroke-width="2.5" stroke-dasharray="${edge.type === 'reference' ? '5,5' : 'none'}" marker-end="${markerUrl}" />
-              ${edge.label ? `
-                <rect x="${midX - 45}" y="${midY - 11}" width="90" height="20" rx="10" fill="#ffffff" stroke="${strokeColor}" stroke-width="1" />
-                <text x="${midX}" y="${midY + 3}" fill="${strokeColor}" font-size="10" font-weight="700" text-anchor="middle">${edge.label}</text>
-              ` : ''}
+              <rect x="${midX - 50}" y="${midY - 11}" width="100" height="22" rx="11" fill="#ffffff" stroke="${strokeColor}" stroke-width="1.2" />
+              <text x="${midX}" y="${midY + 4}" text-anchor="middle" font-size="10" font-weight="700" fill="#334155">${edge.label}</text>
             </g>
           `;
           $svgEdges.append(edgeSvg);
         });
-
-        // Set canvas sizing
-        const totalW = (colIndex * (cardWidth + colGap)) + 200;
-        const totalH = Math.max(600, 4 * (cardHeight + rowGap) + 200);
-        $c.find('#sapSvgLayer').attr('width', totalW).attr('height', totalH);
-        $c.find('#sapCanvas').css({ width: totalW, height: totalH });
       }, 50);
 
-      // Card Click Handler
+      // Bind node interactions
       $nodesLayer.find('.sap-node-card').on('click', (e) => {
         const nodeId = $(e.currentTarget).data('node-id');
         const node = nodes.find(n => n.id === nodeId);
         if (node) this.selectNode(node);
       });
 
-      // Card Double Click Handler (Direct Open in Desk)
       $nodesLayer.find('.sap-node-card').on('dblclick', (e) => {
         const dt = $(e.currentTarget).data('doctype');
         const nm = $(e.currentTarget).data('name');
-        if (dt && nm) {
+        if (dt && nm && dt !== "GL Entry") {
           if (this.dialog) this.dialog.hide();
           frappe.set_route('Form', dt, nm);
         }
@@ -560,7 +546,7 @@
 
       return `
         <div class="sap-node-card ${isCurrent ? 'sap-node-current' : ''}" data-node-id="${node.id}" data-doctype="${node.doctype}" data-name="${node.name}" style="left: ${x}px; top: ${y}px; width: ${width}px; min-height: ${height}px; border-left: 5px solid ${dtConfig.border};">
-          ${isCurrent ? '<div class="sap-active-indicator"><i class="fa fa-dot-circle"></i> ACTIVE DOCUMENT</div>' : ''}
+          ${isCurrent ? '<div class="sap-active-indicator"><i class="fa fa-dot-circle mr-1"></i> ACTIVE DOCUMENT</div>' : ''}
           
           <div class="sap-node-head">
             <div class="sap-node-dt-badge" style="color: ${dtConfig.text};">
@@ -579,19 +565,19 @@
           <div class="sap-node-info-grid">
             ${node.vehicle ? `
               <div class="sap-node-info-row">
-                <span class="text-muted"><i class="fa fa-car"></i> Plate:</span>
+                <span class="text-muted"><i class="fa fa-car mr-1"></i> Plate:</span>
                 <span class="font-weight-bold">${node.vehicle}</span>
               </div>
             ` : ''}
             ${node.customer ? `
               <div class="sap-node-info-row">
-                <span class="text-muted"><i class="fa fa-user"></i> Cust:</span>
+                <span class="text-muted"><i class="fa fa-user mr-1"></i> Cust:</span>
                 <span class="text-truncate" style="max-width: 140px;" title="${node.customer}">${node.customer}</span>
               </div>
             ` : ''}
             ${node.posting_date ? `
               <div class="sap-node-info-row">
-                <span class="text-muted"><i class="fa fa-calendar-alt"></i> Date:</span>
+                <span class="text-muted"><i class="fa fa-calendar-alt mr-1"></i> Date:</span>
                 <span>${node.posting_date}</span>
               </div>
             ` : ''}
@@ -601,10 +587,10 @@
             <div class="sap-node-amt">
               ${node.grand_total > 0 ? `
                 <span class="sap-amt-val">${format_currency(node.grand_total, node.currency || 'PHP')}</span>
-              ` : (node.items_count > 0 ? `<span>${node.items_count} Items</span>` : `<span class="text-muted">No charge</span>`)}
+              ` : (node.items_count > 0 ? `<span>${node.items_count} Items</span>` : `<span class="text-muted">Master Info</span>`)}
             </div>
             <div class="sap-node-actions">
-              <button class="btn btn-default btn-xs sap-quick-view-btn" title="View Document Details">
+              <button class="btn btn-default btn-xs sap-quick-view-btn" title="Inspect Document">
                 <i class="fa fa-eye"></i>
               </button>
             </div>
@@ -616,43 +602,133 @@
     renderItemsMatrix() {
       const $c = $(this.container || document);
       const $nodesLayer = $c.find('#sapNodesLayer');
-      const nodes = this.data.nodes || [];
+      const items = this.data.items || [];
 
-      let rowsHtml = '';
-      nodes.forEach(n => {
-        if (n.items && n.items.length > 0) {
-          n.items.forEach(it => {
-            rowsHtml += `
-              <tr>
-                <td><span class="badge badge-info">${n.doctype}</span> <strong>${n.name}</strong></td>
-                <td><span class="badge ${it.type.includes('Labor') ? 'badge-warning' : 'badge-primary'}">${it.type}</span></td>
-                <td><strong>${it.item_code}</strong><br><small class="text-muted">${it.description || ''}</small></td>
-                <td class="text-right">${it.qty}</td>
-                <td class="text-right">${format_currency(it.rate, 'PHP')}</td>
-                <td class="text-right font-weight-bold">${format_currency(it.amount, 'PHP')}</td>
-              </tr>
-            `;
-          });
+      // Calculate totals
+      let totalLaborCount = 0, totalLaborVal = 0;
+      let totalPartsCount = 0, totalPartsVal = 0;
+      let totalBilledVal = 0;
+
+      items.forEach(it => {
+        const cat = (it.type || '').toLowerCase();
+        if (cat.includes('labor') || cat.includes('service')) {
+          totalLaborCount += 1;
+          totalLaborVal += (it.amount || 0);
+        } else if (cat.includes('part') || cat.includes('material')) {
+          totalPartsCount += 1;
+          totalPartsVal += (it.amount || 0);
+        }
+        if (cat.includes('billed') || it.doc_type === 'Sales Invoice' || it.doc_type === 'POS Invoice') {
+          totalBilledVal += (it.amount || 0);
         }
       });
 
+      const grandItemsVal = items.reduce((acc, it) => acc + (it.amount || 0), 0);
+
+      // Filtering logic
+      let filtered = items;
+      if (this.itemFilter === "labor") {
+        filtered = items.filter(it => (it.type || '').toLowerCase().includes('labor') || (it.type || '').toLowerCase().includes('service'));
+      } else if (this.itemFilter === "parts") {
+        filtered = items.filter(it => (it.type || '').toLowerCase().includes('part') || (it.type || '').toLowerCase().includes('material'));
+      } else if (this.itemFilter === "billed") {
+        filtered = items.filter(it => (it.type || '').toLowerCase().includes('billed') || it.doc_type === 'Sales Invoice' || it.doc_type === 'POS Invoice');
+      }
+
+      if (this.itemSearchTerm) {
+        const term = this.itemSearchTerm.toLowerCase();
+        filtered = filtered.filter(it => 
+          (it.item_code || '').toLowerCase().includes(term) ||
+          (it.description || '').toLowerCase().includes(term) ||
+          (it.doc_name || '').toLowerCase().includes(term)
+        );
+      }
+
+      let rowsHtml = '';
+      filtered.forEach((it, idx) => {
+        const typeClass = it.type.includes('Labor') || it.type.includes('Service') 
+          ? 'badge-warning' 
+          : (it.type.includes('Billed') ? 'badge-success' : 'badge-primary');
+
+        rowsHtml += `
+          <tr>
+            <td class="text-muted"><small>${idx + 1}</small></td>
+            <td>
+              <span class="badge badge-info">${it.doc_type}</span><br>
+              <a href="javascript:void(0)" class="sap-doc-link font-weight-bold" data-dt="${it.doc_type}" data-dn="${it.doc_name}">${it.doc_name}</a>
+            </td>
+            <td><span class="badge ${typeClass}">${it.type}</span></td>
+            <td>
+              <strong class="text-dark">${it.item_code}</strong>
+              ${it.description && it.description !== it.item_code ? `<br><small class="text-muted">${it.description}</small>` : ''}
+            </td>
+            <td class="text-right font-weight-bold">${it.qty} ${it.uom || ''}</td>
+            <td class="text-right">${format_currency(it.rate, 'PHP')}</td>
+            <td class="text-right font-weight-bold text-primary">${format_currency(it.amount, 'PHP')}</td>
+            <td><small class="text-muted">${it.account || 'Income / Expense'}</small></td>
+          </tr>
+        `;
+      });
+
       if (!rowsHtml) {
-        rowsHtml = `<tr><td colspan="6" class="text-center text-muted p-4">No item or service lines found for these documents.</td></tr>`;
+        rowsHtml = `<tr><td colspan="8" class="text-center text-muted p-4">No line items matching the current filter.</td></tr>`;
       }
 
       $nodesLayer.html(`
-        <div class="sap-items-matrix-view p-4" style="max-width: 960px; margin: 0 auto;">
-          <h4 class="font-weight-bold mb-3"><i class="fa fa-list-alt text-primary"></i> Consolidated Items & Labor Matrix</h4>
-          <div class="table-responsive bg-white rounded shadow-sm border">
+        <div class="sap-items-container p-4" style="max-width: 1100px; margin: 0 auto; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); border: 1px solid #e2e8f0;">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h4 class="font-weight-bold m-0 text-dark"><i class="fa fa-list-alt text-primary mr-2"></i> Consolidated Related Items & Services Matrix</h4>
+              <p class="text-muted mb-0 font-size-sm">Full lifecycle trace of all services, labor, parts, materials, and billed items in this workflow.</p>
+            </div>
+            <div class="sap-items-filter-bar btn-group">
+              <button class="btn btn-xs ${this.itemFilter === 'all' ? 'btn-primary' : 'btn-default'} sap-item-filter-btn" data-filter="all">All (${items.length})</button>
+              <button class="btn btn-xs ${this.itemFilter === 'labor' ? 'btn-primary' : 'btn-default'} sap-item-filter-btn" data-filter="labor"><i class="fa fa-wrench mr-1"></i> Labor / Services (${totalLaborCount})</button>
+              <button class="btn btn-xs ${this.itemFilter === 'parts' ? 'btn-primary' : 'btn-default'} sap-item-filter-btn" data-filter="parts"><i class="fa fa-cogs mr-1"></i> Parts / Materials (${totalPartsCount})</button>
+              <button class="btn btn-xs ${this.itemFilter === 'billed' ? 'btn-primary' : 'btn-default'} sap-item-filter-btn" data-filter="billed"><i class="fa fa-check-circle mr-1"></i> Invoiced Lines</button>
+            </div>
+          </div>
+
+          <!-- KPI Cards Ribbon -->
+          <div class="row mb-3">
+            <div class="col-md-3">
+              <div class="p-2 border rounded bg-light text-center">
+                <small class="text-muted text-uppercase font-weight-bold">Total Services / Labor</small>
+                <div class="font-weight-bold text-warning font-size-lg">${format_currency(totalLaborVal, 'PHP')} (${totalLaborCount} lines)</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="p-2 border rounded bg-light text-center">
+                <small class="text-muted text-uppercase font-weight-bold">Total Spare Parts</small>
+                <div class="font-weight-bold text-primary font-size-lg">${format_currency(totalPartsVal, 'PHP')} (${totalPartsCount} lines)</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="p-2 border rounded bg-light text-center">
+                <small class="text-muted text-uppercase font-weight-bold">Final Billed Value</small>
+                <div class="font-weight-bold text-success font-size-lg">${format_currency(totalBilledVal, 'PHP')}</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="p-2 border rounded bg-light text-center">
+                <small class="text-muted text-uppercase font-weight-bold">Total Flow Line Items</small>
+                <div class="font-weight-bold text-dark font-size-lg">${items.length} Lines</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-responsive rounded border">
             <table class="table table-hover table-striped mb-0">
               <thead class="thead-light">
                 <tr>
-                  <th>Document</th>
+                  <th style="width: 40px;">#</th>
+                  <th>Source Document</th>
                   <th>Category</th>
-                  <th>Item / Service Description</th>
-                  <th class="text-right">Qty / Hrs</th>
+                  <th>Item / Service Code & Name</th>
+                  <th class="text-right">Qty / Hours</th>
                   <th class="text-right">Rate</th>
                   <th class="text-right">Total Amount</th>
+                  <th>Accounting / Cost Account</th>
                 </tr>
               </thead>
               <tbody>${rowsHtml}</tbody>
@@ -660,47 +736,190 @@
           </div>
         </div>
       `);
+
+      // Bind filter buttons
+      $nodesLayer.find('.sap-item-filter-btn').on('click', (e) => {
+        this.itemFilter = $(e.currentTarget).data('filter');
+        this.renderItemsMatrix();
+      });
+
+      $nodesLayer.find('.sap-doc-link').on('click', (e) => {
+        const dt = $(e.currentTarget).data('dt');
+        const dn = $(e.currentTarget).data('dn');
+        if (dt && dn) {
+          if (this.dialog) this.dialog.hide();
+          frappe.set_route('Form', dt, dn);
+        }
+      });
     }
 
     renderAccountingFlow() {
       const $c = $(this.container || document);
       const $nodesLayer = $c.find('#sapNodesLayer');
-      const nodes = this.data.nodes || [];
+      const acct = this.data.accounting || {};
+      const glEntries = acct.gl_entries || [];
+      const vouchersGlMap = acct.vouchers_gl_map || {};
+      const pleList = acct.payment_ledger || [];
 
-      const acctNodes = nodes.filter(n => ["Sales Invoice", "POS Invoice", "Payment Entry", "GL Entry"].includes(n.doctype));
+      let voucherCardsHtml = '';
+      const voucherKeys = Object.keys(vouchersGlMap);
 
-      let acctCards = '';
-      acctNodes.forEach(n => {
-        acctCards += `
-          <div class="card mb-3 shadow-sm border">
-            <div class="card-header bg-light d-flex justify-content-between align-items-center">
-              <div>
-                <span class="badge badge-success mr-2">${n.doctype}</span>
-                <strong>${n.name}</strong>
-              </div>
-              <div>
-                <span class="badge badge-info">${n.status}</span>
-                <span class="ml-2 font-weight-bold text-success">${format_currency(n.grand_total, 'PHP')}</span>
-              </div>
-            </div>
-            <div class="card-body py-2">
-              <p class="mb-1 text-muted"><i class="fa fa-info-circle"></i> ${n.remarks || n.title || 'Ledger Posting'}</p>
-              ${n.posting_date ? `<small class="text-muted"><i class="fa fa-calendar"></i> Date: ${n.posting_date}</small>` : ''}
-            </div>
+      if (voucherKeys.length === 0) {
+        voucherCardsHtml = `
+          <div class="alert alert-info text-center p-4">
+            <i class="fa fa-info-circle fa-2x mb-2"></i>
+            <h5>No Accounting or GL Postings Found</h5>
+            <p class="mb-0 text-muted">This transaction is currently in draft or has not yet posted financial journal entries to the General Ledger.</p>
           </div>
+        `;
+      } else {
+        voucherKeys.forEach(vKey => {
+          const [vType, vNo] = vKey.split('::');
+          const entries = vouchersGlMap[vKey] || [];
+          const vDebit = entries.reduce((a, b) => a + (b.debit || 0), 0);
+          const vCredit = entries.reduce((a, b) => a + (b.credit || 0), 0);
+          const postDate = entries[0]?.posting_date || '';
+
+          let glRows = '';
+          entries.forEach(gl => {
+            glRows += `
+              <tr>
+                <td><strong>${gl.account}</strong></td>
+                <td><small class="text-muted">${gl.cost_center || '-'}</small></td>
+                <td class="text-right font-weight-bold ${gl.debit > 0 ? 'text-primary' : 'text-muted'}">${gl.debit > 0 ? format_currency(gl.debit, 'PHP') : '-'}</td>
+                <td class="text-right font-weight-bold ${gl.credit > 0 ? 'text-success' : 'text-muted'}">${gl.credit > 0 ? format_currency(gl.credit, 'PHP') : '-'}</td>
+                <td><small class="text-muted">${gl.remarks || ''}</small></td>
+              </tr>
+            `;
+          });
+
+          voucherCardsHtml += `
+            <div class="card mb-4 shadow-sm border" style="border-radius: 10px; overflow: hidden;">
+              <div class="card-header bg-light d-flex justify-content-between align-items-center py-2 px-3 border-bottom">
+                <div>
+                  <span class="badge ${vType === 'Sales Invoice' ? 'badge-primary' : 'badge-success'} mr-2 font-size-sm">${vType}</span>
+                  <a href="javascript:void(0)" class="sap-doc-link font-weight-bold text-dark" data-dt="${vType}" data-dn="${vNo}">${vNo}</a>
+                  <span class="text-muted ml-2"><i class="fa fa-calendar-alt"></i> ${postDate}</span>
+                </div>
+                <div>
+                  <span class="badge badge-light border">Balanced Journal: <strong>${format_currency(vDebit, 'PHP')}</strong></span>
+                </div>
+              </div>
+              <div class="table-responsive mb-0">
+                <table class="table table-sm table-hover mb-0">
+                  <thead class="thead-light">
+                    <tr>
+                      <th style="width: 35%;">Ledger Account</th>
+                      <th style="width: 15%;">Cost Center</th>
+                      <th class="text-right" style="width: 15%;">Debit (Dr)</th>
+                      <th class="text-right" style="width: 15%;">Credit (Cr)</th>
+                      <th style="width: 20%;">Remarks</th>
+                    </tr>
+                  </thead>
+                  <tbody>${glRows}</tbody>
+                  <tfoot class="bg-light font-weight-bold">
+                    <tr>
+                      <td colspan="2" class="text-right text-uppercase font-size-xs text-muted">Voucher Total:</td>
+                      <td class="text-right text-primary">${format_currency(vDebit, 'PHP')}</td>
+                      <td class="text-right text-success">${format_currency(vCredit, 'PHP')}</td>
+                      <td></td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+          `;
+        });
+      }
+
+      // Reconciliation / PLE Table
+      let pleRowsHtml = '';
+      pleList.forEach(p => {
+        pleRowsHtml += `
+          <tr>
+            <td><span class="badge badge-info">${p.voucher_type}</span> <strong>${p.voucher_no}</strong></td>
+            <td><span class="badge badge-secondary">${p.against_voucher_type || '-'}</span> ${p.against_voucher_no || '-'}</td>
+            <td>${p.account}</td>
+            <td>${p.party || '-'}</td>
+            <td class="text-right font-weight-bold ${p.amount < 0 ? 'text-success' : 'text-primary'}">${format_currency(p.amount, 'PHP')}</td>
+          </tr>
         `;
       });
 
-      if (!acctCards) {
-        acctCards = `<div class="alert alert-info">No accounting or GL entries posted yet for this workflow.</div>`;
-      }
-
       $nodesLayer.html(`
-        <div class="sap-accounting-view p-4" style="max-width: 800px; margin: 0 auto;">
-          <h4 class="font-weight-bold mb-3"><i class="fa fa-balance-scale text-success"></i> Accounting & General Ledger Postings</h4>
-          ${acctCards}
+        <div class="sap-accounting-container p-4" style="max-width: 1000px; margin: 0 auto; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); border: 1px solid #e2e8f0;">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h4 class="font-weight-bold m-0 text-dark"><i class="fa fa-balance-scale text-success mr-2"></i> Accounting & General Ledger Postings</h4>
+              <p class="text-muted mb-0 font-size-sm">Double-entry accounting journal entries, debit/credit ledger breakdown, and reconciliation flow.</p>
+            </div>
+            <div>
+              <span class="badge ${acct.is_balanced ? 'badge-success' : 'badge-danger'} p-2 font-size-sm">
+                <i class="fa ${acct.is_balanced ? 'fa-check-circle' : 'fa-exclamation-triangle'} mr-1"></i>
+                ${acct.is_balanced ? 'Double-Entry Balanced' : 'Ledger Imbalance Detected'}
+              </span>
+            </div>
+          </div>
+
+          <!-- KPI Summary Ribbon -->
+          <div class="row mb-4">
+            <div class="col-md-4">
+              <div class="p-3 border rounded bg-light text-center">
+                <small class="text-muted text-uppercase font-weight-bold">Total Debits (Dr)</small>
+                <div class="font-weight-bold text-primary font-size-lg">${format_currency(acct.total_debit || 0, 'PHP')}</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="p-3 border rounded bg-light text-center">
+                <small class="text-muted text-uppercase font-weight-bold">Total Credits (Cr)</small>
+                <div class="font-weight-bold text-success font-size-lg">${format_currency(acct.total_credit || 0, 'PHP')}</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="p-3 border rounded bg-light text-center">
+                <small class="text-muted text-uppercase font-weight-bold">Party Net Receivable Balance</small>
+                <div class="font-weight-bold ${this.data.summary?.total_outstanding_value === 0 ? 'text-success' : 'text-danger'} font-size-lg">
+                  ${format_currency(this.data.summary?.total_outstanding_value || 0, 'PHP')}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Voucher Journal Breakdown Cards -->
+          <h5 class="font-weight-bold text-dark mb-3"><i class="fa fa-book-open text-primary mr-1"></i> Journal Vouchers & GL Impact</h5>
+          ${voucherCardsHtml}
+
+          <!-- Payment Ledger Reconciliation Trace -->
+          ${pleRowsHtml ? `
+            <div class="mt-4 pt-3 border-top">
+              <h5 class="font-weight-bold text-dark mb-3"><i class="fa fa-handshake text-info mr-1"></i> Payment Ledger Entry (PLE) Settlement Trace</h5>
+              <div class="table-responsive rounded border">
+                <table class="table table-sm table-hover mb-0">
+                  <thead class="thead-light">
+                    <tr>
+                      <th>Voucher</th>
+                      <th>Against Voucher</th>
+                      <th>Account</th>
+                      <th>Party</th>
+                      <th class="text-right">Allocated Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>${pleRowsHtml}</tbody>
+                </table>
+              </div>
+            </div>
+          ` : ''}
         </div>
       `);
+
+      $nodesLayer.find('.sap-doc-link').on('click', (e) => {
+        const dt = $(e.currentTarget).data('dt');
+        const dn = $(e.currentTarget).data('dn');
+        if (dt && dn) {
+          if (this.dialog) this.dialog.hide();
+          frappe.set_route('Form', dt, dn);
+        }
+      });
     }
 
     selectNode(node) {
@@ -732,7 +951,7 @@
                   ${node.items.map(it => `
                     <tr>
                       <td><small><strong>${it.item_code}</strong><br>${it.description || ''}</small></td>
-                      <td class="text-right"><small>${it.qty}</small></td>
+                      <td class="text-right"><small>${it.qty} ${it.uom || ''}</small></td>
                       <td class="text-right font-weight-bold"><small>${format_currency(it.amount, 'PHP')}</small></td>
                     </tr>
                   `).join('')}
@@ -758,14 +977,14 @@
           </table>
         </div>
 
+        ${itemsHtml}
+
         ${node.remarks ? `
           <div class="sap-drawer-sec">
-            <div class="sap-drawer-sec-title">Remarks & Complaints</div>
-            <div class="p-2 bg-light rounded text-muted"><small>${node.remarks}</small></div>
+            <div class="sap-drawer-sec-title">Remarks / Notes</div>
+            <p class="small text-muted p-2 bg-light rounded">${node.remarks}</p>
           </div>
         ` : ''}
-
-        ${itemsHtml}
       `;
 
       $c.find('#sapDrawerBody').html(bodyHtml);
@@ -778,58 +997,85 @@
     }
 
     fitToScreen() {
-      this.zoom = 0.85;
-      this.panX = 20;
-      this.panY = 20;
+      const $viewport = $(this.container || document).find('#sapViewport');
+      const vWidth = $viewport.width();
+      const vHeight = $viewport.height();
+
+      this.zoom = Math.min(vWidth / 1300, vHeight / 800, 1.2);
+      this.panX = 30;
+      this.panY = 30;
       this.applyTransform();
     }
   }
 
-  window.SAPRelationshipMap.ViewerClass = SAPMapViewer;
+  window.SAPRelationshipMap.Viewer = SAPMapViewer;
 
-  // ─────────────────────────────────────────────
-  // Global Launch Function (Modal or Page)
-  // ─────────────────────────────────────────────
-  window.SAPRelationshipMap.open = function (opts) {
-    opts = opts || {};
+  window.SAPRelationshipMap.openModal = function (doctype, docname, vehicle, customer) {
     const d = new frappe.ui.Dialog({
-      title: `<span class="sap-b1-title-logo"><i class="fa fa-sitemap mr-1 text-primary"></i> VMS Relationship Map</span>`,
-      size: "extra-large",
+      title: `<span class="badge badge-info mr-1">VMS</span> Relationship Map & Document Flow`,
+      size: 'extra-large',
       fields: [
         {
-          fieldtype: "HTML",
-          fieldname: "map_canvas_html",
+          fieldtype: 'HTML',
+          fieldname: 'sap_map_area'
         }
       ]
     });
 
     d.show();
-    d.$wrapper.find('.modal-dialog').addClass('sap-map-dialog-xl');
-    d.$wrapper.find('.modal-body').addClass('p-0 sap-map-dialog-body');
+    d.$wrapper.find('.modal-dialog').css({
+      'max-width': '96vw',
+      'width': '96vw',
+      'height': '92vh',
+      'margin': '2vh auto'
+    });
+    d.$wrapper.find('.modal-content').css({
+      'height': '92vh',
+      'display': 'flex',
+      'flex-direction': 'column'
+    });
+    d.$wrapper.find('.modal-body').css({
+      'padding': '0',
+      'flex': '1',
+      'overflow': 'hidden',
+      'position': 'relative'
+    });
 
-    const container = d.get_field("map_canvas_html").$wrapper[0];
+    const container = d.fields_dict.sap_map_area.$wrapper[0];
     new SAPMapViewer({
-      doctype: opts.doctype || cur_frm?.doctype || "Vehicle Job Order",
-      docname: opts.docname || cur_frm?.doc?.name || "",
-      vehicle: opts.vehicle || cur_frm?.doc?.vehicle || cur_frm?.doc?.plate_no || "",
-      customer: opts.customer || cur_frm?.doc?.customer || "",
+      doctype: doctype,
+      docname: docname,
+      vehicle: vehicle,
+      customer: customer,
       container: container,
       isModal: true,
       dialog: d
     });
   };
 
-  // Keyboard shortcut: Alt+M or Alt+R
-  $(document).on('keydown', (e) => {
-    if (e.altKey && (e.key === 'm' || e.key === 'M' || e.key === 'r' || e.key === 'R')) {
-      if (cur_frm && cur_frm.doc && cur_frm.doc.name) {
-        e.preventDefault();
-        window.SAPRelationshipMap.open({
-          doctype: cur_frm.doctype,
-          docname: cur_frm.doc.name
-        });
+  // Attach button to supported DocTypes
+  const targetDocTypes = [
+    'Vehicle Job Order',
+    'Vehicle Estimate',
+    'Vehicle Inspection',
+    'Vehicle POS Invoice',
+    'Customer Vehicle',
+    'Sales Invoice',
+    'Payment Entry'
+  ];
+
+  targetDocTypes.forEach(dt => {
+    frappe.ui.form.on(dt, {
+      refresh: function (frm) {
+        if (!frm.is_new()) {
+          frm.add_custom_button(__('VMS Relationship Map'), function () {
+            let veh = frm.doc.plate_no || frm.doc.vehicle || frm.doc.custom_vehicle_plate || '';
+            let cust = frm.doc.customer_name || frm.doc.customer || frm.doc.party_name || '';
+            window.SAPRelationshipMap.openModal(frm.doctype, frm.doc.name, veh, cust);
+          }, __('View'));
+        }
       }
-    }
+    });
   });
 
 })();

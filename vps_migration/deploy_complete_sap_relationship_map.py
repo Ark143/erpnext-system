@@ -85,8 +85,49 @@ try:
             st_disp = st
 
         gt = float(doc.get("grand_total") or doc.get("total_amount") or doc.get("paid_amount") or doc.get("received_amount") or 0)
-        paid = float(doc.get("paid_amount") or doc.get("total_allocated_amount") or 0)
-        outst = float(doc.get("outstanding_amount") or (gt - paid if gt > paid else 0))
+        
+        if dt == "Sales Invoice":
+            si_out = doc.get("outstanding_amount")
+            if si_out is not None:
+                outst = max(0.0, float(si_out))
+            else:
+                ples = frappe.get_all("Payment Ledger Entry", filters={"against_voucher_no": name, "delinked": 0}, fields=["amount"])
+                if ples:
+                    outst = max(0.0, sum([float(p.get("amount") or 0) for p in ples]))
+                else:
+                    outst = gt
+            paid = max(0.0, gt - outst)
+            if outst <= 0.001:
+                outst = 0.0
+                paid = gt
+                st_disp = "Paid"
+        elif dt == "Payment Entry":
+            paid = gt
+            outst = 0.0
+        elif dt == "Vehicle Job Order":
+            si_no = doc.get("sales_invoice")
+            if si_no and frappe.db.exists("Sales Invoice", si_no):
+                outst = 0.0
+                si_doc = frappe.get_doc("Sales Invoice", si_no)
+                si_out = si_doc.get("outstanding_amount")
+                if (si_out is not None and float(si_out) <= 0.001) or si_doc.get("status") == "Paid":
+                    paid = gt
+                else:
+                    paid = float(doc.get("paid_amount") or 0)
+            else:
+                paid = float(doc.get("paid_amount") or 0)
+                outst = max(0.0, gt - paid)
+        elif dt in ("Vehicle POS Invoice", "POS Invoice"):
+            paid = float(doc.get("paid_amount") or gt)
+            outst = max(0.0, gt - paid)
+        else:
+            paid = float(doc.get("paid_amount") or doc.get("total_allocated_amount") or 0)
+            doc_out = doc.get("outstanding_amount")
+            if doc_out is not None:
+                outst = max(0.0, float(doc_out))
+            else:
+                outst = max(0.0, gt - paid)
+
         p_date = str(doc.get("posting_date") or doc.get("job_order_date") or doc.get("estimate_date") or doc.get("inspection_date") or doc.get("transaction_date") or doc.get("creation") or "")[:10]
         p_time = str(doc.get("posting_time") or "")
 
@@ -281,9 +322,12 @@ try:
                     link_nodes("Vehicle Job Order", j.get("name"), doctype, docname, "Workshop Billing", "flow")
 
         elif doctype == "Sales Invoice":
-            for j in frappe.get_all("Vehicle Job Order", filters={"sales_invoice": docname}, fields=["name"]):
+            for j in frappe.get_all("Vehicle Job Order", filters={"sales_invoice": docname}, fields=["name", "estimate"]):
                 get_node("Vehicle Job Order", j.get("name"), False, 2)
                 link_nodes("Vehicle Job Order", j.get("name"), "Sales Invoice", docname, "Billed via SI", "flow")
+                if j.get("estimate") and frappe.db.exists("Vehicle Estimate", j.get("estimate")):
+                    get_node("Vehicle Estimate", j.get("estimate"), False, 1)
+                    link_nodes("Vehicle Estimate", j.get("estimate"), "Vehicle Job Order", j.get("name"), "Converted to JO", "flow")
             for p in frappe.get_all("Payment Entry Reference", filters={"reference_name": docname}, fields=["parent"]):
                 if frappe.db.exists("Payment Entry", p.get("parent")):
                     get_node("Payment Entry", p.get("parent"), False, 4)
@@ -306,15 +350,32 @@ try:
                 get_node("Vehicle POS Invoice", vp.get("name"), False, 3)
                 link_nodes("Customer Vehicle", docname, "Vehicle POS Invoice", vp.get("name"), "POS Receipt", "flow")
 
-    tot_val = 0.0
-    tot_paid = 0.0
-    tot_outst = 0.0
-    for n in nodes_dict.values():
-        if n.get("doctype") in ("Vehicle Job Order", "Sales Invoice", "Vehicle POS Invoice", "POS Invoice"):
-            tot_val = tot_val + float(n.get("grand_total") or 0)
-            tot_outst = tot_outst + float(n.get("outstanding_amount") or 0)
-        if n.get("doctype") in ("Vehicle Job Order", "Sales Invoice", "Payment Entry", "Vehicle POS Invoice"):
-            tot_paid = tot_paid + float(n.get("paid_amount") or 0)
+    # Deduplicate transaction value and calculate true net outstanding
+    invoices = [n for n in nodes_dict.values() if n.get("doctype") in ("Sales Invoice", "POS Invoice", "Vehicle POS Invoice")]
+    invoiced_jo_names = []
+    for inv in invoices:
+        for j in frappe.get_all("Vehicle Job Order", filters={"sales_invoice": inv.get("name")}, fields=["name"]):
+            invoiced_jo_names.append(j.get("name"))
+
+    unbilled_jos = [n for n in nodes_dict.values() if n.get("doctype") == "Vehicle Job Order" and n.get("name") not in invoiced_jo_names]
+
+    billable_nodes = invoices + unbilled_jos
+
+    if billable_nodes:
+        tot_val = sum([float(n.get("grand_total") or 0) for n in billable_nodes])
+        payment_entries = [n for n in nodes_dict.values() if n.get("doctype") == "Payment Entry"]
+        if payment_entries:
+            pe_paid = sum([float(n.get("grand_total") or 0) for n in payment_entries])
+            pos_paid = sum([float(n.get("paid_amount") or 0) for n in billable_nodes if n.get("doctype") in ("POS Invoice", "Vehicle POS Invoice")])
+            tot_paid = pe_paid + pos_paid
+        else:
+            tot_paid = sum([float(n.get("paid_amount") or 0) for n in billable_nodes])
+        tot_paid = min(tot_val, tot_paid) if tot_val > 0 else tot_paid
+        tot_outst = max(0.0, tot_val - tot_paid)
+    else:
+        tot_val = sum([float(n.get("grand_total") or 0) for n in nodes_dict.values() if n.get("doctype") in ("Vehicle Job Order", "Sales Invoice", "Vehicle POS Invoice", "POS Invoice")])
+        tot_paid = sum([float(n.get("paid_amount") or 0) for n in nodes_dict.values() if n.get("doctype") in ("Vehicle Job Order", "Sales Invoice", "Payment Entry", "Vehicle POS Invoice")])
+        tot_outst = max(0.0, tot_val - tot_paid)
 
     summary_obj = {
         "focal_doctype": doctype,

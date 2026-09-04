@@ -145,3 +145,207 @@ def get_doc_count(doctype, filters) -> int | Literal["?"]:
 		if frappe.db.is_statement_timeout(e):
 			return "?"
 		return 0
+
+
+def patch_query_payment_ledger():
+	try:
+		import erpnext.accounts.utils
+		from frappe import qb
+		from frappe.query_builder import AliasedQuery, Case, Criterion, Table
+		from pypika.terms import Max, Sum
+
+		def query_for_outstanding(self):
+			ple = self.ple
+
+			filter_on_voucher_no = []
+			filter_on_against_voucher_no = []
+
+			if self.vouchers:
+				voucher_types = set([x.voucher_type for x in self.vouchers])
+				voucher_nos = set([x.voucher_no for x in self.vouchers])
+
+				filter_on_voucher_no.append(ple.voucher_type.isin(voucher_types))
+				filter_on_voucher_no.append(ple.voucher_no.isin(voucher_nos))
+
+				filter_on_against_voucher_no.append(ple.against_voucher_type.isin(voucher_types))
+				filter_on_against_voucher_no.append(ple.against_voucher_no.isin(voucher_nos))
+
+			if self.voucher_no:
+				filter_on_voucher_no.append(ple.voucher_no.like(f"%{self.voucher_no}%"))
+				filter_on_against_voucher_no.append(ple.against_voucher_no.like(f"%{self.voucher_no}%"))
+
+			# build outstanding amount filter
+			filter_on_outstanding_amount = []
+			if self.min_outstanding:
+				if self.min_outstanding > 0:
+					filter_on_outstanding_amount.append(
+						Table("outstanding").amount_in_account_currency >= self.min_outstanding
+					)
+				else:
+					filter_on_outstanding_amount.append(
+						Table("outstanding").amount_in_account_currency <= self.min_outstanding
+					)
+			if self.max_outstanding:
+				if self.max_outstanding > 0:
+					filter_on_outstanding_amount.append(
+						Table("outstanding").amount_in_account_currency <= self.max_outstanding
+					)
+				else:
+					filter_on_outstanding_amount.append(
+						Table("outstanding").amount_in_account_currency >= self.max_outstanding
+					)
+
+			if self.limit and self.get_invoices:
+				outstanding_vouchers = (
+					qb.from_(ple)
+					.select(
+						ple.against_voucher_no.as_("voucher_no"),
+						Sum(ple.amount_in_account_currency).as_("amount_in_account_currency"),
+						Max(
+							Case().when(
+								(
+									(ple.voucher_no == ple.against_voucher_no)
+									& (ple.voucher_type == ple.against_voucher_type)
+								),
+								(ple.posting_date),
+							)
+						).as_("invoice_date"),
+					)
+					.where(ple.delinked == 0)
+					.where(Criterion.all(filter_on_against_voucher_no))
+					.where(Criterion.all(self.common_filter))
+					.where(Criterion.all(self.dimensions_filter))
+					.where(Criterion.all(self.voucher_posting_date))
+					.groupby(ple.against_voucher_type, ple.against_voucher_no, ple.party_type, ple.party)
+					.orderby(ple.invoice_date, ple.voucher_no)
+					.having(qb.Field("amount_in_account_currency") > 0)
+					.limit(self.limit)
+					.run()
+				)
+				if outstanding_vouchers:
+					filter_on_voucher_no.append(ple.voucher_no.isin([x[0] for x in outstanding_vouchers]))
+					filter_on_against_voucher_no.append(
+						ple.against_voucher_no.isin([x[0] for x in outstanding_vouchers])
+					)
+
+			# build query for voucher amount
+			query_voucher_amount = (
+				qb.from_(ple)
+				.select(
+					ple.account,
+					ple.voucher_type,
+					ple.voucher_no,
+					ple.party_type,
+					ple.party,
+					Max(ple.posting_date).as_("posting_date"),
+					Max(ple.due_date).as_("due_date"),
+					Max(ple.account_currency).as_("currency"),
+					Max(ple.cost_center).as_("cost_center"),
+					Sum(ple.amount).as_("amount"),
+					Sum(ple.amount_in_account_currency).as_("amount_in_account_currency"),
+					Max(ple.remarks).as_("remarks"),
+				)
+				.where(ple.delinked == 0)
+				.where(Criterion.all(filter_on_voucher_no))
+				.where(Criterion.all(self.common_filter))
+				.where(Criterion.all(self.dimensions_filter))
+				.groupby(
+					ple.account,
+					ple.voucher_type,
+					ple.voucher_no,
+					ple.party_type,
+					ple.party,
+				)
+			)
+
+			# build query for voucher outstanding
+			query_voucher_outstanding = (
+				qb.from_(ple)
+				.select(
+					ple.account,
+					ple.against_voucher_type.as_("voucher_type"),
+					ple.against_voucher_no.as_("voucher_no"),
+					ple.party_type,
+					ple.party,
+					Sum(ple.amount).as_("amount"),
+					Sum(ple.amount_in_account_currency).as_("amount_in_account_currency"),
+				)
+				.where(ple.delinked == 0)
+				.where(Criterion.all(filter_on_against_voucher_no))
+				.where(Criterion.all(self.common_filter))
+				.groupby(
+					ple.account,
+					ple.against_voucher_type,
+					ple.against_voucher_no,
+					ple.party_type,
+					ple.party,
+				)
+			)
+
+			if self.get_invoices:
+				query_voucher_outstanding = query_voucher_outstanding.having(
+					Sum(ple.amount_in_account_currency) > 0
+				)
+			elif self.get_payments:
+				query_voucher_outstanding = query_voucher_outstanding.having(
+					Sum(ple.amount_in_account_currency) < 0
+				)
+
+			# build CTE for combining voucher amount and outstanding
+			self.cte_query_voucher_amount_and_outstanding = (
+				qb.with_(query_voucher_amount, "vouchers")
+				.with_(query_voucher_outstanding, "outstanding")
+				.from_(AliasedQuery("vouchers"))
+				.left_join(AliasedQuery("outstanding"))
+				.on(
+					(AliasedQuery("vouchers").account == AliasedQuery("outstanding").account)
+					& (AliasedQuery("vouchers").voucher_type == AliasedQuery("outstanding").voucher_type)
+					& (AliasedQuery("vouchers").voucher_no == AliasedQuery("outstanding").voucher_no)
+					& (AliasedQuery("vouchers").party_type == AliasedQuery("outstanding").party_type)
+					& (AliasedQuery("vouchers").party == AliasedQuery("outstanding").party)
+				)
+				.select(
+					Table("vouchers").account,
+					Table("vouchers").voucher_type,
+					Table("vouchers").voucher_no,
+					Table("vouchers").party_type,
+					Table("vouchers").party,
+					Table("vouchers").posting_date,
+					Table("vouchers").amount.as_("invoice_amount"),
+					Table("vouchers").amount_in_account_currency.as_("invoice_amount_in_account_currency"),
+					Table("outstanding").amount.as_("outstanding"),
+					Table("outstanding").amount_in_account_currency.as_("outstanding_in_account_currency"),
+					(Table("vouchers").amount - Table("outstanding").amount).as_("paid_amount"),
+					(
+						Table("vouchers").amount_in_account_currency
+						- Table("outstanding").amount_in_account_currency
+					).as_("paid_amount_in_account_currency"),
+					Table("vouchers").due_date,
+					Table("vouchers").currency,
+					Table("vouchers").cost_center.as_("cost_center"),
+					Table("vouchers").remarks,
+				)
+				.where(Criterion.all(filter_on_outstanding_amount))
+			)
+
+			if self.limit:
+				self.cte_query_voucher_amount_and_outstanding = (
+					self.cte_query_voucher_amount_and_outstanding.limit(self.limit)
+				)
+
+			# Clear any PyPika mistaken _havings on outer query to prevent PostgreSQL syntax errors
+			if hasattr(self.cte_query_voucher_amount_and_outstanding, "_havings"):
+				self.cte_query_voucher_amount_and_outstanding._havings.clear()
+
+			# execute SQL
+			self.voucher_outstandings = self.cte_query_voucher_amount_and_outstanding.run(as_dict=True)
+
+		erpnext.accounts.utils.QueryPaymentLedger.query_for_outstanding = query_for_outstanding
+	except Exception:
+		pass
+
+# Apply QueryPaymentLedger PostgreSQL compatibility patch
+patch_query_payment_ledger()
+
+
+

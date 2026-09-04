@@ -371,3 +371,5 @@ def get_relationship_map(doctype=None, docname=None, vehicle=None, customer=None
         "edges": edges,
         "summary": summary
     }
+
+

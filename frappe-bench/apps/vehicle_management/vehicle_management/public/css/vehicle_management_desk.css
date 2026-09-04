@@ -460,3 +460,20 @@
   box-shadow: 0 3px 6px rgba(2, 132, 199, 0.3) !important;
   color: #ffffff !important;
 }
+
+/* Items & Accounting Tables Styling */
+.sap-items-container table th,
+.sap-items-container table td,
+.sap-accounting-container table th,
+.sap-accounting-container table td {
+  vertical-align: middle !important;
+}
+
+.sap-items-container td.text-right,
+.sap-items-container th.text-right,
+.sap-accounting-container td.text-right,
+.sap-accounting-container th.text-right,
+.sap-nowrap {
+  white-space: nowrap !important;
+  word-break: keep-all !important;
+}

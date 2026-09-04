@@ -674,10 +674,10 @@
               <strong class="text-dark">${it.item_code}</strong>
               ${it.description && it.description !== it.item_code ? `<br><small class="text-muted">${it.description}</small>` : ''}
             </td>
-            <td class="text-right font-weight-bold">${it.qty} ${it.uom || ''}</td>
-            <td class="text-right">${format_currency(it.rate, 'PHP')}</td>
-            <td class="text-right font-weight-bold text-primary">${format_currency(it.amount, 'PHP')}</td>
-            <td><small class="text-muted">${it.account || 'Income / Expense'}</small></td>
+            <td class="text-right font-weight-bold" style="white-space: nowrap !important;">${it.qty} ${it.uom || ''}</td>
+            <td class="text-right" style="white-space: nowrap !important; min-width: 110px;">${format_currency(it.rate, 'PHP')}</td>
+            <td class="text-right font-weight-bold text-primary" style="white-space: nowrap !important; min-width: 120px;">${format_currency(it.amount, 'PHP')}</td>
+            <td style="white-space: nowrap;"><small class="text-muted">${it.account || 'Income / Expense'}</small></td>
           </tr>
         `;
       });
@@ -708,25 +708,25 @@
             <div class="col-md-3">
               <div class="p-2 border rounded bg-light text-center">
                 <small class="text-muted text-uppercase font-weight-bold">Total Services / Labor</small>
-                <div class="font-weight-bold text-warning font-size-lg">${format_currency(totalLaborVal, 'PHP')} (${uniqueLaborCount} items)</div>
+                <div class="font-weight-bold text-warning font-size-lg" style="white-space: nowrap;">${format_currency(totalLaborVal, 'PHP')} (${uniqueLaborCount} items)</div>
               </div>
             </div>
             <div class="col-md-3">
               <div class="p-2 border rounded bg-light text-center">
                 <small class="text-muted text-uppercase font-weight-bold">Total Spare Parts</small>
-                <div class="font-weight-bold text-primary font-size-lg">${format_currency(totalPartsVal, 'PHP')} (${uniquePartsCount} items)</div>
+                <div class="font-weight-bold text-primary font-size-lg" style="white-space: nowrap;">${format_currency(totalPartsVal, 'PHP')} (${uniquePartsCount} items)</div>
               </div>
             </div>
             <div class="col-md-3">
               <div class="p-2 border rounded bg-light text-center">
                 <small class="text-muted text-uppercase font-weight-bold">Final Billed Value</small>
-                <div class="font-weight-bold text-success font-size-lg">${format_currency(totalBilledVal, 'PHP')}</div>
+                <div class="font-weight-bold text-success font-size-lg" style="white-space: nowrap;">${format_currency(totalBilledVal, 'PHP')}</div>
               </div>
             </div>
             <div class="col-md-3">
               <div class="p-2 border rounded bg-light text-center">
                 <small class="text-muted text-uppercase font-weight-bold">Distinct Workflow Items</small>
-                <div class="font-weight-bold text-dark font-size-lg">${totalUniqueItems} Item (${items.length} Doc Lines)</div>
+                <div class="font-weight-bold text-dark font-size-lg" style="white-space: nowrap;">${totalUniqueItems} Item (${items.length} Doc Lines)</div>
               </div>
             </div>
           </div>
@@ -735,14 +735,14 @@
             <table class="table table-hover table-striped mb-0">
               <thead class="thead-light">
                 <tr>
-                  <th style="width: 40px;">#</th>
-                  <th>Source Document</th>
-                  <th>Category</th>
-                  <th>Item / Service Code & Name</th>
-                  <th class="text-right">Qty / Hours</th>
-                  <th class="text-right">Rate</th>
-                  <th class="text-right">Total Amount</th>
-                  <th>Accounting / Cost Account</th>
+                  <th style="width: 40px; white-space: nowrap;">#</th>
+                  <th style="white-space: nowrap; min-width: 140px;">Source Document</th>
+                  <th style="white-space: nowrap; min-width: 140px;">Category</th>
+                  <th style="min-width: 180px;">Item / Service Code & Name</th>
+                  <th class="text-right" style="white-space: nowrap; min-width: 90px;">Qty / Hours</th>
+                  <th class="text-right" style="white-space: nowrap; min-width: 110px;">Rate</th>
+                  <th class="text-right" style="white-space: nowrap; min-width: 120px;">Total Amount</th>
+                  <th style="white-space: nowrap; min-width: 160px;">Accounting / Cost Account</th>
                 </tr>
               </thead>
               <tbody>${rowsHtml}</tbody>

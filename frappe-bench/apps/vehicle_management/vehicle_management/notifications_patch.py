@@ -340,12 +340,64 @@ def patch_query_payment_ledger():
 			# execute SQL
 			self.voucher_outstandings = self.cte_query_voucher_amount_and_outstanding.run(as_dict=True)
 
+		# Also patch get_matched_payment_request_of_references
+		import erpnext.accounts.doctype.payment_entry.payment_entry as pe_module
+
+		def get_matched_payment_request_of_references(references):
+			if not references:
+				return
+
+			refs = {
+				(row.reference_doctype, row.reference_name, row.allocated_amount)
+				for row in references
+				if row.reference_doctype and row.reference_name and row.allocated_amount
+			}
+
+			if not refs:
+				return
+
+			PR = frappe.qb.DocType("Payment Request")
+			from frappe.query_builder.functions import Count
+			from frappe.query_builder import Tuple
+
+			subquery = (
+				frappe.qb.from_(PR)
+				.select(
+					PR.reference_doctype,
+					PR.reference_name,
+					PR.outstanding_amount.as_("allocated_amount"),
+					Max(PR.name).as_("payment_request"),
+					Count("*").as_("count"),
+				)
+				.where(Tuple(PR.reference_doctype, PR.reference_name, PR.outstanding_amount).isin(refs))
+				.where(PR.status != "Paid")
+				.where(PR.docstatus == 1)
+				.groupby(PR.reference_doctype, PR.reference_name, PR.outstanding_amount)
+			)
+
+			matched_prs = (
+				frappe.qb.from_(subquery)
+				.select(
+					subquery.reference_doctype,
+					subquery.reference_name,
+					subquery.allocated_amount,
+					subquery.payment_request,
+				)
+				.where(subquery.count == 1)
+				.run()
+			)
+
+			return matched_prs if matched_prs else None
+
+		pe_module.get_matched_payment_request_of_references = get_matched_payment_request_of_references
+
 		erpnext.accounts.utils.QueryPaymentLedger.query_for_outstanding = query_for_outstanding
 	except Exception:
 		pass
 
 # Apply QueryPaymentLedger PostgreSQL compatibility patch
 patch_query_payment_ledger()
+
 
 
 

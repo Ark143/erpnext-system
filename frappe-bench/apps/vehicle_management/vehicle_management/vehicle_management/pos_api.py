@@ -655,3 +655,98 @@ try:
 except Exception:
     pass
 
+try:
+    from frappe.utils.nestedset import get_descendants_of
+    import erpnext.selling.report.item_wise_sales_history.item_wise_sales_history as iwsh
+    
+    def _safe_iwsh_get_data(filters):
+        data = []
+        company_list = []
+        if filters.get("company"):
+            company_list = get_descendants_of("Company", filters.get("company"))
+            company_list.append(filters.get("company"))
+
+        customer_details = iwsh.get_customer_details()
+        item_details = iwsh.get_item_details()
+        sales_order_records = iwsh.get_sales_order_details(company_list, filters)
+
+        for record in sales_order_records:
+            customer_record = customer_details.get(record.customer)
+            item_record = item_details.get(record.item_code)
+            row = {
+                "item_code": record.get("item_code"),
+                "item_name": item_record.get("item_name") if item_record else record.get("item_code"),
+                "item_group": item_record.get("item_group") if item_record else "",
+                "description": record.get("description"),
+                "quantity": record.get("qty"),
+                "uom": record.get("uom"),
+                "rate": record.get("base_rate"),
+                "amount": record.get("base_amount"),
+                "sales_order": record.get("name"),
+                "transaction_date": record.get("transaction_date"),
+                "customer": record.get("customer"),
+                "customer_name": customer_record.get("customer_name") if customer_record else record.get("customer"),
+                "customer_group": customer_record.get("customer_group") if customer_record else "",
+                "territory": record.get("territory"),
+                "project": record.get("project"),
+                "delivered_quantity": flt(record.get("delivered_qty")),
+                "billed_amount": flt(record.get("billed_amt")),
+                "company": record.get("company"),
+            }
+            row["currency"] = frappe.get_cached_value("Company", row["company"], "default_currency")
+            data.append(row)
+        return data
+
+    def _safe_iwsh_get_sales_order_details(company_list, filters):
+        db_so = frappe.qb.DocType("Sales Order")
+        db_so_item = frappe.qb.DocType("Sales Order Item")
+
+        query = (
+            frappe.qb.from_(db_so)
+            .inner_join(db_so_item)
+            .on(db_so_item.parent == db_so.name)
+            .select(
+                db_so.name,
+                db_so.customer,
+                db_so.transaction_date,
+                db_so.territory,
+                db_so.project,
+                db_so.company,
+                db_so_item.item_code,
+                db_so_item.description,
+                db_so_item.qty,
+                db_so_item.uom,
+                db_so_item.base_rate,
+                db_so_item.base_amount,
+                db_so_item.delivered_qty,
+                (db_so_item.billed_amt * db_so.conversion_rate).as_("billed_amt"),
+            )
+            .where(db_so.docstatus == 1)
+        )
+
+        if company_list:
+            query = query.where(db_so.company.isin(tuple(company_list)))
+
+        if filters.get("item_group"):
+            query = query.where(db_so_item.item_group == filters.item_group)
+
+        if filters.get("from_date"):
+            query = query.where(db_so.transaction_date >= filters.from_date)
+
+        if filters.get("to_date"):
+            query = query.where(db_so.transaction_date <= filters.to_date)
+
+        if filters.get("item_code"):
+            query = query.where(db_so_item.item_code == filters.item_code)
+
+        if filters.get("customer"):
+            query = query.where(db_so.customer == filters.customer)
+
+        return query.run(as_dict=1)
+
+    iwsh.get_data = _safe_iwsh_get_data
+    iwsh.get_sales_order_details = _safe_iwsh_get_sales_order_details
+except Exception:
+    pass
+
+

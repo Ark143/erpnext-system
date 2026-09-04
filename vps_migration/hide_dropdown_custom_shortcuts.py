@@ -1,0 +1,111 @@
+import urllib.request, urllib.parse, json, http.cookiejar
+
+URL = 'http://38.247.138.224:10017'
+jar = http.cookiejar.CookieJar()
+op = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))
+H = {'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json'}
+data = urllib.parse.urlencode({'cmd': 'login', 'usr': 'Administrator', 'pwd': 'admin'}).encode()
+op.open(urllib.request.Request(f'{URL}/api/method/login', data=data, headers=H), timeout=30)
+
+# 1. Clear custom items from Navbar Settings settings_dropdown
+res = op.open(urllib.request.Request(f"{URL}/api/resource/Navbar%20Settings/Navbar%20Settings", headers=H))
+ns = json.loads(res.read().decode()).get('data', {})
+
+# Keep only standard non-custom items if any, or empty array
+ns['settings_dropdown'] = []
+
+put_req = urllib.request.Request(
+    f"{URL}/api/resource/Navbar%20Settings/Navbar%20Settings",
+    data=urllib.parse.urlencode({'data': json.dumps(ns)}).encode(),
+    headers=H
+)
+put_req.get_method = lambda: 'PUT'
+op.open(put_req)
+print("Cleared custom items from Navbar Settings settings_dropdown!")
+
+# 2. Update Client Script to keep sidebar header dropdown clean and standard
+client_script_content = """
+(function() {
+  const VM_SIDEBAR_ITEMS = [
+    { label: "Vehicle Management", link_to: "Vehicle Management", link_type: "Workspace", type: "Link", icon: "home", child: 0, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0 },
+    { label: "Vehicle POS Terminal", link_to: "vehicle_pos", link_type: "Page", type: "Link", icon: "panel-top", child: 0, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0 },
+    { label: "Vehicle Analytics", link_to: "vehicle_analytics", link_type: "Page", type: "Link", icon: "bar-chart", child: 0, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0 },
+    { label: "Operations & Workshop", type: "Section Break", link_type: "DocType", child: 0, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0 },
+    { label: "Customer Vehicles", link_to: "Customer Vehicle", link_type: "DocType", type: "Link", icon: "car", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0 },
+    { label: "Vehicle Job Orders", link_to: "Vehicle Job Order", link_type: "DocType", type: "Link", icon: "tool", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0 },
+    { label: "Vehicle Inspections", link_to: "Vehicle Inspection", link_type: "DocType", type: "Link", icon: "check-circle", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0 },
+    { label: "Vehicle Estimates", link_to: "Vehicle Estimate", link_type: "DocType", type: "Link", icon: "file-text", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0 },
+    { label: "Vehicle Service Reminders", link_to: "Vehicle Service Reminder", link_type: "DocType", type: "Link", icon: "bell", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0 },
+    { label: "Point of Sale & Cashier", type: "Section Break", link_type: "DocType", child: 0, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0 },
+    { label: "Vehicle POS Invoices", link_to: "Vehicle POS Invoice", link_type: "DocType", type: "Link", icon: "file", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0 },
+    { label: "POS Invoices", link_to: "POS Invoice", link_type: "DocType", type: "Link", icon: "credit-card", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0 },
+    { label: "POS Opening Entry", link_to: "POS Opening Entry", link_type: "DocType", type: "Link", icon: "play", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0 },
+    { label: "POS Closing Entry", link_to: "POS Closing Entry", link_type: "DocType", type: "Link", icon: "square", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0 },
+    { label: "Cashier Profiles", link_to: "Cashier Profile", link_type: "DocType", type: "Link", icon: "user", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0 },
+    { label: "Inventory & Parts", type: "Section Break", link_type: "DocType", child: 0, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0 },
+    { label: "Items", link_to: "Item", link_type: "DocType", type: "Link", icon: "box", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0 },
+    { label: "Stock Entries", link_to: "Stock Entry", link_type: "DocType", type: "Link", icon: "truck", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0 },
+    { label: "Item Vehicle Compatibility", link_to: "Item Vehicle Compatibility", link_type: "DocType", type: "Link", icon: "check-square", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0 },
+    { label: "Item Part Cross Reference", link_to: "Item Part Cross Reference", link_type: "DocType", type: "Link", icon: "git-commit", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0 },
+    { label: "Bin Locations", link_to: "Bin Location", link_type: "DocType", type: "Link", icon: "archive", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0 },
+    { label: "Warehouses", link_to: "Warehouse", link_type: "DocType", type: "Link", icon: "home", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0 },
+    { label: "Vehicle Masters", type: "Section Break", link_type: "DocType", child: 0, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0 },
+    { label: "Vehicle Makes", link_to: "Vehicle Make", link_type: "DocType", type: "Link", icon: "tag", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0 },
+    { label: "Vehicle Models", link_to: "Vehicle Model", link_type: "DocType", type: "Link", icon: "list", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0 },
+    { label: "Inspection Templates", link_to: "Inspection Template", link_type: "DocType", type: "Link", icon: "file-text", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0 },
+    { label: "Analytical Reports", type: "Section Break", link_type: "DocType", child: 0, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0 },
+    { label: "Monthly Sales Report", link_to: "Monthly Sales Report", link_type: "Report", type: "Link", icon: "table", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0, report: { report_type: "Script Report", ref_doctype: "Sales Invoice" } },
+    { label: "Detailed Sales Report", link_to: "Detailed Sales Report", link_type: "Report", type: "Link", icon: "table", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0, report: { report_type: "Script Report", ref_doctype: "Sales Invoice" } },
+    { label: "Sales Analytics", link_to: "Sales Analytics", link_type: "Report", type: "Link", icon: "table", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0, report: { report_type: "Script Report", ref_doctype: "Sales Invoice" } },
+    { label: "Sales Invoice Trends", link_to: "Sales Invoice Trends", link_type: "Report", type: "Link", icon: "table", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0, report: { report_type: "Script Report", ref_doctype: "Sales Invoice" } },
+    { label: "POS Register", link_to: "POS Register", link_type: "Report", type: "Link", icon: "table", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0, report: { report_type: "Script Report", ref_doctype: "POS Invoice" } },
+    { label: "Daily Collection Report", link_to: "Daily Collection Report", link_type: "Report", type: "Link", icon: "table", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0, report: { report_type: "Script Report", ref_doctype: "POS Invoice" } },
+    { label: "Product Purchases", link_to: "Product Purchases", link_type: "Report", type: "Link", icon: "table", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0, report: { report_type: "Script Report", ref_doctype: "Purchase Invoice" } },
+    { label: "Purchase Order Report", link_to: "Purchase Order Report", link_type: "Report", type: "Link", icon: "table", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0, report: { report_type: "Script Report", ref_doctype: "Purchase Order" } },
+    { label: "Purchase Analytics", link_to: "Purchase Analytics", link_type: "Report", type: "Link", icon: "table", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0, report: { report_type: "Script Report", ref_doctype: "Purchase Order" } },
+    { label: "Top Suppliers", link_to: "Top Suppliers", link_type: "Report", type: "Link", icon: "table", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0, report: { report_type: "Script Report", ref_doctype: "Purchase Order" } },
+    { label: "Stock Balance", link_to: "Stock Balance", link_type: "Report", type: "Link", icon: "table", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0, report: { report_type: "Script Report", ref_doctype: "Stock Ledger Entry" } },
+    { label: "Warehouse Wise Stock Balance", link_to: "Warehouse Wise Stock Balance", link_type: "Report", type: "Link", icon: "table", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0, report: { report_type: "Script Report", ref_doctype: "Stock Ledger Entry" } },
+    { label: "Inventory Summary", link_to: "Inventory Summary", link_type: "Report", type: "Link", icon: "table", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0, report: { report_type: "Script Report", ref_doctype: "Stock Ledger Entry" } },
+    { label: "Monthly Job Orders", link_to: "Monthly Job Orders", link_type: "Report", type: "Link", icon: "table", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0, report: { report_type: "Script Report", ref_doctype: "Vehicle Job Order" } },
+    { label: "Detailed Job Orders", link_to: "Detailed Job Orders", link_type: "Report", type: "Link", icon: "table", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0, report: { report_type: "Script Report", ref_doctype: "Vehicle Job Order" } },
+    { label: "Top Vehicles Served", link_to: "Top Vehicles Served", link_type: "Report", type: "Link", icon: "table", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0, report: { report_type: "Script Report", ref_doctype: "Vehicle Job Order" } },
+    { label: "Statement of Account", link_to: "Statement of Account", link_type: "Report", type: "Link", icon: "table", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0, report: { report_type: "Script Report", ref_doctype: "Customer" } },
+    { label: "Check Register", link_to: "Check Register", link_type: "Report", type: "Link", icon: "table", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0, report: { report_type: "Script Report", ref_doctype: "Payment Entry" } },
+    { label: "Profit and Loss Statement", link_to: "Profit and Loss Statement", link_type: "Report", type: "Link", icon: "table", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0, report: { report_type: "Script Report", ref_doctype: "GL Entry" } },
+    { label: "General Ledger", link_to: "General Ledger", link_type: "Report", type: "Link", icon: "table", child: 1, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0, report: { report_type: "Script Report", ref_doctype: "GL Entry" } }
+  ];
+
+  function ensureVMBootSidebar() {
+    if (window.frappe && frappe.boot) {
+      if (!frappe.boot.workspace_sidebar_item) {
+        frappe.boot.workspace_sidebar_item = {};
+      }
+      frappe.boot.workspace_sidebar_item["vehicle management"] = VM_SIDEBAR_ITEMS;
+      frappe.boot.workspace_sidebar_item["Vehicle Management"] = VM_SIDEBAR_ITEMS;
+    }
+  }
+
+  ensureVMBootSidebar();
+  $(document).ready(ensureVMBootSidebar);
+  $(document).on("toolbar_setup page-change", ensureVMBootSidebar);
+})();
+"""
+
+# Update Client Script in DB
+res_cs = op.open(urllib.request.Request(f"{URL}/api/resource/Client%20Script/VM%20Header%20Shortcut%20Button", headers=H))
+cs_doc = json.loads(res_cs.read().decode()).get('data', {})
+cs_doc['script'] = client_script_content
+put_cs = urllib.request.Request(
+    f"{URL}/api/resource/Client%20Script/VM%20Header%20Shortcut%20Button",
+    data=urllib.parse.urlencode({'data': json.dumps(cs_doc)}).encode(),
+    headers=H
+)
+put_cs.get_method = lambda: 'PUT'
+op.open(put_cs)
+print("Updated Client Script in DB!")
+
+# Write to local file
+with open("frappe-bench/apps/vehicle_management/vehicle_management/public/js/vehicle_management_desk.js", "w", encoding="utf-8") as f:
+    f.write(client_script_content.strip() + "\n")
+print("Updated local vehicle_management_desk.js!")

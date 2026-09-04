@@ -1,0 +1,1224 @@
+<!-- VMS Web Portal - Modern Ride, Vehicle & Financial Management Dashboard -->
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ULTRA MRF — Enterprise Vehicle &amp; Financial Management</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ── Website Chrome Suppression ── */
+    header, footer, nav, .navbar, .web-footer, .page-header, .page-breadcrumbs, .standard-breadcrumbs, .sidebar-column, .web-page-sidebar, .page-container > .col-sm-3 {
+      display: none !important;
+    }
+    .page-container, .container, .page-content, .main-section, .body-content, main {
+      padding: 0 !important;
+      margin: 0 !important;
+      max-width: 100% !important;
+      width: 100% !important;
+      background: transparent !important;
+      border: none !important;
+    }
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100vh;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ── Monochrome Black & White / Modern Theme Variables ── */
+    :root {
+      --bg-app: #080808;
+      --bg-sidebar: #0d0d0d;
+      --bg-surface: #141414;
+      --bg-surface-hover: #1c1c1c;
+      --bg-card: #121212;
+      --bg-input: #181818;
+      --border-subtle: #222222;
+      --border-strong: #333333;
+      --border-focus: #ffffff;
+      --text-primary: #ffffff;
+      --text-secondary: #a1a1aa;
+      --text-muted: #71717a;
+      --accent-solid: #ffffff;
+      --accent-text: #000000;
+      --badge-bg: #1f1f1f;
+      --badge-border: #333333;
+      --chart-bar-1: #ffffff;
+      --chart-bar-2: #888888;
+      --chart-bar-3: #444444;
+      --shadow-sm: 0 2px 4px rgba(0,0,0,0.6);
+      --shadow-md: 0 10px 25px -5px rgba(0,0,0,0.7);
+      --scrollbar-thumb: #2b2b2b;
+    }
+
+    html[data-theme="light"] {
+      --bg-app: #f4f4f5;
+      --bg-sidebar: #ffffff;
+      --bg-surface: #ffffff;
+      --bg-surface-hover: #f4f4f5;
+      --bg-card: #ffffff;
+      --bg-input: #f4f4f5;
+      --border-subtle: #e4e4e7;
+      --border-strong: #d4d4d8;
+      --border-focus: #000000;
+      --text-primary: #09090b;
+      --text-secondary: #52525b;
+      --text-muted: #a1a1aa;
+      --accent-solid: #000000;
+      --accent-text: #ffffff;
+      --badge-bg: #f4f4f5;
+      --badge-border: #e4e4e7;
+      --chart-bar-1: #09090b;
+      --chart-bar-2: #71717a;
+      --chart-bar-3: #d4d4d8;
+      --shadow-sm: 0 2px 4px rgba(0,0,0,0.04);
+      --shadow-md: 0 10px 25px -5px rgba(0,0,0,0.06);
+      --scrollbar-thumb: #d4d4d8;
+    }
+
+    body {
+      background-color: var(--bg-app);
+      color: var(--text-primary);
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    .dashboard-layout {
+      display: flex;
+      min-height: 100vh;
+      width: 100%;
+    }
+
+    /* ── Left Sidebar Navigation (Comprehensive Workspace Hub) ── */
+    .sidebar {
+      width: 280px;
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 1.25rem 0.85rem;
+      z-index: 100;
+      flex-shrink: 0;
+      transition: all 0.25s ease;
+    }
+
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0 0.5rem 1.25rem;
+      border-bottom: 1px solid var(--border-subtle);
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .sidebar-logo {
+      font-size: 26px;
+      line-height: 1;
+    }
+
+    .sidebar-brand-title {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      line-height: 1.1;
+    }
+
+    .sidebar-brand-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .sidebar-nav {
+      margin-top: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .sidebar-nav::-webkit-scrollbar {
+      width: 4px;
+    }
+    .sidebar-nav::-webkit-scrollbar-thumb {
+      background: var(--scrollbar-thumb);
+      border-radius: 4px;
+    }
+
+    .sidebar-section-header {
+      font-size: 10.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      padding: 0.85rem 0.75rem 0.35rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      user-select: none;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.55rem 0.75rem;
+      border-radius: 10px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 12.5px;
+      font-weight: 600;
+      transition: all 0.15s ease;
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+
+    .nav-item:hover {
+      background: var(--bg-surface-hover);
+      color: var(--text-primary);
+    }
+
+    .nav-item.active {
+      background: var(--accent-solid);
+      color: var(--accent-text);
+      font-weight: 800;
+    }
+
+    .badge-count {
+      margin-left: auto;
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 6px;
+      background: var(--badge-bg);
+      border: 1px solid var(--badge-border);
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .sidebar-footer {
+      border-top: 1px solid var(--border-subtle);
+      padding-top: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sidebar-user {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .sidebar-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--bg-surface-hover);
+      border: 1px solid var(--border-strong);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 12px;
+    }
+
+    .sidebar-user-details {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-user-name {
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .sidebar-user-role {
+      font-size: 10.5px;
+      color: var(--text-muted);
+    }
+
+    /* ── Main Application Content ── */
+    .main-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      overflow-x: hidden;
+    }
+
+    .top-header {
+      background: var(--bg-sidebar);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0.85rem 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 90;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .header-title-wrap h2 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.2px;
+    }
+
+    .header-title-wrap p {
+      margin: 0;
+      font-size: 11.5px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .branch-selector {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      padding: 4px 10px;
+    }
+
+    .branch-selector select {
+      background: transparent;
+      border: none;
+      color: var(--text-primary);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .branch-selector select option {
+      background: var(--bg-card);
+      color: var(--text-primary);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .btn-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.45rem 0.85rem;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      border: 1px solid var(--border-strong);
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      transition: all 0.15s ease;
+      cursor: pointer;
+    }
+
+    .btn-action:hover {
+      background: var(--bg-surface-hover);
+      border-color: var(--border-focus);
+    }
+
+    .btn-action.primary {
+      background: var(--accent-solid);
+      color: var(--accent-text);
+      border-color: var(--accent-solid);
+    }
+
+    .theme-toggle-btn {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-strong);
+      color: var(--text-primary);
+      padding: 6px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    /* ── Content Container ── */
+    .content-container {
+      padding: 1.5rem 1.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* ── Stats Metric Cards Ribbon ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+
+    .stat-widget {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 1.15rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .stat-widget:hover {
+      transform: translateY(-2px);
+      border-color: var(--border-strong);
+    }
+
+    .stat-widget-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--text-muted);
+      font-size: 11.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .stat-widget-icon {
+      font-size: 18px;
+    }
+
+    .stat-widget-number {
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-primary);
+    }
+
+    .stat-widget-bottom {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    .stat-pill-trend {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: var(--badge-bg);
+      border: 1px solid var(--badge-border);
+      font-weight: 800;
+    }
+
+    /* ── Analytics Grid Sections ── */
+    .analytics-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+
+    .analytics-grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1.25rem;
+    }
+
+    .analytics-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .analytics-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .analytics-card-header h3 {
+      margin: 0;
+      font-size: 13.5px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .analytics-tag {
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: var(--badge-bg);
+      border: 1px solid var(--badge-border);
+      color: var(--text-secondary);
+    }
+
+    /* Custom Analytics Bars / Progress Visuals */
+    .metric-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .metric-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .metric-item-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .metric-item-bar {
+      height: 6px;
+      background: var(--bg-surface);
+      border-radius: 4px;
+      overflow: hidden;
+      display: flex;
+    }
+
+    .metric-item-fill {
+      background: var(--accent-solid);
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+
+    /* ── Live Fleet Operations Table ── */
+    .operations-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 1.25rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .operations-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .operations-header h3 {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .filter-tabs {
+      display: flex;
+      gap: 0.4rem;
+    }
+
+    .filter-tab {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-strong);
+      color: var(--text-secondary);
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .filter-tab.active, .filter-tab:hover {
+      background: var(--accent-solid);
+      color: var(--accent-text);
+      border-color: var(--accent-solid);
+    }
+
+    .ops-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 12.5px;
+    }
+
+    .ops-table th {
+      padding: 0.65rem 0.75rem;
+      border-bottom: 1px solid var(--border-strong);
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .ops-table td {
+      padding: 0.75rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .plate-badge {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-strong);
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 11px;
+      padding: 3px 6px;
+      border-radius: 5px;
+      letter-spacing: 0.5px;
+    }
+
+    .status-pill {
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: var(--badge-bg);
+      border: 1px solid var(--badge-border);
+      display: inline-block;
+    }
+
+    .action-btn-sm {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-strong);
+      color: var(--text-primary);
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+
+    .action-btn-sm:hover {
+      background: var(--bg-surface-hover);
+      border-color: var(--border-focus);
+    }
+
+    @media (max-width: 1100px) {
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+      .analytics-grid-2, .analytics-grid-3 { grid-template-columns: 1fr; }
+      .sidebar { width: 230px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="dashboard-layout">
+  <!-- ── Left Sidebar Navigation ── -->
+  <aside class="sidebar">
+    <a href="/vms" class="sidebar-brand">
+      <div class="sidebar-logo">🚗</div>
+      <div>
+        <div class="sidebar-brand-title">ULTRA MRF</div>
+        <div class="sidebar-brand-sub">Enterprise Management</div>
+      </div>
+    </a>
+
+    <!-- Modular Workspace Navigation Links -->
+    <nav class="sidebar-nav">
+      <!-- 1. VEHICLE MANAGEMENT & OPERATIONS -->
+      <div class="sidebar-section-header">
+        <span>🚗 Operations / Fleet</span>
+      </div>
+      <a href="/vms" class="nav-item active">
+        <span>⚡</span> <span>Dashboard</span>
+      </a>
+      <a href="/pos-terminal" class="nav-item">
+        <span>🐴</span> <span>POS Terminal</span>
+        <span class="badge-count" style="background:var(--accent-solid); color:var(--accent-text);">LIVE</span>
+      </a>
+      <a href="/desk#List/Customer%20Vehicle" class="nav-item">
+        <span>🚘</span> <span>Customer Vehicles</span>
+      </a>
+      <a href="/desk#List/Vehicle%20Job%20Order" class="nav-item">
+        <span>🔧</span> <span>Workshop Job Orders</span>
+      </a>
+      <a href="/desk#List/Vehicle%20Inspection" class="nav-item">
+        <span>🔍</span> <span>Vehicle Inspections</span>
+      </a>
+      <a href="/desk#List/Vehicle%20Estimate" class="nav-item">
+        <span>📝</span> <span>Estimates &amp; Quotes</span>
+      </a>
+      <a href="/desk#List/Vehicle%20Service%20Reminder" class="nav-item">
+        <span>⏰</span> <span>Service Reminders</span>
+      </a>
+
+      <!-- 2. ACCOUNTING & FINANCE -->
+      <div class="sidebar-section-header">
+        <span>💳 Accounting &amp; Finance</span>
+      </div>
+      <a href="/desk#List/POS%20Invoice" class="nav-item">
+        <span>🧾</span> <span>POS Invoices</span>
+      </a>
+      <a href="/desk#List/Sales%20Invoice" class="nav-item">
+        <span>📄</span> <span>Sales Invoices</span>
+      </a>
+      <a href="/desk#List/Payment%20Entry" class="nav-item">
+        <span>💵</span> <span>Payment Entries</span>
+      </a>
+      <a href="/desk#query-report/General%20Ledger" class="nav-item">
+        <span>📖</span> <span>General Ledger</span>
+      </a>
+      <a href="/desk#query-report/Profit%20and%20Loss%20Statement" class="nav-item">
+        <span>📑</span> <span>Profit &amp; Loss</span>
+      </a>
+      <a href="/desk#query-report/Balance%20Sheet" class="nav-item">
+        <span>🏛️</span> <span>Balance Sheet</span>
+      </a>
+      <a href="/desk#Tree/Account" class="nav-item">
+        <span>🌳</span> <span>Chart of Accounts</span>
+      </a>
+
+      <!-- 3. PROCUREMENT & INVENTORY -->
+      <div class="sidebar-section-header">
+        <span>📦 Procurement &amp; Stock</span>
+      </div>
+      <a href="/desk#List/Item" class="nav-item">
+        <span>🔩</span> <span>Auto Parts Catalog</span>
+      </a>
+      <a href="/desk#List/Purchase%20Order" class="nav-item">
+        <span>📥</span> <span>Purchase Orders</span>
+      </a>
+      <a href="/desk#List/Purchase%20Receipt" class="nav-item">
+        <span>🚚</span> <span>Purchase Receipts</span>
+      </a>
+      <a href="/desk#query-report/Stock%20Balance" class="nav-item">
+        <span>📊</span> <span>Stock Balance</span>
+      </a>
+      <a href="/desk#query-report/Warehouse%20Wise%20Stock%20Balance" class="nav-item">
+        <span>🏢</span> <span>Warehouse Stock</span>
+      </a>
+      <a href="/desk#List/Supplier" class="nav-item">
+        <span>🏭</span> <span>Suppliers Registry</span>
+      </a>
+
+      <!-- 4. ANALYTICAL REPORTS -->
+      <div class="sidebar-section-header">
+        <span>📊 Analytical Reports</span>
+      </div>
+      <a href="/executive-dashboard" target="_blank" class="nav-item">
+        <span>👑</span> <span>Executive Dashboard</span>
+      </a>
+      <a href="/desk#query-report/Monthly%20Sales%20Report" class="nav-item">
+        <span>📈</span> <span>Monthly Sales Report</span>
+      </a>
+      <a href="/desk#query-report/Detailed%20Sales%20Report" class="nav-item">
+        <span>📋</span> <span>Detailed Sales Report</span>
+      </a>
+      <a href="/desk#query-report/POS%20Register" class="nav-item">
+        <span>🏧</span> <span>POS Register</span>
+      </a>
+      <a href="/desk#query-report/Monthly%20Job%20Orders" class="nav-item">
+        <span>🛠️</span> <span>Monthly Job Orders</span>
+      </a>
+    </nav>
+
+    <!-- Sidebar Bottom User -->
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar" id="vms-avatar-letter">A</div>
+        <div class="sidebar-user-details">
+          <span class="sidebar-user-name" id="vms-sidebar-username">Administrator</span>
+          <span class="sidebar-user-role">System Manager</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── Main Application Content ── -->
+  <div class="main-wrapper">
+    <!-- Top Header Bar -->
+    <header class="top-header">
+      <div class="header-left">
+        <div class="header-title-wrap">
+          <h2 id="vms-greeting">Enterprise Management Dashboard</h2>
+          <p id="vms-datetime">Live Operations, Sales, Purchases &amp; Stock Analytics</p>
+        </div>
+
+        <!-- Branch Selector -->
+        <div class="branch-selector">
+          <span>🏢</span>
+          <select id="vms-company-select" onchange="VMS.onBranchChange(this.value)">
+            <option value="All Companies" selected>All Companies</option>
+            <option value="Ultra MRF Dau Main">Ultra MRF Dau Main</option>
+            <option value="Ultra MRF Dau Annex">Ultra MRF Dau Annex</option>
+            <option value="Ultra MRF San Fernando">Ultra MRF San Fernando</option>
+            <option value="Ultra MRF Telebastagan">Ultra MRF Telebastagan</option>
+            <option value="Ultra MRF Telebastagan 2">Ultra MRF Telebastagan 2</option>
+            <option value="Ultra MRF Mexico Warehouse">Ultra MRF Mexico Warehouse</option>
+            <option value="Ultra MRF Warehouse Dau">Ultra MRF Warehouse Dau</option>
+            <option value="Automan Car Care Center">Automan Car Care Center</option>
+            <option value="The Wheelhub">The Wheelhub</option>
+            <option value="Wheel Core">Wheel Core</option>
+            <option value="San Fernando Warehouse">San Fernando Warehouse</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <button class="theme-toggle-btn" id="vms-theme-toggle-btn" onclick="VMS.toggleTheme()" title="Toggle Dark / Light">
+          🌙
+        </button>
+        <button class="btn-action" onclick="VMS.fetchAnalytics()" title="Refresh live data">
+          <span>🔄 Refresh</span>
+        </button>
+        <a href="/pos-terminal" class="btn-action primary">
+          <span>🐴 Launch POS</span>
+        </a>
+        <a href="/desk" class="btn-action" title="Open Frappe Desk">
+          <span>📂 Desk</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- Content Body (100% Analytical, NO module cards) -->
+    <main class="content-container">
+      <!-- ── Metric Cards Ribbon ── -->
+      <section class="stats-row">
+        <div class="stat-widget">
+          <div class="stat-widget-top">
+            <span>Total Sales &amp; Revenue</span>
+            <div class="stat-widget-icon">💰</div>
+          </div>
+          <div class="stat-widget-number" id="stat-val-sales">₱ 1.85M</div>
+          <div class="stat-widget-bottom">
+            <span class="stat-pill-trend" id="stat-pill-invoices">165 Invoices</span>
+            <span>Recorded sales</span>
+          </div>
+        </div>
+
+        <div class="stat-widget">
+          <div class="stat-widget-top">
+            <span>Total Purchases</span>
+            <div class="stat-widget-icon">🛒</div>
+          </div>
+          <div class="stat-widget-number" id="stat-val-purchases">₱ 920.4k</div>
+          <div class="stat-widget-bottom">
+            <span class="stat-pill-trend">Procurement</span>
+            <span>Vendor invoices</span>
+          </div>
+        </div>
+
+        <div class="stat-widget">
+          <div class="stat-widget-top">
+            <span>Warehouse Stock Value</span>
+            <div class="stat-widget-icon">📦</div>
+          </div>
+          <div class="stat-widget-number" id="stat-val-stock">₱ 45.92M</div>
+          <div class="stat-widget-bottom">
+            <span class="stat-pill-trend">Inventory</span>
+            <span>In-stock parts &amp; tires</span>
+          </div>
+        </div>
+
+        <div class="stat-widget">
+          <div class="stat-widget-top">
+            <span>Active Job Orders</span>
+            <div class="stat-widget-icon">🔧</div>
+          </div>
+          <div class="stat-widget-number" id="stat-val-jobs">481</div>
+          <div class="stat-widget-bottom">
+            <span class="stat-pill-trend" id="stat-pill-vehicles">38.6k Fleet</span>
+            <span>Repairs in workshop</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Row 1: Sales & Revenue Analytics + Top Branches ── -->
+      <section class="analytics-grid-2">
+        <div class="analytics-card">
+          <div class="analytics-card-header">
+            <h3><span>📈</span> <span>Sales &amp; Revenue by Branch</span></h3>
+            <span class="analytics-tag">Live Invoicing</span>
+          </div>
+          <div class="metric-list" id="vms-branch-sales-list">
+            <!-- Populated via Server Script API -->
+            <div class="metric-item">
+              <div class="metric-item-top">
+                <span>Ultra MRF Dau Main</span>
+                <span class="font-mono">₱ 252,887.50</span>
+              </div>
+              <div class="metric-item-bar"><div class="metric-item-fill" style="width: 100%;"></div></div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-item-top">
+                <span>Wheel Core</span>
+                <span class="font-mono">₱ 216,800.00</span>
+              </div>
+              <div class="metric-item-bar"><div class="metric-item-fill" style="width: 85%;"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="analytics-card">
+          <div class="analytics-card-header">
+            <h3><span>🛒</span> <span>Top Suppliers &amp; Procurement</span></h3>
+            <span class="analytics-tag">Vendor Spend</span>
+          </div>
+          <div class="metric-list" id="vms-suppliers-list">
+            <!-- Populated via Server Script API -->
+            <div class="metric-item">
+              <div class="metric-item-top">
+                <span>Ultra MRF Dau Main</span>
+                <span class="font-mono">₱ 93,550.00</span>
+              </div>
+              <div class="metric-item-bar"><div class="metric-item-fill" style="width: 90%;"></div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Row 2: Inventory & Stock Valuation + Top Products ── -->
+      <section class="analytics-grid-2">
+        <div class="analytics-card">
+          <div class="analytics-card-header">
+            <h3><span>🏢</span> <span>Warehouse Stock Valuation</span></h3>
+            <span class="analytics-tag">Stock Levels</span>
+          </div>
+          <div class="metric-list" id="vms-warehouse-stock-list">
+            <!-- Populated via Server Script API -->
+            <div class="metric-item">
+              <div class="metric-item-top">
+                <span>Stores - UMDM (Dau Main)</span>
+                <span class="font-mono">₱ 15.24M</span>
+              </div>
+              <div class="metric-item-bar"><div class="metric-item-fill" style="width: 100%;"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="analytics-card">
+          <div class="analytics-card-header">
+            <h3><span>🔩</span> <span>Auto Parts &amp; Tires Catalog</span></h3>
+            <span class="analytics-tag">Active Inventory</span>
+          </div>
+          <div class="metric-list" id="vms-top-items-list">
+            <!-- Populated via Server Script API -->
+            <div class="metric-item">
+              <div class="metric-item-top">
+                <span>245/35 R20 MICHELIN PILOT SPORT 5</span>
+                <span class="font-mono">₱ 21,562.50</span>
+              </div>
+              <div class="metric-item-bar"><div class="metric-item-fill" style="width: 95%;"></div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Live Workshop Operations Feed ── -->
+      <section class="operations-section">
+        <div class="operations-header">
+          <h3>
+            <span>⚡</span>
+            <span>Live Workshop &amp; Fleet Operations</span>
+          </h3>
+          <div class="filter-tabs">
+            <button class="filter-tab active" onclick="VMS.filterJobs('all', this)">All Work Orders</button>
+            <button class="filter-tab" onclick="VMS.filterJobs('In Progress', this)">In Progress</button>
+            <button class="filter-tab" onclick="VMS.filterJobs('Completed', this)">Completed</button>
+            <button class="filter-tab" onclick="VMS.filterJobs('Pending Parts', this)">Pending Parts</button>
+          </div>
+        </div>
+
+        <div style="overflow-x: auto;">
+          <table class="ops-table">
+            <thead>
+              <tr>
+                <th>Job Order</th>
+                <th>Plate Number</th>
+                <th>Customer Name</th>
+                <th>Branch / Location</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="vms-ops-tbody">
+              <!-- Populated dynamically via Server Script API -->
+              <tr>
+                <td><strong>JO-2026-00481</strong></td>
+                <td><span class="plate-badge">CBD2686</span></td>
+                <td>CATHERINE TRAD</td>
+                <td>The Wheelhub</td>
+                <td><span class="status-pill">Completed</span></td>
+                <td><a href="/desk#Form/Vehicle%20Job%20Order/JO-2026-00481" class="action-btn-sm">Open Record</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<!-- ── Application Logic ── -->
+<script>
+window.VMS = {
+  theme: 'dark',
+  currentJobs: [],
+
+  init: function() {
+    this.initTheme();
+    this.initUserInfo();
+    this.fetchAnalytics();
+  },
+
+  initTheme: function() {
+    var saved = localStorage.getItem('vms_theme') || 'dark';
+    this.setTheme(saved);
+  },
+
+  setTheme: function(theme) {
+    this.theme = theme;
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('vms_theme', theme);
+    var btn = document.getElementById('vms-theme-toggle-btn');
+    if (btn) {
+      btn.innerHTML = theme === 'dark' ? '🌙' : '☀️';
+    }
+  },
+
+  toggleTheme: function() {
+    var next = this.theme === 'dark' ? 'light' : 'dark';
+    this.setTheme(next);
+  },
+
+  initUserInfo: function() {
+    var user = (window.frappe && frappe.session && frappe.session.user) ? frappe.session.user : 'Administrator';
+    var userFullName = (window.frappe && frappe.session && frappe.session.user_fullname) ? frappe.session.user_fullname : (user.split('@')[0]);
+
+    var uName = document.getElementById('vms-sidebar-username');
+    var uAvatar = document.getElementById('vms-avatar-letter');
+    var uGreeting = document.getElementById('vms-greeting');
+
+    if (uName) uName.textContent = userFullName;
+    if (uAvatar) uAvatar.textContent = userFullName.charAt(0).toUpperCase();
+    if (uGreeting) uGreeting.textContent = 'Welcome back, ' + userFullName;
+  },
+
+  onBranchChange: function(val) {
+    this.fetchAnalytics(val);
+  },
+
+  formatMoney: function(num) {
+    var n = Number(num) || 0;
+    if (n >= 1000000) {
+      return '₱ ' + (n / 1000000).toFixed(2) + 'M';
+    }
+    if (n >= 1000) {
+      return '₱ ' + (n / 1000).toFixed(1) + 'k';
+    }
+    return '₱ ' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  },
+
+  fetchAnalytics: function(company) {
+    var self = this;
+    var sel = document.getElementById('vms-company-select');
+    var co = company || (sel ? sel.value : 'All Companies');
+
+    var url = '/api/method/vm_get_analytics_dashboard';
+    if (co && co !== 'All Companies') {
+      url += '?company=' + encodeURIComponent(co);
+    }
+
+    fetch(url)
+      .then(function(res) { return res.json(); })
+      .then(function(res) {
+        if (res && res.message && res.message.kpis) {
+          self.renderData(res.message);
+        }
+      })
+      .catch(function(err) {
+        console.error('Failed to load analytics:', err);
+      });
+  },
+
+  renderData: function(data) {
+    var k = data.kpis || {};
+    
+    // 1. KPI Cards
+    var elSales = document.getElementById('stat-val-sales');
+    var elPurch = document.getElementById('stat-val-purchases');
+    var elStock = document.getElementById('stat-val-stock');
+    var elJobs = document.getElementById('stat-val-jobs');
+    var elInvs = document.getElementById('stat-pill-invoices');
+    var elVeh = document.getElementById('stat-pill-vehicles');
+
+    if (elSales) elSales.textContent = this.formatMoney(k.total_sales);
+    if (elPurch) elPurch.textContent = this.formatMoney(k.total_purchases);
+    if (elStock) elStock.textContent = this.formatMoney(k.total_stock_value);
+    if (elJobs) elJobs.textContent = (k.total_job_orders || 0).toLocaleString();
+    if (elInvs) elInvs.textContent = (k.total_invoices_count || 0) + ' Invoices';
+    if (elVeh) elVeh.textContent = ((k.total_vehicles || 0) >= 1000 ? ((k.total_vehicles/1000).toFixed(1) + 'k') : k.total_vehicles) + ' Fleet';
+
+    // 2. Branch Sales
+    var branchList = document.getElementById('vms-branch-sales-list');
+    if (branchList && data.company_sales && data.company_sales.length) {
+      var maxSales = Math.max.apply(Math, data.company_sales.map(function(c) { return c.total; })) || 1;
+      var html = '';
+      data.company_sales.forEach(function(item) {
+        var pct = Math.round((item.total / maxSales) * 100);
+        html += `
+          <div class="metric-item">
+            <div class="metric-item-top">
+              <span>${item.company}</span>
+              <span class="font-mono">₱ ${Number(item.total).toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
+            </div>
+            <div class="metric-item-bar"><div class="metric-item-fill" style="width: ${pct}%;"></div></div>
+          </div>
+        `;
+      });
+      branchList.innerHTML = html;
+    }
+
+    // 3. Top Suppliers
+    var suppList = document.getElementById('vms-suppliers-list');
+    if (suppList && data.top_suppliers && data.top_suppliers.length) {
+      var maxSupp = Math.max.apply(Math, data.top_suppliers.map(function(c) { return c.amount; })) || 1;
+      var html = '';
+      data.top_suppliers.forEach(function(item) {
+        var pct = Math.round((item.amount / maxSupp) * 100);
+        html += `
+          <div class="metric-item">
+            <div class="metric-item-top">
+              <span>${item.supplier}</span>
+              <span class="font-mono">₱ ${Number(item.amount).toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
+            </div>
+            <div class="metric-item-bar"><div class="metric-item-fill" style="width: ${pct}%;"></div></div>
+          </div>
+        `;
+      });
+      suppList.innerHTML = html;
+    }
+
+    // 4. Warehouse Stock
+    var whList = document.getElementById('vms-warehouse-stock-list');
+    if (whList && data.warehouse_stock && data.warehouse_stock.length) {
+      var maxWh = Math.max.apply(Math, data.warehouse_stock.map(function(c) { return c.value; })) || 1;
+      var html = '';
+      data.warehouse_stock.forEach(function(item) {
+        var pct = Math.round((item.value / maxWh) * 100);
+        html += `
+          <div class="metric-item">
+            <div class="metric-item-top">
+              <span>${item.warehouse}</span>
+              <span class="font-mono">₱ ${Number(item.value).toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
+            </div>
+            <div class="metric-item-bar"><div class="metric-item-fill" style="width: ${pct}%;"></div></div>
+          </div>
+        `;
+      });
+      whList.innerHTML = html;
+    }
+
+    // 5. Top Items
+    var itemsList = document.getElementById('vms-top-items-list');
+    if (itemsList && data.top_items && data.top_items.length) {
+      var html = '';
+      data.top_items.slice(0, 5).forEach(function(item) {
+        html += `
+          <div class="metric-item">
+            <div class="metric-item-top">
+              <span>${item.item_name || item.name}</span>
+              <span class="font-mono">${item.standard_rate ? ('₱ ' + Number(item.standard_rate).toLocaleString('en-US', {minimumFractionDigits: 2})) : (item.item_group || 'Active')}</span>
+            </div>
+            <div class="metric-item-bar"><div class="metric-item-fill" style="width: 88%;"></div></div>
+          </div>
+        `;
+      });
+      itemsList.innerHTML = html;
+    }
+
+    // 6. Recent Ops Table
+    if (data.recent_ops) {
+      this.currentJobs = data.recent_ops;
+      this.renderJobsTable(this.currentJobs);
+    }
+  },
+
+  renderJobsTable: function(jobs) {
+    var tbody = document.getElementById('vms-ops-tbody');
+    if (!tbody) return;
+
+    if (!jobs || !jobs.length) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:1rem;">No recent work orders found</td></tr>';
+      return;
+    }
+
+    var html = '';
+    jobs.forEach(function(j) {
+      var name = j.name || '-';
+      var plate = j.plate_no || j.vehicle || 'N/A';
+      var cust = j.customer_name || 'Client';
+      var co = j.company || 'Main';
+      var st = j.status || 'Open';
+
+      html += `
+        <tr data-status="${st}">
+          <td><strong>${name}</strong></td>
+          <td><span class="plate-badge">${plate}</span></td>
+          <td>${cust}</td>
+          <td>${co}</td>
+          <td><span class="status-pill">${st}</span></td>
+          <td><a href="/desk#Form/Vehicle%20Job%20Order/${encodeURIComponent(name)}" class="action-btn-sm">Open Record</a></td>
+        </tr>
+      `;
+    });
+    tbody.innerHTML = html;
+  },
+
+  filterJobs: function(status, btn) {
+    document.querySelectorAll('.filter-tab').forEach(function(t) { t.classList.remove('active'); });
+    btn.classList.add('active');
+
+    if (status === 'all') {
+      this.renderJobsTable(this.currentJobs);
+    } else {
+      var filtered = this.currentJobs.filter(function(j) { return j.status === status; });
+      this.renderJobsTable(filtered);
+    }
+  }
+};
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', function() { VMS.init(); });
+} else {
+  VMS.init();
+}
+</script>
+</body>
+</html>

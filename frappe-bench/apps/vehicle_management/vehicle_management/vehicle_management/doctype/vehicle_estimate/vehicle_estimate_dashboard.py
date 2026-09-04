@@ -7,7 +7,10 @@ def get_data():
 		"fieldname": "estimate",
 		"non_standard_fieldnames": {
 			"Vehicle Job Order": "estimate",
-			"Customer Vehicle": "plate_no",
+		},
+		"internal_links": {
+			"Vehicle Job Order": "job_order",
+			"Customer Vehicle": "vehicle",
 			"Customer": "customer",
 		},
 		"transactions": [

@@ -10,7 +10,10 @@ def get_data():
 			"Sales Invoice": "custom_vehicle_job_order",
 			"Sales Order": "custom_vehicle_job_order",
 			"Quotation": "custom_vehicle_job_order",
-			"Customer Vehicle": "plate_no",
+		},
+		"internal_links": {
+			"Vehicle Estimate": "estimate",
+			"Customer Vehicle": "vehicle",
 			"Customer": "customer",
 		},
 		"transactions": [

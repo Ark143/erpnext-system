@@ -25,8 +25,8 @@ add_to_apps_screen = [
 # ------------------
 
 # include js, css files in header of desk.html
-# app_include_css = "/assets/vehicle_management/css/vehicle_management.css"
-# app_include_js = "/assets/vehicle_management/js/vehicle_management.js"
+app_include_css = "/assets/vehicle_management/css/vehicle_management_desk.css"
+app_include_js = "/assets/vehicle_management/js/vehicle_management_desk.js"
 
 # include js, css files in header of web template
 # web_include_css = "/assets/vehicle_management/css/vehicle_management.css"

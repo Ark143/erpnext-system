@@ -11,6 +11,9 @@ def get_data():
 			"Quotation": "custom_vehicle_plate",
 			"Delivery Note": "custom_vehicle_plate",
 		},
+		"internal_links": {
+			"Customer": "customer",
+		},
 		"transactions": [
 			{
 				"label": "Vehicle Operations",
@@ -19,6 +22,10 @@ def get_data():
 			{
 				"label": "Billing & Sales",
 				"items": ["Sales Invoice", "Sales Order", "Quotation", "Delivery Note"],
+			},
+			{
+				"label": "References",
+				"items": ["Customer"],
 			},
 		],
 	}

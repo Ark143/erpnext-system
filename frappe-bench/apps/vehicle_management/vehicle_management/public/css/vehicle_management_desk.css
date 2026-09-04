@@ -1,0 +1,53 @@
+/* ── VM Header Pill Next to Profile in ERPNext Desk ── */
+.vm-header-pill {
+  background: #16c784 !important;
+  color: #04201a !important;
+  font-weight: 800 !important;
+  border-radius: 9px !important;
+  padding: 4px 10px !important;
+  height: 30px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  box-shadow: 0 2px 5px rgba(22, 199, 132, 0.35) !important;
+  border: 1px solid rgba(4, 32, 26, 0.1) !important;
+  transition: all 0.15s ease !important;
+  cursor: pointer !important;
+  margin-right: 4px !important;
+}
+
+.vm-header-pill:hover, .vm-header-pill:focus {
+  background: #0fa76d !important;
+  color: #ffffff !important;
+  text-decoration: none !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 8px rgba(16, 185, 129, 0.4) !important;
+}
+
+.vm-dropdown-menu {
+  border-radius: 14px !important;
+  border: 1px solid #e2e8f0 !important;
+  padding: 8px !important;
+  min-width: 270px !important;
+  animation: vmFadeIn 0.18s ease-out !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.12), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+  margin-top: 6px !important;
+}
+
+.vm-dropdown-menu .dropdown-item {
+  border-radius: 8px !important;
+  padding: 8px 12px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  transition: all 0.12s ease !important;
+}
+
+.vm-dropdown-menu .dropdown-item:hover {
+  background: #f0fdf4 !important;
+  color: #0fa76d !important;
+  transform: translateX(3px) !important;
+}
+
+@keyframes vmFadeIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}

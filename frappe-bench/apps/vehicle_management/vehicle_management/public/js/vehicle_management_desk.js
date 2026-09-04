@@ -1,7 +1,7 @@
 (function() {
   const VM_SIDEBAR_ITEMS = [
     { label: "Vehicle Management", link_to: "Vehicle Management", link_type: "Workspace", type: "Link", icon: "home", child: 0, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0 },
-    { label: "SAP Relationship Map", link_to: "vehicle_relationship_map", link_type: "Page", type: "Link", icon: "sitemap", child: 0, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0 },
+    { label: "VMS Relationship Map", link_to: "vehicle_relationship_map", link_type: "Page", type: "Link", icon: "sitemap", child: 0, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0 },
     { label: "Vehicle POS Terminal", link_to: "vehicle_pos", link_type: "Page", type: "Link", icon: "panel-top", child: 0, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0 },
     { label: "Vehicle Analytics", link_to: "vehicle_analytics", link_type: "Page", type: "Link", icon: "bar-chart", child: 0, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0 },
     { label: "Operations & Workshop", type: "Section Break", link_type: "DocType", child: 0, collapsible: 1, indent: 0, keep_closed: 0, show_arrow: 0 },
@@ -77,7 +77,7 @@
 
     // Check if button already added
     if (frm.page && !frm.page.has_sap_map_btn) {
-      frm.page.add_inner_button(__('🗺️ SAP Relationship Map'), function() {
+      frm.page.add_inner_button(__('🗺️ VMS Relationship Map'), function() {
         if (window.SAPRelationshipMap && window.SAPRelationshipMap.open) {
           window.SAPRelationshipMap.open({
             doctype: frm.doctype,

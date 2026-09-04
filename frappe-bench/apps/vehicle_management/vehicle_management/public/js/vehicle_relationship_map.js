@@ -1,5 +1,5 @@
 /**
- * SAP Business One Style Relationship Map Engine for Vehicle Management
+ * VMS Relationship Map Engine for Vehicle Management
  * (c) Autometrik / ULTRA MRF
  *
  * Provides full visual document flow, items/services breakdown, accounting posting graph,
@@ -68,11 +68,11 @@
     renderSkeleton() {
       const html = `
         <div class="sap-map-container ${this.isModal ? 'sap-map-modal-mode' : ''}">
-          <!-- Top SAP B1 Toolbar -->
+          <!-- Top VMS Toolbar -->
           <div class="sap-map-header">
             <div class="sap-map-title-bar">
               <div class="sap-b1-badge">
-                <span class="sap-b1-logo">SAP B1</span>
+                <span class="sap-b1-logo">VMS</span>
                 <span class="sap-b1-sub">RELATIONSHIP MAP</span>
               </div>
               <div class="sap-map-doc-title" id="sapMapDocTitle">
@@ -793,7 +793,7 @@
   window.SAPRelationshipMap.open = function (opts) {
     opts = opts || {};
     const d = new frappe.ui.Dialog({
-      title: `<span class="sap-b1-title-logo"><i class="fa fa-sitemap mr-1 text-primary"></i> SAP Business One Relationship Map</span>`,
+      title: `<span class="sap-b1-title-logo"><i class="fa fa-sitemap mr-1 text-primary"></i> VMS Relationship Map</span>`,
       size: "extra-large",
       fields: [
         {

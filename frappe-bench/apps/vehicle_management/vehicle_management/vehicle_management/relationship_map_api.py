@@ -4,7 +4,7 @@ from frappe import _
 @frappe.whitelist()
 def get_relationship_map(doctype=None, docname=None, vehicle=None, customer=None):
     """
-    SAP Business One style Relationship Map backend engine.
+    VMS Relationship Map backend engine.
     Given a starting document (or vehicle/customer), traces upstream and downstream
     transactions across Vehicle Management and ERPNext accounting/inventory modules.
     """

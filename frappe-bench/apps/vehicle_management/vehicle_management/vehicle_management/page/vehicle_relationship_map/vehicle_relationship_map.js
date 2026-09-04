@@ -1,7 +1,7 @@
 frappe.pages['vehicle_relationship_map'].on_page_load = function(wrapper) {
   var page = frappe.ui.make_app_page({
     parent: wrapper,
-    title: 'SAP Business One Relationship Map',
+    title: 'VMS Relationship Map',
     single_column: true
   });
 

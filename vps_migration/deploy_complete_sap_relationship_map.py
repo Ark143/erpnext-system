@@ -15,7 +15,7 @@ page_payload = {
     "doctype": "Page",
     "name": "vehicle_relationship_map",
     "page_name": "vehicle_relationship_map",
-    "title": "SAP Relationship Map",
+    "title": "VMS Relationship Map",
     "module": "Vehicle Management",
     "standard": "Yes",
     "system_page": 0,
@@ -25,17 +25,16 @@ page_payload = {
 try:
     check_page = urllib.request.Request(f'{URL}/api/resource/Page/vehicle_relationship_map', headers=H)
     op.open(check_page, timeout=10)
-    # Exists, update
     up_req = urllib.request.Request(f'{URL}/api/resource/Page/vehicle_relationship_map', data=json.dumps(page_payload).encode(), headers={'Content-Type': 'application/json', 'Accept': 'application/json'}, method='PUT')
     op.open(up_req, timeout=15)
     print("[OK] Page 'vehicle_relationship_map' updated in database.")
-except urllib.error.HTTPError as e:
-    if e.code == 404:
+except Exception as e:
+    try:
         create_req = urllib.request.Request(f'{URL}/api/resource/Page', data=json.dumps(page_payload).encode(), headers={'Content-Type': 'application/json', 'Accept': 'application/json'}, method='POST')
         op.open(create_req, timeout=15)
         print("[OK] Page 'vehicle_relationship_map' created in database.")
-    else:
-        print("Page error:", e)
+    except Exception as e2:
+        print("[INFO] Page note:", e2)
 
 # -------------------------------------------------------------
 # 2. Deploy Server Script: VM SAP Relationship Map API
@@ -396,7 +395,7 @@ client_script_bundle = """
     if (!TARGET_DOCTYPES.includes(frm.doctype)) return;
     
     if (frm.page && !frm.page.has_sap_map_btn) {
-      frm.page.add_inner_button(__('🗺️ SAP Relationship Map'), function() {
+      frm.page.add_inner_button(__('🗺️ VMS Relationship Map'), function() {
         if (window.SAPRelationshipMap && window.SAPRelationshipMap.open) {
           window.SAPRelationshipMap.open({
             doctype: frm.doctype,
@@ -447,11 +446,11 @@ for dt in ["Vehicle Job Order", "Vehicle Estimate", "Vehicle Inspection", "Custo
             print(f"Client script error for {dt}:", e)
 
 # -------------------------------------------------------------
-# 4. Update Workspace Sidebar: Add SAP Relationship Map
+# 4. Update Workspace Sidebar: Add VMS Relationship Map
 # -------------------------------------------------------------
 sidebar_items = [
     {"label": "Vehicle Management", "link_type": "Workspace", "type": "Link", "link_to": "Vehicle Management", "icon": "home"},
-    {"label": "SAP Relationship Map", "link_type": "Page", "type": "Link", "link_to": "vehicle_relationship_map", "icon": "sitemap"},
+    {"label": "VMS Relationship Map", "link_type": "Page", "type": "Link", "link_to": "vehicle_relationship_map", "icon": "sitemap"},
     {"label": "Vehicle POS Terminal", "link_type": "Page", "type": "Link", "link_to": "vehicle_pos", "icon": "panel-top"},
     {"label": "Vehicle Analytics", "link_type": "Page", "type": "Link", "link_to": "vehicle_analytics", "icon": "bar-chart"},
 

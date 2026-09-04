@@ -117,6 +117,7 @@ try:
                     "doc_type": dt,
                     "doc_name": name,
                     "type": "Labor / Service",
+                    "category": "service",
                     "item_code": s.get("service_name") or s.get("description") or "Service",
                     "description": s.get("description") or s.get("service_name") or "",
                     "qty": float(s.get("hours") or 1),
@@ -133,6 +134,7 @@ try:
                     "doc_type": dt,
                     "doc_name": name,
                     "type": "Spare Part / Material",
+                    "category": "part",
                     "item_code": p.get("part_no") or p.get("item_code") or p.get("item_name") or "Part",
                     "description": p.get("item_name") or p.get("description") or "",
                     "qty": float(p.get("qty") or 1),
@@ -147,11 +149,17 @@ try:
             for it in doc.get("items"):
                 grp = str(it.get("item_group") or "").lower()
                 nm = str(it.get("item_name") or "").lower()
-                cat = "Billed Service / Labor" if ("service" in grp or "labor" in grp or "service" in nm or "labor" in nm) else "Billed Spare Part / Product"
+                if "service" in grp or "labor" in grp or "service" in nm or "labor" in nm:
+                    cat_name = "Billed Service / Labor"
+                    cat_key = "service"
+                else:
+                    cat_name = "Billed Spare Part / Product"
+                    cat_key = "part"
                 it_obj = {
                     "doc_type": dt,
                     "doc_name": name,
-                    "type": cat,
+                    "type": cat_name,
+                    "category": cat_key,
                     "item_code": it.get("item_code") or it.get("item_name") or "Item",
                     "description": it.get("description") or it.get("item_name") or "",
                     "qty": float(it.get("qty") or 1),
@@ -168,6 +176,7 @@ try:
                     "doc_type": dt,
                     "doc_name": name,
                     "type": "Payment Allocation",
+                    "category": "payment",
                     "item_code": ref.get("reference_name") or "",
                     "description": "Allocated Payment for " + str(ref.get("reference_doctype") or "") + " " + str(ref.get("reference_name") or ""),
                     "qty": 1.0,
@@ -179,7 +188,7 @@ try:
                 items_list.append(it_obj)
                 all_items.append(it_obj)
 
-        node_obj = {
+        node = {
             "id": key,
             "doctype": dt,
             "name": name,
@@ -190,7 +199,7 @@ try:
             "grand_total": gt,
             "paid_amount": paid,
             "outstanding_amount": outst,
-            "currency": doc.get("currency") or "PHP",
+            "currency": str(doc.get("currency") or "PHP"),
             "posting_date": p_date,
             "posting_time": p_time,
             "vehicle": v_plate,
@@ -200,46 +209,36 @@ try:
             "level": lvl,
             "items_count": len(items_list),
             "items": items_list[:25],
-            "remarks": doc.get("remarks") or doc.get("customer_complaint") or doc.get("general_remarks") or ""
+            "remarks": str(doc.get("remarks") or doc.get("customer_complaint") or doc.get("general_remarks") or "")
         }
-        nodes_dict[key] = node_obj
-        return node_obj
+        nodes_dict[key] = node
+        return node
 
-    def link_nodes(from_dt, from_name, to_dt, to_name, lbl, e_type):
+    def link_nodes(from_dt, from_name, to_dt, to_name, label, edge_type="flow"):
         if not from_name or not to_name:
             return
-        f_id = str(from_dt) + "::" + str(from_name)
-        t_id = str(to_dt) + "::" + str(to_name)
+        from_id = str(from_dt) + "::" + str(from_name)
+        to_id = str(to_dt) + "::" + str(to_name)
         for e in edges:
-            if e.get("from") == f_id and e.get("to") == t_id and e.get("label") == lbl:
+            if e.get("from") == from_id and e.get("to") == to_id and e.get("label") == label:
                 return
-        edges.append({"from": f_id, "to": t_id, "label": lbl, "type": e_type})
+        edges.append({
+            "from": from_id,
+            "to": to_id,
+            "label": label,
+            "type": edge_type
+        })
 
-    focal = None
-    plate = ""
-    cust = ""
-    if doctype and docname and frappe.db.exists(doctype, docname):
-        focal = get_node(doctype, docname, True, 2)
+    focal = get_node(doctype, docname, True, 2)
     
     if focal:
-        plate = focal.get("vehicle") or ""
-        cust = focal.get("customer") or ""
-
-        if doctype == "Customer Vehicle":
-            plate = docname
-            v_doc = frappe.get_doc("Customer Vehicle", docname)
-            if v_doc.get("customer") and frappe.db.exists("Customer", v_doc.get("customer")):
-                get_node("Customer", v_doc.get("customer"), False, 0)
-                link_nodes("Customer", v_doc.get("customer"), "Customer Vehicle", docname, "Owns Vehicle", "reference")
+        plate = focal.get("vehicle")
+        cust = focal.get("customer")
 
         if plate and frappe.db.exists("Customer Vehicle", plate):
             get_node("Customer Vehicle", plate, False, 0)
             if doctype not in ("Customer Vehicle", "Customer"):
                 link_nodes("Customer Vehicle", plate, doctype, docname, "Vehicle", "reference")
-            v_doc = frappe.get_doc("Customer Vehicle", plate)
-            if v_doc.get("customer") and frappe.db.exists("Customer", v_doc.get("customer")):
-                get_node("Customer", v_doc.get("customer"), False, 0)
-                link_nodes("Customer", v_doc.get("customer"), "Customer Vehicle", plate, "Owns Vehicle", "reference")
 
         if cust and frappe.db.exists("Customer", cust):
             get_node("Customer", cust, False, 0)
@@ -347,7 +346,6 @@ try:
                 get_node("Vehicle POS Invoice", vp.get("name"), False, 3)
                 link_nodes("Customer Vehicle", docname, "Vehicle POS Invoice", vp.get("name"), "POS Receipt", "flow")
 
-    # Deduplicate transaction value and calculate true net outstanding
     invoices = [n for n in nodes_dict.values() if n.get("doctype") in ("Sales Invoice", "POS Invoice", "Vehicle POS Invoice")]
     invoiced_jo_names = []
     for inv in invoices:
@@ -373,9 +371,23 @@ try:
         tot_paid = sum([float(n.get("paid_amount") or 0) for n in nodes_dict.values() if n.get("doctype") in ("Vehicle Job Order", "Sales Invoice", "Payment Entry", "Vehicle POS Invoice")])
         tot_outst = max(0.0, tot_val - tot_paid)
 
-    # -------------------------------------------------------------
-    # Full Accounting & General Ledger Double-Entry Extraction
-    # -------------------------------------------------------------
+    unique_parts_map = {}
+    unique_services_map = {}
+    for it in all_items:
+        code = str(it.get("item_code") or it.get("description") or "")
+        amt = float(it.get("amount") or 0)
+        qty = float(it.get("qty") or 1)
+        cat = str(it.get("category") or "")
+        if cat == "part":
+            if code not in unique_parts_map or it.get("doc_type") in ("Sales Invoice", "POS Invoice"):
+                unique_parts_map[code] = {"amount": amt, "qty": qty, "item": it}
+        elif cat == "service":
+            if code not in unique_services_map or it.get("doc_type") in ("Sales Invoice", "POS Invoice"):
+                unique_services_map[code] = {"amount": amt, "qty": qty, "item": it}
+
+    dedup_parts_total = sum([float(p.get("amount") or 0) for p in unique_parts_map.values()])
+    dedup_services_total = sum([float(s.get("amount") or 0) for s in unique_services_map.values()])
+
     accounting_vouchers = [n.get("name") for n in nodes_dict.values() if n.get("doctype") in ("Sales Invoice", "Payment Entry", "POS Invoice", "Vehicle POS Invoice", "Journal Entry")]
     gl_entries_list = []
     
@@ -427,10 +439,30 @@ try:
             vouchers_gl_map[v_key] = []
         vouchers_gl_map[v_key].append(g)
 
+    total_invoice_revenue = sum([
+        float(g.get("credit") or 0)
+        for g in gl_entries_list
+        if g.get("voucher_type") in ("Sales Invoice", "POS Invoice", "Vehicle POS Invoice")
+        and ("sales" in str(g.get("account") or "").lower() or "income" in str(g.get("account") or "").lower() or "revenue" in str(g.get("account") or "").lower())
+    ])
+    if total_invoice_revenue == 0:
+        total_invoice_revenue = sum([float(n.get("grand_total") or 0) for n in nodes_dict.values() if n.get("doctype") in ("Sales Invoice", "POS Invoice", "Vehicle POS Invoice")])
+
+    total_payments_collected = sum([
+        float(g.get("debit") or 0)
+        for g in gl_entries_list
+        if g.get("voucher_type") in ("Payment Entry", "Journal Entry")
+        and ("cash" in str(g.get("account") or "").lower() or "bank" in str(g.get("account") or "").lower() or "undeposited" in str(g.get("account") or "").lower())
+    ])
+    if total_payments_collected == 0:
+        total_payments_collected = sum([float(n.get("grand_total") or 0) for n in nodes_dict.values() if n.get("doctype") == "Payment Entry"])
+
     accounting_summary = {
         "gl_entries": gl_entries_list,
         "payment_ledger": ple_list,
         "vouchers_gl_map": vouchers_gl_map,
+        "total_revenue": total_invoice_revenue,
+        "total_collected": total_payments_collected,
         "total_debit": total_debit,
         "total_credit": total_credit,
         "is_balanced": bool(round(total_debit, 2) == round(total_credit, 2)),
@@ -447,6 +479,10 @@ try:
         "total_transaction_value": tot_val,
         "total_paid_value": tot_paid,
         "total_outstanding_value": tot_outst,
+        "dedup_parts_total": dedup_parts_total,
+        "dedup_services_total": dedup_services_total,
+        "unique_parts_count": len(unique_parts_map),
+        "unique_services_count": len(unique_services_map),
         "status_flow_complete": bool(tot_outst == 0 and tot_val > 0)
     }
 

@@ -110,6 +110,7 @@ def get_relationship_map(doctype=None, docname=None, vehicle=None, customer=None
                     "doc_type": dt,
                     "doc_name": name,
                     "type": "Labor / Service",
+                    "category": "service",
                     "item_code": getattr(s, "service_name", "") or getattr(s, "description", "Service"),
                     "description": getattr(s, "description", "") or getattr(s, "service_name", ""),
                     "qty": float(getattr(s, "hours", 1) or 1),
@@ -127,6 +128,7 @@ def get_relationship_map(doctype=None, docname=None, vehicle=None, customer=None
                     "doc_type": dt,
                     "doc_name": name,
                     "type": "Spare Part / Material",
+                    "category": "part",
                     "item_code": getattr(p, "part_no", "") or getattr(p, "item_code", "") or getattr(p, "item_name", "Part"),
                     "description": getattr(p, "item_name", "") or getattr(p, "description", ""),
                     "qty": float(getattr(p, "qty", 1) or 1),
@@ -143,14 +145,17 @@ def get_relationship_map(doctype=None, docname=None, vehicle=None, customer=None
                 grp = (getattr(it, "item_group", "") or "").lower()
                 nm = (getattr(it, "item_name", "") or "").lower()
                 if "service" in grp or "labor" in grp or "service" in nm or "labor" in nm:
-                    cat = "Billed Service / Labor"
+                    cat_name = "Billed Service / Labor"
+                    cat_key = "service"
                 else:
-                    cat = "Billed Spare Part / Product"
+                    cat_name = "Billed Spare Part / Product"
+                    cat_key = "part"
 
                 it_obj = {
                     "doc_type": dt,
                     "doc_name": name,
-                    "type": cat,
+                    "type": cat_name,
+                    "category": cat_key,
                     "item_code": getattr(it, "item_code", "") or getattr(it, "item_name", "Item"),
                     "description": getattr(it, "description", "") or getattr(it, "item_name", ""),
                     "qty": float(getattr(it, "qty", 1) or 1),
@@ -168,6 +173,7 @@ def get_relationship_map(doctype=None, docname=None, vehicle=None, customer=None
                     "doc_type": dt,
                     "doc_name": name,
                     "type": "Payment Allocation",
+                    "category": "payment",
                     "item_code": getattr(ref, "reference_name", ""),
                     "description": f"Allocated Payment for {getattr(ref, 'reference_doctype', '')} {getattr(ref, 'reference_name', '')}",
                     "qty": 1.0,
@@ -250,14 +256,12 @@ def get_relationship_map(doctype=None, docname=None, vehicle=None, customer=None
 
     if customer_name and frappe.db.exists("Customer", customer_name):
         add_node("Customer", customer_name, level=0)
-        if doctype not in ("Customer Vehicle", "Customer"):
+        if doctype != "Customer":
             add_edge("Customer", customer_name, doctype, docname, "Customer", "reference")
 
     # Document specifics
     if doctype == "Vehicle Job Order":
         jo = frappe.get_doc("Vehicle Job Order", docname)
-        
-        # Upstream: Vehicle Estimate
         if jo.estimate and frappe.db.exists("Vehicle Estimate", jo.estimate):
             add_node("Vehicle Estimate", jo.estimate, level=1)
             add_edge("Vehicle Estimate", jo.estimate, "Vehicle Job Order", docname, "Converted to JO", "flow")
@@ -394,6 +398,27 @@ def get_relationship_map(doctype=None, docname=None, vehicle=None, customer=None
         total_outstanding = max(0.0, total_val - total_paid)
 
     # -------------------------------------------------------------
+    # Deduplicated Item Matrix & Metrics
+    # -------------------------------------------------------------
+    unique_parts_map = {}
+    unique_services_map = {}
+    for it in all_items:
+        code = it.get("item_code") or it.get("description")
+        amt = float(it.get("amount") or 0)
+        qty = float(it.get("qty") or 1)
+        cat = it.get("category", "")
+        # Deduplicate across Job Order vs Sales Invoice stages
+        if cat == "part":
+            if code not in unique_parts_map or it.get("doc_type") in ("Sales Invoice", "POS Invoice"):
+                unique_parts_map[code] = {"amount": amt, "qty": qty, "item": it}
+        elif cat == "service":
+            if code not in unique_services_map or it.get("doc_type") in ("Sales Invoice", "POS Invoice"):
+                unique_services_map[code] = {"amount": amt, "qty": qty, "item": it}
+
+    dedup_parts_total = sum([p["amount"] for p in unique_parts_map.values()])
+    dedup_services_total = sum([s["amount"] for s in unique_services_map.values()])
+
+    # -------------------------------------------------------------
     # Full Accounting & General Ledger Double-Entry Extraction
     # -------------------------------------------------------------
     accounting_vouchers = [n["name"] for n in nodes_dict.values() if n.get("doctype") in ("Sales Invoice", "Payment Entry", "POS Invoice", "Vehicle POS Invoice", "Journal Entry")]
@@ -449,10 +474,31 @@ def get_relationship_map(doctype=None, docname=None, vehicle=None, customer=None
             vouchers_gl_map[v_key] = []
         vouchers_gl_map[v_key].append(g)
 
+    # Net Revenue and Collections for clean accounting KPIs
+    total_invoice_revenue = sum([
+        float(g["credit"] or 0) 
+        for g in gl_entries_list 
+        if g.get("voucher_type") in ("Sales Invoice", "POS Invoice", "Vehicle POS Invoice") 
+        and ("sales" in (g.get("account") or "").lower() or "income" in (g.get("account") or "").lower() or "revenue" in (g.get("account") or "").lower())
+    ])
+    if total_invoice_revenue == 0:
+        total_invoice_revenue = sum([n.get("grand_total", 0) for n in nodes_dict.values() if n.get("doctype") in ("Sales Invoice", "POS Invoice", "Vehicle POS Invoice")])
+
+    total_payments_collected = sum([
+        float(g["debit"] or 0)
+        for g in gl_entries_list
+        if g.get("voucher_type") in ("Payment Entry", "Journal Entry")
+        and ("cash" in (g.get("account") or "").lower() or "bank" in (g.get("account") or "").lower() or "undeposited" in (g.get("account") or "").lower())
+    ])
+    if total_payments_collected == 0:
+        total_payments_collected = sum([n.get("grand_total", 0) for n in nodes_dict.values() if n.get("doctype") == "Payment Entry"])
+
     accounting_summary = {
         "gl_entries": gl_entries_list,
         "payment_ledger": ple_list,
         "vouchers_gl_map": vouchers_gl_map,
+        "total_revenue": total_invoice_revenue,
+        "total_collected": total_payments_collected,
         "total_debit": total_debit,
         "total_credit": total_credit,
         "is_balanced": round(total_debit, 2) == round(total_credit, 2),
@@ -469,6 +515,10 @@ def get_relationship_map(doctype=None, docname=None, vehicle=None, customer=None
         "total_transaction_value": total_val,
         "total_paid_value": total_paid,
         "total_outstanding_value": total_outstanding,
+        "dedup_parts_total": dedup_parts_total,
+        "dedup_services_total": dedup_services_total,
+        "unique_parts_count": len(unique_parts_map),
+        "unique_services_count": len(unique_services_map),
         "status_flow_complete": total_outstanding == 0 and total_val > 0
     }
 

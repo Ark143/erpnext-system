@@ -68,15 +68,30 @@
   overflow: hidden !important;
 }
 
+.modal-dialog .form-layout,
+.modal-dialog .form-page,
+.modal-dialog .form-section,
+.modal-dialog .form-column,
+.modal-dialog [data-fieldname="sap_map_area"] {
+  height: 100% !important;
+  min-height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
 .sap-map-container {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 100% !important;
+  min-height: 75vh !important;
   width: 100%;
   background: #f8fafc;
   position: relative;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  user-select: none;
+  flex: 1;
 }
 
 /* Header & Toolbars */

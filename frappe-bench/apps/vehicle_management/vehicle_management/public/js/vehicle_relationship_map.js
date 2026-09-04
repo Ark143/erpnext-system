@@ -85,7 +85,7 @@
             <div class="sap-map-controls">
               <!-- Mode Selector -->
               <div class="btn-group sap-mode-toggle" role="group">
-                <button type="button" class="btn btn-default btn-xs active" data-mode="flow">
+                <button type="button" class="btn btn-primary btn-xs active" data-mode="flow">
                   <i class="fa fa-sitemap mr-1"></i> <span>Document Flow</span>
                 </button>
                 <button type="button" class="btn btn-default btn-xs" data-mode="items">
@@ -145,28 +145,37 @@
 
           <!-- Main Interactive Viewport & Drawer -->
           <div class="sap-map-workspace">
-            <div class="sap-map-viewport" id="sapViewport">
-              <div class="sap-map-canvas" id="sapCanvas">
-                <!-- SVG Layer for Bezier Connectors -->
-                <svg class="sap-map-svg-layer" id="sapSvgLayer" width="3000" height="2000">
-                  <defs>
-                    <marker id="sapArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-                      <path d="M 0 1 L 10 5 L 0 9 z" fill="#0284c7" />
-                    </marker>
-                    <marker id="sapArrowGreen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-                      <path d="M 0 1 L 10 5 L 0 9 z" fill="#16a34a" />
-                    </marker>
-                    <marker id="sapArrowGold" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-                      <path d="M 0 1 L 10 5 L 0 9 z" fill="#d97706" />
-                    </marker>
-                  </defs>
-                  <g id="sapSvgEdges"></g>
-                </svg>
+            <!-- 1. Document Flow Interactive Canvas View -->
+            <div class="sap-view-pane" id="sapFlowView" style="display: flex; flex: 1; position: relative; overflow: hidden; width: 100%; height: 100%;">
+              <div class="sap-map-viewport" id="sapViewport">
+                <div class="sap-map-canvas" id="sapCanvas">
+                  <!-- SVG Layer for Bezier Connectors -->
+                  <svg class="sap-map-svg-layer" id="sapSvgLayer" width="3000" height="2000">
+                    <defs>
+                      <marker id="sapArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                        <path d="M 0 1 L 10 5 L 0 9 z" fill="#0284c7" />
+                      </marker>
+                      <marker id="sapArrowGreen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                        <path d="M 0 1 L 10 5 L 0 9 z" fill="#16a34a" />
+                      </marker>
+                      <marker id="sapArrowGold" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                        <path d="M 0 1 L 10 5 L 0 9 z" fill="#d97706" />
+                      </marker>
+                    </defs>
+                    <g id="sapSvgEdges"></g>
+                  </svg>
 
-                <!-- HTML Nodes Layer -->
-                <div class="sap-map-nodes-layer" id="sapNodesLayer"></div>
+                  <!-- HTML Nodes Layer -->
+                  <div class="sap-map-nodes-layer" id="sapNodesLayer"></div>
+                </div>
               </div>
             </div>
+
+            <!-- 2. Related Items Scrollable Table View -->
+            <div class="sap-view-pane" id="sapItemsView" style="display: none; flex: 1; overflow-y: auto; width: 100%; height: 100%; padding: 20px; background: #f8fafc;"></div>
+
+            <!-- 3. Accounting Flow Scrollable Ledger View -->
+            <div class="sap-view-pane" id="sapAccountingView" style="display: none; flex: 1; overflow-y: auto; width: 100%; height: 100%; padding: 20px; background: #f8fafc;"></div>
 
             <!-- Right Inspector Drawer -->
             <div class="sap-map-drawer" id="sapDrawer">
@@ -236,7 +245,7 @@
       const viewport = $c.find('#sapViewport')[0];
       if (viewport) {
         $(viewport).on('mousedown', (e) => {
-          if ($(e.target).closest('.sap-node-card, .sap-map-drawer, button, input, .sap-items-container, .sap-accounting-container').length) return;
+          if ($(e.target).closest('.sap-node-card, .sap-map-drawer, button, input').length) return;
           this.isDragging = true;
           this.startX = e.clientX - this.panX;
           this.startY = e.clientY - this.panY;
@@ -313,7 +322,7 @@
     fetchData() {
       const $c = $(this.container || document);
       $c.find('#sapNodesLayer').html(`
-        <div class="sap-loading-spinner text-center p-5">
+        <div class="sap-loading-spinner text-center p-5" style="width: 100%; min-width: 600px;">
           <i class="fa fa-spinner fa-spin fa-2x text-primary"></i>
           <p class="mt-2 text-muted">Building relationship graph for ${this.doctype}: ${this.docname || this.vehicle}...</p>
         </div>
@@ -379,28 +388,40 @@
     renderGraph() {
       if (!this.data) return;
       const $c = $(this.container || document);
+
+      if (this.currentMode === "items") {
+        $c.find('#sapFlowView').hide();
+        $c.find('#sapAccountingView').hide();
+        $c.find('#sapItemsView').show();
+        this.renderItemsMatrix();
+        return;
+      }
+
+      if (this.currentMode === "accounting") {
+        $c.find('#sapFlowView').hide();
+        $c.find('#sapItemsView').hide();
+        $c.find('#sapAccountingView').show();
+        this.renderAccountingFlow();
+        return;
+      }
+
+      // Default: Document Flow Canvas View
+      $c.find('#sapItemsView').hide();
+      $c.find('#sapAccountingView').hide();
+      $c.find('#sapFlowView').show();
+
       const $nodesLayer = $c.find('#sapNodesLayer');
       const $svgEdges = $c.find('#sapSvgEdges');
 
       $nodesLayer.empty();
       $svgEdges.empty();
 
-      if (this.currentMode === "items") {
-        this.renderItemsMatrix();
-        return;
-      }
-
-      if (this.currentMode === "accounting") {
-        this.renderAccountingFlow();
-        return;
-      }
-
       // ── Standard Document Flow Layout ──
       const nodes = this.data.nodes || [];
       const edges = this.data.edges || [];
 
       // Group nodes by 5 Sequential Columns:
-      // Column 0: Master Records (Customer, Customer Vehicle)
+      // Column 0: Master Profiles (Customer, Customer Vehicle)
       // Column 1: Estimates & Diagnostics (Vehicle Estimate, Vehicle Inspection)
       // Column 2: Workshop Execution (Vehicle Job Order, Stock Entry)
       // Column 3: Billing & Invoicing (Sales Invoice, Vehicle POS Invoice, POS Invoice)
@@ -601,36 +622,27 @@
 
     renderItemsMatrix() {
       const $c = $(this.container || document);
-      const $nodesLayer = $c.find('#sapNodesLayer');
+      const $itemsView = $c.find('#sapItemsView');
       const items = this.data.items || [];
+      const sum = this.data.summary || {};
 
-      // Calculate totals
-      let totalLaborCount = 0, totalLaborVal = 0;
-      let totalPartsCount = 0, totalPartsVal = 0;
-      let totalBilledVal = 0;
-
-      items.forEach(it => {
-        const cat = (it.type || '').toLowerCase();
-        if (cat.includes('labor') || cat.includes('service')) {
-          totalLaborCount += 1;
-          totalLaborVal += (it.amount || 0);
-        } else if (cat.includes('part') || cat.includes('material')) {
-          totalPartsCount += 1;
-          totalPartsVal += (it.amount || 0);
-        }
-        if (cat.includes('billed') || it.doc_type === 'Sales Invoice' || it.doc_type === 'POS Invoice') {
-          totalBilledVal += (it.amount || 0);
-        }
-      });
-
-      const grandItemsVal = items.reduce((acc, it) => acc + (it.amount || 0), 0);
+      // Calculate totals using deduplicated metrics
+      const totalLaborVal = sum.dedup_services_total !== undefined ? sum.dedup_services_total : 0;
+      const totalPartsVal = sum.dedup_parts_total !== undefined ? sum.dedup_parts_total : 0;
+      const uniquePartsCount = sum.unique_parts_count !== undefined ? sum.unique_parts_count : 0;
+      const uniqueLaborCount = sum.unique_services_count !== undefined ? sum.unique_services_count : 0;
+      
+      const billedItems = items.filter(it => it.doc_type === 'Sales Invoice' || it.doc_type === 'POS Invoice' || it.doc_type === 'Vehicle POS Invoice');
+      const totalBilledVal = billedItems.length > 0 
+        ? billedItems.reduce((a, b) => a + (b.amount || 0), 0)
+        : (sum.total_transaction_value || 0);
 
       // Filtering logic
       let filtered = items;
       if (this.itemFilter === "labor") {
-        filtered = items.filter(it => (it.type || '').toLowerCase().includes('labor') || (it.type || '').toLowerCase().includes('service'));
+        filtered = items.filter(it => (it.category === 'service' || (it.type || '').toLowerCase().includes('labor') || (it.type || '').toLowerCase().includes('service')));
       } else if (this.itemFilter === "parts") {
-        filtered = items.filter(it => (it.type || '').toLowerCase().includes('part') || (it.type || '').toLowerCase().includes('material'));
+        filtered = items.filter(it => (it.category === 'part' || (it.type || '').toLowerCase().includes('part') || (it.type || '').toLowerCase().includes('material')));
       } else if (this.itemFilter === "billed") {
         filtered = items.filter(it => (it.type || '').toLowerCase().includes('billed') || it.doc_type === 'Sales Invoice' || it.doc_type === 'POS Invoice');
       }
@@ -646,9 +658,9 @@
 
       let rowsHtml = '';
       filtered.forEach((it, idx) => {
-        const typeClass = it.type.includes('Labor') || it.type.includes('Service') 
+        const typeClass = (it.type || '').includes('Labor') || (it.type || '').includes('Service') 
           ? 'badge-warning' 
-          : (it.type.includes('Billed') ? 'badge-success' : 'badge-primary');
+          : ((it.type || '').includes('Billed') ? 'badge-success' : 'badge-primary');
 
         rowsHtml += `
           <tr>
@@ -674,8 +686,10 @@
         rowsHtml = `<tr><td colspan="8" class="text-center text-muted p-4">No line items matching the current filter.</td></tr>`;
       }
 
-      $nodesLayer.html(`
-        <div class="sap-items-container p-4" style="max-width: 1100px; margin: 0 auto; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); border: 1px solid #e2e8f0;">
+      const totalUniqueItems = (uniquePartsCount + uniqueLaborCount) || 1;
+
+      $itemsView.html(`
+        <div class="sap-items-container" style="max-width: 1100px; margin: 0 auto; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); border: 1px solid #e2e8f0; padding: 24px;">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
               <h4 class="font-weight-bold m-0 text-dark"><i class="fa fa-list-alt text-primary mr-2"></i> Consolidated Related Items & Services Matrix</h4>
@@ -683,8 +697,8 @@
             </div>
             <div class="sap-items-filter-bar btn-group">
               <button class="btn btn-xs ${this.itemFilter === 'all' ? 'btn-primary' : 'btn-default'} sap-item-filter-btn" data-filter="all">All (${items.length})</button>
-              <button class="btn btn-xs ${this.itemFilter === 'labor' ? 'btn-primary' : 'btn-default'} sap-item-filter-btn" data-filter="labor"><i class="fa fa-wrench mr-1"></i> Labor / Services (${totalLaborCount})</button>
-              <button class="btn btn-xs ${this.itemFilter === 'parts' ? 'btn-primary' : 'btn-default'} sap-item-filter-btn" data-filter="parts"><i class="fa fa-cogs mr-1"></i> Parts / Materials (${totalPartsCount})</button>
+              <button class="btn btn-xs ${this.itemFilter === 'labor' ? 'btn-primary' : 'btn-default'} sap-item-filter-btn" data-filter="labor"><i class="fa fa-wrench mr-1"></i> Labor / Services (${uniqueLaborCount})</button>
+              <button class="btn btn-xs ${this.itemFilter === 'parts' ? 'btn-primary' : 'btn-default'} sap-item-filter-btn" data-filter="parts"><i class="fa fa-cogs mr-1"></i> Parts / Materials (${uniquePartsCount})</button>
               <button class="btn btn-xs ${this.itemFilter === 'billed' ? 'btn-primary' : 'btn-default'} sap-item-filter-btn" data-filter="billed"><i class="fa fa-check-circle mr-1"></i> Invoiced Lines</button>
             </div>
           </div>
@@ -694,13 +708,13 @@
             <div class="col-md-3">
               <div class="p-2 border rounded bg-light text-center">
                 <small class="text-muted text-uppercase font-weight-bold">Total Services / Labor</small>
-                <div class="font-weight-bold text-warning font-size-lg">${format_currency(totalLaborVal, 'PHP')} (${totalLaborCount} lines)</div>
+                <div class="font-weight-bold text-warning font-size-lg">${format_currency(totalLaborVal, 'PHP')} (${uniqueLaborCount} items)</div>
               </div>
             </div>
             <div class="col-md-3">
               <div class="p-2 border rounded bg-light text-center">
                 <small class="text-muted text-uppercase font-weight-bold">Total Spare Parts</small>
-                <div class="font-weight-bold text-primary font-size-lg">${format_currency(totalPartsVal, 'PHP')} (${totalPartsCount} lines)</div>
+                <div class="font-weight-bold text-primary font-size-lg">${format_currency(totalPartsVal, 'PHP')} (${uniquePartsCount} items)</div>
               </div>
             </div>
             <div class="col-md-3">
@@ -711,8 +725,8 @@
             </div>
             <div class="col-md-3">
               <div class="p-2 border rounded bg-light text-center">
-                <small class="text-muted text-uppercase font-weight-bold">Total Flow Line Items</small>
-                <div class="font-weight-bold text-dark font-size-lg">${items.length} Lines</div>
+                <small class="text-muted text-uppercase font-weight-bold">Distinct Workflow Items</small>
+                <div class="font-weight-bold text-dark font-size-lg">${totalUniqueItems} Item (${items.length} Doc Lines)</div>
               </div>
             </div>
           </div>
@@ -738,12 +752,12 @@
       `);
 
       // Bind filter buttons
-      $nodesLayer.find('.sap-item-filter-btn').on('click', (e) => {
+      $itemsView.find('.sap-item-filter-btn').on('click', (e) => {
         this.itemFilter = $(e.currentTarget).data('filter');
         this.renderItemsMatrix();
       });
 
-      $nodesLayer.find('.sap-doc-link').on('click', (e) => {
+      $itemsView.find('.sap-doc-link').on('click', (e) => {
         const dt = $(e.currentTarget).data('dt');
         const dn = $(e.currentTarget).data('dn');
         if (dt && dn) {
@@ -755,8 +769,9 @@
 
     renderAccountingFlow() {
       const $c = $(this.container || document);
-      const $nodesLayer = $c.find('#sapNodesLayer');
+      const $acctView = $c.find('#sapAccountingView');
       const acct = this.data.accounting || {};
+      const sum = this.data.summary || {};
       const glEntries = acct.gl_entries || [];
       const vouchersGlMap = acct.vouchers_gl_map || {};
       const pleList = acct.payment_ledger || [];
@@ -846,15 +861,19 @@
         `;
       });
 
-      $nodesLayer.html(`
-        <div class="sap-accounting-container p-4" style="max-width: 1000px; margin: 0 auto; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); border: 1px solid #e2e8f0;">
+      const totalRevenueVal = acct.total_revenue || sum.total_transaction_value || 0;
+      const totalCollectedVal = acct.total_collected || sum.total_paid_value || 0;
+      const outstandingVal = sum.total_outstanding_value !== undefined ? sum.total_outstanding_value : 0;
+
+      $acctView.html(`
+        <div class="sap-accounting-container" style="max-width: 1000px; margin: 0 auto; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); border: 1px solid #e2e8f0; padding: 24px;">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
               <h4 class="font-weight-bold m-0 text-dark"><i class="fa fa-balance-scale text-success mr-2"></i> Accounting & General Ledger Postings</h4>
               <p class="text-muted mb-0 font-size-sm">Double-entry accounting journal entries, debit/credit ledger breakdown, and reconciliation flow.</p>
             </div>
             <div>
-              <span class="badge ${acct.is_balanced ? 'badge-success' : 'badge-danger'} p-2 font-size-sm">
+              <span class="badge ${acct.is_balanced ? 'badge-success' : 'badge-danger'} p-2 font-size-sm" title="Gross GL Turnover: Dr ${format_currency(acct.total_debit || 0, 'PHP')} | Cr ${format_currency(acct.total_credit || 0, 'PHP')}">
                 <i class="fa ${acct.is_balanced ? 'fa-check-circle' : 'fa-exclamation-triangle'} mr-1"></i>
                 ${acct.is_balanced ? 'Double-Entry Balanced' : 'Ledger Imbalance Detected'}
               </span>
@@ -865,21 +884,21 @@
           <div class="row mb-4">
             <div class="col-md-4">
               <div class="p-3 border rounded bg-light text-center">
-                <small class="text-muted text-uppercase font-weight-bold">Total Debits (Dr)</small>
-                <div class="font-weight-bold text-primary font-size-lg">${format_currency(acct.total_debit || 0, 'PHP')}</div>
+                <small class="text-muted text-uppercase font-weight-bold">Total Invoiced / GL Revenue</small>
+                <div class="font-weight-bold text-primary font-size-lg">${format_currency(totalRevenueVal, 'PHP')}</div>
               </div>
             </div>
             <div class="col-md-4">
               <div class="p-3 border rounded bg-light text-center">
-                <small class="text-muted text-uppercase font-weight-bold">Total Credits (Cr)</small>
-                <div class="font-weight-bold text-success font-size-lg">${format_currency(acct.total_credit || 0, 'PHP')}</div>
+                <small class="text-muted text-uppercase font-weight-bold">Total Collections (Cash/Bank)</small>
+                <div class="font-weight-bold text-success font-size-lg">${format_currency(totalCollectedVal, 'PHP')}</div>
               </div>
             </div>
             <div class="col-md-4">
               <div class="p-3 border rounded bg-light text-center">
                 <small class="text-muted text-uppercase font-weight-bold">Party Net Receivable Balance</small>
-                <div class="font-weight-bold ${this.data.summary?.total_outstanding_value === 0 ? 'text-success' : 'text-danger'} font-size-lg">
-                  ${format_currency(this.data.summary?.total_outstanding_value || 0, 'PHP')}
+                <div class="font-weight-bold ${outstandingVal === 0 ? 'text-success' : 'text-danger'} font-size-lg">
+                  ${format_currency(outstandingVal, 'PHP')}
                 </div>
               </div>
             </div>
@@ -912,7 +931,7 @@
         </div>
       `);
 
-      $nodesLayer.find('.sap-doc-link').on('click', (e) => {
+      $acctView.find('.sap-doc-link').on('click', (e) => {
         const dt = $(e.currentTarget).data('dt');
         const dn = $(e.currentTarget).data('dn');
         if (dt && dn) {
@@ -1038,10 +1057,29 @@
       'padding': '0',
       'flex': '1',
       'overflow': 'hidden',
-      'position': 'relative'
+      'position': 'relative',
+      'display': 'flex',
+      'flex-direction': 'column'
+    });
+    d.$wrapper.find('.modal-body .form-layout, .modal-body .form-page, .modal-body .form-section, .modal-body .form-column, .modal-body [data-fieldname="sap_map_area"]').css({
+      'height': '100%',
+      'min-height': '100%',
+      'display': 'flex',
+      'flex-direction': 'column',
+      'flex': '1',
+      'padding': '0',
+      'margin': '0'
     });
 
     const container = d.fields_dict.sap_map_area.$wrapper[0];
+    $(container).css({
+      'height': '100%',
+      'min-height': '100%',
+      'display': 'flex',
+      'flex-direction': 'column',
+      'flex': '1'
+    });
+
     new SAPMapViewer({
       doctype: doctype,
       docname: docname,

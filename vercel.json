@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "installCommand": "echo 'Skipping backend pip install for static frontend deployment'",
+  "buildCommand": "python build_gh_pages.py || true",
+  "outputDirectory": "gh_pages_build",
+  "framework": null,
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/pos-terminal", "destination": "/pos_terminal.html" },
+    { "source": "/pos", "destination": "/pos.html" },
+    { "source": "/executive", "destination": "/executive.html" },
+    { "source": "/executive-dashboard", "destination": "/executive.html" },
+    { "source": "/vms", "destination": "/index.html" },
+    { "source": "/api/(.*)", "destination": "http://38.247.138.224:10017/api/$1" },
+    { "source": "/files/(.*)", "destination": "http://38.247.138.224:10017/files/$1" }
+  ]
+}

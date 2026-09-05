@@ -63,19 +63,32 @@ try:
         
         if dt == "Sales Invoice":
             si_out = doc.get("outstanding_amount")
-            if si_out is not None:
+            is_pos = doc.get("is_pos")
+            payments_sum = sum([float(p.get("amount") or 0) for p in (doc.get("payments") or [])])
+            doc_status_raw = doc.get("status") or ""
+
+            if is_pos or doc_status_raw == "Paid" or (payments_sum > 0 and payments_sum >= gt - 0.01) or (si_out is not None and float(si_out) <= 0.001):
+                outst = 0.0
+                paid = gt
+                st_disp = "Paid"
+            elif si_out is not None:
                 outst = max(0.0, float(si_out))
+                paid = max(0.0, gt - outst)
+                if outst <= 0.001:
+                    outst = 0.0
+                    paid = gt
+                    st_disp = "Paid"
             else:
                 ples = frappe.get_all("Payment Ledger Entry", filters={"against_voucher_no": name, "delinked": 0}, fields=["amount"])
                 if ples:
                     outst = max(0.0, sum([float(p.get("amount") or 0) for p in ples]))
                 else:
                     outst = gt
-            paid = max(0.0, gt - outst)
-            if outst <= 0.001:
-                outst = 0.0
-                paid = gt
-                st_disp = "Paid"
+                paid = max(0.0, gt - outst)
+                if outst <= 0.001:
+                    outst = 0.0
+                    paid = gt
+                    st_disp = "Paid"
         elif dt == "Payment Entry":
             paid = gt
             outst = 0.0
@@ -420,7 +433,7 @@ try:
     if pos_names_in_graph and si_names_in_graph:
         try:
             pos_si_links = frappe.get_all(
-                "POS Invoice Merge Log Detail",
+                "POS Invoice Reference",
                 filters={"pos_invoice": ["in", list(pos_names_in_graph)]},
                 fields=["pos_invoice", "parent"]
             )
@@ -503,11 +516,11 @@ try:
     total_payments_collected = sum([
         float(g.get("debit") or 0)
         for g in gl_entries_list
-        if g.get("voucher_type") in ("Payment Entry", "Journal Entry")
+        if g.get("voucher_type") in ("Payment Entry", "Journal Entry", "Sales Invoice", "POS Invoice", "Vehicle POS Invoice")
         and ("cash" in str(g.get("account") or "").lower() or "bank" in str(g.get("account") or "").lower() or "undeposited" in str(g.get("account") or "").lower())
     ])
     if total_payments_collected == 0:
-        total_payments_collected = sum([float(n.get("grand_total") or 0) for n in nodes_dict.values() if n.get("doctype") == "Payment Entry"])
+        total_payments_collected = sum([float(n.get("paid_amount") or 0) for n in nodes_dict.values() if n.get("doctype") in ("Payment Entry", "Sales Invoice", "POS Invoice", "Vehicle POS Invoice")])
 
     accounting_summary = {
         "gl_entries": gl_entries_list,
@@ -585,7 +598,7 @@ res = s.put(f'{URL}/api/resource/Server%20Script/VM%20SAP%20Relationship%20Map%2
     "disabled": 0,
     "script": server_script_code
 }, timeout=45)
-print("Updated Server Script:", res.status_code)
+print("Updated Server Script:", res.status_code, flush=True)
 
 # 2. Client Script
 with open('c:/Users/josem/erpnext-system/frappe-bench/apps/vehicle_management/vehicle_management/public/js/vehicle_relationship_map.js', 'r', encoding='utf-8') as f:
@@ -620,43 +633,31 @@ target_doctypes = [
 ]
 
 for dt in target_doctypes:
-    # Update both naming formats if they exist
-    for cs_name in [f"SAP Relationship Map - {dt}", f"VM SAP Relationship Map Client - {dt}" if dt != "Vehicle Job Order" else "VM SAP Relationship Map Client"]:
-        payload = {
-            "name": cs_name,
-            "dt": dt,
-            "view": "Form",
-            "script_type": "DocType Event",
-            "enabled": 1,
-            "script": full_client_script
-        }
-        try:
-            check_cs = s.get(f'{URL}/api/resource/Client%20Script/{cs_name}', timeout=45)
-            if check_cs.status_code == 200:
-                cs_res = s.put(f'{URL}/api/resource/Client%20Script/{cs_name}', json=payload, timeout=45)
-                print(f"[OK] Updated Client Script: {cs_name} ({cs_res.status_code})")
-            else:
-                cs_res = s.post(f'{URL}/api/resource/Client%20Script', json=payload, timeout=45)
-                print(f"[OK] Created Client Script: {cs_name} ({cs_res.status_code})")
-        except Exception as e:
-            print(f"Client Script error for {cs_name}:", str(e))
-
-# 3. Clear cache on live server
-try:
-    s.post(f'{URL}/api/method/frappe.desk.doctype.route_history.route_history.clear_cache', timeout=15)
-    s.post(f'{URL}/api/method/frappe.sessions.clear', timeout=15)
-except Exception:
-    pass
+    cs_name = f"SAP Relationship Map - {dt}"
+    payload = {
+        "name": cs_name,
+        "dt": dt,
+        "view": "Form",
+        "script_type": "DocType Event",
+        "enabled": 1,
+        "script": full_client_script
+    }
+    try:
+        check_cs = s.get(f'{URL}/api/resource/Client%20Script/{cs_name}', timeout=15)
+        if check_cs.status_code == 200:
+            cs_res = s.put(f'{URL}/api/resource/Client%20Script/{cs_name}', json=payload, timeout=15)
+            print(f"[OK] Updated Client Script: {cs_name} ({cs_res.status_code})", flush=True)
+        else:
+            cs_res = s.post(f'{URL}/api/resource/Client%20Script', json=payload, timeout=15)
+            print(f"[OK] Created Client Script: {cs_name} ({cs_res.status_code})", flush=True)
+    except Exception as e:
+        print(f"Client Script error for {cs_name}:", str(e), flush=True)
 
 # 3. Test API Call
-test_res = s.get(f'{URL}/api/method/vm_relationship_map', params={'doctype': 'Sales Invoice', 'docname': 'ACC-SINV-2026-00166'}, timeout=45)
+test_res = s.get(f'{URL}/api/method/vm_relationship_map', params={'doctype': 'Sales Invoice', 'docname': 'ACC-SINV-2026-00163'}, timeout=15)
 data = test_res.json().get('message', {})
-print("\n=== TEST ACC-SINV-2026-00166 ===")
-print("Summary:", json.dumps(data.get('summary', {}), indent=2))
-print(f"Total Nodes: {len(data.get('nodes', []))}")
-print(f"Total Items: {len(data.get('items', []))}")
-for it in data.get('items', []):
-    print(f"  [{it.get('doc_type')}] {it.get('type')}: {it.get('item_code')} | Qty: {it.get('qty')} | Amount: {it.get('amount')}")
-print(f"Accounting GL Entries: {len(data.get('accounting', {}).get('gl_entries', []))}")
-for gl in data.get('accounting', {}).get('gl_entries', []):
-    print(f"  [{gl.get('voucher_type')} {gl.get('voucher_no')}] {gl.get('account')} | Dr: {gl.get('debit')} | Cr: {gl.get('credit')}")
+print("\n=== TEST ACC-SINV-2026-00163 ===", flush=True)
+print("Summary:", json.dumps(data.get('summary', {}), indent=2), flush=True)
+print(f"Accounting GL Entries: {len(data.get('accounting', {}).get('gl_entries', []))}", flush=True)
+print(f"Accounting Summary:", json.dumps({k: v for k, v in data.get('accounting', {}).items() if k != 'gl_entries'}, indent=2), flush=True)
+

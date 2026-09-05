@@ -163,10 +163,10 @@
           </div>
 
           <!-- Main Interactive Viewport & Drawer -->
-          <div class="sap-map-workspace">
+          <div class="sap-map-workspace" style="position: relative; flex: 1 1 auto; overflow: hidden; width: 100%; height: calc(100% - 95px); min-height: 0;">
             <!-- 1. Document Flow Interactive Canvas View -->
-            <div class="sap-view-pane" id="sapFlowView" style="display: flex; flex: 1; position: relative; overflow: hidden; width: 100%; height: 100%;">
-              <div class="sap-map-viewport" id="sapViewport">
+            <div class="sap-view-pane" id="sapFlowView" style="display: flex; position: absolute; top: 0; left: 0; right: 0; bottom: 0; overflow: hidden; width: 100%; height: 100%;">
+              <div class="sap-map-viewport" id="sapViewport" style="width: 100%; height: 100%;">
                 <div class="sap-map-canvas" id="sapCanvas">
                   <!-- SVG Layer for Bezier Connectors -->
                   <svg class="sap-map-svg-layer" id="sapSvgLayer" width="3000" height="2000">
@@ -191,10 +191,10 @@
             </div>
 
             <!-- 2. Related Items Scrollable Table View -->
-            <div class="sap-view-pane" id="sapItemsView" style="display: none; flex: 1; overflow-y: auto; width: 100%; height: 100%; padding: 20px; background: #f8fafc;"></div>
+            <div class="sap-view-pane" id="sapItemsView" style="display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; overflow-y: scroll; overflow-x: hidden; width: 100%; height: 100%; padding: 20px 24px 80px 24px; background: #f8fafc; box-sizing: border-box;"></div>
 
             <!-- 3. Accounting Flow Scrollable Ledger View -->
-            <div class="sap-view-pane" id="sapAccountingView" style="display: none; flex: 1; overflow-y: auto; width: 100%; height: 100%; padding: 20px; background: #f8fafc;"></div>
+            <div class="sap-view-pane" id="sapAccountingView" style="display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; overflow-y: scroll; overflow-x: hidden; width: 100%; height: 100%; padding: 20px 24px 80px 24px; background: #f8fafc; box-sizing: border-box;"></div>
 
             <!-- Right Inspector Drawer -->
             <div class="sap-map-drawer" id="sapDrawer">
@@ -427,25 +427,25 @@
       const $c = $(this.container || document);
 
       if (this.currentMode === "items") {
-        $c.find('#sapFlowView').hide();
-        $c.find('#sapAccountingView').hide();
-        $c.find('#sapItemsView').show();
+        $c.find('#sapFlowView').css('display', 'none');
+        $c.find('#sapAccountingView').css('display', 'none');
+        $c.find('#sapItemsView').css('display', 'block');
         this.renderItemsMatrix();
         return;
       }
 
       if (this.currentMode === "accounting") {
-        $c.find('#sapFlowView').hide();
-        $c.find('#sapItemsView').hide();
-        $c.find('#sapAccountingView').show();
+        $c.find('#sapFlowView').css('display', 'none');
+        $c.find('#sapItemsView').css('display', 'none');
+        $c.find('#sapAccountingView').css('display', 'block');
         this.renderAccountingFlow();
         return;
       }
 
       // Default: Document Flow Canvas View
-      $c.find('#sapItemsView').hide();
-      $c.find('#sapAccountingView').hide();
-      $c.find('#sapFlowView').show();
+      $c.find('#sapItemsView').css('display', 'none');
+      $c.find('#sapAccountingView').css('display', 'none');
+      $c.find('#sapFlowView').css('display', 'flex');
 
       const $nodesLayer = $c.find('#sapNodesLayer');
       const $svgEdges = $c.find('#sapSvgEdges');

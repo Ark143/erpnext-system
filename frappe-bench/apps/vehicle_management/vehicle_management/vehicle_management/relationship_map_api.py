@@ -55,19 +55,32 @@ def get_relationship_map(doctype=None, docname=None, vehicle=None, customer=None
         
         if dt == "Sales Invoice":
             si_out = getattr(doc, "outstanding_amount", None)
-            if si_out is not None:
+            is_pos = getattr(doc, "is_pos", 0)
+            payments_sum = sum([float(getattr(p, "amount", 0) or 0) for p in getattr(doc, "payments", [])])
+            doc_status_raw = getattr(doc, "status", "") or ""
+
+            if is_pos or doc_status_raw == "Paid" or (payments_sum > 0 and payments_sum >= grand_total - 0.01) or (si_out is not None and float(si_out) <= 0.001):
+                outstanding = 0.0
+                paid_amount = grand_total
+                status_display = "Paid"
+            elif si_out is not None:
                 outstanding = max(0.0, float(si_out))
+                paid_amount = max(0.0, grand_total - outstanding)
+                if outstanding <= 0.001:
+                    outstanding = 0.0
+                    paid_amount = grand_total
+                    status_display = "Paid"
             else:
                 ples = frappe.get_all("Payment Ledger Entry", filters={"against_voucher_no": name, "delinked": 0}, fields=["amount"])
                 if ples:
                     outstanding = max(0.0, sum([float(p.amount) for p in ples]))
                 else:
                     outstanding = grand_total
-            paid_amount = max(0.0, grand_total - outstanding)
-            if outstanding <= 0.001:
-                outstanding = 0.0
-                paid_amount = grand_total
-                status_display = "Paid"
+                paid_amount = max(0.0, grand_total - outstanding)
+                if outstanding <= 0.001:
+                    outstanding = 0.0
+                    paid_amount = grand_total
+                    status_display = "Paid"
         elif dt == "Payment Entry":
             paid_amount = grand_total
             outstanding = 0.0
@@ -457,7 +470,7 @@ def get_relationship_map(doctype=None, docname=None, vehicle=None, customer=None
         # in our graph (i.e. it was consolidated already).
         try:
             pos_si_links = frappe.get_all(
-                "POS Invoice Merge Log Detail",
+                "POS Invoice Reference",
                 filters={"pos_invoice": ["in", list(pos_names_in_graph)]},
                 fields=["pos_invoice", "parent"]
             )
@@ -546,11 +559,11 @@ def get_relationship_map(doctype=None, docname=None, vehicle=None, customer=None
     total_payments_collected = sum([
         float(g["debit"] or 0)
         for g in gl_entries_list
-        if g.get("voucher_type") in ("Payment Entry", "Journal Entry")
+        if g.get("voucher_type") in ("Payment Entry", "Journal Entry", "Sales Invoice", "POS Invoice", "Vehicle POS Invoice")
         and ("cash" in (g.get("account") or "").lower() or "bank" in (g.get("account") or "").lower() or "undeposited" in (g.get("account") or "").lower())
     ])
     if total_payments_collected == 0:
-        total_payments_collected = sum([n.get("grand_total", 0) for n in nodes_dict.values() if n.get("doctype") == "Payment Entry"])
+        total_payments_collected = sum([n.get("paid_amount", 0) for n in nodes_dict.values() if n.get("doctype") in ("Payment Entry", "Sales Invoice", "POS Invoice", "Vehicle POS Invoice")])
 
     accounting_summary = {
         "gl_entries": gl_entries_list,

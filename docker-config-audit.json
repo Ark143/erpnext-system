@@ -1,0 +1,264 @@
+{
+  "issues": [
+    {
+      "file": "vps_migration/docker-compose.yml",
+      "line": "6",
+      "severity": "CRITICAL",
+      "issue": "Postgres superuser password hardcoded as 'postgres' in plaintext.",
+      "fix": "Use Docker Secrets or a .env file excluded from VCS. Replace inline POSTGRES_PASSWORD with: ${POSTGRES_PASSWORD_FILE:-/run/secrets/pg_pass} and manage the secret externally."
+    },
+    {
+      "file": "vps_migration/docker-compose.yml",
+      "line": "37",
+      "severity": "CRITICAL",
+      "issue": "ERPNext DB_PASSWORD environment variable is 'postgres' — the same weak default as the superuser. The application connects as the postgres superuser instead of a least-privilege role.",
+      "fix": "Create a dedicated DB user with limited privileges and pass that credential via env, not the postgres superuser."
+    },
+    {
+      "file": "vps_migration/sites/site1.local/site_config.json",
+      "line": "6",
+      "severity": "CRITICAL",
+      "issue": "DB password 'postgres' hardcoded in site_config.json and committed to the image via COPY in Dockerfile line 32. The password is baked into the layer and visible in image history.",
+      "fix": "Do not COPY site_config.json at build time. Mount it at runtime or use an entrypoint that fetches secrets from a vault / Docker secret mount."
+    },
+    {
+      "file": "vps_migration/sites/site1.local/site_config.json",
+      "line": "8",
+      "severity": "CRITICAL",
+      "issue": "Admin password 'admin' is the default and hardcoded in site_config.json.",
+      "fix": "Override admin_password via an environment variable injected at container start, or change it immediately after deployment."
+    },
+    {
+      "file": "vps_migration/sites/site1.local/site_config.json",
+      "line": "12",
+      "severity": "CRITICAL",
+      "issue": "allow_cors: [\"*\"] allows every origin to make credentialed requests to the API — CSRF bypass and data exfiltration risk.",
+      "fix": "Restrict to specific origins: allow_cors: [\"https://erp.yourdomain.com\"]."
+    },
+    {
+      "file": "vps_migration/Dockerfile",
+      "line": "32",
+      "severity": "CRITICAL",
+      "issue": "COPY sites/ /workspace/frappe-bench/sites/ bakes secrets (db_password, admin_password) and developer_mode=1 into the image layer. Anyone with image access can extract them.",
+      "fix": "Mount sites/ as a runtime volume or inject site_config via envsubst in entrypoint.sh from a secrets source."
+    },
+    {
+      "file": "vps_migration/docker-compose.yml",
+      "line": "18",
+      "severity": "HIGH",
+      "issue": "Redis runs with --appendonly no and has no persistent volume — all cache/queue/socketio state is lost on restart.",
+      "fix": "Add a redis volume (redis_data:/data) and enable appendonly yes, or at minimum document that this is ephemeral-only."
+    },
+    {
+      "file": "vps_migration/entrypoint.sh",
+      "line": "15",
+      "severity": "HIGH",
+      "issue": "Uses 'exec' to replace the shell with the Frappe process, making the background SocketIO process (line 12) an orphan reparented to PID 1 — which cannot properly wait/reap it or forward signals. Container stop will send SIGTERM only to the python process; node is left running until SIGKILL timeout.",
+      "fix": "Trap SIGTERM/SIGINT in a wrapper that kills both processes, use 'wait' on the background PID, or run a proper init (tini/dumb-init) as PID 1."
+    },
+    {
+      "file": "entrypoint.sh",
+      "line": "19-26",
+      "severity": "HIGH",
+      "issue": "Root entrypoint runs background processes with wait -n but the trap does not guarantee SocketIO cleanup on exit; also no init reaper so zombie processes can accumulate under rapid restarts.",
+      "fix": "Add ENPOINT [\"/usr/bin/dumb-init\", \"--\", \"/entrypoint.sh\"] in the Containerfile or install tini. The trap should wait for both PIDs, not exit immediately."
+    },
+    {
+      "file": "vps_migration/restore.sh",
+      "line": "17",
+      "severity": "HIGH",
+      "issue": "restore.sh does DROP DATABASE IF EXISTS site1_local — running it on a running production site would destroy all data. It also has no guard to prevent re-execution.",
+      "fix": "Add a guard: check for a restore-lock file or a sentinel env var (RESTORE_ONCE=1) and abort if already initialized."
+    },
+    {
+      "file": "vps_migration/Caddyfile",
+      "line": "1-14",
+      "severity": "HIGH",
+      "issue": "Only listens on :80 (plain HTTP). No TLS/HTTPS redirect — credentials sent in cleartext.",
+      "fix": "Add automatic HTTPS (Caddy does this automatically if a domain name is provided) or at minimum a :80 -> :443 redirect block. Use a real domain, not IP."
+    },
+    {
+      "file": "vps_migration/Caddyfile",
+      "line": "1-14",
+      "severity": "MEDIUM",
+      "issue": "No security headers set (X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Content-Security-Policy, Strict-Transport-Security).",
+      "fix": "Add header block:\nheader {\n  X-Frame-Options \"SAMEORIGIN\"\n  X-Content-Type-Options \"nosniff\"\n  Referrer-Policy \"strict-origin-when-cross-origin\"\n  Strict-Transport-Security \"max-age=31536000; includeSubDomains\"\n  -Server\n}"
+    },
+    {
+      "file": "Caddyfile",
+      "line": "3",
+      "severity": "HIGH",
+      "issue": "Hardcoded container IP 10.88.0.50 for reverse_proxy — if the container is recreated with a different IP, Caddy will 502.",
+      "fix": "Use Docker service name 'erpnext:8000' and let Docker's internal DNS resolve it (as the vps_migration/Caddyfile already does)."
+    },
+    {
+      "file": "Caddyfile",
+      "line": "2-7",
+      "severity": "HIGH",
+      "issue": "Socket.IO reverse_proxy does not include transport=websocket upgrade headers — Socket.IO will negotiate polling only and realtime will break silently.",
+      "fix": "Add to the socket.io reverse_proxy block:\nheader_up Connection \"upgrade\"\nheader_up Upgrade \"websocket\""
+    },
+    {
+      "file": "vps_migration/Caddyfile",
+      "line": "3",
+      "severity": "MEDIUM",
+      "issue": "Socket.IO reverse_proxy in vps_migration also missing websocket upgrade headers.",
+      "fix": "Same as above — add Connection and Upgrade header_up directives for the /socket.io/* handler."
+    },
+    {
+      "file": "vps_migration/Dockerfile",
+      "line": "4",
+      "severity": "HIGH",
+      "issue": "Base image is python:3.14-slim-bookworm — Python 3.14 is a release candidate (rc). Using an RC in production is unsupported and may have breaking changes before GA.",
+      "fix": "Pin to a stable Python version: python:3.11-slim-bookworm or python:3.12-slim-bookworm."
+    },
+    {
+      "file": "Containerfile",
+      "line": "1",
+      "severity": "HIGH",
+      "issue": "Base image is python:3.14-rc-slim-bookworm — release candidate tag, will get surprise updates on rebuild and may be removed from Docker Hub.",
+      "fix": "Pin to python:3.11-slim-bookworm or python:3.12-slim-bookworm."
+    },
+    {
+      "file": "vps_migration/Dockerfile",
+      "line": "27",
+      "severity": "MEDIUM",
+      "issue": "Installs pypika and gunicorn from git@github via SSH (would require SSH key at build time) — but build_prep.sh overrides the SSH-to-HTTPS rewrite. However, this Dockerfile line doesn't include those git+https deps (they're in requirements.txt). Worth confirming pip install doesn't fail.",
+      "fix": "Ensure all git dependencies in requirements.txt use https:// URLs. Run pip install inside the Dockerfile with --default-timeout=100 and pin SHAs."
+    },
+    {
+      "file": "vps_migration/docker-compose.yml",
+      "line": "45-53",
+      "severity": "MEDIUM",
+      "issue": "Caddy container has no healthcheck — if the Caddy process dies, Docker won't restart it and the depends_on on the VPS side won't detect the failure.",
+      "fix": "Add healthcheck: test: [\"CMD\", \"caddy\", \"version\"] or an HTTP probe on localhost."
+    },
+    {
+      "file": "vps_migration/docker-compose.yml",
+      "line": "25",
+      "severity": "MEDIUM",
+      "issue": "ERPNext container has no healthcheck — Docker cannot determine if the app is actually serving traffic, so depends_on only checks container state, not readiness.",
+      "fix": "Add healthcheck:\ntest: [\"CMD\", \"curl\", \"-f\", \"http://localhost:8000/api/method/ping\"]\ninterval: 10s\nretries: 6"
+    },
+    {
+      "file": "vps_migration/restore.sh",
+      "line": "15",
+      "severity": "CRITICAL",
+      "issue": "ALTER ROLE site1_local WITH SUPERUSER — the application database user has full superuser privileges. A SQL injection would have complete DBMS control.",
+      "fix": "Create the role without SUPERUSER. Grant only needed privileges: CREATEDB (if needed) or just membership in the owning role."
+    },
+    {
+      "file": "vps_migration/docker-compose.yml",
+      "line": "1-59",
+      "severity": "MEDIUM",
+      "issue": "No custom network defined — all services join the default bridge network. Service discovery is possible by name on the default network in modern compose, but isolation and DNS rotation are better with an explicit network.",
+      "fix": "Add networks: [erpnet] at top level and attach each service."
+    },
+    {
+      "file": "vps_migration/Dockerfile",
+      "line": "26",
+      "severity": "LOW",
+      "issue": "pip install does not use --require-hashes, so a compromised PyPI mirror could inject arbitrary code.",
+      "fix": "Generate requirements.txt with hashes (pip-compile --generate-hashes) and use pip install --require-hashes."
+    },
+    {
+      "file": "vps_migration/build_prep.sh",
+      "line": "30",
+      "severity": "MEDIUM",
+      "issue": "git apply --reject with || true — patch failures are silently ignored. The image may build successfully with partially-applied or unapplied patches, leading to runtime errors.",
+      "fix": "Remove || true and let the build fail if a patch doesn't apply. Verify patch application with git apply --check first."
+    },
+    {
+      "file": "vps_migration/restore.sh",
+      "line": "21",
+      "severity": "MEDIUM",
+      "issue": "psql -v ON_ERROR_STOP=0 — restore continues through SQL errors. A corrupt dump would produce a partial, inconsistent database with no alarm raised.",
+      "fix": "Use ON_ERROR_STOP=1 and check exit code. Log errors to a file instead of suppressing them."
+    },
+    {
+      "file": "vps_migration/docker-compose.yml",
+      "line": "26",
+      "severity": "MEDIUM",
+      "issue": "Image tag is erpnext-v16:latest — 'latest' is mutable and non-reproducible. A redeploy could pull a different image without warning.",
+      "fix": "Pin to a specific digest or versioned tag: erpnext-v16:20250906 or use the sha256 digest."
+    },
+    {
+      "file": "vps_migration/sites/common_site_config.json",
+      "line": "7",
+      "severity": "MEDIUM",
+      "issue": "db_password: 'postgres' in common_site_config.json — another copy of the credential baked into the image.",
+      "fix": "Same as site_config.json — externalize secrets, do not COPY at build time."
+    },
+    {
+      "file": "Caddyfile",
+      "line": "1",
+      "severity": "LOW",
+      "issue": "Listens on :80, :8080, http:// — binding to all HTTP ports including 8080 which is unconventional and may conflict with other services.",
+      "fix": "Remove :8080 unless explicitly needed. Document why multiple ports are bound."
+    },
+    {
+      "file": "vps_migration/entrypoint.sh",
+      "line": "12",
+      "severity": "MEDIUM",
+      "issue": "SocketIO logs to a file with no rotation or size limit. Long-running container will fill disk with realtime.log.",
+      "fix": "Use logrotate, forward to stdout/stderr (docker logging driver), or add a max-size cap."
+    },
+    {
+      "file": "backups/backup_pos.sh",
+      "line": "10",
+      "severity": "MEDIUM",
+      "issue": "Backup runs via WSL + podman exec piping — if the pipe breaks mid-dump, the .sql.gz file will be truncated with no integrity check.",
+      "fix": "Add gzip integrity test (gzip -t) after completion. Upload with checksum verification."
+    },
+    {
+      "file": "vps_migration/docker-compose.yml",
+      "line": "55-59",
+      "severity": "MEDIUM",
+      "issue": "No backup cron or sidecar container defined. The named volume bench_sites persists sites/ but there's no scheduled DB dump or offsite copy.",
+      "fix": "Add a backup service using offen/docker-volume-backup or a cron sidecar that runs pg_dump and syncs to S3/GCS."
+    },
+    {
+      "file": "vps_migration/Dockerfile",
+      "line": "6",
+      "severity": "LOW",
+      "issue": "NODE_MAJOR=24 is set as an ARG-style ENV — Node 24 is the current release but may not be LTS. Frappe/ERPNext historically targets Node 20.",
+      "fix": "Pin to NODE_MAJOR=20 (LTS) for ERPNext v16 compatibility, or verify upstream support for Node 24."
+    },
+    {
+      "file": "vps_migration/sites/site1.local/site_config.json",
+      "line": "11",
+      "severity": "HIGH",
+      "issue": "developer_mode: 1 in production — enables debug stack traces, disables asset caching/minification, and exposes internals.",
+      "fix": "Set developer_mode: 0 for production deployments."
+    },
+    {
+      "file": "vps_migration/sites/common_site_config.json",
+      "line": "12",
+      "severity": "MEDIUM",
+      "issue": "server_script_enabled: true in common config — Server Scripts allow arbitrary Python execution from the desk. Combined with weak admin credentials, this is a code-execution path.",
+      "fix": "Disable server_script_enabled unless explicitly needed, and audit all Server Scripts regularly."
+    },
+    {
+      "file": "vps_migration/entrypoint.sh",
+      "line": "7-9",
+      "severity": "LOW",
+      "issue": "ln -sfn creates symlinks at container boot, but sites/ is a mounted volume. If the volume already has the symlinks from a previous run, this is a no-op; if the volume is fresh, this masks missing site initialization.",
+      "fix": "Verify the target directory (site1.local) exists before symlinking, and log a warning if it doesn't."
+    },
+    {
+      "file": "vps_migration/docker-compose.yml",
+      "line": "44-53",
+      "severity": "MEDIUM",
+      "issue": "Caddy exposes 443:443 but has no TLS configuration in Caddyfile — the port mapping serves nothing.",
+      "fix": "Either remove the 443 mapping or add a TLS block / real domain name to the Caddyfile so Caddy can issue certificates."
+    },
+    {
+      "file": "vps_migration/restore.sh",
+      "line": "8",
+      "severity": "LOW",
+      "issue": "export PGPASSWORD=postgres — password visible in /proc/<pid>/environ and in compose logs.",
+      "fix": "Use a .pgpass file or PGPASSFILE with restricted permissions (0600)."
+    }
+  ],
+  "summary": "Scanned 8 files across root and vps_migration/. Found 37 issues: 7 CRITICAL (hardcoded secrets baked into image layers, SUPERUSER DB role, weak admin password, allow_cors wildcard), 10 HIGH (RC Python base images, no TLS, no websocket headers, developer_mode on, missing healthchecks, exec-based entrypoint orphans socketio, hardcoded container IP, restore.sh DROP DATABASE risk), 15 MEDIUM (silent patch failures, no security headers, no backup strategy, latest tag, no network isolation, log disk-fill, no integrity on backups, server_script_enabled, common_site_config secret, 443 mapped but unused, redis no persistence), 5 LOW (no --require-hashes, over-privileged port bindings, PGPASSWORD in env, symlink masking, Node 24 non-LTS). The most urgent fix is removing site_config.json from the build COPY and injecting secrets at runtime; second is adding tini/dumb-init + proper signal forwarding in entrypoints; third is restricting DB role and adding TLS + security headers to Caddy."
+}

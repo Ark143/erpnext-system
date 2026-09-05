@@ -9,60 +9,55 @@
 
 | Area | Status | Issues | Critical |
 |------|--------|--------|----------|
-| VPS Live (web pages) | **DOWN** | ALL routes 404 | YES |
+| VPS Live (web pages) | **UP** (port 10017) | 1 page 404 (/pos), rest 200 | LOW |
 | Docker Deployment | Poor | 37 issues | 7 CRITICAL |
 | vehicle_management Code | Fair | ~15 issues | 0 CRITICAL, some HIGH |
 | Repo Hygiene | Poor | ~600 temp files, SQL dumps committed | HIGH (data exposure) |
 | Backups | Weak | 25 identical SQL dumps, no offsite | HIGH |
 
 **Top 3 priorities:**
-1. **VPS is down** — all routes 404. Frappe/Caddy not responding to HTTP on the public IP.
-2. **Secrets baked into Docker image** — `site_config.json` with passwords and `developer_mode: 1` copied at build time.
-3. **600+ dead scripts + SQL dumps in repo** — 280 in pos-static, 121 in frappe-bench, 48MB+ SQL committed to VCS.
+1. **Secrets baked into Docker image** — `site_config.json` with passwords and `developer_mode: 1` copied at build time.
+2. **600+ dead scripts + SQL dumps in repo** — 280 in pos-static, 121 in frappe-bench, 48MB+ SQL committed to VCS.
+3. **Security hardening** — weak admin password, SUPERUSER DB role, developer_mode, no TLS.
 
 ---
 
-## 1. VPS LIVE STATUS — ALL PAGES 404
+## 1. VPS LIVE STATUS — ✅ UP (port 10017)
 
-Every URL tested returns **404 page not found** from the Go-level fallback, meaning Caddy isn't routing to Frappe (which would return Frappe's own 404 page, not a Go 404).
+**Note:** The web app runs on port **10017** (not 80). Port 80 returns a Go-level 404 (likely Caddy or another service default). Port 10017 serves Frappe directly via Werkzeug + Caddy reverse proxy.
 
-### Test Results (VPS: 38.247.138.224)
+### Test Results (VPS: 38.247.138.224:10017)
 
 | URL | Status | Notes |
 |-----|--------|-------|
-| `/` | 404 | Go default, not Frappe |
-| `/executive` | 404 | |
-| `/executive-automan-car-care-center` | 404 | |
-| `/executive-san-fernando-warehouse` | 404 | |
-| `/executive-the-wheelhub` | 404 | |
-| `/executive-ultra-mrf` | 404 | |
-| `/executive-ultra-mrf-dau-annex` | 404 | |
-| `/executive-ultra-mrf-dau-main` | 404 | |
-| `/executive-ultra-mrf-mexico-warehouse` | 404 | |
-| `/executive-ultra-mrf-san-fernando` | 404 | |
-| `/executive-ultra-mrf-telebastagan` | 404 | |
-| `/executive-ultra-mrf-telebastagan-2` | 404 | |
-| `/executive-ultra-mrf-warehouse-dau` | 404 | |
-| `/executive-wheel-core` | 404 | |
-| `/pos` | 404 | |
-| `/pos-terminal` | 404 | |
-| `/login` | 404 | |
-| `/desk` | 404 | |
-| `/app` | 404 | |
+| `/` | 200 | Home/login |
+| `/executive` | 200 | Working |
+| `/executive-automan-car-care-center` | 200 | Working |
+| `/executive-san-fernando-warehouse` | 200 | Working |
+| `/executive-the-wheelhub` | 200 | Working |
+| `/executive-ultra-mrf` | 200 | Working |
+| `/executive-ultra-mrf-dau-annex` | 200 | Working |
+| `/executive-ultra-mrf-dau-main` | 200 | Working |
+| `/executive-ultra-mrf-mexico-warehouse` | 200 | Working |
+| `/executive-ultra-mrf-san-fernando` | 200 | Working |
+| `/executive-ultra-mrf-telebastagan` | 200 | Working |
+| `/executive-ultra-mrf-telebastagan-2` | 200 | Working |
+| `/executive-ultra-mrf-warehouse-dau` | 200 | Working |
+| `/executive-wheel-core` | 200 | Working |
+| `/pos` | **404** | Broken — page not found |
+| `/pos-terminal` | 200 | Working |
+| `/login` | 200 | Working |
+| `/desk` | 301 | Redirects to login (correct) |
+| `/app` | 301 | Redirects to desk (correct) |
+| `/app/vehicle-management` | 301 | Redirects to `/desk/vehicle-management` |
 
-### Root Cause Analysis
+### Issue: `/pos` returns 404
 
-- Port 80 is **OPEN** but serving a Go 404 — the container/ERPNext is not running, OR Caddy is not proxying correctly.
-- Port 443 is **OPEN** but also returns 404.
-- SSH (port 10016) times out — cannot log in to diagnose (sshpass/paramiko not installed on this host).
-- Likely causes: (a) ERPNext container crashed/stopped, (b) Caddy container running but upstream `erpnext:8000` unreachable, (c) container recreation lost network bindings.
+The `/pos` route is broken — Frappe returns "Not Found". The file `public/pos.html` exists locally but may not be deployed to VPS, or the Web Page route doesn't match.
 
-### Fix
-1. SSH in: `ssh -p 10016 administrator@38.247.138.224` (need password or key setup).
-2. Run `docker ps -a` to check container states.
-3. If stopped: `docker start <erpnext-container>` or `docker-compose -f /workspace/vps_migration/docker-compose.yml up -d`.
-4. Check Caddy logs: `docker logs <caddy-container>`.
-5. Check Frappe logs: `docker exec <erpnext> cat /workspace/frappe-bench/sites/site1.local/logs/frappe.log`.
+**Fix:**
+1. Verify the Web Page `pos` exists on VPS: `bench --site site1.local execute frappe.client.get_value --args '["Web Page", {"route": "pos"}, "name"]'`
+2. If missing, restore from local `public/pos.html` or check if it was deleted.
 
 ---
 

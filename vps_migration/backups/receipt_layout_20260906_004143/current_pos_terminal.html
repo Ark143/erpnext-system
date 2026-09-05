@@ -390,13 +390,11 @@ html, body { margin: 0; padding: 0; min-height: 100%; font-family: var(--font-ba
     padding: 14px;
     padding-bottom: 30px;
   }
-  .vpos-ticket.mobile-active { display: flex; z-index: 999 !important; }
+  .vpos-ticket.mobile-active { display: flex; }
   .vpos-mobile-back { display: inline-flex; align-items: center; }
 
   /* Floating Bottom Cart Bar */
-  .vpos-mobile-cart-bar { display: flex; z-index: 90; }
-  .vpos-ticket.mobile-active ~ .vpos-mobile-cart-bar,
-  #vpos-ticket-panel.mobile-active ~ #vpos-mobile-cart-bar { display: none !important; }
+  .vpos-mobile-cart-bar { display: flex; }
 
   .vpos-paid { font-size: 18px; height: 44px; }
   .vpos-quick button { height: 36px; font-size: 11.5px; }
@@ -1400,10 +1398,81 @@ body, html {
 
 
 
-/* Receipt rendering is isolated from Desk and website print styles. */
-.vpos-receipt-dialog-inner { width:80mm; max-width:100%; padding:0 !important; }
-.vpos-receipt-print-wrapper > div > :last-child:not(:first-child) { min-width:0; text-align:right; overflow-wrap:anywhere; }
-.vpos-receipt-print-wrapper > div > :first-child:not(:last-child) { flex-shrink:0; }
+/* ── Direct Page Print Stylesheet: 100% Reliable across all browsers & iframes ── */
+@media screen {
+  #vpos-direct-print-area {
+    display: none !important;
+  }
+}
+
+@media print {
+  @page {
+    size: 80mm auto;
+    margin: 0;
+  }
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    width: 80mm !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+  
+  /* Force hide every UI element except the dedicated print container */
+  #vpos-root, #vpos-receipt-modal-overlay, .vpos-receipt-overlay, .navbar, .web-footer, header, footer, nav, .page-header, .page-breadcrumbs, .modal, .modal-backdrop {
+    display: none !important;
+    visibility: hidden !important;
+  }
+  
+  #vpos-direct-print-area, #vpos-direct-print-area * {
+    visibility: visible !important;
+  }
+  
+  #vpos-direct-print-area {
+    display: block !important;
+    position: static !important;
+    width: 76mm !important;
+    max-width: 76mm !important;
+    margin: 0 auto !important;
+    padding: 3mm 2mm !important;
+    box-sizing: border-box !important;
+    color: #000000 !important;
+    background: #ffffff !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Courier New', monospace !important;
+    font-size: 12px !important;
+    line-height: 1.35 !important;
+    page-break-inside: avoid !important;
+    page-break-after: avoid !important;
+  }
+  
+  #vpos-direct-print-area .vpos-receipt-co {
+    font-size: 16px !important;
+    font-weight: 900 !important;
+    text-align: center !important;
+    text-transform: uppercase !important;
+    color: #000 !important;
+  }
+  
+  #vpos-direct-print-area .vpos-receipt-not-official {
+    margin: 6px 0 !important;
+    padding: 4px 6px !important;
+    border: 1.5px dashed #000 !important;
+    text-align: center !important;
+    font-weight: 800 !important;
+    font-size: 11px !important;
+    color: #000 !important;
+    background: #fff !important;
+  }
+  
+  #vpos-direct-print-area .vpos-receipt-grand-row {
+    font-size: 16px !important;
+    font-weight: 900 !important;
+    color: #000 !important;
+  }
+}
+
 </style>
 
 <script id="vpos-libs">(function webpackUniversalModuleDefinition(root, factory) {
@@ -13813,28 +13882,16 @@ function flt(v) { return Number(v || 0); }
 function peso(n) { return PESO + Number(n || 0).toLocaleString("en-US", { minimumFractionDigits: 2 }); }
 function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
 
-async function api(method, params, httpMethod) {
+async function api(method, params) {
   let url = "/api/method/" + method;
-  const isPost = httpMethod === "POST" || method.includes("create_invoice") || method.includes("open_shift") || method.includes("close_shift") || method.includes("save_");
-  
-  let fetchOptions = {
-    cache: "no-store",
-    headers: { "X-Requested-With": "XMLHttpRequest" }
-  };
-  
-  if (isPost) {
-    fetchOptions.method = "POST";
-    fetchOptions.headers["Content-Type"] = "application/json";
-    fetchOptions.body = JSON.stringify(params || {});
-  } else {
-    fetchOptions.method = "GET";
-    const p = Object.assign({}, params || {}, { _: Date.now() });
-    const qs = Object.keys(p).map(k => encodeURIComponent(k) + "=" + encodeURIComponent(p[k] == null ? "" : p[k])).join("&");
-    if (qs) url += "?" + qs;
-  }
-  
+  const p = Object.assign({}, params || {}, { _: Date.now() });
+  const qs = Object.keys(p).map(k => encodeURIComponent(k) + "=" + encodeURIComponent(p[k] == null ? "" : p[k])).join("&");
+  if (qs) url += "?" + qs;
   try {
-    const r = await fetch(url, fetchOptions);
+    const r = await fetch(url, {
+      cache: "no-store",
+      headers: { "X-Requested-With": "XMLHttpRequest" }
+    });
     const j = await r.json();
     if (!r.ok) {
       console.error("API error", method, j);
@@ -14584,17 +14641,10 @@ var POS = {
     const p = document.getElementById("vpos-ticket-panel");
     const bar = document.getElementById("vpos-mobile-cart-bar");
     if (p) {
-      if (show) {
-        p.classList.add("mobile-active");
-        p.style.display = "flex";
-      } else {
-        p.classList.remove("mobile-active");
-        if (window.innerWidth <= 900) p.style.display = "none";
-      }
+      if (show) p.classList.add("mobile-active");
+      else p.classList.remove("mobile-active");
     }
-    if (bar) {
-      bar.style.display = (show || !this.cart.length) ? "none" : "flex";
-    }
+    if (bar) bar.style.display = show ? "none" : (this.cart.length ? "flex" : "none");
   },
 
   async load() {
@@ -15080,23 +15130,18 @@ var POS = {
   },
 
   async onVeh(vehicle) {
-    this.vehicle = vehicle ? String(vehicle).trim() : null;
+    this.vehicle = vehicle || null;
     const disp = document.querySelector(".vpos-cust");
-    if (!this.vehicle) {
-      if (!this.customer) this.customer = "Cash Customer";
-      if (disp) disp.textContent = "Cash Customer";
-      this.totals();
-      return;
-    }
-    const d = await api("vm_pos_vehicle_customer", { vehicle: this.vehicle });
+    if (!vehicle) { this.customer = null; if (disp) disp.textContent = ""; return; }
+    const d = await api("vm_pos_vehicle_customer", { vehicle: vehicle });
     if (d && d.customer) {
       this.customer = d.customer;
       if (disp) disp.textContent = d.customer_name ? (d.customer + " — " + d.customer_name) : d.customer;
     } else {
-      if (!this.customer) this.customer = "Cash Customer";
-      if (disp) disp.textContent = this.customer;
+      this.customer = null;
+      if (disp) disp.textContent = "";
+      alert("Selected Vehicle has no linked Customer.");
     }
-    this.totals();
   },
 
   async search() {
@@ -15202,7 +15247,7 @@ var POS = {
     const tip = this.STOCK && this.STOCK[it.code] ? this.stockTip(this.STOCK[it.code]) : "";
 
     let thumbHtml = "";
-    if (it.image && it.image !== 'undefined' && it.image !== 'null' && String(it.image).trim() !== '') {
+    if (it.image) {
       thumbHtml = `<div class="vpos-thumb"><img src="${it.image}" alt="${name}" loading="lazy" onerror="this.onerror=null;this.parentElement.innerHTML='<div class=\'vpos-thumb-placeholder\'><span class=\'ico\'>${self.getCategoryIcon(it.group, name)}</span><span>${it.group || 'Product'}</span></div>';"></div>`;
     } else {
       thumbHtml = `<div class="vpos-thumb"><div class="vpos-thumb-placeholder"><span class="ico">${self.getCategoryIcon(it.group, name)}</span><span>${it.group || 'Item'}</span></div></div>`;
@@ -15299,7 +15344,7 @@ var POS = {
 
     const chargeBtn = document.querySelector(".vpos-charge");
     if (chargeBtn) {
-      chargeBtn.disabled = !(this.cart.length && paid >= tot);
+      chargeBtn.disabled = !(this.cart.length && this.vehicle && this.customer && this.company && paid >= tot);
     }
     const printBtn = document.querySelector("#vpos-print-btn");
     if (printBtn) {
@@ -15357,25 +15402,13 @@ var POS = {
 
   charge() {
     const tot = this.total || 0;
-    const pInp = document.querySelector(".vpos-paid");
-    const paid = flt(pInp ? pInp.value : 0) || 0;
-    
-    const vInp = document.querySelector(".vpos-vin");
-    if (vInp && vInp.value && !this.vehicle) {
-      this.vehicle = vInp.value.trim();
-    }
-    
-    if (!this.customer) {
-      const cDisp = document.querySelector(".vpos-cust");
-      this.customer = (cDisp && cDisp.textContent.trim()) ? cDisp.textContent.trim() : "Cash Customer";
-    }
-    if (!this.company) {
-      this.company = "ULTRA MRF";
-    }
-    
+    const paid = flt(document.querySelector(".vpos-paid").value) || 0;
     if (!this.cart.length) { alert("Cart is empty."); return; }
-    if (paid < tot) { alert("Paid amount is less than total (₱" + peso(tot) + "). Tap paid amount or quick cash to tender."); return; }
-    if (!confirm("Confirm Transaction: Charge " + peso(tot) + " (Tendered: " + peso(paid) + " · Change: " + peso(paid - tot) + ")?")) return;
+    if (!this.vehicle) { alert("Select a Customer Vehicle."); return; }
+    if (!this.customer) { alert("Customer Vehicle has no linked Customer."); return; }
+    if (!this.company) { alert("Company not set."); return; }
+    if (paid < tot) { alert("Paid amount is less than total."); return; }
+    if (!confirm("Charge " + peso(tot) + " (Change: " + peso(paid - tot) + ")?")) return;
     this.submit(tot, paid);
   },
 
@@ -15559,9 +15592,102 @@ var POS = {
   },
 
   _buildReceiptDom(sale) {
+    const peso = v => "₱ " + parseFloat(v || 0).toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const company = sale.company || "ULTRA MRF";
+    const cashier = sale.cashier || "Cashier";
+    const date = sale.date || "";
+    const time = sale.time || "";
+    const invoiceNo = sale.invoice_no || "POS-0000";
+    const vehicle = sale.vehicle ? (sale.vehicle + (sale.vehicle_name ? (" — " + sale.vehicle_name) : "")) : "";
+    const customer = sale.customer_name ? (sale.customer + " — " + sale.customer_name) : (sale.customer || "Walk-in Customer");
+    const paymentMethod = sale.payment_method || "Cash";
+    const paidAmount = sale.paid_amount != null ? peso(sale.paid_amount) : "";
+    const changeAmount = sale.change_amount != null ? peso(sale.change_amount) : "";
+    const totalAmount = sale.total_amount != null ? peso(sale.total_amount) : "";
+    const discountAmount = sale.discount_amount != null && parseFloat(sale.discount_amount) > 0 ? peso(sale.discount_amount) : "";
+    const remarks = sale.remarks ? sale.remarks : "";
+    
+    let itemsHtml = "";
+    const itemList = sale.items || sale.items_raw || [];
+    if (itemList && itemList.length) {
+      itemList.forEach(it => {
+        const amt = flt(it.amount || (flt(it.qty) * flt(it.rate)) - flt(it.discount_amount || 0));
+        itemsHtml += `
+          <div class="vpos-receipt-item-block">
+            <div class="vpos-receipt-item-header">
+              <span>${it.item_name || it.item_code}</span>
+              <span>${peso(amt)}</span>
+            </div>
+            <div class="vpos-receipt-item-sub">
+              <span>${it.qty} ${it.uom || 'PC'} × ${peso(it.rate)}</span>
+              ${it.discount_amount ? `<span style="color:#dc2626;">Disc: -${peso(it.discount_amount)}</span>` : ''}
+            </div>
+          </div>`;
+      });
+    } else if (sale.items_html) {
+      itemsHtml = sale.items_html;
+    } else {
+      itemsHtml = '<div style="color:#64748b;font-style:italic;">No items.</div>';
+    }
+
+    const html = `
+      <div class="vpos-receipt-box">
+        <div class="vpos-receipt-co">${company}</div>
+        <div class="vpos-receipt-sub">Vehicle Management System &amp; Services</div>
+        
+        <div class="vpos-receipt-not-official">
+          *** THIS IS NOT AN OFFICIAL RECEIPT ***<br>
+          <span style="font-size:10.5px;font-weight:600;">(ORDER SLIP / INTERNAL REFERENCE ONLY)</span>
+        </div>
+
+        <div class="vpos-receipt-row"><span>Bill / Invoice No:</span><b>${invoiceNo}</b></div>
+        <div class="vpos-receipt-row"><span>Date &amp; Time:</span><span>${date} ${time ? '· ' + time : ''}</span></div>
+        <div class="vpos-receipt-row"><span>Cashier / Staff:</span><span>${cashier}</span></div>
+
+        ${(customer || vehicle) ? `
+          <div class="vpos-receipt-sep"></div>
+          ${customer ? `<div class="vpos-receipt-row"><span>Customer:</span><b>${customer}</b></div>` : ''}
+          ${vehicle ? `<div class="vpos-receipt-row"><span>Vehicle:</span><b>${vehicle}</b></div>` : ''}
+        ` : ''}
+
+        <div class="vpos-receipt-sep-solid"></div>
+        <div style="font-weight:800;font-size:12.5px;color:#0f172a;margin-bottom:4px;">ITEMS SOLD / SERVICES</div>
+        <div class="vpos-receipt-items-container">${itemsHtml}</div>
+
+        ${discountAmount ? `
+          <div class="vpos-receipt-sep"></div>
+          <div class="vpos-receipt-row"><span>Discount:</span><span style="color:#dc2626;">-${discountAmount}</span></div>
+        ` : ''}
+
+        <div class="vpos-receipt-sep-solid"></div>
+        <div class="vpos-receipt-grand-row">
+          <span>TOTAL AMOUNT:</span>
+          <span>${totalAmount}</span>
+        </div>
+        <div class="vpos-receipt-sep"></div>
+
+        <div class="vpos-receipt-row"><span>Payment Method:</span><b>${paymentMethod}</b></div>
+        ${paidAmount ? `<div class="vpos-receipt-row"><span>Amount Tendered:</span><span>${paidAmount}</span></div>` : ''}
+        ${changeAmount ? `<div class="vpos-receipt-row"><span>Change Due:</span><b style="font-size:15px;color:#10b981;">${changeAmount}</b></div>` : ''}
+
+        ${remarks ? `
+          <div class="vpos-receipt-sep"></div>
+          <div class="vpos-receipt-row"><span>Remarks / Bay:</span><span>${remarks}</span></div>
+        ` : ''}
+
+        <div class="vpos-receipt-sep"></div>
+        <div class="vpos-receipt-not-official" style="margin-top:8px;">
+          *** THIS IS NOT AN OFFICIAL RECEIPT ***
+        </div>
+        <div class="vpos-receipt-foot-msg">
+          Thank you for choosing ${company}!<br>
+          Please keep this order slip for warranty &amp; vehicle reference.
+        </div>
+      </div>`;
+
     const div = document.createElement("div");
     div.className = "vpos-receipt-dialog-inner";
-    div.innerHTML = this._buildPrintMarkup(sale);
+    div.innerHTML = html;
     return div;
   },
 
@@ -15610,14 +15736,21 @@ var POS = {
     const winBtn = overlay.querySelector("#vpos-receipt-modal-win");
     if (winBtn) {
       winBtn.onclick = () => {
-        self.openPrintWindow(self._buildPrintMarkup(sale));
+        const wrap = document.querySelector("#vpos-direct-print-area") || receiptDom;
+        self.openPrintWindow(wrap.innerHTML);
       };
     }
   },
 
-  // Receipt layout v2: one template, isolated print document, measured roll height.
-  _buildPrintMarkup(sale) {
-    const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  triggerPrint(sale) {
+    if (!sale) {
+      sale = this._currentModalSale || this._recentSale || (this.cart.length ? this._buildOpenCartSale() : null);
+    }
+    if (!sale) {
+      alert("No transaction to print.");
+      return;
+    }
+
     const peso = v => "₱ " + parseFloat(v || 0).toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     const company = sale.company || "ULTRA MRF";
     const cashier = sale.cashier || "Cashier";
@@ -15637,26 +15770,24 @@ var POS = {
     const itemList = sale.items || sale.items_raw || [];
     if (itemList && itemList.length) {
       itemList.forEach(it => {
-        const amt = it.amount != null ? flt(it.amount) : (flt(it.qty) * flt(it.rate) - flt(it.discount_amount || 0));
+        const amt = flt(it.amount || (flt(it.qty) * flt(it.rate)) - flt(it.discount_amount || 0));
         itemsRows += `
           <tr style="border-bottom:1px dashed #e2e8f0;">
-            <td style="padding:4px 0;vertical-align:top;font-weight:700;width:62%;">${esc(it.item_name || it.item_code)}<br>
-              <span style="font-size:11px;font-weight:400;color:#555;">${esc(it.qty)} ${esc(it.uom || 'PC')} × ${peso(it.rate)}</span>
+            <td style="padding:4px 0;vertical-align:top;font-weight:700;width:62%;">${it.item_name || it.item_code}<br>
+              <span style="font-size:11px;font-weight:400;color:#555;">${it.qty} ${it.uom || 'PC'} × ${peso(it.rate)}</span>
             </td>
-            <td style="padding:4px 0;vertical-align:top;text-align:right;font-weight:700;width:38%;white-space:nowrap;">${peso(amt)}</td>
+            <td style="padding:4px 0;vertical-align:top;text-align:right;font-weight:700;width:38%;">${peso(amt)}</td>
           </tr>`;
       });
     } else if (sale.items_html) {
-      const legacy = document.createElement("div");
-      legacy.innerHTML = sale.items_html;
-      itemsRows = '<tr><td colspan="2">' + esc(legacy.textContent) + '</td></tr>';
+      itemsRows = sale.items_html;
     } else {
       itemsRows = '<tr><td colspan="2" style="color:#555;font-style:italic;">No items.</td></tr>';
     }
 
     const receiptMarkup = `
-      <div class="vpos-receipt-print-wrapper" style="width:100%;max-width:80mm;margin:0 auto;box-sizing:border-box;overflow-wrap:anywhere;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Courier New',monospace;font-size:12px;line-height:1.35;color:#000;background:#fff;padding:3mm 4mm;">
-        <div style="font-size:16px;font-weight:900;text-align:center;text-transform:uppercase;color:#000;">${esc(company)}</div>
+      <div class="vpos-receipt-print-wrapper" style="width:100%;max-width:76mm;margin:0 auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Courier New',monospace;font-size:12px;line-height:1.35;color:#000;background:#fff;padding:4mm 2mm;">
+        <div style="font-size:16px;font-weight:900;text-align:center;text-transform:uppercase;color:#000;">${company}</div>
         <div style="font-size:11px;text-align:center;color:#444;margin-top:1px;">Vehicle Management System &amp; Services</div>
 
         <div style="margin:6px 0;padding:4px 6px;border:1.5px dashed #000;text-align:center;font-weight:800;font-size:10.5px;color:#000;background:#f9f9f9;">
@@ -15664,20 +15795,20 @@ var POS = {
           <span style="font-size:9px;font-weight:600;">(ORDER SLIP / TRANSACTION RECORD)</span>
         </div>
 
-        <div style="display:flex;gap:3mm;justify-content:space-between;margin:2px 0;font-size:11.5px;"><span>Bill No:</span><b>${esc(invoiceNo)}</b></div>
-        <div style="display:flex;gap:3mm;justify-content:space-between;margin:2px 0;font-size:11.5px;"><span>Date &amp; Time:</span><span>${esc(date)} ${esc(time)}</span></div>
-        <div style="display:flex;gap:3mm;justify-content:space-between;margin:2px 0;font-size:11.5px;"><span>Cashier:</span><span>${esc(cashier)}</span></div>
+        <div style="display:flex;justify-content:space-between;margin:2px 0;font-size:11.5px;"><span>Bill No:</span><b>${invoiceNo}</b></div>
+        <div style="display:flex;justify-content:space-between;margin:2px 0;font-size:11.5px;"><span>Date &amp; Time:</span><span>${date} ${time}</span></div>
+        <div style="display:flex;justify-content:space-between;margin:2px 0;font-size:11.5px;"><span>Cashier:</span><span>${cashier}</span></div>
 
         <div style="border-top:1px dashed #777;margin:5px 0;"></div>
-        <div style="display:flex;gap:3mm;justify-content:space-between;margin:2px 0;font-size:11.5px;"><span>Customer:</span><b>${esc(customer)}</b></div>
-        ${vehicle ? `<div style="display:flex;gap:3mm;justify-content:space-between;margin:2px 0;font-size:11.5px;"><span>Vehicle:</span><b>${esc(vehicle)}</b></div>` : ''}
+        <div style="display:flex;justify-content:space-between;margin:2px 0;font-size:11.5px;"><span>Customer:</span><b>${customer}</b></div>
+        ${vehicle ? `<div style="display:flex;justify-content:space-between;margin:2px 0;font-size:11.5px;"><span>Vehicle:</span><b>${vehicle}</b></div>` : ''}
 
         <div style="border-top:1.5px solid #000;margin:6px 0;"></div>
         <div style="font-weight:800;font-size:11px;margin-bottom:2px;">ITEMS SOLD / SERVICES</div>
-        <table style="width:100%;table-layout:fixed;border-collapse:collapse;margin:4px 0;">
+        <table style="width:100%;border-collapse:collapse;margin:4px 0;">
           <thead>
             <tr>
-              <th style="width:62%;border-bottom:1px dashed #000;padding:3px 0;font-size:10.5px;text-align:left;font-weight:700;">DESCRIPTION</th>
+              <th style="border-bottom:1px dashed #000;padding:3px 0;font-size:10.5px;text-align:left;font-weight:700;">DESCRIPTION</th>
               <th style="border-bottom:1px dashed #000;padding:3px 0;font-size:10.5px;text-align:right;font-weight:700;">AMOUNT</th>
             </tr>
           </thead>
@@ -15686,90 +15817,59 @@ var POS = {
           </tbody>
         </table>
 
-        ${discountAmount ? `<div style="border-top:1px dashed #777;margin:4px 0;"></div><div style="display:flex;gap:3mm;justify-content:space-between;margin:2px 0;font-size:11.5px;"><span>Discount:</span><span>-${discountAmount}</span></div>` : ''}
+        ${discountAmount ? `<div style="border-top:1px dashed #777;margin:4px 0;"></div><div style="display:flex;justify-content:space-between;margin:2px 0;font-size:11.5px;"><span>Discount:</span><span>-${discountAmount}</span></div>` : ''}
 
         <div style="border-top:1.5px solid #000;margin:6px 0;"></div>
-        <div style="display:flex;gap:3mm;justify-content:space-between;align-items:center;font-size:16px;font-weight:900;color:#000;padding:3px 0;">
+        <div style="display:flex;justify-content:space-between;align-items:center;font-size:16px;font-weight:900;color:#000;padding:3px 0;">
           <span>TOTAL:</span>
           <span>${totalAmount}</span>
         </div>
         <div style="border-top:1px dashed #777;margin:5px 0;"></div>
 
-        <div style="display:flex;gap:3mm;justify-content:space-between;margin:2px 0;font-size:11.5px;"><span>Payment Method:</span><b>${esc(paymentMethod)}</b></div>
-        ${paidAmount ? `<div style="display:flex;gap:3mm;justify-content:space-between;margin:2px 0;font-size:11.5px;"><span>Amount Tendered:</span><span>${paidAmount}</span></div>` : ''}
-        ${changeAmount ? `<div style="display:flex;gap:3mm;justify-content:space-between;margin:2px 0;font-size:11.5px;"><span>Change Due:</span><b style="font-size:13px;">${changeAmount}</b></div>` : ''}
+        <div style="display:flex;justify-content:space-between;margin:2px 0;font-size:11.5px;"><span>Payment Method:</span><b>${paymentMethod}</b></div>
+        ${paidAmount ? `<div style="display:flex;justify-content:space-between;margin:2px 0;font-size:11.5px;"><span>Amount Tendered:</span><span>${paidAmount}</span></div>` : ''}
+        ${changeAmount ? `<div style="display:flex;justify-content:space-between;margin:2px 0;font-size:11.5px;"><span>Change Due:</span><b style="font-size:13px;">${changeAmount}</b></div>` : ''}
 
-        ${remarks ? `<div style="border-top:1px dashed #777;margin:5px 0;"></div><div style="display:flex;gap:3mm;justify-content:space-between;margin:2px 0;font-size:11.5px;"><span>Remarks:</span><span>${esc(remarks)}</span></div>` : ''}
+        ${remarks ? `<div style="border-top:1px dashed #777;margin:5px 0;"></div><div style="display:flex;justify-content:space-between;margin:2px 0;font-size:11.5px;"><span>Remarks:</span><span>${remarks}</span></div>` : ''}
 
         <div style="border-top:1px dashed #777;margin:5px 0;"></div>
         <div style="margin:6px 0;padding:4px 6px;border:1.5px dashed #000;text-align:center;font-weight:800;font-size:10.5px;color:#000;background:#f9f9f9;">
           *** THIS IS NOT AN OFFICIAL RECEIPT ***
         </div>
         <div style="text-align:center;font-size:10px;color:#444;margin-top:6px;line-height:1.3;">
-          Thank you for choosing ${esc(company)}!<br>
+          Thank you for choosing ${company}!<br>
           Please keep this slip for your reference.
         </div>
       </div>
     `;
 
-    return receiptMarkup;
-  },
-
-  _receiptPrintCss() {
-    return `
-      * { box-sizing: border-box; }
-      html { overflow:hidden; }
-      html, body { margin:0; padding:0; background:#fff; color:#000; }
-      body { width:80mm; max-width:100%; }
-      .vpos-receipt-print-wrapper { width:80mm; max-width:100%; }
-      .vpos-receipt-print-wrapper > div > :last-child:not(:first-child) {
-        min-width:0; text-align:right; overflow-wrap:anywhere;
-      }
-      .vpos-receipt-print-wrapper > div > :first-child:not(:last-child) { flex-shrink:0; }
-      table { table-layout:fixed; }
-      tr { break-inside:avoid; }
-      @media print {
-        html, body { height:auto; min-height:0; overflow:visible; }
-        .vpos-receipt-print-wrapper { margin:0 !important; break-inside:auto; }
-      }
-    `;
-  },
-
-  triggerPrint(sale) {
-    sale = sale || this._currentModalSale || this._recentSale || (this.cart.length ? this._buildOpenCartSale() : null);
-    if (!sale) { alert("No transaction to print."); return; }
-    const markup = this._buildPrintMarkup(sale);
-    // Print only this frame, never the POS page or its enclosing Desk iframe.
-    let frame = document.getElementById("vpos-receipt-print-frame");
-    if (!frame) {
-      frame = document.createElement("iframe");
-      frame.id = "vpos-receipt-print-frame";
-      frame.title = "Receipt print document";
-      frame.style.cssText = "position:fixed;left:-10000px;top:0;width:80mm;height:1px;border:0;";
-      document.body.appendChild(frame);
+    let printContainer = document.getElementById("vpos-direct-print-area");
+    if (!printContainer) {
+      printContainer = document.createElement("div");
+      printContainer.id = "vpos-direct-print-area";
+      document.body.appendChild(printContainer);
     }
-    this._writeReceiptDocument(frame.contentWindow, markup);
-  },
+    printContainer.innerHTML = receiptMarkup;
 
-  _writeReceiptDocument(target, markup) {
-    const doc = target.document;
-    doc.open();
-    doc.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>POS Receipt</title><style>${this._receiptPrintCss()}</style><style id="receipt-page-size"></style></head><body>${markup}</body></html>`);
-    doc.close();
-    const ready = doc.fonts ? doc.fonts.ready : Promise.resolve();
-    ready.then(() => target.requestAnimationFrame(() => {
-      const receipt = doc.querySelector(".vpos-receipt-print-wrapper");
-      // CSS pixels are 96/inch. Extra 2mm prevents rounding from creating page two.
-      const heightMm = Math.max(40, Math.ceil(receipt.getBoundingClientRect().height * 25.4 / 96) + 2);
-      doc.getElementById("receipt-page-size").textContent = `@page { size:80mm ${heightMm}mm; margin:0; }`;
-      target.requestAnimationFrame(() => { target.focus(); target.print(); });
-    }));
+    try {
+      window.print();
+    } catch (e) {
+      console.warn("Direct window.print failed, attempting popup window...", e);
+      this.openPrintWindow(receiptMarkup);
+    }
   },
 
   openPrintWindow(receiptMarkup) {
     const w = window.open("", "_blank", "width=420,height=680,menubar=no,toolbar=no,location=no,status=no");
-    if (w) this._writeReceiptDocument(w, receiptMarkup);
-    else alert("Popup blocked. Please use Print Receipt or allow popups.");
+    if (w) {
+      w.document.open();
+      w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Receipt</title><style>@page{size:80mm auto;margin:0;}body{margin:0;padding:4mm 3mm;background:#fff;color:#000;font-family:-apple-system,sans-serif;}</style></head><body>${receiptMarkup}</body></html>`);
+      w.document.close();
+      w.focus();
+      setTimeout(() => { w.print(); }, 250);
+    } else {
+      alert("Popup blocked. Please allow popups or use direct Print.");
+    }
   },
 
   initTip() {

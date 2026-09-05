@@ -395,8 +395,37 @@ def patch_query_payment_ledger():
 	except Exception:
 		pass
 
-# Apply QueryPaymentLedger PostgreSQL compatibility patch
+def patch_get_mode_of_payments_info():
+	try:
+		import erpnext.accounts.doctype.sales_invoice.sales_invoice as si_module
+
+		def safe_get_mode_of_payments_info(mode_of_payments, company):
+			data = frappe.db.sql(
+				"""
+				select
+					mpa.default_account, mpa.parent as mop, mp.type as type
+				from
+					`tabMode of Payment Account` mpa,`tabMode of Payment` mp
+				where
+					mpa.parent = mp.name and
+					mpa.company = %s and
+					mp.enabled = 1 and
+					mp.name in %s
+				group by
+					mp.name, mpa.default_account, mpa.parent, mp.type
+				""",
+				(company, mode_of_payments),
+				as_dict=1,
+			)
+			return {row.get("mop"): row for row in data}
+
+		si_module.get_mode_of_payments_info = safe_get_mode_of_payments_info
+	except Exception:
+		pass
+
+# Apply PostgreSQL compatibility patches
 patch_query_payment_ledger()
+patch_get_mode_of_payments_info()
 
 
 

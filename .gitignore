@@ -4,3 +4,5 @@ backups/*.sql.gz
 backups/*.tar.gz
 vps_migration/backups/reconciliation_deploy_*/
 *.dump
+__pycache__/
+*.pyc

@@ -710,10 +710,23 @@
 
 ### 2026-09-06 POS reconciliation remediation
 
-- **POS closing totals** — **RESOLVED**. `vm_pos_get_shift` and `vm_pos_close_shift` now capture every submitted, unreconciled POS Invoice for the signed-in cashier and matching POS Profile, including invoices from earlier dates. Already consolidated invoices are excluded.
-- **Closing-entry status visibility** — **RESOLVED**. Vehicle POS and POS Terminal history now show `Not reconciled`, `Closing draft`, `Closing failed`, or `Reconciled`, with a link to the POS Closing Entry when available.
-- **Manual reconciliation** — **RESOLVED**. Close Shift & Daily Reconciliation selects all eligible invoices by default, supports Select All/Deselect All and manual invoice selection, validates stale or duplicate selections, and calculates cash/card/e-wallet expected amounts with change and returns handled per payment method.
-- **Concurrent shift safety** — **RESOLVED**. Opening and closing APIs reuse the user's active shift, lock the shift/invoices while closing, and refuse invoices belonging to another cashier or POS Profile.
+- **POS closing totals** — **RESOLVED — TESTING REQUIRED**. `vm_pos_get_shift` and `vm_pos_close_shift` now capture every submitted, unreconciled POS Invoice for the signed-in cashier and matching POS Profile, including invoices from earlier dates. Already consolidated invoices are excluded.
+- **Closing-entry status visibility** — **RESOLVED — TESTING REQUIRED**. Vehicle POS and POS Terminal history now show `Not reconciled`, `Closing draft`, `Closing failed`, or `Reconciled`, with a link to the POS Closing Entry when available.
+- **Manual reconciliation** — **RESOLVED — TESTING REQUIRED**. Close Shift & Daily Reconciliation selects all eligible invoices by default, supports Select All/Deselect All and manual invoice selection, validates stale or duplicate selections, and calculates cash/card/e-wallet expected amounts with change and returns handled per payment method.
+- **Concurrent shift safety** — **RESOLVED — TESTING REQUIRED**. Opening and closing APIs reuse the user's active shift, lock the shift/invoices while closing, and refuse invoices belonging to another cashier or POS Profile.
+
+#### Hermes cron verification checklist
+
+The next Hermes audit run should verify each resolved item on the live site and record `PASS` or `FAIL` with a timestamp:
+
+1. Call `GET /api/method/vm_pos_get_shift` as a cashier. Confirm the response is HTTP 200 and that the shift payload contains `pending_closing`, `invoices`, `payments`, and `expected_cash`.
+2. Call `GET /api/method/vm_pos_history` as a cashier. Confirm every returned invoice includes `reconciliation_status`, `is_reconciled`, and `closing_entry` fields.
+3. Open `/desk/vehicle_pos` and `/desk/pos-terminal`. Confirm Close Shift shows Select All, Deselect All, Refresh Invoices, invoice checkboxes, payment totals, and actual-count inputs.
+4. In a disposable test shift, deselect one invoice and confirm the selected count, sales total, and expected cash decrease by that invoice amount. Do not submit the closing entry unless the test fixture is explicitly marked safe.
+5. Confirm invoices from another cashier or POS Profile appear under the warning list and are not included in the selected totals.
+6. Confirm the browser console has no errors and both POS pages load the reconciliation status badge in invoice history.
+
+**Testing state:** implementation deployed; automated/local checks passed; live functional verification by the Hermes cron bot is still required.
 
 Live validation on `38.247.138.224:10017` completed after deployment: both APIs returned HTTP 200, the history API returned reconciliation fields, and the temporary preview scripts were removed.
 

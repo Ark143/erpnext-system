@@ -1,0 +1,20 @@
+{
+  "name": "VM POS History",
+  "owner": "Administrator",
+  "creation": "2026-08-28 05:12:48.180164",
+  "modified": "2026-09-02 23:02:19.181523",
+  "modified_by": "Administrator",
+  "docstatus": 0,
+  "idx": 0,
+  "script_type": "API",
+  "event_frequency": "All",
+  "doctype_event": "Before Insert",
+  "api_method": "vm_pos_history",
+  "allow_guest": 1,
+  "disabled": 0,
+  "script": "\ndef vm_pos_history():\n    user = frappe.session.user\n    is_manager = (user == 'Administrator') or bool(frappe.db.get_value('Has Role', {'parent': user, 'role': ['in', ['System Manager', 'Accounts Manager']], 'parenttype': 'User'}, 'name'))\n    \n    filters = [['docstatus', '<', 2]]\n    \n    company = (frappe.form_dict.get('company') or '').strip()\n    if company and company not in ['All Branches', 'All', 'null', 'undefined', 'None']:\n        filters.append(['company', '=', company])\n    elif not is_manager and user != 'Guest':\n        cashier_company = frappe.db.get_value('Employee', {'user_id': user}, 'company') or frappe.db.get_value('Cashier Profile', user, 'company')\n        if cashier_company:\n            filters.append(['company', '=', cashier_company])\n    \n    period = (frappe.form_dict.get('period') or 'all').strip().lower()\n    from_date = (frappe.form_dict.get('from_date') or '').strip()\n    to_date = (frappe.form_dict.get('to_date') or '').strip()\n    today_str = frappe.utils.today()\n    \n    if period == 'today':\n        filters.append(['posting_date', '=', today_str])\n    elif period == 'month':\n        first_day = str(today_str)[:8] + '01'\n        filters.append(['posting_date', '>=', first_day])\n        filters.append(['posting_date', '<=', today_str])\n    elif from_date or to_date:\n        if from_date:\n            filters.append(['posting_date', '>=', from_date])\n        if to_date:\n            filters.append(['posting_date', '<=', to_date])\n    \n    search = (frappe.form_dict.get('search') or '').strip()\n    or_filters = None\n    if search:\n        like = f'%{search}%'\n        or_filters = [\n            ['name', 'like', like],\n            ['customer_name', 'like', like],\n            ['custom_plate_no', 'like', like],\n            ['custom_customer_vehicle', 'like', like]\n        ]\n    \n    rows = frappe.get_all(\n        'POS Invoice',\n        filters=filters,\n        or_filters=or_filters,\n        fields=['name', 'posting_date', 'customer_name', 'custom_customer_vehicle as vehicle',\n                'custom_plate_no as plate_no', 'grand_total as total_amount', 'paid_amount',\n                'company', 'creation', 'status', 'remarks', 'owner as cashier'],\n        order_by='creation desc',\n        limit_page_length=200\n    )\n    \n    for r in rows:\n        c = r.get('creation') or ''\n        r['timestamp'] = str(c)[:19] if c else str(r.get('posting_date') or '')\n        r['pos_invoice'] = r['name']\n        mop = frappe.db.get_value('Sales Invoice Payment', {'parent': r['name']}, 'mode_of_payment')\n        r['payment_method'] = mop or 'Cash'\n        \n    frappe.response['message'] = rows\n\nvm_pos_history()\n",
+  "enable_rate_limit": 0,
+  "rate_limit_count": 5,
+  "rate_limit_seconds": 86400,
+  "doctype": "Server Script"
+}

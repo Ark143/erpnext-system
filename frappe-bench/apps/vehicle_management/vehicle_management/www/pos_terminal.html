@@ -220,9 +220,11 @@ html, body { margin: 0; padding: 0; min-height: 100%; font-family: var(--font-ba
 .vpos-tot-grand { font-family: var(--font-head); font-weight: 800; font-size: 20px; color: var(--ink); margin-top: 2px; }
 .vpos-tender { display: flex; flex-direction: column; gap: 8px; }
 .vpos-paid { height: 48px; border: 2px solid var(--mint); border-radius: 14px; padding: 0 14px; font-family: var(--font-head); font-weight: 800; font-size: 20px; background: #fff; color: var(--ink); cursor: pointer; text-align: center; width: 100%; }
-.vpos-quick { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
-.vpos-quick button { height: 38px; border: 1px solid var(--line); background: #fbfdfc; border-radius: 10px; font-weight: 700; color: var(--mint-d); cursor: pointer; font-size: 12.5px; touch-action: manipulation; }
+.vpos-quick { display: grid; grid-template-columns: 1.2fr repeat(4, 1fr); gap: 5px; }
+.vpos-quick button { height: 38px; border: 1px solid var(--line); background: #fbfdfc; border-radius: 10px; font-weight: 700; color: var(--mint-d); cursor: pointer; font-size: 12px; touch-action: manipulation; }
 .vpos-quick button:hover, .vpos-quick button:active { background: #eef7f3; border-color: var(--mint); }
+.vpos-quick button.vpos-q-exact { background: #16c784; color: #04201a; font-weight: 800; border-color: #16c784; }
+.vpos-quick button.vpos-q-exact:hover { background: #13b075; }
 .vpos-change { font-weight: 700; color: var(--mint-d); font-size: 13.5px; }
 .vpos-act { display: flex; gap: 10px; margin-top: 4px; }
 .vpos-clear { flex: 0 0 92px; background: #fff; border: 1.5px solid var(--line); color: var(--slate); font-weight: 700; border-radius: 14px; height: 50px; cursor: pointer; font-size: 14px; touch-action: manipulation; }
@@ -1404,6 +1406,29 @@ body, html {
 .vpos-receipt-dialog-inner { width:80mm; max-width:100%; padding:0 !important; }
 .vpos-receipt-print-wrapper > div > :last-child:not(:first-child) { min-width:0; text-align:right; overflow-wrap:anywhere; }
 .vpos-receipt-print-wrapper > div > :first-child:not(:last-child) { flex-shrink:0; }
+
+/* Cashier reconciliation: shared by POS Terminal and embedded Vehicle POS. */
+.vpos-recon-modal{width:900px!important;max-width:96vw!important;max-height:92vh;overflow:auto;color:#e6edf3}
+.vpos-recon-modal label,.vpos-recon-modal th,.vpos-recon-modal td,.vpos-recon-invoice b,.vpos-recon-invoice strong{color:#e6edf3}
+.vpos-recon-note{font-size:12px;color:#adb9c8;margin:12px 0;line-height:1.5}
+.vpos-recon-warning{background:#342b17;color:#ffcf79;border:1px solid #755b25;padding:12px;border-radius:8px;margin:12px 0;font-size:12px}
+.vpos-recon-warning a{color:inherit;text-decoration:underline}
+.vpos-recon-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:12px 0;font-size:12px}
+.vpos-recon-actions button{background:#303c4b;color:#f0f6fc;border:1px solid #506075;border-radius:6px;padding:8px 10px;cursor:pointer}
+.vpos-recon-invoices{max-height:230px;overflow:auto;border:1px solid #30363d;border-radius:8px}
+.vpos-recon-invoice{display:flex;align-items:center;gap:10px;padding:10px;border-bottom:1px solid #30363d;cursor:pointer;font-size:12px}
+.vpos-recon-invoice input{width:18px;height:18px;accent-color:#16c784;flex-shrink:0}
+.vpos-recon-invoice span{flex:1;min-width:0;overflow-wrap:anywhere}
+.vpos-recon-invoice small{display:block;color:#adb9c8;margin-top:4px}
+.vpos-recon-invoice strong{white-space:nowrap}
+.vpos-recon-payments{overflow:auto;margin:12px 0}
+.vpos-recon-payments table{width:100%;min-width:610px;border-collapse:collapse;font-size:12px}
+.vpos-recon-payments th,.vpos-recon-payments td{text-align:right;padding:8px 6px;border-bottom:1px solid #30363d}
+.vpos-recon-payments th:first-child,.vpos-recon-payments td:first-child{text-align:left}
+.vpos-recon-count{width:110px;background:#0d1117;color:#f0f6fc;border:1px solid #53657a;border-radius:6px;padding:8px}
+.vpos-hist-tag.vpos-recon-pending{background:#fff3da;color:#825600}
+.vpos-hist-tags{flex-wrap:wrap}
+
 </style>
 
 <script id="vpos-libs">(function webpackUniversalModuleDefinition(root, factory) {
@@ -13813,18 +13838,37 @@ function flt(v) { return Number(v || 0); }
 function peso(n) { return PESO + Number(n || 0).toLocaleString("en-US", { minimumFractionDigits: 2 }); }
 function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
 
+function getCsrfToken() {
+  if (typeof frappe !== "undefined") {
+    if (frappe.csrf_token && frappe.csrf_token !== "None") return frappe.csrf_token;
+    if (frappe.boot && frappe.boot.csrf_token && frappe.boot.csrf_token !== "None") return frappe.boot.csrf_token;
+  }
+  if (typeof csrf_token !== "undefined" && csrf_token && csrf_token !== "None") return csrf_token;
+  if (window.csrf_token && window.csrf_token !== "None") return window.csrf_token;
+  const match = document.cookie.match(/(?:^|;\s*)csrf_token=([^;]+)/);
+  if (match && match[1] && match[1] !== "None") return decodeURIComponent(match[1]);
+  return "";
+}
+
 async function api(method, params, httpMethod) {
   let url = "/api/method/" + method;
   const isPost = httpMethod === "POST" || method.includes("create_invoice") || method.includes("open_shift") || method.includes("close_shift") || method.includes("save_");
   
+  const csrf = getCsrfToken();
   let fetchOptions = {
     cache: "no-store",
     headers: { "X-Requested-With": "XMLHttpRequest" }
   };
+  if (csrf) {
+    fetchOptions.headers["X-Frappe-CSRF-Token"] = csrf;
+  }
   
   if (isPost) {
     fetchOptions.method = "POST";
     fetchOptions.headers["Content-Type"] = "application/json";
+    if (csrf && params && typeof params === "object" && !Array.isArray(params)) {
+      params.csrf_token = csrf;
+    }
     fetchOptions.body = JSON.stringify(params || {});
   } else {
     fetchOptions.method = "GET";
@@ -14215,130 +14259,95 @@ var POS = {
 
   async showCloseShiftModal() {
     const self = this;
+    const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+    const money = v => "₱ " + Number(v || 0).toLocaleString("en-PH", {minimumFractionDigits:2,maximumFractionDigits:2});
     const overlay = document.createElement("div");
     overlay.className = "vpos-closing-overlay";
-    overlay.innerHTML = `<div class="vpos-closing-modal" style="text-align:center;padding:36px;color:#c9d1d9;">⏳ Calculating cashier's daily sales...</div>`;
+    overlay.innerHTML = '<div class="vpos-closing-modal">Loading unreconciled invoices...</div>';
     document.body.appendChild(overlay);
-
-    const cashierId = this.cashier || this.user || "Administrator";
-    const cashierDisplayName = this.empName || this.cashier || this.user || "Administrator";
-
-    // Fetch live shift & today's sales metrics for THIS cashier
-    const shiftRes = await api("vm_pos_get_shift", {
-      company: this.company || "ULTRA MRF",
-      user: cashierId
-    });
-
-    if (!shiftRes || !shiftRes.has_open_shift) {
-      overlay.remove();
-      alert("No active shift found. Please enter your opening cash amount to start your shift.");
-      await this.checkOrOpenShift();
-      return;
-    }
-
-    const shift = shiftRes.shift;
-    self.openingEntry = shift.name;
-    self.openingAmount = parseFloat(shift.opening_amount || 0);
-    self.shiftMop = shift.mode_of_payment || "Cash";
-    self.posProfile = shift.pos_profile;
-
-    // Strict cashier daily metrics
-    const totalCollected = parseFloat(shift.total_sales || 0);
-    const invoiceCount = parseInt(shift.total_invoices || 0);
-    const expectedClose = parseFloat(shift.expected_closing || (self.openingAmount + totalCollected));
-    const peso = v => "₱ " + parseFloat(v||0).toLocaleString("en-PH", {minimumFractionDigits:2, maximumFractionDigits:2});
-    const todayFormatted = new Date().toLocaleDateString("en-PH", { month: "short", day: "numeric", year: "numeric" });
-    const branchName = this.company || shift.company || "ULTRA MRF";
-
-    overlay.innerHTML = `<div class="vpos-closing-modal">
-      <div class="vpos-closing-title">🔴 Close Shift & Daily Reconciliation</div>
-      <div class="vpos-closing-sub">Daily Shift Summary (${todayFormatted})</div>
-
-      <div class="vpos-shift-info" style="margin-bottom:14px;background:#161b22;border:1px solid #30363d;border-radius:10px;padding:10px 14px;font-size:12px;line-height:1.6;">
-        <div><strong>👤 Cashier:</strong> ${cashierDisplayName} <span style="opacity:0.6">(${cashierId})</span></div>
-        <div><strong>🏢 Branch:</strong> ${branchName}</div>
-        <div><strong>🎫 Shift Entry:</strong> ${shift.name}</div>
-      </div>
-
-      <div class="vpos-summary-row"><span class="lbl">Opening Cash Float</span><span class="amt">${peso(self.openingAmount)}</span></div>
-      <div class="vpos-summary-row"><span class="lbl">Cashier's Today Sales</span><span class="amt pos" style="font-size:16px;font-weight:700;">${peso(totalCollected)}</span></div>
-      <div class="vpos-summary-row"><span class="lbl">Cashier's Today Invoices</span><span class="amt">${invoiceCount} invoice${invoiceCount === 1 ? '' : 's'}</span></div>
-      <div class="vpos-summary-row"><span class="lbl">Expected Cash in Drawer</span><span class="amt" style="font-size:16px;color:#16c784;font-weight:800;">${peso(expectedClose)}</span></div>
-
-      <div class="vpos-shift-label" style="margin-top:18px">Actual Cash Count (₱)</div>
-      <input class="vpos-shift-input" id="closing-amount" type="number" min="0" step="0.01"
-             placeholder="Count your cash drawer and enter total" value="${expectedClose.toFixed(2)}">
-
-      <div id="closing-diff-row" style="margin-top:10px;font-size:13px;font-weight:700;color:#16c784;text-align:right;">
-        Difference: <span id="closing-diff-val">₱ 0.00 (Balanced)</span>
-      </div>
-
-      <div style="display:flex;gap:10px;margin-top:20px">
-        <button class="vpos-shift-btn" id="shift-close-confirm">🔴 Submit & Close Shift</button>
-        <button class="vpos-shift-btn" id="shift-close-cancel" style="background:#30363d;box-shadow:none;flex:0 0 auto;width:auto;padding:14px 20px">Cancel</button>
-      </div>
-      <div class="vpos-shift-err" id="closing-err"></div>
-    </div>`;
-
-    const countInput = overlay.querySelector("#closing-amount");
-    const diffVal = overlay.querySelector("#closing-diff-val");
-    
-    const updateDiff = () => {
-      const act = parseFloat(countInput.value) || 0;
-      const diff = act - expectedClose;
-      if (Math.abs(diff) < 0.01) {
-        diffVal.textContent = "₱ 0.00 (Balanced)";
-        diffVal.style.color = "#16c784";
-      } else if (diff > 0) {
-        diffVal.textContent = "+ " + peso(diff) + " (Overage)";
-        diffVal.style.color = "#38bdf8";
-      } else {
-        diffVal.textContent = "- " + peso(Math.abs(diff)) + " (Shortage)";
-        diffVal.style.color = "#f85149";
-      }
-    };
-    countInput.oninput = updateDiff;
-    updateDiff();
-
-    overlay.querySelector("#shift-close-cancel").onclick = () => overlay.remove();
-    overlay.querySelector("#shift-close-confirm").onclick = async () => {
-      const btn = overlay.querySelector("#shift-close-confirm");
-      const errEl = overlay.querySelector("#closing-err");
-      btn.disabled = true; btn.textContent = "⏳ Closing shift...";
-      errEl.textContent = "";
-      try {
-        const closing_amount = parseFloat(countInput.value) || 0;
-        const result = await api("vm_pos_close_shift", {
-          data: JSON.stringify({
-            opening_entry: self.openingEntry,
-            closing_amount,
-            mode_of_payment: self.shiftMop || "Cash",
-            user: cashierId
-          })
+    try {
+      const result = await api("vm_pos_get_shift", {company:this.company || ""});
+      if (!result) throw new Error(api.lastError || "Unable to load the shift. Please try again.");
+      if (!result.has_open_shift) throw new Error("No active shift exists for your account. Open your shift before reconciling invoices.");
+      const shift = result.shift;
+      this.openingEntry = shift.name;
+      this.openingAmount = Number(shift.opening_amount || 0);
+      const invoices = shift.invoices || [];
+      const selected = new Set(invoices.map(i => i.name));
+      const payments = shift.payments || [];
+      const pending = shift.pending_closing;
+      const others = shift.other_profile_invoices || [];
+      overlay.innerHTML = `<div class="vpos-closing-modal vpos-recon-modal">
+        <div class="vpos-closing-title">Close Shift & Daily Reconciliation</div>
+        <div class="vpos-closing-sub">${esc(shift.user)} · ${esc(shift.company)}<br>${esc(shift.name)} · ${esc(shift.pos_profile)}<br>Shift opened: ${esc(shift.period_start_date)}</div>
+        ${pending ? `<div class="vpos-recon-warning">Closing entry <a href="/desk/pos-closing-entry/${encodeURIComponent(pending.name)}" target="_blank" rel="noopener">${esc(pending.name)}</a> is ${esc(pending.status)}. Complete, retry, or cancel that entry before closing again.</div>` : ''}
+        <div class="vpos-recon-note">All eligible unreconciled invoices for your account and POS profile are selected automatically. Older unreconciled invoices are marked below.</div>
+        <div class="vpos-recon-actions"><button type="button" id="recon-all">Select All</button><button type="button" id="recon-none">Deselect All</button><button type="button" id="recon-refresh">Refresh Invoices</button><span id="recon-selected-count"></span></div>
+        <div class="vpos-recon-invoices">${invoices.length ? invoices.map((i,n) => `<label class="vpos-recon-invoice"><input type="checkbox" data-invoice-index="${n}" checked ${pending ? 'disabled' : ''}><span><b>${esc(i.name)}</b><small>${esc(i.posting_date)} · ${esc(i.customer_name || i.customer)}${i.is_return ? ' · Return' : ''}${i.earlier_invoice ? ' · Earlier / unreconciled' : ''}</small></span><strong>${money(i.grand_total)}</strong></label>`).join('') : '<p>No eligible unreconciled invoices for this POS profile.</p>'}</div>
+        ${others.length ? `<details class="vpos-recon-warning"><summary>${others.length} unreconciled invoice(s) use a different POS profile</summary><p>ERPNext requires a separate closing entry for each POS profile. These invoices are not included in this shift.</p>${others.map(i=>`<div>${esc(i.name)} · ${esc(i.pos_profile)} · ${money(i.grand_total)}</div>`).join('')}</details>` : ''}
+        <div class="vpos-summary-row"><span>Selected Invoice Sales</span><b id="recon-sales"></b></div>
+        <div class="vpos-summary-row"><span>Collected, After Change / Refunds</span><b id="recon-collected"></b></div>
+        <div class="vpos-summary-row"><span>Expected Cash in Drawer</span><b id="recon-cash"></b></div>
+        <div class="vpos-recon-note">Count physical cash and verify card / e-wallet totals. Electronic payments are not included in the cash drawer total.</div>
+        <div class="vpos-recon-payments"><table><thead><tr><th>Payment Method</th><th>Opening</th><th>Expected</th><th>Actual / Verified</th><th>Difference</th></tr></thead><tbody>${payments.map((p,n)=>`<tr><td>${esc(p.mode_of_payment)}${p.is_cash ? ' (cash)' : ''}</td><td>${money(p.opening_amount)}</td><td data-expected="${n}"></td><td><input class="vpos-recon-count" data-payment-index="${n}" aria-label="${esc(p.mode_of_payment)} actual amount" type="number" step="0.01" ${p.is_cash ? 'min="0"' : ''} placeholder="Enter amount" value="${p.is_cash ? '' : Number(p.expected_amount).toFixed(2)}" ${pending ? 'disabled' : ''}></td><td data-difference="${n}">—</td></tr>`).join('')}</tbody></table></div>
+        <div id="recon-summary-note" class="vpos-recon-note"></div>
+        <div style="display:flex;gap:10px;margin-top:18px"><button class="vpos-shift-btn" id="shift-close-confirm" ${pending ? 'disabled' : ''}>Submit & Close Shift</button><button class="vpos-shift-btn" id="shift-close-cancel" style="background:#30363d">Cancel</button></div>
+        <div class="vpos-shift-err" id="closing-err" role="alert"></div>
+      </div>`;
+      const err = overlay.querySelector('#closing-err');
+      const submit = overlay.querySelector('#shift-close-confirm');
+      const update = () => {
+        const chosen = invoices.filter(i=>selected.has(i.name));
+        const amounts = Object.fromEntries(payments.map(p=>[p.mode_of_payment,Number(p.opening_amount || 0)]));
+        let sales=0, collected=0;
+        chosen.forEach(i=>{sales+=Number(i.grand_total||0);collected+=Number(i.collected_amount||0);Object.entries(i.payment_amounts || {}).forEach(([m,a])=>{amounts[m]=(amounts[m]||0)+Number(a||0);});});
+        overlay.querySelector('#recon-selected-count').textContent = `${chosen.length} of ${invoices.length} selected`;
+        overlay.querySelector('#recon-sales').textContent=money(sales);
+        overlay.querySelector('#recon-collected').textContent=money(collected);
+        overlay.querySelector('#recon-cash').textContent=money(payments.filter(p=>p.is_cash).reduce((sum,p)=>sum+(amounts[p.mode_of_payment]||0),0));
+        payments.forEach((p,n)=>{
+          const expected=amounts[p.mode_of_payment]||0;
+          const input=overlay.querySelector(`[data-payment-index="${n}"]`);
+          if(!p.is_cash && !input.dataset.edited) input.value=expected.toFixed(2);
+          overlay.querySelector(`[data-expected="${n}"]`).textContent=money(expected);
+          const diff=overlay.querySelector(`[data-difference="${n}"]`);
+          if(input.value===''){diff.textContent='—';}else{const value=Number(input.value)-expected;diff.textContent=money(value);diff.style.color=Math.abs(value)<0.005?'#16c784':'#ffb454';}
         });
-        if (result && result.name) {
-          overlay.remove();
-          alert("✅ Shift Closed Successfully!\n\n" +
-            "Closing Entry: " + result.name + "\n" +
-            "Cashier: " + (result.cashier || cashierDisplayName) + "\n" +
-            "Invoices by Cashier Today: " + result.total_invoices + "\n" +
-            "Today's Sales: " + peso(result.grand_total) + "\n" +
-            "Opening Float: " + peso(result.opening_amount) + "\n" +
-            "Cash Counted: " + peso(result.closing_amount) + "\n" +
-            "Difference: " + peso(result.difference));
-          self.openingEntry = null;
-          self.openingAmount = 0;
-          self.logout();
-        } else {
-          const err = api.lastError || "Failed to close shift. Check ERPNext logs.";
-          errEl.textContent = "Error: " + err;
-          btn.disabled = false; btn.textContent = "🔴 Submit & Close Shift";
+        overlay.querySelector('#recon-summary-note').textContent=chosen.length===invoices.length ? 'Automatic selection: all eligible invoices included.' : `${invoices.length-chosen.length} invoice(s) will remain unreconciled for a later closing entry.`;
+        submit.disabled=!!pending || (!!invoices.length && !chosen.length);
+      };
+      overlay.querySelectorAll('[data-invoice-index]').forEach(input=>{input.onchange=()=>{const name=invoices[Number(input.dataset.invoiceIndex)].name;input.checked?selected.add(name):selected.delete(name);update();};});
+      overlay.querySelectorAll('[data-payment-index]').forEach(input=>{input.oninput=()=>{input.dataset.edited='true';update();};});
+      const selectAll = checked => {if(pending)return;overlay.querySelectorAll('[data-invoice-index]').forEach(input=>{input.checked=checked;});selected.clear();if(checked)invoices.forEach(i=>selected.add(i.name));update();};
+      overlay.querySelector('#recon-all').onclick=()=>selectAll(true);
+      overlay.querySelector('#recon-none').onclick=()=>selectAll(false);
+      overlay.querySelector('#recon-refresh').onclick=()=>{overlay.remove();self.showCloseShiftModal();};
+      overlay.querySelector('#shift-close-cancel').onclick=()=>overlay.remove();
+      submit.onclick=async()=>{
+        err.textContent='';
+        const counted={};
+        for(let n=0;n<payments.length;n++){
+          const input=overlay.querySelector(`[data-payment-index="${n}"]`);
+          if(input.value==='' || !Number.isFinite(Number(input.value)) || !input.checkValidity()){err.textContent='Enter a valid actual amount for '+payments[n].mode_of_payment+'.';input.focus();return;}
+          counted[payments[n].mode_of_payment]=Number(input.value);
         }
-      } catch(e) {
-        errEl.textContent = "Error: " + (e.message || e);
-        btn.disabled = false; btn.textContent = "🔴 Submit & Close Shift";
-      }
-    };
+        submit.disabled=true;submit.textContent='Submitting closing entry...';
+        try{
+          const names=invoices.filter(i=>selected.has(i.name)).map(i=>i.name);
+          const result=await api('vm_pos_close_shift',{data:JSON.stringify({opening_entry:shift.name,invoice_names:names,invoice_versions:Object.fromEntries(invoices.filter(i=>selected.has(i.name)).map(i=>[i.name,i.modified])),selection_mode:names.length===invoices.length?'all':'manual',counted_amounts:counted})});
+          if(!result || !result.name)throw new Error(api.lastError||'Unable to close the shift. Refresh the summary and try again.');
+          overlay.remove();
+          alert(`Closing Entry: ${result.name}\nStatus: ${result.status}\nInvoices: ${result.total_invoices}\nSales: ${money(result.grand_total)}\nCash Counted: ${money(result.closing_amount)}\nCash Difference: ${money(result.difference)}\nInvoices left unreconciled: ${result.remaining_invoices||0}`);
+          if(result.status==='Submitted'){self.openingEntry=null;self.openingAmount=0;self.logout();}
+          else {await self.showCloseShiftModal();}
+        }catch(e){err.textContent=e.message||String(e);submit.disabled=false;submit.textContent='Submit & Close Shift';}
+      };
+      update();
+    } catch(e) {
+      overlay.innerHTML='<div class="vpos-closing-modal"><div class="vpos-shift-err" role="alert"></div><button class="vpos-shift-btn">Close</button></div>';
+      overlay.querySelector('[role="alert"]').textContent=e.message||String(e);
+      overlay.querySelector('button').onclick=()=>overlay.remove();
+    }
   },
 
   openScanner() {
@@ -14461,10 +14470,11 @@ var POS = {
             <input class="vpos-paid" type="text" readonly value="0" placeholder="Tap to enter paid amount">
           </div>
           <div class="vpos-quick">
-            <button data-q="100">+100</button>
-            <button data-q="200">+200</button>
-            <button data-q="500">+500</button>
-            <button data-q="1000">+1000</button>
+            <button type="button" class="vpos-q-exact" data-q="exact">Exact</button>
+            <button type="button" data-q="100">+100</button>
+            <button type="button" data-q="200">+200</button>
+            <button type="button" data-q="500">+500</button>
+            <button type="button" data-q="1000">+1000</button>
           </div>
           <div class="vpos-tot-row vpos-change"><span>Change</span><span class="vpos-balance">₱0.00</span></div>
         </div>
@@ -14527,13 +14537,11 @@ var POS = {
         r.querySelectorAll(".vpos-pay-btn").forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
         self.payment_method = btn.getAttribute("data-pay");
-        if (self.payment_method !== "Cash") {
-          const tot = self.total || 0;
-          const pInput = document.querySelector(".vpos-paid");
-          if (pInput && (flt(pInput.value) <= 0 || flt(pInput.value) < tot)) {
-            pInput.value = tot;
-            self.totals();
-          }
+        const tot = self.total || 0;
+        const pInput = document.querySelector(".vpos-paid");
+        if (pInput && (self.payment_method !== "Cash" || flt(pInput.value) <= 0 || flt(pInput.value) < tot)) {
+          pInput.value = tot;
+          self.totals();
         }
       };
     });
@@ -14550,7 +14558,7 @@ var POS = {
     };
 
     r.querySelector(".vpos-paid").addEventListener("click", () => self.openKeypad());
-    r.querySelectorAll(".vpos-quick button").forEach(b => b.onclick = () => self.quickAdd(flt(b.getAttribute("data-q"))));
+    r.querySelectorAll(".vpos-quick button").forEach(b => b.onclick = () => self.quickAdd(b.getAttribute("data-q")));
     r.querySelector(".vpos-clear").onclick = () => self.clear();
     r.querySelector(".vpos-charge").onclick = () => self.charge();
     const printBtn = r.querySelector("#vpos-print-btn");
@@ -14808,6 +14816,11 @@ var POS = {
 
     listEl.innerHTML = list.map(t => {
       const isPaid = (t.status === "Paid" || flt(t.paid_amount) >= flt(t.total_amount));
+      const escapeRecon = v => String(v ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+      const reconLabel = t.reconciliation_status || 'Status unavailable';
+      const reconBadge = `<span class="vpos-hist-tag ${t.is_reconciled ? 'paid' : 'vpos-recon-pending'}">${escapeRecon(reconLabel)}</span>`;
+      const closingLink = t.closing_entry ? `<a class="vpos-hist-tag" href="/desk/pos-closing-entry/${encodeURIComponent(t.closing_entry)}" target="_blank" rel="noopener">${escapeRecon(t.closing_entry)}</a>` : '';
+
       const posLink = t.pos_invoice ? `<span class="vpos-hist-tag desk-link" onclick="window.open('/desk#Form/POS Invoice/${encodeURIComponent(t.pos_invoice)}', '_blank')">🔗 ${t.pos_invoice}</span>` : "";
       const vehDisplay = (t.plate_no || t.vehicle) ? `🚗 <b>${t.plate_no || t.vehicle}</b>` : "";
       const remDisplay = t.remarks ? `<div style="font-size:11px;color:var(--muted);margin-top:2px;">📝 ${t.remarks}</div>` : "";
@@ -14829,6 +14842,7 @@ var POS = {
             <button class="vpos-hist-print-btn" type="button" onclick="event.stopPropagation(); POS.showReceiptForInvoice('${t.name}')">🖨 Print Receipt</button>
             <span class="vpos-hist-tag">${t.payment_method || "Cash"}</span>
             <span class="vpos-hist-tag ${isPaid ? 'paid' : ''}">${isPaid ? '✓ Paid' : 'Draft'}</span>
+            ${reconBadge}${closingLink}
           </div>
         </div>
       </div>`;
@@ -15235,9 +15249,22 @@ var POS = {
   },
 
   add(code, name, rate, uom) {
+    const prevTot = this.total || 0;
     const ex = this.cart.find(c => c.item_code === code);
     if (ex) ex.qty += 1;
     else this.cart.push({ item_code: code, item_name: name, qty: 1, rate: rate, uom: uom, discount_amount: 0 });
+    
+    // Auto-update paid input to match total if not custom cash
+    const pInput = document.querySelector(".vpos-paid");
+    if (pInput) {
+      const curPaid = flt(pInput.value);
+      if (curPaid <= 0 || curPaid === prevTot || this.payment_method !== "Cash") {
+        let newTot = 0;
+        this.cart.forEach(c => newTot += flt(c.qty) * flt(c.rate) - flt(c.discount_amount));
+        pInput.value = newTot;
+      }
+    }
+    
     this.cartRender();
     this.totals();
     this.search();
@@ -15293,13 +15320,20 @@ var POS = {
     document.querySelectorAll(".vpos-total").forEach(el => el.textContent = peso(tot));
 
     const paidInp = document.querySelector(".vpos-paid");
-    const paid = flt(paidInp ? paidInp.value : 0);
+    let paid = flt(paidInp ? paidInp.value : 0);
+    
+    // Auto-fill total if cart has items and paid is 0
+    if (this.cart.length && paid <= 0) {
+      paid = tot;
+      if (paidInp) paidInp.value = tot;
+    }
+
     const balEl = document.querySelector(".vpos-balance");
     if (balEl) balEl.textContent = peso(flt(paid - tot));
 
     const chargeBtn = document.querySelector(".vpos-charge");
     if (chargeBtn) {
-      chargeBtn.disabled = !(this.cart.length && paid >= tot);
+      chargeBtn.disabled = !this.cart.length;
     }
     const printBtn = document.querySelector("#vpos-print-btn");
     if (printBtn) {
@@ -15335,9 +15369,14 @@ var POS = {
   },
 
   quickAdd(q) {
-    const cur = flt(document.querySelector(".vpos-paid").value) || 0;
-    const v = cur + q;
-    document.querySelector(".vpos-paid").value = v;
+    const tot = this.total || 0;
+    if (q === "exact") {
+      document.querySelector(".vpos-paid").value = tot;
+    } else {
+      const cur = flt(document.querySelector(".vpos-paid").value) || 0;
+      const v = cur + flt(q);
+      document.querySelector(".vpos-paid").value = v;
+    }
     this.totals();
   },
 
@@ -15355,16 +15394,30 @@ var POS = {
     this.toggleMobileTicket(false);
   },
 
-  charge() {
+  async charge() {
     const tot = this.total || 0;
+    if (!this.cart.length) { alert("Cart is empty. Please select items from catalog first."); return; }
+
     const pInp = document.querySelector(".vpos-paid");
-    const paid = flt(pInp ? pInp.value : 0) || 0;
-    
+    let paid = flt(pInp ? pInp.value : 0) || 0;
+
+    if (paid <= 0) {
+      paid = tot;
+      if (pInp) pInp.value = paid;
+      this.totals();
+    }
+
+    if (paid < tot) {
+      paid = tot;
+      if (pInp) pInp.value = paid;
+      this.totals();
+    }
+
     const vInp = document.querySelector(".vpos-vin");
     if (vInp && vInp.value && !this.vehicle) {
       this.vehicle = vInp.value.trim();
     }
-    
+
     if (!this.customer) {
       const cDisp = document.querySelector(".vpos-cust");
       this.customer = (cDisp && cDisp.textContent.trim()) ? cDisp.textContent.trim() : "Cash Customer";
@@ -15372,11 +15425,21 @@ var POS = {
     if (!this.company) {
       this.company = "ULTRA MRF";
     }
-    
-    if (!this.cart.length) { alert("Cart is empty."); return; }
-    if (paid < tot) { alert("Paid amount is less than total (₱" + peso(tot) + "). Tap paid amount or quick cash to tender."); return; }
-    if (!confirm("Confirm Transaction: Charge " + peso(tot) + " (Tendered: " + peso(paid) + " · Change: " + peso(paid - tot) + ")?")) return;
-    this.submit(tot, paid);
+
+    const chargeBtn = document.querySelector(".vpos-charge");
+    if (chargeBtn) {
+      chargeBtn.disabled = true;
+      chargeBtn.innerHTML = "⏳ Processing Payment...";
+    }
+
+    try {
+      await this.submit(tot, paid);
+    } finally {
+      if (chargeBtn) {
+        chargeBtn.disabled = !this.cart.length;
+        chargeBtn.innerHTML = "&#9889; Charge &amp; Pay";
+      }
+    }
   },
 
   /* ── Transaction Submission & Receipt Suite ───────────────────────────── */
@@ -15394,6 +15457,7 @@ var POS = {
     const remEl = document.getElementById("vpos-remarks");
     const remarks = remEl ? remEl.value.trim() : "";
     const payload = {
+      opening_entry: this.openingEntry, pos_profile: this.posProfile,
       customer: this.customer,
       vehicle: this.vehicle || null,
       company: this.company,

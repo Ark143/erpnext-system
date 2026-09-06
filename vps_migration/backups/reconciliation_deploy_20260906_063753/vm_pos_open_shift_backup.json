@@ -1,0 +1,20 @@
+{
+  "name": "VM POS Open Shift",
+  "owner": "Administrator",
+  "creation": "2026-09-02 15:14:45.152887",
+  "modified": "2026-09-05 11:31:52.277193",
+  "modified_by": "Administrator",
+  "docstatus": 0,
+  "idx": 0,
+  "script_type": "API",
+  "event_frequency": "All",
+  "doctype_event": "Before Insert",
+  "api_method": "vm_pos_open_shift",
+  "allow_guest": 1,
+  "disabled": 0,
+  "script": "\ndef vm_pos_open_shift():\n    user = frappe.session.user\n    d = frappe.form_dict.get('data') or frappe.form_dict\n    if isinstance(d, str):\n        d = json.loads(d)\n    \n    company = d.get('company') or frappe.defaults.get_user_default('Company') or 'ULTRA MRF'\n    if company in ['All Branches', 'All', 'null', 'undefined', '']:\n        company = 'ULTRA MRF'\n        \n    opening_amount = float(d.get('opening_amount') or 0)\n    mop = d.get('mode_of_payment') or 'Cash'\n    \n    # Validate mode of payment exists\n    if not frappe.db.exists('Mode of Payment', mop):\n        mop = frappe.db.get_value('Mode of Payment', {'type': 'Cash'}, 'name') or 'Cash'\n    \n    # Get or auto-create POS Profile\n    profile_name = d.get('pos_profile')\n    if not profile_name:\n        profile_name = frappe.db.get_value('POS Profile', {'company': company, 'disabled': 0}, 'name')\n    if not profile_name:\n        default_warehouse = (\n            frappe.db.get_value('Company', company, 'default_fg_warehouse')\n            or frappe.db.get_value('Warehouse', {'company': company, 'is_group': 0}, 'name')\n        )\n        income_account = frappe.db.get_value('Company', company, 'default_income_account')\n        cost_center = (\n            frappe.db.get_value('Company', company, 'cost_center')\n            or frappe.db.get_value('Cost Center', {'company': company, 'is_group': 0}, 'name')\n        )\n        profile_name = f'Vehicle POS - {company}'\n        if not frappe.db.exists('POS Profile', profile_name):\n            prof_doc = frappe.get_doc({\n                'doctype': 'POS Profile',\n                'name': profile_name,\n                'pos_profile_name': profile_name,\n                'company': company,\n                'warehouse': default_warehouse,\n                'currency': frappe.db.get_value('Company', company, 'default_currency') or 'PHP',\n                'income_account': income_account,\n                'cost_center': cost_center,\n                'payments': [{'default': 1, 'mode_of_payment': 'Cash'}],\n                'write_off_account': income_account,\n                'write_off_cost_center': cost_center\n            })\n            prof_doc.insert(ignore_permissions=True)\n            frappe.db.commit()\n\n    # Close any existing open entries for this user or profile\n    other_open = frappe.get_all('POS Opening Entry', filters={'status': 'Open', 'docstatus': 1}, fields=['name', 'user', 'pos_profile'])\n    for o in other_open:\n        if o.user == user or o.pos_profile == profile_name:\n            frappe.db.set_value('POS Opening Entry', o.name, 'status', 'Closed', update_modified=False)\n    frappe.db.commit()\n\n    # Create new POS Opening Entry\n    entry = frappe.get_doc({\n        'doctype': 'POS Opening Entry',\n        'company': company,\n        'pos_profile': profile_name,\n        'user': user,\n        'posting_date': frappe.utils.nowdate(),\n        'period_start_date': frappe.utils.now_datetime(),\n        'balance_details': [{\n            'mode_of_payment': mop,\n            'opening_amount': opening_amount\n        }]\n    })\n    entry.insert(ignore_permissions=True)\n    entry.submit()\n    frappe.db.commit()\n\n    frappe.response['message'] = {\n        'name': entry.name,\n        'pos_profile': profile_name,\n        'company': company,\n        'posting_date': str(entry.posting_date),\n        'period_start_date': str(entry.period_start_date),\n        'status': entry.status,\n        'opening_amount': opening_amount,\n        'mode_of_payment': mop\n    }\n\nvm_pos_open_shift()\n",
+  "enable_rate_limit": 0,
+  "rate_limit_count": 5,
+  "rate_limit_seconds": 86400,
+  "doctype": "Server Script"
+}

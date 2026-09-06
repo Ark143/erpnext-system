@@ -584,7 +584,7 @@ on_vehicle_change(vehicle) {
 					self.update_totals();
 					self.$(".vpos-paid").val(0);
 					if (r.message.pos_invoice) {
-						window.open(`/desk#Form/POS Invoice/${r.message.pos_invoice}`, "_blank");
+						window.open(`/desk/pos-invoice/${r.message.pos_invoice}`, "_blank");
 					}
 				}
 			}

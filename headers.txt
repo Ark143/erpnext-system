@@ -1,0 +1,13 @@
+HTTP/1.1 200 OK
+Cache-Control: no-store,no-cache,must-revalidate,max-age=0
+Content-Length: 70
+Content-Type: application/json
+Date: Sun, 06 Sep 2026 08:20:32 GMT
+Server: Werkzeug/3.1.8 Python/3.14.7
+Set-Cookie: sid=3ab7073cdc3a9b52d43eb072b6a6b644dad080dcf0da9a0fab7c180a; Expires=Sun, 13 Sep 2026 10:20:32 GMT; Max-Age=612000; HttpOnly; Path=/; SameSite=Lax
+Set-Cookie: system_user=yes; Path=/; SameSite=Lax
+Set-Cookie: full_name=Administrator; Path=/; SameSite=Lax
+Set-Cookie: user_id=Administrator; Path=/; SameSite=Lax
+Set-Cookie: user_lang=en; Path=/; SameSite=Lax
+Via: 1.1 Caddy
+

@@ -1,0 +1,1111 @@
+{
+  "timestamp": "2026-09-06 18:22",
+  "issues": [
+    {
+      "severity": "HIGH",
+      "module": "Selling",
+      "title": "Quotation submit failed",
+      "detail": "{'exception': \"KeyError: 'run_method'\", 'exc_type': 'KeyError', 'exc': '[\"Traceback (most recent call last):\\\\n  File \\\\\"apps/frappe/frappe/app.py\\\\\", line 121, in application\\\\n    response = frappe.api.handle(request)\\\\n  File \\\\\"apps/frappe/frappe/api/__init__.py\\\\\", line 63, in handle\\\\n    data",
+      "repro": "POST Quotation/{name} docstatus=1",
+      "root_cause": "Validation error on submit",
+      "fix": "Check server-side validation hooks",
+      "id": "ISS-001"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Selling",
+      "title": "Sales Order creation failed",
+      "detail": "{'exception': 'erpnext.selling.doctype.sales_order.sales_order.WarehouseRequired: Source warehouse required for stock item #16 WIRE DM-DAS-OS', 'exc_type': 'WarehouseRequired', '_exc_source': 'erpnext (app)', 'exc': '[\"Traceback (most recent call last):\\\\n  File \\\\\"apps/frappe/frappe/app.py\\\\\", line",
+      "repro": "POST Sales Order",
+      "root_cause": "Unknown",
+      "fix": "Investigate",
+      "id": "ISS-002"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Selling",
+      "title": "Sales Invoice submit failed",
+      "detail": "{'exception': \"KeyError: 'run_method'\", 'exc_type': 'KeyError', 'exc': '[\"Traceback (most recent call last):\\\\n  File \\\\\"apps/frappe/frappe/app.py\\\\\", line 121, in application\\\\n    response = frappe.api.handle(request)\\\\n  File \\\\\"apps/frappe/frappe/api/__init__.py\\\\\", line 63, in handle\\\\n    data",
+      "repro": "Submit Sales Invoice",
+      "root_cause": "Validation error",
+      "fix": "Check server scripts",
+      "id": "ISS-003"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Selling",
+      "title": "Delivery Note create fails \u2014 warehouse mandatory",
+      "detail": "{'exception': 'erpnext.stock.utils.InvalidWarehouseCompany: Warehouse Stores - UM does not belong to company Ultra MRF Mexico Warehouse', 'exc_type': 'InvalidWarehouseCompany', '_exc_source': 'erpnext (app)', 'exc': '[\"Traceback (most recent call last):\\\\n  File \\\\\"apps/frappe/frappe/app.py\\\\\", line",
+      "repro": "POST Delivery Note",
+      "root_cause": "Warehouse not set on item row",
+      "fix": "Add warehouse to item payload",
+      "id": "ISS-004"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Buying",
+      "title": "Supplier Quotation create fails \u2014 warehouse mandatory",
+      "detail": "{'exception': 'erpnext.stock.utils.InvalidWarehouseCompany: Warehouse Stores - UM does not belong to company Ultra MRF Mexico Warehouse', 'exc_type': 'InvalidWarehouseCompany', '_exc_source': 'erpnext (app)', 'exc': '[\"Traceback (most recent call last):\\\\n  File \\\\\"apps/frappe/frappe/app.py\\\\\", line",
+      "repro": "POST Supplier Quotation",
+      "root_cause": "Warehouse not set",
+      "fix": "Add warehouse to item row",
+      "id": "ISS-005"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Buying",
+      "title": "Purchase Order create fails \u2014 warehouse mandatory",
+      "detail": "{'exception': 'erpnext.stock.utils.InvalidWarehouseCompany: Warehouse Stores - UM does not belong to company Ultra MRF Mexico Warehouse', 'exc_type': 'InvalidWarehouseCompany', '_exc_source': 'erpnext (app)', 'exc': '[\"Traceback (most recent call last):\\\\n  File \\\\\"apps/frappe/frappe/app.py\\\\\", line",
+      "repro": "POST Purchase Order",
+      "root_cause": "Warehouse not set",
+      "fix": "Add warehouse to item row",
+      "id": "ISS-006"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Buying",
+      "title": "Purchase Invoice creation failed",
+      "detail": "{'exception': 'erpnext.stock.utils.InvalidWarehouseCompany: Warehouse Stores - UM does not belong to company Ultra MRF Mexico Warehouse', 'exc_type': 'InvalidWarehouseCompany', '_exc_source': 'erpnext (app)', 'exc': '[\"Traceback (most recent call last):\\\\n  File \\\\\"apps/frappe/frappe/app.py\\\\\", line",
+      "repro": "POST Purchase Invoice",
+      "root_cause": "Unknown",
+      "fix": "Investigate",
+      "id": "ISS-007"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Buying",
+      "title": "Purchase Receipt create fails \u2014 warehouse mandatory",
+      "detail": "{'exception': 'erpnext.stock.utils.InvalidWarehouseCompany: Warehouse Stores - UM does not belong to company Ultra MRF Mexico Warehouse', 'exc_type': 'InvalidWarehouseCompany', '_exc_source': 'erpnext (app)', 'exc': '[\"Traceback (most recent call last):\\\\n  File \\\\\"apps/frappe/frappe/app.py\\\\\", line",
+      "repro": "POST Purchase Receipt",
+      "root_cause": "Warehouse not set",
+      "fix": "Add warehouse to item row",
+      "id": "ISS-008"
+    },
+    {
+      "severity": "CRITICAL",
+      "module": "Stock",
+      "title": "Material Receipt submit failed",
+      "detail": "{'exception': \"KeyError: 'run_method'\", 'exc_type': 'KeyError', 'exc': '[\"Traceback (most recent call last):\\\\n  File \\\\\"apps/frappe/frappe/app.py\\\\\", line 121, in application\\\\n    response = frappe.api.handle(request)\\\\n  File \\\\\"apps/frappe/frappe/api/__init__.py\\\\\", line 63, in handle\\\\n    data",
+      "repro": "Submit Stock Entry",
+      "root_cause": "Unknown",
+      "fix": "Check error log",
+      "id": "ISS-009"
+    },
+    {
+      "severity": "CRITICAL",
+      "module": "Stock",
+      "title": "Material Issue submit failed",
+      "detail": "{'exception': \"KeyError: 'run_method'\", 'exc_type': 'KeyError', 'exc': '[\"Traceback (most recent call last):\\\\n  File \\\\\"apps/frappe/frappe/app.py\\\\\", line 121, in application\\\\n    response = frappe.api.handle(request)\\\\n  File \\\\\"apps/frappe/frappe/api/__init__.py\\\\\", line 63, in handle\\\\n    data",
+      "repro": "Submit Stock Entry (Issue)",
+      "root_cause": "Unknown",
+      "fix": "Check error log",
+      "id": "ISS-010"
+    },
+    {
+      "severity": "CRITICAL",
+      "module": "Stock",
+      "title": "Material Transfer submit failed",
+      "detail": "{'exception': \"KeyError: 'run_method'\", 'exc_type': 'KeyError', 'exc': '[\"Traceback (most recent call last):\\\\n  File \\\\\"apps/frappe/frappe/app.py\\\\\", line 121, in application\\\\n    response = frappe.api.handle(request)\\\\n  File \\\\\"apps/frappe/frappe/api/__init__.py\\\\\", line 63, in handle\\\\n    data",
+      "repro": "Submit Stock Entry (Transfer)",
+      "root_cause": "Unknown",
+      "fix": "Check error log",
+      "id": "ISS-011"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Accounts",
+      "title": "Payment Entry (Receive) creation failed",
+      "detail": "{'exception': 'frappe.exceptions.ValidationError: Target Exchange Rate is mandatory', 'exc_type': 'ValidationError', '_exc_source': 'erpnext (app)', 'exc': '[\"Traceback (most recent call last):\\\\n  File \\\\\"apps/frappe/frappe/app.py\\\\\", line 121, in application\\\\n    response = frappe.api.handle(requ",
+      "repro": "POST Payment Entry",
+      "root_cause": "Unknown",
+      "fix": "Investigate",
+      "id": "ISS-012"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Accounts",
+      "title": "Payment Entry (Pay) creation failed",
+      "detail": "{'exception': 'frappe.exceptions.MandatoryError: [Payment Entry, ACC-PAY-2026-00230]: paid_from, paid_from_account_currency', 'exc_type': 'MandatoryError', 'exc': '[\"Traceback (most recent call last):\\\\n  File \\\\\"apps/frappe/frappe/app.py\\\\\", line 121, in application\\\\n    response = frappe.api.hand",
+      "repro": "POST Payment Entry",
+      "root_cause": "Unknown",
+      "fix": "Investigate",
+      "id": "ISS-013"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Accounts",
+      "title": "Journal Entry submit failed",
+      "detail": "{'exception': \"KeyError: 'run_method'\", 'exc_type': 'KeyError', 'exc': '[\"Traceback (most recent call last):\\\\n  File \\\\\"apps/frappe/frappe/app.py\\\\\", line 121, in application\\\\n    response = frappe.api.handle(request)\\\\n  File \\\\\"apps/frappe/frappe/api/__init__.py\\\\\", line 63, in handle\\\\n    data",
+      "repro": "Submit Journal Entry",
+      "root_cause": "Unknown",
+      "fix": "Check error log",
+      "id": "ISS-014"
+    },
+    {
+      "severity": "HIGH",
+      "module": "HR",
+      "title": "Salary Structure DocType does NOT EXIST",
+      "detail": "{'exc_type': 'DoesNotExistError', '_server_messages': '[\"{\\\\\"message\\\\\":\\\\\"DocType Salary Structure not found\\\\\",\\\\\"as_table\\\\\":false,\\\\\"title\\\\\":\\\\\"Message\\\\\",\\\\\"indicator\\\\\":\\\\\"red\\\\\",\\\\\"raise_excep",
+      "repro": "GET Salary Structure",
+      "root_cause": "Payroll module (HRMS) not installed",
+      "fix": "Install HRMS module via bench",
+      "id": "ISS-015"
+    },
+    {
+      "severity": "HIGH",
+      "module": "HR",
+      "title": "Salary Slip DocType does NOT EXIST",
+      "detail": "{'exc_type': 'DoesNotExistError', '_server_messages': '[\"{\\\\\"message\\\\\":\\\\\"DocType Salary Slip not found\\\\\",\\\\\"as_table\\\\\":false,\\\\\"title\\\\\":\\\\\"Message\\\\\",\\\\\"indicator\\\\\":\\\\\"red\\\\\",\\\\\"raise_exception\\",
+      "repro": "GET Salary Slip",
+      "root_cause": "Payroll module (HRMS) not installed",
+      "fix": "Install HRMS module via bench",
+      "id": "ISS-016"
+    },
+    {
+      "severity": "HIGH",
+      "module": "HR",
+      "title": "Expense Claim DocType does NOT EXIST",
+      "detail": "{'exc_type': 'DoesNotExistError', '_server_messages': '[\"{\\\\\"message\\\\\":\\\\\"DocType Expense Claim not found\\\\\",\\\\\"as_table\\\\\":false,\\\\\"title\\\\\":\\\\\"Message\\\\\",\\\\\"indicator\\\\\":\\\\\"red\\\\\",\\\\\"raise_exceptio",
+      "repro": "GET Expense Claim",
+      "root_cause": "Payroll module (HRMS) not installed",
+      "fix": "Install HRMS module via bench",
+      "id": "ISS-017"
+    },
+    {
+      "severity": "HIGH",
+      "module": "HR",
+      "title": "Leave Application DocType does NOT EXIST",
+      "detail": "{'exc_type': 'DoesNotExistError', '_server_messages': '[\"{\\\\\"message\\\\\":\\\\\"DocType Leave Application not found\\\\\",\\\\\"as_table\\\\\":false,\\\\\"title\\\\\":\\\\\"Message\\\\\",\\\\\"indicator\\\\\":\\\\\"red\\\\\",\\\\\"raise_exce",
+      "repro": "GET Leave Application",
+      "root_cause": "Payroll module (HRMS) not installed",
+      "fix": "Install HRMS module via bench",
+      "id": "ISS-018"
+    },
+    {
+      "severity": "HIGH",
+      "module": "HR",
+      "title": "Attendance DocType does NOT EXIST",
+      "detail": "{'exc_type': 'DoesNotExistError', '_server_messages': '[\"{\\\\\"message\\\\\":\\\\\"DocType Attendance not found\\\\\",\\\\\"as_table\\\\\":false,\\\\\"title\\\\\":\\\\\"Message\\\\\",\\\\\"indicator\\\\\":\\\\\"red\\\\\",\\\\\"raise_exception\\\\",
+      "repro": "GET Attendance",
+      "root_cause": "Payroll module (HRMS) not installed",
+      "fix": "Install HRMS module via bench",
+      "id": "ISS-019"
+    },
+    {
+      "severity": "HIGH",
+      "module": "HR",
+      "title": "Payroll Entry DocType does NOT EXIST",
+      "detail": "{'exc_type': 'DoesNotExistError', '_server_messages': '[\"{\\\\\"message\\\\\":\\\\\"DocType Payroll Entry not found\\\\\",\\\\\"as_table\\\\\":false,\\\\\"title\\\\\":\\\\\"Message\\\\\",\\\\\"indicator\\\\\":\\\\\"red\\\\\",\\\\\"raise_exceptio",
+      "repro": "GET Payroll Entry",
+      "root_cause": "Payroll module (HRMS) not installed",
+      "fix": "Install HRMS module via bench",
+      "id": "ISS-020"
+    },
+    {
+      "severity": "MEDIUM",
+      "module": "Manufacturing",
+      "title": "No BOMs exist",
+      "detail": "Count: 0",
+      "repro": "GET BOM",
+      "root_cause": "No master data seeded",
+      "fix": "Create at least 1 BOM via Manufacturing module",
+      "id": "ISS-021"
+    },
+    {
+      "severity": "MEDIUM",
+      "module": "Manufacturing",
+      "title": "No Work Orders exist",
+      "detail": "Count: 0",
+      "repro": "GET Work Order",
+      "root_cause": "No master data seeded",
+      "fix": "Create at least 1 Work Order via Manufacturing module",
+      "id": "ISS-022"
+    },
+    {
+      "severity": "MEDIUM",
+      "module": "Vehicle Mgmt",
+      "title": "Vehicle Service Item not accessible",
+      "detail": "{'exc_type': 'DoesNotExistError', '_server_messages': '[\"{\\\\\"message\\\\\":\\\\\"DocType Vehicle Service Item not found\\\\\",\\\\\"as_table\\\\\":false,\\\\\"title\\\\\":\\\\\"Message\\\\\",\\\\\"indicator\\\\\":\\\\\"red\\\\\",\\\\\"raise_e",
+      "repro": "GET Vehicle Service Item",
+      "root_cause": "DocType may not exist or app not deployed",
+      "fix": "Verify vehicle_management app is deployed",
+      "id": "ISS-023"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Vehicle Mgmt",
+      "title": "Vehicle Analytics API failed",
+      "detail": "Status: 417",
+      "repro": "GET /api/method/vehicle_management.api.get_analytics",
+      "root_cause": "Unknown",
+      "fix": "Check error log",
+      "id": "ISS-024"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Vehicle Mgmt",
+      "title": "Executive Dashboard API failed",
+      "detail": "Status: 417",
+      "repro": "GET /api/method/vehicle_management.api.get_executive_dashboard",
+      "root_cause": "Unknown",
+      "fix": "Check error log",
+      "id": "ISS-025"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Vehicle Mgmt",
+      "title": "POS Meta API failed",
+      "detail": "Status: 417",
+      "repro": "GET /api/method/vehicle_management.api.get_pos_meta",
+      "root_cause": "Unknown",
+      "fix": "Check error log",
+      "id": "ISS-026"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Web Pages",
+      "title": "POS returns 404",
+      "detail": "Path: /pos",
+      "repro": "GET /pos",
+      "root_cause": "Web Page route not defined",
+      "fix": "Create Web Page with route '/pos'",
+      "id": "ISS-027"
+    },
+    {
+      "severity": "MEDIUM",
+      "module": "Web Pages",
+      "title": "Vehicle POS JS returns 404",
+      "detail": "Path: /assets/vehicle_management/js/pos.js",
+      "repro": "GET /assets/vehicle_management/js/pos.js",
+      "root_cause": "Static assets not built/deployed",
+      "fix": "Run bench build to deploy JS/CSS assets",
+      "id": "ISS-028"
+    },
+    {
+      "severity": "MEDIUM",
+      "module": "Web Pages",
+      "title": "ERPNext Web JS returns 404",
+      "detail": "Path: /assets/erpnext/js/erpnext-web.js",
+      "repro": "GET /assets/erpnext/js/erpnext-web.js",
+      "root_cause": "Static assets not built/deployed",
+      "fix": "Run bench build to deploy JS/CSS assets",
+      "id": "ISS-029"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM POS Items",
+      "detail": "Script: VM POS Items, Disabled: 0",
+      "repro": "Server Script 'VM POS Items' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-030"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM POS Vehicles",
+      "detail": "Script: VM POS Vehicles, Disabled: 0",
+      "repro": "Server Script 'VM POS Vehicles' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-031"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM POS Vehicle Customer",
+      "detail": "Script: VM POS Vehicle Customer, Disabled: 0",
+      "repro": "Server Script 'VM POS Vehicle Customer' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-032"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM Company Dashboard API",
+      "detail": "Script: VM Company Dashboard API, Disabled: 0",
+      "repro": "Server Script 'VM Company Dashboard API' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-033"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM Verify Receiver Badge",
+      "detail": "Script: VM Verify Receiver Badge, Disabled: 0",
+      "repro": "Server Script 'VM Verify Receiver Badge' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-034"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM Stock Entry Safety Check",
+      "detail": "Script: VM Stock Entry Safety Check, Disabled: 0",
+      "repro": "Server Script 'VM Stock Entry Safety Check' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-035"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM Save Receiver Photo",
+      "detail": "Script: VM Save Receiver Photo, Disabled: 0",
+      "repro": "Server Script 'VM Save Receiver Photo' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-036"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM Check Assets and Schedules",
+      "detail": "Script: VM Check Assets and Schedules, Disabled: 0",
+      "repro": "Server Script 'VM Check Assets and Schedules' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-037"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM Diagnose Sync",
+      "detail": "Script: VM Diagnose Sync, Disabled: 0",
+      "repro": "Server Script 'VM Diagnose Sync' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-038"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM Sync All Unlinked",
+      "detail": "Script: VM Sync All Unlinked, Disabled: 0",
+      "repro": "Server Script 'VM Sync All Unlinked' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-039"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM Check Dashboard Data",
+      "detail": "Script: VM Check Dashboard Data, Disabled: 0",
+      "repro": "Server Script 'VM Check Dashboard Data' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-040"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM Backfill POS Invoice Links",
+      "detail": "Script: VM Backfill POS Invoice Links, Disabled: 0",
+      "repro": "Server Script 'VM Backfill POS Invoice Links' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-041"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM Clean Vehicle Customers",
+      "detail": "Script: VM Clean Vehicle Customers, Disabled: 0",
+      "repro": "Server Script 'VM Clean Vehicle Customers' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-042"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM Fix Single Vehicle",
+      "detail": "Script: VM Fix Single Vehicle, Disabled: 0",
+      "repro": "Server Script 'VM Fix Single Vehicle' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-043"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM Batch Clean Vehicles",
+      "detail": "Script: VM Batch Clean Vehicles, Disabled: 0",
+      "repro": "Server Script 'VM Batch Clean Vehicles' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-044"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM Test Stock Items",
+      "detail": "Script: VM Test Stock Items, Disabled: 0",
+      "repro": "Server Script 'VM Test Stock Items' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-045"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM POS Items API",
+      "detail": "Script: VM POS Items API, Disabled: 0",
+      "repro": "Server Script 'VM POS Items API' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-046"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM Stock Up Demo Items",
+      "detail": "Script: VM Stock Up Demo Items, Disabled: 0",
+      "repro": "Server Script 'VM Stock Up Demo Items' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-047"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM Test Simple",
+      "detail": "Script: VM Test Simple, Disabled: 0",
+      "repro": "Server Script 'VM Test Simple' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-048"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM Check Customer Fields",
+      "detail": "Script: VM Check Customer Fields, Disabled: 0",
+      "repro": "Server Script 'VM Check Customer Fields' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-049"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM Get Analytics Dashboard",
+      "detail": "Script: VM Get Analytics Dashboard, Disabled: 0",
+      "repro": "Server Script 'VM Get Analytics Dashboard' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-050"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM POS Cashier",
+      "detail": "Script: VM POS Cashier, Disabled: 0",
+      "repro": "Server Script 'VM POS Cashier' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-051"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM Check Meta HasField",
+      "detail": "Script: VM Check Meta HasField, Disabled: 0",
+      "repro": "Server Script 'VM Check Meta HasField' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-052"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM POS Stock",
+      "detail": "Script: VM POS Stock, Disabled: 0",
+      "repro": "Server Script 'VM POS Stock' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-053"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM POS Get Invoice Receipt",
+      "detail": "Script: VM POS Get Invoice Receipt, Disabled: 0",
+      "repro": "Server Script 'VM POS Get Invoice Receipt' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-054"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM POS Meta",
+      "detail": "Script: VM POS Meta, Disabled: 0",
+      "repro": "Server Script 'VM POS Meta' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-055"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM Check DocType Links",
+      "detail": "Script: VM Check DocType Links, Disabled: 0",
+      "repro": "Server Script 'VM Check DocType Links' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-056"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM Get Distinct Models",
+      "detail": "Script: VM Get Distinct Models, Disabled: 0",
+      "repro": "Server Script 'VM Get Distinct Models' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-057"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM Safe Open Count API",
+      "detail": "Script: VM Safe Open Count API, Disabled: 0",
+      "repro": "Server Script 'VM Safe Open Count API' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-058"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM Sync Vehicle Models and Makes",
+      "detail": "Script: VM Sync Vehicle Models and Makes, Disabled: 0",
+      "repro": "Server Script 'VM Sync Vehicle Models and Makes' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-059"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM Auto Resolve Vehicle Models",
+      "detail": "Script: VM Auto Resolve Vehicle Models, Disabled: 0",
+      "repro": "Server Script 'VM Auto Resolve Vehicle Models' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-060"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM Check Sales Order Fields",
+      "detail": "Script: VM Check Sales Order Fields, Disabled: 0",
+      "repro": "Server Script 'VM Check Sales Order Fields' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-061"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM Debug PLE",
+      "detail": "Script: VM Debug PLE, Disabled: 0",
+      "repro": "Server Script 'VM Debug PLE' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-062"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM Payment Entry Fix",
+      "detail": "Script: VM Payment Entry Fix, Disabled: 0",
+      "repro": "Server Script 'VM Payment Entry Fix' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-063"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM Test Globals",
+      "detail": "Script: VM Test Globals, Disabled: 0",
+      "repro": "Server Script 'VM Test Globals' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-064"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM SAP Relationship Map API",
+      "detail": "Script: VM SAP Relationship Map API, Disabled: 0",
+      "repro": "Server Script 'VM SAP Relationship Map API' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-065"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM Test Jinja",
+      "detail": "Script: VM Test Jinja, Disabled: 0",
+      "repro": "Server Script 'VM Test Jinja' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-066"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM POS Get Shift",
+      "detail": "Script: VM POS Get Shift, Disabled: 0",
+      "repro": "Server Script 'VM POS Get Shift' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-067"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM POS Close Shift",
+      "detail": "Script: VM POS Close Shift, Disabled: 0",
+      "repro": "Server Script 'VM POS Close Shift' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-068"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM POS History",
+      "detail": "Script: VM POS History, Disabled: 0",
+      "repro": "Server Script 'VM POS History' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-069"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM POS Open Shift",
+      "detail": "Script: VM POS Open Shift, Disabled: 0",
+      "repro": "Server Script 'VM POS Open Shift' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-070"
+    },
+    {
+      "severity": "HIGH",
+      "module": "Server Scripts",
+      "title": "Active Server Script: VM POS Create Invoice",
+      "detail": "Script: VM POS Create Invoice, Disabled: 0",
+      "repro": "Server Script 'VM POS Create Invoice' is active",
+      "root_cause": "May block transactions (e.g., Material Issue requires QR badge)",
+      "fix": "Review if script should have API bypass",
+      "id": "ISS-071"
+    },
+    {
+      "severity": "LOW",
+      "module": "System",
+      "title": "Error: Country Bosnia And Herzegovina for regional Address Template does not exist.",
+      "detail": "",
+      "repro": "Country Bosnia And Herzegovina for regional Address Template does not exist.",
+      "root_cause": "Various",
+      "fix": "Review error log",
+      "id": "ISS-072"
+    },
+    {
+      "severity": "LOW",
+      "module": "System",
+      "title": "Error: Exception during Setup",
+      "detail": "Traceback with variables (most recent call last):\n  File \"C:\\Users\\josem\\erpnext-system\\frappe-bench\\apps\\frappe\\frappe\\desk\\page\\setup_wizard\\setup_w",
+      "repro": "Exception during Setup",
+      "root_cause": "Various",
+      "fix": "Review error log",
+      "id": "ISS-073"
+    },
+    {
+      "severity": "LOW",
+      "module": "System",
+      "title": "Error: Unable to send new password notification",
+      "detail": "Traceback with variables (most recent call last):\n  File \"C:\\Users\\josem\\erpnext-system\\frappe-bench\\apps\\frappe\\frappe\\core\\doctype\\user\\user.py\", li",
+      "repro": "Unable to send new password notification",
+      "root_cause": "Various",
+      "fix": "Review error log",
+      "id": "ISS-074"
+    },
+    {
+      "severity": "LOW",
+      "module": "System",
+      "title": "Error: LIMIT #,# syntax is not supported\nLINE 16:   limit '0', '10'\n           ^\nHINT:  Use separate LIMIT and OFFSET clauses.\n",
+      "detail": "Traceback with variables (most recent call last):\n  File \"C:\\Users\\josem\\erpnext-system\\frappe-bench\\apps\\frappe\\frappe\\app.py\", line 121, in applicat",
+      "repro": "LIMIT #,# syntax is not supported\nLINE 16:   limit '0', '10'\n           ^\nHINT:  Use separate LIMIT and OFFSET clauses.\n",
+      "root_cause": "Various",
+      "fix": "Review error log",
+      "id": "ISS-075"
+    },
+    {
+      "severity": "LOW",
+      "module": "System",
+      "title": "Error: Error Attaching File",
+      "detail": "Traceback with variables (most recent call last):\n  File \"C:\\Users\\josem\\erpnext-system\\frappe-bench\\apps\\frappe\\frappe\\core\\doctype\\file\\utils.py\", l",
+      "repro": "Error Attaching File",
+      "root_cause": "Various",
+      "fix": "Review error log",
+      "id": "ISS-076"
+    },
+    {
+      "severity": "CRITICAL",
+      "module": "Cross-Cutting",
+      "title": "Company mismatch: No customers linked to ULTRA MRF",
+      "detail": "Total customers: 50, ULTRA MRF customers: 0",
+      "repro": "Check customer company field",
+      "root_cause": "Default company is ULTRA MRF but master data belongs to MC",
+      "fix": "Link existing customers/items to ULTRA MRF or change default company",
+      "id": "ISS-077"
+    },
+    {
+      "severity": "CRITICAL",
+      "module": "Cross-Cutting",
+      "title": "Company mismatch: No items linked to ULTRA MRF",
+      "detail": "Total items: 50, ULTRA MRF items: 0",
+      "repro": "Check item company field",
+      "root_cause": "Default company is ULTRA MRF but items belong to MC",
+      "fix": "Link existing items to ULTRA MRF or change default company",
+      "id": "ISS-078"
+    },
+    {
+      "severity": "MEDIUM",
+      "module": "Cross-Cutting",
+      "title": "Payroll (HRMS) module not installed",
+      "detail": "{'exc_type': 'DoesNotExistError', '_server_messages': '[\"{\\\\\"message\\\\\":\\\\\"DocType Salary Structure not found\\\\\",\\\\\"as_table\\\\\":false,\\\\\"title\\\\\":\\\\\"Message\\\\\",\\\\\"indicator\\\\\":\\\\\"red\\\\\",\\\\\"raise_excep",
+      "repro": "GET Salary Structure",
+      "root_cause": "HRMS module not installed",
+      "fix": "Install HRMS via bench: bench --site site1.local install-app hrms",
+      "id": "ISS-079"
+    },
+    {
+      "severity": "MEDIUM",
+      "module": "Cross-Cutting",
+      "title": "No BOMs exist \u2014 Manufacturing cannot function",
+      "detail": "BOM count: 0",
+      "repro": "GET BOM",
+      "root_cause": "No manufacturing master data seeded",
+      "fix": "Create at least 1 BOM for an item",
+      "id": "ISS-080"
+    }
+  ],
+  "test_results": [
+    {
+      "module": "System",
+      "test": "Connectivity",
+      "passed": true,
+      "detail": "Status: 200"
+    },
+    {
+      "module": "Selling",
+      "test": "Quotation Create",
+      "passed": true,
+      "detail": "SAL-QTN-2026-00010"
+    },
+    {
+      "module": "Selling",
+      "test": "Quotation Submit",
+      "passed": false,
+      "detail": "KeyError: 'run_method'"
+    },
+    {
+      "module": "Selling",
+      "test": "Sales Order Create",
+      "passed": false,
+      "detail": "{'exception': 'erpnext.selling.doctype.sales_order.sales_order.WarehouseRequired: Source warehouse required for stock item #16 WIRE DM-DAS-OS', 'exc_type': 'WarehouseRequired', '_exc_source': 'erpnext (app)', 'exc': '[\"Traceback (most recent call last):\\\\n  File \\\\\"apps/frappe/frappe/app.py\\\\\", line"
+    },
+    {
+      "module": "Selling",
+      "test": "Sales Invoice Create",
+      "passed": true,
+      "detail": "ACC-SINV-2026-00178"
+    },
+    {
+      "module": "Selling",
+      "test": "Sales Invoice Submit",
+      "passed": false,
+      "detail": "KeyError: 'run_method'"
+    },
+    {
+      "module": "Selling",
+      "test": "Delivery Note Create",
+      "passed": false,
+      "detail": "{'exception': 'erpnext.stock.utils.InvalidWarehouseCompany: Warehouse Stores - UM does not belong to company Ultra MRF Mexico Warehouse', 'exc_type': 'InvalidWarehouseCompany', '_exc_source': 'erpnext (app)', 'exc': '[\"Traceback (most recent call last):\\\\n  File \\\\\"apps/frappe/frappe/app.py\\\\\", line"
+    },
+    {
+      "module": "Buying",
+      "test": "Supplier Quotation Create",
+      "passed": false,
+      "detail": "{'exception': 'erpnext.stock.utils.InvalidWarehouseCompany: Warehouse Stores - UM does not belong to company Ultra MRF Mexico Warehouse', 'exc_type': 'InvalidWarehouseCompany', '_exc_source': 'erpnext (app)', 'exc': '[\"Traceback (most recent call last):\\\\n  File \\\\\"apps/frappe/frappe/app.py\\\\\", line"
+    },
+    {
+      "module": "Buying",
+      "test": "Purchase Order Create",
+      "passed": false,
+      "detail": "{'exception': 'erpnext.stock.utils.InvalidWarehouseCompany: Warehouse Stores - UM does not belong to company Ultra MRF Mexico Warehouse', 'exc_type': 'InvalidWarehouseCompany', '_exc_source': 'erpnext (app)', 'exc': '[\"Traceback (most recent call last):\\\\n  File \\\\\"apps/frappe/frappe/app.py\\\\\", line"
+    },
+    {
+      "module": "Buying",
+      "test": "Purchase Invoice Create",
+      "passed": false,
+      "detail": "{'exception': 'erpnext.stock.utils.InvalidWarehouseCompany: Warehouse Stores - UM does not belong to company Ultra MRF Mexico Warehouse', 'exc_type': 'InvalidWarehouseCompany', '_exc_source': 'erpnext (app)', 'exc': '[\"Traceback (most recent call last):\\\\n  File \\\\\"apps/frappe/frappe/app.py\\\\\", line"
+    },
+    {
+      "module": "Buying",
+      "test": "Purchase Receipt Create",
+      "passed": false,
+      "detail": "{'exception': 'erpnext.stock.utils.InvalidWarehouseCompany: Warehouse Stores - UM does not belong to company Ultra MRF Mexico Warehouse', 'exc_type': 'InvalidWarehouseCompany', '_exc_source': 'erpnext (app)', 'exc': '[\"Traceback (most recent call last):\\\\n  File \\\\\"apps/frappe/frappe/app.py\\\\\", line"
+    },
+    {
+      "module": "Stock",
+      "test": "Stock Entry (Receipt) Create",
+      "passed": true,
+      "detail": "MAT-STE-2026-00061"
+    },
+    {
+      "module": "Stock",
+      "test": "Stock Entry (Receipt) Submit",
+      "passed": false,
+      "detail": "KeyError: 'run_method'"
+    },
+    {
+      "module": "Stock",
+      "test": "Stock Entry (Issue) Create",
+      "passed": true,
+      "detail": "MAT-STE-2026-00062"
+    },
+    {
+      "module": "Stock",
+      "test": "Stock Entry (Issue) Submit",
+      "passed": false,
+      "detail": "KeyError: 'run_method'"
+    },
+    {
+      "module": "Stock",
+      "test": "Stock Entry (Transfer) Create",
+      "passed": true,
+      "detail": "MAT-STE-2026-00063"
+    },
+    {
+      "module": "Stock",
+      "test": "Stock Entry (Transfer) Submit",
+      "passed": false,
+      "detail": "KeyError: 'run_method'"
+    },
+    {
+      "module": "Accounts",
+      "test": "Payment Entry (Receive) Create",
+      "passed": false,
+      "detail": "{'exception': 'frappe.exceptions.ValidationError: Target Exchange Rate is mandatory', 'exc_type': 'ValidationError', '_exc_source': 'erpnext (app)', 'exc': '[\"Traceback (most recent call last):\\\\n  File \\\\\"apps/frappe/frappe/app.py\\\\\", line 121, in application\\\\n    response = frappe.api.handle(requ"
+    },
+    {
+      "module": "Accounts",
+      "test": "Payment Entry (Pay) Create",
+      "passed": false,
+      "detail": "{'exception': 'frappe.exceptions.MandatoryError: [Payment Entry, ACC-PAY-2026-00230]: paid_from, paid_from_account_currency', 'exc_type': 'MandatoryError', 'exc': '[\"Traceback (most recent call last):\\\\n  File \\\\\"apps/frappe/frappe/app.py\\\\\", line 121, in application\\\\n    response = frappe.api.hand"
+    },
+    {
+      "module": "Accounts",
+      "test": "Journal Entry Create",
+      "passed": true,
+      "detail": "ACC-JV-2026-00003"
+    },
+    {
+      "module": "Accounts",
+      "test": "Journal Entry Submit",
+      "passed": false,
+      "detail": "KeyError: 'run_method'"
+    },
+    {
+      "module": "HR",
+      "test": "Employee List",
+      "passed": true,
+      "detail": "5 records"
+    },
+    {
+      "module": "HR",
+      "test": "Salary Structure Accessible",
+      "passed": false,
+      "detail": "{'exc_type': 'DoesNotExistError', '_server_messages': '[\"{\\\\\"message\\\\\":\\\\\"DocType Salary Structure not found\\\\\",\\\\\"as_table\\\\\":false,\\\\\"title\\\\\":\\\\\"Message\\\\\",\\\\\"indicator\\\\\":\\\\\"red\\\\\",\\\\\"raise_excep"
+    },
+    {
+      "module": "HR",
+      "test": "Salary Slip Accessible",
+      "passed": false,
+      "detail": "{'exc_type': 'DoesNotExistError', '_server_messages': '[\"{\\\\\"message\\\\\":\\\\\"DocType Salary Slip not found\\\\\",\\\\\"as_table\\\\\":false,\\\\\"title\\\\\":\\\\\"Message\\\\\",\\\\\"indicator\\\\\":\\\\\"red\\\\\",\\\\\"raise_exception\\"
+    },
+    {
+      "module": "HR",
+      "test": "Expense Claim Accessible",
+      "passed": false,
+      "detail": "{'exc_type': 'DoesNotExistError', '_server_messages': '[\"{\\\\\"message\\\\\":\\\\\"DocType Expense Claim not found\\\\\",\\\\\"as_table\\\\\":false,\\\\\"title\\\\\":\\\\\"Message\\\\\",\\\\\"indicator\\\\\":\\\\\"red\\\\\",\\\\\"raise_exceptio"
+    },
+    {
+      "module": "HR",
+      "test": "Leave Application Accessible",
+      "passed": false,
+      "detail": "{'exc_type': 'DoesNotExistError', '_server_messages': '[\"{\\\\\"message\\\\\":\\\\\"DocType Leave Application not found\\\\\",\\\\\"as_table\\\\\":false,\\\\\"title\\\\\":\\\\\"Message\\\\\",\\\\\"indicator\\\\\":\\\\\"red\\\\\",\\\\\"raise_exce"
+    },
+    {
+      "module": "HR",
+      "test": "Attendance Accessible",
+      "passed": false,
+      "detail": "{'exc_type': 'DoesNotExistError', '_server_messages': '[\"{\\\\\"message\\\\\":\\\\\"DocType Attendance not found\\\\\",\\\\\"as_table\\\\\":false,\\\\\"title\\\\\":\\\\\"Message\\\\\",\\\\\"indicator\\\\\":\\\\\"red\\\\\",\\\\\"raise_exception\\\\"
+    },
+    {
+      "module": "HR",
+      "test": "Payroll Entry Accessible",
+      "passed": false,
+      "detail": "{'exc_type': 'DoesNotExistError', '_server_messages': '[\"{\\\\\"message\\\\\":\\\\\"DocType Payroll Entry not found\\\\\",\\\\\"as_table\\\\\":false,\\\\\"title\\\\\":\\\\\"Message\\\\\",\\\\\"indicator\\\\\":\\\\\"red\\\\\",\\\\\"raise_exceptio"
+    },
+    {
+      "module": "Manufacturing",
+      "test": "BOM List",
+      "passed": true,
+      "detail": "0 records"
+    },
+    {
+      "module": "Manufacturing",
+      "test": "Work Order List",
+      "passed": true,
+      "detail": "0 records"
+    },
+    {
+      "module": "Manufacturing",
+      "test": "Job Card List",
+      "passed": true,
+      "detail": "0 records"
+    },
+    {
+      "module": "Manufacturing",
+      "test": "Operation List",
+      "passed": true,
+      "detail": "1 records"
+    },
+    {
+      "module": "Manufacturing",
+      "test": "Routing List",
+      "passed": true,
+      "detail": "0 records"
+    },
+    {
+      "module": "Vehicle Mgmt",
+      "test": "Vehicle Job Order List",
+      "passed": true,
+      "detail": "5 records"
+    },
+    {
+      "module": "Vehicle Mgmt",
+      "test": "Customer Vehicle List",
+      "passed": true,
+      "detail": "5 records"
+    },
+    {
+      "module": "Vehicle Mgmt",
+      "test": "Vehicle Service Item List",
+      "passed": false,
+      "detail": "{'exc_type': 'DoesNotExistError', '_server_messages': '[\"{\\\\\"message\\\\\":\\\\\"DocType Vehicle Service Item not found\\\\\",\\\\\"as_table\\\\\":false,\\\\\"title\\\\\":\\\\\"Message\\\\\",\\\\\"indicator\\\\\":\\\\\"red\\\\\",\\\\\"raise_e"
+    },
+    {
+      "module": "Vehicle Mgmt",
+      "test": "Vehicle Analytics API",
+      "passed": false,
+      "detail": "Status: 417"
+    },
+    {
+      "module": "Vehicle Mgmt",
+      "test": "Executive Dashboard API",
+      "passed": false,
+      "detail": "Status: 417"
+    },
+    {
+      "module": "Vehicle Mgmt",
+      "test": "POS Meta API",
+      "passed": false,
+      "detail": "Status: 417"
+    },
+    {
+      "module": "Web Pages",
+      "test": "Home",
+      "passed": true,
+      "detail": "/ \u2192 200"
+    },
+    {
+      "module": "Web Pages",
+      "test": "Desk",
+      "passed": true,
+      "detail": "/desk \u2192 200"
+    },
+    {
+      "module": "Web Pages",
+      "test": "Login",
+      "passed": true,
+      "detail": "/login \u2192 200"
+    },
+    {
+      "module": "Web Pages",
+      "test": "POS",
+      "passed": false,
+      "detail": "/pos \u2192 404"
+    },
+    {
+      "module": "Web Pages",
+      "test": "POS Terminal",
+      "passed": true,
+      "detail": "/pos-terminal \u2192 200"
+    },
+    {
+      "module": "Web Pages",
+      "test": "Executive Dashboard",
+      "passed": true,
+      "detail": "/executive \u2192 200"
+    },
+    {
+      "module": "Web Pages",
+      "test": "Vehicle POS JS",
+      "passed": false,
+      "detail": "/assets/vehicle_management/js/pos.js \u2192 404"
+    },
+    {
+      "module": "Web Pages",
+      "test": "ERPNext Web JS",
+      "passed": false,
+      "detail": "/assets/erpnext/js/erpnext-web.js \u2192 404"
+    },
+    {
+      "module": "Server Scripts",
+      "test": "List",
+      "passed": true,
+      "detail": "48 scripts"
+    },
+    {
+      "module": "Error Log",
+      "test": "List",
+      "passed": true,
+      "detail": "10 recent errors"
+    }
+  ],
+  "summary": {
+    "total_issues": 80,
+    "critical": 5,
+    "high": 63,
+    "medium": 7,
+    "low": 5,
+    "tests_total": 49,
+    "tests_passed": 22,
+    "tests_failed": 27
+  }
+}

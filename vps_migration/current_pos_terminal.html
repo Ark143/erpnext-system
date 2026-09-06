@@ -14821,14 +14821,14 @@ var POS = {
       const reconBadge = `<span class="vpos-hist-tag ${t.is_reconciled ? 'paid' : 'vpos-recon-pending'}">${escapeRecon(reconLabel)}</span>`;
       const closingLink = t.closing_entry ? `<a class="vpos-hist-tag" href="/desk/pos-closing-entry/${encodeURIComponent(t.closing_entry)}" target="_blank" rel="noopener">${escapeRecon(t.closing_entry)}</a>` : '';
 
-      const posLink = t.pos_invoice ? `<span class="vpos-hist-tag desk-link" onclick="window.open('/desk#Form/POS Invoice/${encodeURIComponent(t.pos_invoice)}', '_blank')">🔗 ${t.pos_invoice}</span>` : "";
+      const posLink = t.pos_invoice ? `<span class="vpos-hist-tag desk-link" onclick="window.open('/desk/pos-invoice/${encodeURIComponent(t.pos_invoice)}', '_blank')">🔗 ${t.pos_invoice}</span>` : "";
       const vehDisplay = (t.plate_no || t.vehicle) ? `🚗 <b>${t.plate_no || t.vehicle}</b>` : "";
       const remDisplay = t.remarks ? `<div style="font-size:11px;color:var(--muted);margin-top:2px;">📝 ${t.remarks}</div>` : "";
 
       return `
       <div class="vpos-hist-card">
         <div class="vpos-hist-top">
-          <div class="vpos-hist-code" onclick="window.open('/desk#Form/POS Invoice/${encodeURIComponent(t.name)}', '_blank')" title="Open POS Invoice in Desk">${t.name}</div>
+          <div class="vpos-hist-code" onclick="window.open('/desk/pos-invoice/${encodeURIComponent(t.name)}', '_blank')" title="Open POS Invoice in Desk">${t.name}</div>
           <div class="vpos-hist-time">${t.timestamp || t.posting_date || ""}</div>
         </div>
         <div class="vpos-hist-mid">
@@ -15657,7 +15657,7 @@ var POS = {
         <div class="vpos-receipt-dialog-foot">
           <button class="vpos-receipt-btn-print" id="vpos-receipt-modal-print">🖨 Print Receipt</button>
           <button class="vpos-receipt-btn-desk" id="vpos-receipt-modal-win" title="Open in dedicated printable window">🗗 Popup</button>
-          ${sale.invoice_no && sale.invoice_no !== 'OPEN-CART' ? `<button class="vpos-receipt-btn-desk" onclick="window.open('/desk#Form/POS Invoice/${encodeURIComponent(sale.invoice_no)}', '_blank')">🔗 Desk</button>` : ''}
+          ${sale.invoice_no && sale.invoice_no !== 'OPEN-CART' ? `<button class="vpos-receipt-btn-desk" onclick="window.open('/desk/pos-invoice/${encodeURIComponent(sale.invoice_no)}', '_blank')">🔗 Desk</button>` : ''}
           <button class="vpos-receipt-btn-close" id="vpos-receipt-modal-done">Close</button>
         </div>
       </div>

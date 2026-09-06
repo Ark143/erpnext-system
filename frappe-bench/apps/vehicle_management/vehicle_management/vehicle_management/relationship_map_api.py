@@ -2,19 +2,25 @@ import frappe
 from frappe import _
 
 @frappe.whitelist()
-def get_relationship_map(doctype=None, docname=None, vehicle=None, customer=None):
+def get_relationship_map(doctype=None, docname=None, vehicle=None, customer=None, supplier=None):
     """
-    VMS Relationship Map backend engine.
-    Traces upstream and downstream transactions across Vehicle Management, ERPNext Accounting,
-    and Inventory modules. Provides full Document Flow, Related Items Matrix, and Double-Entry Accounting Flow.
+    Unified Relationship Map backend engine for both VMS / Order-to-Cash (O2C) 
+    and Procure-to-Pay (P2P) transactional workflows.
+    Traces upstream and downstream transactions across Vehicle Management, Purchasing,
+    Inventory, Accounting, and Intercompany modules.
     """
-    if not doctype and not docname and not vehicle and not customer:
+    if not doctype and not docname and not vehicle and not customer and not supplier:
         latest_jo = frappe.get_all("Vehicle Job Order", fields=["name"], order_by="creation desc", limit=1)
         if latest_jo:
             doctype = "Vehicle Job Order"
             docname = latest_jo[0].name
         else:
-            return {"nodes": [], "edges": [], "summary": {}, "items": [], "accounting": {}}
+            latest_po = frappe.get_all("Purchase Order", fields=["name"], order_by="creation desc", limit=1)
+            if latest_po:
+                doctype = "Purchase Order"
+                docname = latest_po[0].name
+            else:
+                return {"nodes": [], "edges": [], "summary": {}, "items": [], "accounting": {}}
 
     if vehicle and not doctype:
         doctype = "Customer Vehicle"
@@ -22,12 +28,17 @@ def get_relationship_map(doctype=None, docname=None, vehicle=None, customer=None
     elif customer and not doctype:
         doctype = "Customer"
         docname = customer
+    elif supplier and not doctype:
+        doctype = "Supplier"
+        docname = supplier
 
     nodes_dict = {}
     edges = []
     all_items = []
 
     def add_node(dt, name, is_current=False, level=0):
+        if not dt or not name:
+            return None
         key = f"{dt}::{name}"
         if key in nodes_dict:
             if is_current:
@@ -51,7 +62,7 @@ def get_relationship_map(doctype=None, docname=None, vehicle=None, customer=None
         else:
             status_display = status
 
-        grand_total = float(getattr(doc, "grand_total", 0) or getattr(doc, "total_amount", 0) or getattr(doc, "paid_amount", 0) or getattr(doc, "received_amount", 0) or 0)
+        grand_total = float(getattr(doc, "grand_total", 0) or getattr(doc, "total_amount", 0) or getattr(doc, "paid_amount", 0) or getattr(doc, "received_amount", 0) or getattr(doc, "total", 0) or 0)
         
         if dt == "Sales Invoice":
             si_out = getattr(doc, "outstanding_amount", None)
@@ -65,6 +76,31 @@ def get_relationship_map(doctype=None, docname=None, vehicle=None, customer=None
                 status_display = "Paid"
             elif si_out is not None:
                 outstanding = max(0.0, float(si_out))
+                paid_amount = max(0.0, grand_total - outstanding)
+                if outstanding <= 0.001:
+                    outstanding = 0.0
+                    paid_amount = grand_total
+                    status_display = "Paid"
+            else:
+                ples = frappe.get_all("Payment Ledger Entry", filters={"against_voucher_no": name, "delinked": 0}, fields=["amount"])
+                if ples:
+                    outstanding = max(0.0, sum([float(p.amount) for p in ples]))
+                else:
+                    outstanding = grand_total
+                paid_amount = max(0.0, grand_total - outstanding)
+                if outstanding <= 0.001:
+                    outstanding = 0.0
+                    paid_amount = grand_total
+                    status_display = "Paid"
+        elif dt == "Purchase Invoice":
+            pi_out = getattr(doc, "outstanding_amount", None)
+            doc_status_raw = getattr(doc, "status", "") or ""
+            if doc_status_raw == "Paid" or (pi_out is not None and float(pi_out) <= 0.001):
+                outstanding = 0.0
+                paid_amount = grand_total
+                status_display = "Paid"
+            elif pi_out is not None:
+                outstanding = max(0.0, float(pi_out))
                 paid_amount = max(0.0, grand_total - outstanding)
                 if outstanding <= 0.001:
                     outstanding = 0.0
@@ -100,6 +136,13 @@ def get_relationship_map(doctype=None, docname=None, vehicle=None, customer=None
         elif dt in ("Vehicle POS Invoice", "POS Invoice"):
             paid_amount = float(getattr(doc, "paid_amount", 0) or grand_total)
             outstanding = max(0.0, grand_total - paid_amount)
+        elif dt == "Purchase Order":
+            per_billed = float(getattr(doc, "per_billed", 0) or 0)
+            per_received = float(getattr(doc, "per_received", 0) or 0)
+            advance_paid = float(getattr(doc, "advance_paid", 0) or 0)
+            paid_amount = advance_paid
+            doc_out = getattr(doc, "outstanding_amount", None)
+            outstanding = float(doc_out) if doc_out is not None else max(0.0, grand_total - paid_amount)
         else:
             paid_amount = float(getattr(doc, "paid_amount", 0) or getattr(doc, "total_allocated_amount", 0) or 0)
             doc_out = getattr(doc, "outstanding_amount", None)
@@ -108,11 +151,17 @@ def get_relationship_map(doctype=None, docname=None, vehicle=None, customer=None
             else:
                 outstanding = max(0.0, grand_total - paid_amount)
         
-        posting_date = str(getattr(doc, "posting_date", "") or getattr(doc, "job_order_date", "") or getattr(doc, "estimate_date", "") or getattr(doc, "inspection_date", "") or getattr(doc, "transaction_date", "") or getattr(doc, "creation", ""))[:10]
+        posting_date = str(getattr(doc, "posting_date", "") or getattr(doc, "transaction_date", "") or getattr(doc, "job_order_date", "") or getattr(doc, "schedule_date", "") or getattr(doc, "estimate_date", "") or getattr(doc, "inspection_date", "") or getattr(doc, "creation", ""))[:10]
         posting_time = str(getattr(doc, "posting_time", "") or "")
 
         veh_plate = getattr(doc, "plate_no", None) or getattr(doc, "vehicle", None) or getattr(doc, "custom_vehicle_plate", None)
-        cust_name = getattr(doc, "customer_name", None) or getattr(doc, "customer", None) or getattr(doc, "party_name", None)
+        cust_name = getattr(doc, "customer_name", None) or getattr(doc, "customer", None)
+        supp_name = getattr(doc, "supplier_name", None) or getattr(doc, "supplier", None)
+        if not cust_name and getattr(doc, "party_type", "") == "Customer":
+            cust_name = getattr(doc, "party", "") or getattr(doc, "party_name", "")
+        if not supp_name and getattr(doc, "party_type", "") == "Supplier":
+            supp_name = getattr(doc, "party", "") or getattr(doc, "party_name", "")
+
         company = getattr(doc, "company", "") or "ULTRA MRF"
 
         # Line items extraction
@@ -158,11 +207,15 @@ def get_relationship_map(doctype=None, docname=None, vehicle=None, customer=None
                 grp = (getattr(it, "item_group", "") or "").lower()
                 nm = (getattr(it, "item_name", "") or "").lower()
                 if "service" in grp or "labor" in grp or "service" in nm or "labor" in nm:
-                    cat_name = "Billed Service / Labor"
+                    cat_name = "Billed Service / Labor" if dt in ("Sales Invoice", "POS Invoice") else "Procured Service"
                     cat_key = "service"
                 else:
-                    cat_name = "Billed Spare Part / Product"
-                    cat_key = "part"
+                    if dt in ("Purchase Order", "Purchase Receipt", "Purchase Invoice", "Material Request"):
+                        cat_name = "Purchased Material / Stock"
+                        cat_key = "part"
+                    else:
+                        cat_name = "Billed Spare Part / Product"
+                        cat_key = "part"
 
                 it_obj = {
                     "doc_type": dt,
@@ -175,7 +228,7 @@ def get_relationship_map(doctype=None, docname=None, vehicle=None, customer=None
                     "uom": getattr(it, "uom", "PC") or "PC",
                     "rate": float(getattr(it, "rate", 0) or 0),
                     "amount": float(getattr(it, "amount", 0) or (getattr(it, "qty", 1) * getattr(it, "rate", 0))),
-                    "account": getattr(it, "income_account", "") or getattr(it, "expense_account", "") or "Sales Revenue"
+                    "account": getattr(it, "expense_account", "") or getattr(it, "income_account", "") or getattr(it, "cost_center", "") or "Inventory / COGS"
                 }
                 items.append(it_obj)
                 all_items.append(it_obj)
@@ -193,7 +246,7 @@ def get_relationship_map(doctype=None, docname=None, vehicle=None, customer=None
                     "uom": "Voucher",
                     "rate": float(getattr(ref, "allocated_amount", 0) or 0),
                     "amount": float(getattr(ref, "allocated_amount", 0) or 0),
-                    "account": "Accounts Receivable Offset"
+                    "account": "Accounts Receivable / Payable Offset"
                 }
                 items.append(it_obj)
                 all_items.append(it_obj)
@@ -214,6 +267,7 @@ def get_relationship_map(doctype=None, docname=None, vehicle=None, customer=None
             "posting_time": posting_time,
             "vehicle": veh_plate,
             "customer": cust_name,
+            "supplier": supp_name,
             "company": company,
             "is_current": is_current,
             "level": level,
@@ -240,13 +294,27 @@ def get_relationship_map(doctype=None, docname=None, vehicle=None, customer=None
         })
 
     # 1. Add focal node
-    focal_node = add_node(doctype, docname, is_current=True, level=2)
+    focal_level = 2
+    if doctype in ("Customer", "Customer Vehicle", "Supplier", "Material Request"):
+        focal_level = 0
+    elif doctype in ("Purchase Order", "Vehicle Estimate", "Vehicle Inspection", "Quotation", "Supplier Quotation", "Sales Order"):
+        focal_level = 1
+    elif doctype in ("Vehicle Job Order", "Purchase Receipt", "Delivery Note", "Stock Entry"):
+        focal_level = 2
+    elif doctype in ("Sales Invoice", "Purchase Invoice", "Vehicle POS Invoice", "POS Invoice"):
+        focal_level = 3
+    elif doctype in ("Payment Entry", "GL Entry", "Journal Entry"):
+        focal_level = 4
+
+    focal_node = add_node(doctype, docname, is_current=True, level=focal_level)
     if not focal_node:
         return {"nodes": [], "edges": [], "summary": {}, "items": [], "accounting": {}}
 
     plate_no = focal_node.get("vehicle")
     customer_name = focal_node.get("customer")
+    supplier_name = focal_node.get("supplier")
 
+    # Trace Customer / Vehicle masters
     if doctype == "Customer Vehicle":
         plate_no = docname
         veh_doc = frappe.get_doc("Customer Vehicle", docname)
@@ -256,6 +324,9 @@ def get_relationship_map(doctype=None, docname=None, vehicle=None, customer=None
 
     if doctype == "Customer":
         customer_name = docname
+
+    if doctype == "Supplier":
+        supplier_name = docname
 
     if plate_no and frappe.db.exists("Customer Vehicle", plate_no):
         add_node("Customer Vehicle", plate_no, level=0)
@@ -272,8 +343,186 @@ def get_relationship_map(doctype=None, docname=None, vehicle=None, customer=None
         if doctype != "Customer":
             add_edge("Customer", customer_name, doctype, docname, "Customer", "reference")
 
-    # Document specifics
-    if doctype == "Vehicle Job Order":
+    if supplier_name and frappe.db.exists("Supplier", supplier_name):
+        add_node("Supplier", supplier_name, level=0)
+        if doctype != "Supplier":
+            add_edge("Supplier", supplier_name, doctype, docname, "Supplier", "reference")
+
+    # =========================================================================
+    # PROCURE-TO-PAY (P2P) DOCUMENT FLOWS
+    # =========================================================================
+
+    if doctype == "Material Request":
+        mr_doc = frappe.get_doc("Material Request", docname)
+        # Downstream: Purchase Orders
+        po_items = frappe.get_all("Purchase Order Item", filters={"material_request": docname}, fields=["parent"], distinct=True)
+        for poi in po_items:
+            if frappe.db.exists("Purchase Order", poi.parent):
+                add_node("Purchase Order", poi.parent, level=1)
+                add_edge("Material Request", docname, "Purchase Order", poi.parent, "Procured via PO", "flow")
+                po_doc = frappe.get_doc("Purchase Order", poi.parent)
+                if po_doc.supplier and frappe.db.exists("Supplier", po_doc.supplier):
+                    add_node("Supplier", po_doc.supplier, level=0)
+                    add_edge("Supplier", po_doc.supplier, "Purchase Order", poi.parent, "Supplier", "reference")
+
+                # Trace Downstream Receipts for this PO
+                for pr in frappe.get_all("Purchase Receipt Item", filters={"purchase_order": poi.parent}, fields=["parent"], distinct=True):
+                    if frappe.db.exists("Purchase Receipt", pr.parent):
+                        add_node("Purchase Receipt", pr.parent, level=2)
+                        add_edge("Purchase Order", poi.parent, "Purchase Receipt", pr.parent, "GRN Receipt", "flow")
+
+                # Trace Downstream Invoices for this PO
+                for pi in frappe.get_all("Purchase Invoice Item", filters={"purchase_order": poi.parent}, fields=["parent"], distinct=True):
+                    if frappe.db.exists("Purchase Invoice", pi.parent):
+                        add_node("Purchase Invoice", pi.parent, level=3)
+                        add_edge("Purchase Order", poi.parent, "Purchase Invoice", pi.parent, "Billed via PI", "flow")
+                        for p in frappe.get_all("Payment Entry Reference", filters={"reference_name": pi.parent}, fields=["parent"], distinct=True):
+                            if frappe.db.exists("Payment Entry", p.parent):
+                                add_node("Payment Entry", p.parent, level=4)
+                                add_edge("Purchase Invoice", pi.parent, "Payment Entry", p.parent, "Payment Disbursed", "accounting")
+
+        # Downstream: Stock Entries
+        for se_item in frappe.get_all("Stock Entry Detail", filters={"material_request": docname}, fields=["parent"], distinct=True):
+            if frappe.db.exists("Stock Entry", se_item.parent):
+                add_node("Stock Entry", se_item.parent, level=2)
+                add_edge("Material Request", docname, "Stock Entry", se_item.parent, "Stock Movement", "flow")
+
+    elif doctype == "Purchase Order":
+        po_doc = frappe.get_doc("Purchase Order", docname)
+        if po_doc.supplier and frappe.db.exists("Supplier", po_doc.supplier):
+            add_node("Supplier", po_doc.supplier, level=0)
+            add_edge("Supplier", po_doc.supplier, "Purchase Order", docname, "Supplier", "reference")
+
+        # Upstream: Material Requests
+        for it in po_doc.items:
+            mr_id = getattr(it, "material_request", None)
+            if mr_id and frappe.db.exists("Material Request", mr_id):
+                add_node("Material Request", mr_id, level=0)
+                add_edge("Material Request", mr_id, "Purchase Order", docname, "Procured via PO", "flow")
+
+        # Downstream: Purchase Receipts
+        for pr in frappe.get_all("Purchase Receipt Item", filters={"purchase_order": docname}, fields=["parent"], distinct=True):
+            if frappe.db.exists("Purchase Receipt", pr.parent):
+                add_node("Purchase Receipt", pr.parent, level=2)
+                add_edge("Purchase Order", docname, "Purchase Receipt", pr.parent, "Goods Received (GRN)", "flow")
+
+        # Downstream: Purchase Invoices
+        for pi in frappe.get_all("Purchase Invoice Item", filters={"purchase_order": docname}, fields=["parent"], distinct=True):
+            if frappe.db.exists("Purchase Invoice", pi.parent):
+                add_node("Purchase Invoice", pi.parent, level=3)
+                add_edge("Purchase Order", docname, "Purchase Invoice", pi.parent, "Billed via PI", "flow")
+                for p in frappe.get_all("Payment Entry Reference", filters={"reference_name": pi.parent}, fields=["parent"], distinct=True):
+                    if frappe.db.exists("Payment Entry", p.parent):
+                        add_node("Payment Entry", p.parent, level=4)
+                        add_edge("Purchase Invoice", pi.parent, "Payment Entry", p.parent, "Payment Disbursed", "accounting")
+
+        # Downstream: Advance Payment Entries directly against PO
+        for p in frappe.get_all("Payment Entry Reference", filters={"reference_name": docname}, fields=["parent"], distinct=True):
+            if frappe.db.exists("Payment Entry", p.parent):
+                add_node("Payment Entry", p.parent, level=4)
+                add_edge("Purchase Order", docname, "Payment Entry", p.parent, "Advance Payment", "accounting")
+
+        # Intercompany Sister Order Link
+        inter_so = getattr(po_doc, "inter_company_order_reference", None)
+        if inter_so and frappe.db.exists("Sales Order", inter_so):
+            add_node("Sales Order", inter_so, level=1)
+            add_edge("Purchase Order", docname, "Sales Order", inter_so, "Intercompany Sister SO", "reference")
+        else:
+            for so in frappe.get_all("Sales Order", filters={"inter_company_order_reference": docname}, fields=["name"]):
+                add_node("Sales Order", so.name, level=1)
+                add_edge("Purchase Order", docname, "Sales Order", so.name, "Intercompany Sister SO", "reference")
+
+    elif doctype == "Purchase Receipt":
+        pr_doc = frappe.get_doc("Purchase Receipt", docname)
+        if pr_doc.supplier and frappe.db.exists("Supplier", pr_doc.supplier):
+            add_node("Supplier", pr_doc.supplier, level=0)
+            add_edge("Supplier", pr_doc.supplier, "Purchase Receipt", docname, "Supplier", "reference")
+
+        # Upstream: Purchase Orders
+        for it in pr_doc.items:
+            po_id = getattr(it, "purchase_order", None)
+            if po_id and frappe.db.exists("Purchase Order", po_id):
+                add_node("Purchase Order", po_id, level=1)
+                add_edge("Purchase Order", po_id, "Purchase Receipt", docname, "Goods Received (GRN)", "flow")
+                po_d = frappe.get_doc("Purchase Order", po_id)
+                for po_it in po_d.items:
+                    mr_id = getattr(po_it, "material_request", None)
+                    if mr_id and frappe.db.exists("Material Request", mr_id):
+                        add_node("Material Request", mr_id, level=0)
+                        add_edge("Material Request", mr_id, "Purchase Order", po_id, "Procured via PO", "flow")
+
+        # Downstream: Purchase Invoices
+        for pi in frappe.get_all("Purchase Invoice Item", filters={"purchase_receipt": docname}, fields=["parent"], distinct=True):
+            if frappe.db.exists("Purchase Invoice", pi.parent):
+                add_node("Purchase Invoice", pi.parent, level=3)
+                add_edge("Purchase Receipt", docname, "Purchase Invoice", pi.parent, "Billed via PI", "flow")
+                for p in frappe.get_all("Payment Entry Reference", filters={"reference_name": pi.parent}, fields=["parent"], distinct=True):
+                    if frappe.db.exists("Payment Entry", p.parent):
+                        add_node("Payment Entry", p.parent, level=4)
+                        add_edge("Purchase Invoice", pi.parent, "Payment Entry", p.parent, "Payment Disbursed", "accounting")
+
+    elif doctype == "Purchase Invoice":
+        pi_doc = frappe.get_doc("Purchase Invoice", docname)
+        if pi_doc.supplier and frappe.db.exists("Supplier", pi_doc.supplier):
+            add_node("Supplier", pi_doc.supplier, level=0)
+            add_edge("Supplier", pi_doc.supplier, "Purchase Invoice", docname, "Supplier", "reference")
+
+        # Upstream: Purchase Receipts
+        for it in pi_doc.items:
+            pr_id = getattr(it, "purchase_receipt", None)
+            if pr_id and frappe.db.exists("Purchase Receipt", pr_id):
+                add_node("Purchase Receipt", pr_id, level=2)
+                add_edge("Purchase Receipt", pr_id, "Purchase Invoice", docname, "Billed via PI", "flow")
+
+        # Upstream: Purchase Orders
+        for it in pi_doc.items:
+            po_id = getattr(it, "purchase_order", None)
+            if po_id and frappe.db.exists("Purchase Order", po_id):
+                add_node("Purchase Order", po_id, level=1)
+                add_edge("Purchase Order", po_id, "Purchase Invoice", docname, "Direct Billed PO", "flow")
+                po_d = frappe.get_doc("Purchase Order", po_id)
+                for po_it in po_d.items:
+                    mr_id = getattr(po_it, "material_request", None)
+                    if mr_id and frappe.db.exists("Material Request", mr_id):
+                        add_node("Material Request", mr_id, level=0)
+                        add_edge("Material Request", mr_id, "Purchase Order", po_id, "Procured via PO", "flow")
+
+        # Downstream: Payment Entries
+        for p in frappe.get_all("Payment Entry Reference", filters={"reference_name": docname}, fields=["parent"], distinct=True):
+            if frappe.db.exists("Payment Entry", p.parent):
+                add_node("Payment Entry", p.parent, level=4)
+                add_edge("Purchase Invoice", docname, "Payment Entry", p.parent, "Payment Disbursed", "accounting")
+
+        # Intercompany Sister Invoice Link
+        inter_si = getattr(pi_doc, "inter_company_invoice_reference", None)
+        if inter_si and frappe.db.exists("Sales Invoice", inter_si):
+            add_node("Sales Invoice", inter_si, level=3)
+            add_edge("Purchase Invoice", docname, "Sales Invoice", inter_si, "Intercompany Sister SI", "reference")
+        else:
+            for si in frappe.get_all("Sales Invoice", filters={"inter_company_invoice_reference": docname}, fields=["name"]):
+                add_node("Sales Invoice", si.name, level=3)
+                add_edge("Purchase Invoice", docname, "Sales Invoice", si.name, "Intercompany Sister SI", "reference")
+
+    elif doctype == "Supplier":
+        # Trace recent transactions for this supplier
+        for po in frappe.get_all("Purchase Order", filters={"supplier": docname}, fields=["name"], order_by="creation desc", limit=3):
+            add_node("Purchase Order", po.name, level=1)
+            add_edge("Supplier", docname, "Purchase Order", po.name, "Purchase Order", "flow")
+        for pr in frappe.get_all("Purchase Receipt", filters={"supplier": docname}, fields=["name"], order_by="creation desc", limit=2):
+            add_node("Purchase Receipt", pr.name, level=2)
+            add_edge("Supplier", docname, "Purchase Receipt", pr.name, "Receipt (GRN)", "flow")
+        for pi in frappe.get_all("Purchase Invoice", filters={"supplier": docname}, fields=["name"], order_by="creation desc", limit=3):
+            add_node("Purchase Invoice", pi.name, level=3)
+            add_edge("Supplier", docname, "Purchase Invoice", pi.name, "Purchase Bill", "flow")
+        for pe in frappe.get_all("Payment Entry", filters={"party_type": "Supplier", "party": docname}, fields=["name"], order_by="creation desc", limit=3):
+            add_node("Payment Entry", pe.name, level=4)
+            add_edge("Supplier", docname, "Payment Entry", pe.name, "Payment Entry", "accounting")
+
+    # =========================================================================
+    # VEHICLE MANAGEMENT & ORDER-TO-CASH (O2C) FLOWS
+    # =========================================================================
+
+    elif doctype == "Vehicle Job Order":
         jo = frappe.get_doc("Vehicle Job Order", docname)
         if jo.estimate and frappe.db.exists("Vehicle Estimate", jo.estimate):
             add_node("Vehicle Estimate", jo.estimate, level=1)
@@ -361,6 +610,26 @@ def get_relationship_map(doctype=None, docname=None, vehicle=None, customer=None
                 add_node("Payment Entry", p.parent, level=4)
                 add_edge("Sales Invoice", docname, "Payment Entry", p.parent, "Payment Received", "accounting")
 
+    elif doctype == "Payment Entry":
+        pe_doc = frappe.get_doc("Payment Entry", docname)
+        if pe_doc.party_type == "Customer" and pe_doc.party and frappe.db.exists("Customer", pe_doc.party):
+            add_node("Customer", pe_doc.party, level=0)
+            add_edge("Customer", pe_doc.party, "Payment Entry", docname, "Party", "reference")
+        elif pe_doc.party_type == "Supplier" and pe_doc.party and frappe.db.exists("Supplier", pe_doc.party):
+            add_node("Supplier", pe_doc.party, level=0)
+            add_edge("Supplier", pe_doc.party, "Payment Entry", docname, "Party", "reference")
+
+        for ref in getattr(pe_doc, "references", []):
+            ref_dt = ref.reference_doctype
+            ref_dn = ref.reference_name
+            if ref_dt and ref_dn and frappe.db.exists(ref_dt, ref_dn):
+                if ref_dt in ("Sales Invoice", "POS Invoice", "Purchase Invoice"):
+                    add_node(ref_dt, ref_dn, level=3)
+                    add_edge(ref_dt, ref_dn, "Payment Entry", docname, "Payment Settled", "accounting")
+                elif ref_dt in ("Sales Order", "Purchase Order"):
+                    add_node(ref_dt, ref_dn, level=1)
+                    add_edge(ref_dt, ref_dn, "Payment Entry", docname, "Advance Payment", "accounting")
+
     elif doctype == "Customer Vehicle":
         for i in frappe.get_all("Vehicle Inspection", filters={"vehicle": docname}, fields=["name"], limit=3):
             add_node("Vehicle Inspection", i.name, level=1)
@@ -382,33 +651,46 @@ def get_relationship_map(doctype=None, docname=None, vehicle=None, customer=None
             add_edge("Customer Vehicle", docname, "Vehicle POS Invoice", vp.name, "POS Receipt", "flow")
 
     # -------------------------------------------------------------
-    # Calculate Graph Financial Summary (Deduplicating billed JOs)
+    # Calculate Graph Financial Summary (Deduplicating billed stages)
     # -------------------------------------------------------------
-    invoices = [n for n in nodes_dict.values() if n.get("doctype") in ("Sales Invoice", "POS Invoice", "Vehicle POS Invoice")]
+    invoices = [n for n in nodes_dict.values() if n.get("doctype") in ("Sales Invoice", "POS Invoice", "Vehicle POS Invoice", "Purchase Invoice")]
     invoiced_jo_names = set()
     for inv in invoices:
         for j in frappe.get_all("Vehicle Job Order", filters={"sales_invoice": inv.get("name")}, fields=["name"]):
             invoiced_jo_names.add(j.name)
 
     unbilled_jos = [n for n in nodes_dict.values() if n.get("doctype") == "Vehicle Job Order" and n.get("name") not in invoiced_jo_names]
-    billable_nodes = invoices + unbilled_jos
+    
+    # Check if this is a P2P workflow
+    is_p2p = doctype in ("Material Request", "Purchase Order", "Purchase Receipt", "Purchase Invoice", "Supplier") or any(n.get("doctype") in ("Purchase Order", "Purchase Invoice", "Supplier") for n in nodes_dict.values())
 
-    if billable_nodes:
-        total_val = sum([n.get("grand_total", 0) for n in billable_nodes])
-        payment_entries = [n for n in nodes_dict.values() if n.get("doctype") == "Payment Entry"]
-        if payment_entries:
-            pe_paid = sum([n.get("grand_total", 0) for n in payment_entries])
-            pos_paid = sum([n.get("paid_amount", 0) for n in billable_nodes if n.get("doctype") in ("POS Invoice", "Vehicle POS Invoice")])
-            total_paid = pe_paid + pos_paid
-        else:
-            total_paid = sum([n.get("paid_amount", 0) for n in billable_nodes])
-            
+    if is_p2p:
+        po_nodes = [n for n in nodes_dict.values() if n.get("doctype") == "Purchase Order"]
+        pi_nodes = [n for n in nodes_dict.values() if n.get("doctype") == "Purchase Invoice"]
+        pe_nodes = [n for n in nodes_dict.values() if n.get("doctype") == "Payment Entry"]
+        
+        total_val = sum([n.get("grand_total", 0) for n in pi_nodes]) or sum([n.get("grand_total", 0) for n in po_nodes])
+        total_paid = sum([n.get("grand_total", 0) for n in pe_nodes]) or sum([n.get("paid_amount", 0) for n in pi_nodes])
         total_paid = min(total_val, total_paid) if total_val > 0 else total_paid
         total_outstanding = max(0.0, total_val - total_paid)
     else:
-        total_val = sum([n.get("grand_total", 0) for n in nodes_dict.values() if n.get("doctype") in ("Vehicle Job Order", "Sales Invoice", "Vehicle POS Invoice", "POS Invoice")])
-        total_paid = sum([n.get("paid_amount", 0) for n in nodes_dict.values() if n.get("doctype") in ("Vehicle Job Order", "Sales Invoice", "Payment Entry", "Vehicle POS Invoice")])
-        total_outstanding = max(0.0, total_val - total_paid)
+        billable_nodes = invoices + unbilled_jos
+        if billable_nodes:
+            total_val = sum([n.get("grand_total", 0) for n in billable_nodes])
+            payment_entries = [n for n in nodes_dict.values() if n.get("doctype") == "Payment Entry"]
+            if payment_entries:
+                pe_paid = sum([n.get("grand_total", 0) for n in payment_entries])
+                pos_paid = sum([n.get("paid_amount", 0) for n in billable_nodes if n.get("doctype") in ("POS Invoice", "Vehicle POS Invoice")])
+                total_paid = pe_paid + pos_paid
+            else:
+                total_paid = sum([n.get("paid_amount", 0) for n in billable_nodes])
+                
+            total_paid = min(total_val, total_paid) if total_val > 0 else total_paid
+            total_outstanding = max(0.0, total_val - total_paid)
+        else:
+            total_val = sum([n.get("grand_total", 0) for n in nodes_dict.values() if n.get("doctype") in ("Vehicle Job Order", "Sales Invoice", "Vehicle POS Invoice", "POS Invoice", "Purchase Order", "Purchase Invoice")])
+            total_paid = sum([n.get("paid_amount", 0) for n in nodes_dict.values() if n.get("doctype") in ("Vehicle Job Order", "Sales Invoice", "Payment Entry", "Vehicle POS Invoice", "Purchase Invoice")])
+            total_outstanding = max(0.0, total_val - total_paid)
 
     # -------------------------------------------------------------
     # Deduplicated Item Matrix & Metrics
@@ -420,12 +702,11 @@ def get_relationship_map(doctype=None, docname=None, vehicle=None, customer=None
         amt = float(it.get("amount") or 0)
         qty = float(it.get("qty") or 1)
         cat = it.get("category", "")
-        # Deduplicate across Job Order vs Sales Invoice stages
         if cat == "part":
-            if code not in unique_parts_map or it.get("doc_type") in ("Sales Invoice", "POS Invoice"):
+            if code not in unique_parts_map or it.get("doc_type") in ("Sales Invoice", "POS Invoice", "Purchase Invoice"):
                 unique_parts_map[code] = {"amount": amt, "qty": qty, "item": it}
         elif cat == "service":
-            if code not in unique_services_map or it.get("doc_type") in ("Sales Invoice", "POS Invoice"):
+            if code not in unique_services_map or it.get("doc_type") in ("Sales Invoice", "POS Invoice", "Purchase Invoice"):
                 unique_services_map[code] = {"amount": amt, "qty": qty, "item": it}
 
     dedup_parts_total = sum([p["amount"] for p in unique_parts_map.values()])
@@ -434,28 +715,15 @@ def get_relationship_map(doctype=None, docname=None, vehicle=None, customer=None
     # -------------------------------------------------------------
     # Full Accounting & General Ledger Double-Entry Extraction
     # -------------------------------------------------------------
-    accounting_vouchers = [n["name"] for n in nodes_dict.values() if n.get("doctype") in ("Sales Invoice", "Payment Entry", "POS Invoice", "Vehicle POS Invoice", "Journal Entry")]
+    accounting_vouchers = [n["name"] for n in nodes_dict.values() if n.get("doctype") in ("Sales Invoice", "Payment Entry", "POS Invoice", "Vehicle POS Invoice", "Purchase Invoice", "Journal Entry", "Stock Entry")]
     gl_entries_list = []
 
-    # Build a strict map: voucher_no -> expected doctype from our relationship graph.
-    # This is used to discard cross-type GL entries (e.g. Payment Entry clearing rows
-    # that ERPNext stores under the Sales Invoice voucher_no).
     voucher_doctype_map = {
         n["name"]: n["doctype"]
         for n in nodes_dict.values()
-        if n.get("doctype") in ("Sales Invoice", "Payment Entry", "POS Invoice", "Vehicle POS Invoice", "Journal Entry")
+        if n.get("doctype") in ("Sales Invoice", "Payment Entry", "POS Invoice", "Vehicle POS Invoice", "Purchase Invoice", "Journal Entry", "Stock Entry")
     }
 
-    # -----------------------------------------------------------------------
-    # POS Invoice → Sales Invoice consolidation guard
-    # -----------------------------------------------------------------------
-    # ERPNext posts FULL GL entries on the POS Invoice AND again on the
-    # consolidated Sales Invoice (created via POS Closing Entry).
-    # Showing both doubles every revenue/receivable line.
-    # Rule: if a POS Invoice has already been consolidated into a Sales Invoice
-    # that exists in our graph, exclude that POS Invoice from the GL fetch —
-    # the Sales Invoice is the authoritative accounting document.
-    # Standalone POS Invoices (not yet consolidated) are kept as-is.
     consolidated_pos_to_skip = set()
     si_names_in_graph = {
         n["name"] for n in nodes_dict.values()
@@ -466,8 +734,6 @@ def get_relationship_map(doctype=None, docname=None, vehicle=None, customer=None
         if n.get("doctype") in ("POS Invoice", "Vehicle POS Invoice")
     }
     if pos_names_in_graph and si_names_in_graph:
-        # Check if any POS Invoice in our graph is referenced by a Sales Invoice
-        # in our graph (i.e. it was consolidated already).
         try:
             pos_si_links = frappe.get_all(
                 "POS Invoice Reference",
@@ -475,18 +741,15 @@ def get_relationship_map(doctype=None, docname=None, vehicle=None, customer=None
                 fields=["pos_invoice", "parent"]
             )
             for link in pos_si_links:
-                # 'parent' is the POS Invoice Merge Log; follow to the SI
                 merge_log = frappe.db.get_value(
                     "POS Invoice Merge Log", link.parent, "consolidated_invoice"
                 )
                 if merge_log and merge_log in si_names_in_graph:
                     consolidated_pos_to_skip.add(link.pos_invoice)
         except Exception:
-            pass  # Doctype may not exist; safe to skip
+            pass
 
-    # Remove consolidated POS Invoices from accounting_vouchers
     accounting_vouchers = [v for v in accounting_vouchers if v not in consolidated_pos_to_skip]
-    # Also remove them from the type map so the voucher_type filter works correctly
     for pos_name in consolidated_pos_to_skip:
         voucher_doctype_map.pop(pos_name, None)
 
@@ -497,9 +760,6 @@ def get_relationship_map(doctype=None, docname=None, vehicle=None, customer=None
             order_by="posting_date asc, creation asc"
         )
         for gl in gles:
-            # Skip GL entries whose voucher_type doesn't match the expected doctype
-            # for that voucher_no.  ERPNext can store Payment Entry reconciliation
-            # rows under the Sales Invoice's voucher_no which would double the total.
             expected_doctype = voucher_doctype_map.get(gl.voucher_no)
             if expected_doctype and gl.voucher_type != expected_doctype:
                 continue
@@ -538,7 +798,7 @@ def get_relationship_map(doctype=None, docname=None, vehicle=None, customer=None
                 "amount": float(p.amount or 0)
             })
 
-    # Group GL entries by Voucher for direct accounting breakdown cards
+    # Group GL entries by Voucher
     vouchers_gl_map = {}
     for g in gl_entries_list:
         v_key = f"{g['voucher_type']}::{g['voucher_no']}"
@@ -546,7 +806,7 @@ def get_relationship_map(doctype=None, docname=None, vehicle=None, customer=None
             vouchers_gl_map[v_key] = []
         vouchers_gl_map[v_key].append(g)
 
-    # Net Revenue and Collections for clean accounting KPIs
+    # Net Revenue / Purchases and Collections / Disbursements
     total_invoice_revenue = sum([
         float(g["credit"] or 0) 
         for g in gl_entries_list 
@@ -557,7 +817,7 @@ def get_relationship_map(doctype=None, docname=None, vehicle=None, customer=None
         total_invoice_revenue = sum([n.get("grand_total", 0) for n in nodes_dict.values() if n.get("doctype") in ("Sales Invoice", "POS Invoice", "Vehicle POS Invoice")])
 
     total_payments_collected = sum([
-        float(g["debit"] or 0)
+        float(g["debit"] or 0) 
         for g in gl_entries_list
         if g.get("voucher_type") in ("Payment Entry", "Journal Entry", "Sales Invoice", "POS Invoice", "Vehicle POS Invoice")
         and ("cash" in (g.get("account") or "").lower() or "bank" in (g.get("account") or "").lower() or "undeposited" in (g.get("account") or "").lower())
@@ -604,8 +864,10 @@ def get_relationship_map(doctype=None, docname=None, vehicle=None, customer=None
         "company_address": company_address,
         "focal_doctype": doctype,
         "focal_docname": docname,
+        "is_p2p": is_p2p,
         "vehicle_plate": plate_no,
         "customer_name": customer_name,
+        "supplier_name": supplier_name,
         "total_nodes": len(nodes_dict),
         "total_edges": len(edges),
         "total_transaction_value": total_val,

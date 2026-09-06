@@ -1,27 +1,44 @@
 /**
- * VMS Relationship Map Engine for Vehicle Management
+ * Unified VMS & P2P Relationship Map Engine
  * (c) Autometrik / ULTRA MRF
  *
  * Provides full visual document flow, items/services breakdown, accounting posting graph,
- * zoom/pan interactive canvas, and document inspector drawer.
+ * zoom/pan interactive canvas, and document inspector drawer for both Order-to-Cash (O2C)
+ * and Procure-to-Pay (P2P) transactional workflows.
  */
 
 (function () {
   window.SAPRelationshipMap = window.SAPRelationshipMap || {};
 
   const DOCTYPE_COLORS = {
+    // Master Entities
     "Customer": { bg: "#f1f5f9", border: "#64748b", text: "#0f172a", icon: "fa fa-user", tag: "Customer Profile" },
     "Customer Vehicle": { bg: "#e0f2fe", border: "#0284c7", text: "#0369a1", icon: "fa fa-car", tag: "Customer Vehicle" },
+    "Supplier": { bg: "#f8fafc", border: "#475569", text: "#0f172a", icon: "fa fa-truck", tag: "Supplier Profile" },
+
+    // P2P Workflow
+    "Material Request": { bg: "#fef3c7", border: "#f59e0b", text: "#b45309", icon: "fa fa-clipboard-list", tag: "Material Request" },
+    "Supplier Quotation": { bg: "#fdf4ff", border: "#c026d3", text: "#a21caf", icon: "fa fa-file-invoice", tag: "Supplier Quotation" },
+    "Purchase Order": { bg: "#e0e7ff", border: "#6366f1", text: "#4338ca", icon: "fa fa-shopping-cart", tag: "Purchase Order" },
+    "Purchase Receipt": { bg: "#ccfbf1", border: "#0d9488", text: "#0f766e", icon: "fa fa-boxes", tag: "Purchase Receipt (GRN)" },
+    "Purchase Invoice": { bg: "#fee2e2", border: "#ef4444", text: "#b91c1c", icon: "fa fa-file-invoice-dollar", tag: "Purchase Invoice (Bill)" },
+
+    // VMS & O2C Workflow
     "Vehicle Estimate": { bg: "#f3e8ff", border: "#9333ea", text: "#7e22ce", icon: "fa fa-calculator", tag: "Estimate / Quote" },
+    "Quotation": { bg: "#f3e8ff", border: "#9333ea", text: "#7e22ce", icon: "fa fa-calculator", tag: "Sales Quotation" },
     "Vehicle Inspection": { bg: "#e0e7ff", border: "#4f46e5", text: "#3730a3", icon: "fa fa-check-circle", tag: "Multi-Point Inspection" },
     "Vehicle Job Order": { bg: "#fef3c7", border: "#d97706", text: "#b45309", icon: "fa fa-wrench", tag: "Vehicle Job Order" },
+    "Sales Order": { bg: "#eff6ff", border: "#3b82f6", text: "#1d4ed8", icon: "fa fa-file-signature", tag: "Sales Order" },
+    "Delivery Note": { bg: "#ecfeff", border: "#06b6d4", text: "#0e7490", icon: "fa fa-truck-loading", tag: "Delivery Note" },
     "Vehicle POS Invoice": { bg: "#ccfbf1", border: "#0d9488", text: "#0f766e", icon: "fa fa-receipt", tag: "Vehicle POS Invoice" },
     "POS Invoice": { bg: "#dcfce7", border: "#16a34a", text: "#15803d", icon: "fa fa-cash-register", tag: "POS Invoice" },
     "Sales Invoice": { bg: "#d1fae5", border: "#059669", text: "#047857", icon: "fa fa-file-invoice-dollar", tag: "Sales Invoice" },
+    
+    // Financial & Inventory
     "Payment Entry": { bg: "#ecfdf5", border: "#10b981", text: "#065f46", icon: "fa fa-money-check-alt", tag: "Payment Entry" },
+    "Journal Entry": { bg: "#f8fafc", border: "#64748b", text: "#334155", icon: "fa fa-book-open", tag: "Journal Entry" },
     "GL Entry": { bg: "#f8fafc", border: "#475569", text: "#334155", icon: "fa fa-book", tag: "General Ledger" },
-    "Stock Entry": { bg: "#cffafe", border: "#0891b2", text: "#0e7490", icon: "fa fa-boxes", tag: "Stock Movement" },
-    "Vehicle Service Reminder": { bg: "#ffedd5", border: "#ea580c", text: "#c2410c", icon: "fa fa-bell", tag: "Service Reminder" }
+    "Stock Entry": { bg: "#cffafe", border: "#0891b2", text: "#0e7490", icon: "fa fa-exchange-alt", tag: "Stock Movement" }
   };
 
   const STATUS_COLORS = {
@@ -36,7 +53,14 @@
     "Paid": { bg: "#dcfce7", text: "#166534" },
     "Submitted": { bg: "#e0e7ff", text: "#4338ca" },
     "Posted": { bg: "#f1f5f9", text: "#334155" },
-    "Cancelled": { bg: "#ffe4e6", text: "#be123c" }
+    "Cancelled": { bg: "#ffe4e6", text: "#be123c" },
+    "To Receive and Bill": { bg: "#fef3c7", text: "#d97706" },
+    "To Bill": { bg: "#dbeafe", text: "#1d4ed8" },
+    "To Receive": { bg: "#e0e7ff", text: "#4338ca" },
+    "Ordered": { bg: "#dcfce7", text: "#15803d" },
+    "Unpaid": { bg: "#fee2e2", text: "#b91c1c" },
+    "Overdue": { bg: "#ffe4e6", text: "#be123c" },
+    "Partly Paid": { bg: "#fef3c7", text: "#d97706" }
   };
 
   class SAPMapViewer {
@@ -45,6 +69,7 @@
       this.docname = opts.docname || "";
       this.vehicle = opts.vehicle || "";
       this.customer = opts.customer || "";
+      this.supplier = opts.supplier || "";
       this.container = opts.container || null;
       this.isModal = !!opts.isModal;
       this.dialog = opts.dialog || null;
@@ -76,7 +101,7 @@
               <h3 class="sap-print-company" id="sapPrintCompany">ULTRA MRF</h3>
               <div class="sap-print-address text-muted" id="sapPrintAddress"></div>
               <div class="sap-print-doc-meta mt-1">
-                <strong>VMS Relationship Map & Audit Trace:</strong>
+                <strong>VMS / P2P Relationship Map & Audit Trace:</strong>
                 <span id="sapPrintDocTitle"></span>
               </div>
             </div>
@@ -89,15 +114,15 @@
             </div>
           </div>
 
-          <!-- Top VMS Toolbar -->
+          <!-- Top Toolbar -->
           <div class="sap-map-header">
             <div class="sap-map-title-bar">
               <div class="sap-b1-badge">
-                <span class="sap-b1-logo">VMS</span>
+                <span class="sap-b1-logo">VMS & P2P</span>
                 <span class="sap-b1-sub">RELATIONSHIP MAP</span>
               </div>
               <div class="sap-map-doc-title" id="sapMapDocTitle">
-                <span class="text-muted">Loading Relationship Map for</span> <strong>${this.doctype}: ${this.docname || this.vehicle}</strong>
+                <span class="text-muted">Loading Relationship Map for</span> <strong>${this.doctype}: ${this.docname || this.vehicle || this.supplier}</strong>
               </div>
             </div>
 
@@ -108,7 +133,7 @@
                   <i class="fa fa-sitemap mr-1"></i> <span>Document Flow</span>
                 </button>
                 <button type="button" class="btn btn-default btn-xs" data-mode="items">
-                  <i class="fa fa-list-alt mr-1"></i> <span>Related Items</span>
+                  <i class="fa fa-list-alt mr-1"></i> <span>Related Items / Lines</span>
                 </button>
                 <button type="button" class="btn btn-default btn-xs" data-mode="accounting">
                   <i class="fa fa-balance-scale mr-1"></i> <span>Accounting Flow</span>
@@ -118,7 +143,7 @@
               <!-- Search / Switch Document -->
               <div class="sap-search-box">
                 <i class="fa fa-search sap-search-icon"></i>
-                <input type="text" class="form-control input-xs" id="sapSearchDoc" placeholder="Search Plate / JO / SI / Doc ID..." />
+                <input type="text" class="form-control input-xs" id="sapSearchDoc" placeholder="Search PO / MR / PR / PINV / JO / Plate / ID..." />
                 <button class="btn btn-default btn-xs sap-search-btn" id="sapSearchBtn">Go</button>
               </div>
 
@@ -136,20 +161,20 @@
 
           <!-- Summary Financial Metric Ribbon -->
           <div class="sap-map-metrics" id="sapMapMetrics">
-            <div class="sap-metric-item">
+            <div class="sap-metric-item" id="sapMetricPartyBox">
+              <span class="sap-metric-lbl" id="sapMetricPartyLbl">Party / Customer:</span>
+              <span class="sap-metric-val font-weight-bold" id="sapMetricParty">-</span>
+            </div>
+            <div class="sap-metric-item" id="sapMetricVehicleBox">
               <span class="sap-metric-lbl">Vehicle Plate:</span>
               <span class="sap-metric-val font-weight-bold" id="sapMetricPlate">-</span>
             </div>
             <div class="sap-metric-item">
-              <span class="sap-metric-lbl">Customer:</span>
-              <span class="sap-metric-val font-weight-bold" id="sapMetricCust">-</span>
-            </div>
-            <div class="sap-metric-item">
-              <span class="sap-metric-lbl">Total Flow Value:</span>
+              <span class="sap-metric-lbl">Total Value:</span>
               <span class="sap-metric-val text-primary" id="sapMetricVal">₱ 0.00</span>
             </div>
             <div class="sap-metric-item">
-              <span class="sap-metric-lbl">Total Paid:</span>
+              <span class="sap-metric-lbl">Total Paid / Disbursed:</span>
               <span class="sap-metric-val text-success" id="sapMetricPaid">₱ 0.00</span>
             </div>
             <div class="sap-metric-item">
@@ -169,16 +194,19 @@
               <div class="sap-map-viewport" id="sapViewport" style="width: 100%; height: 100%;">
                 <div class="sap-map-canvas" id="sapCanvas">
                   <!-- SVG Layer for Bezier Connectors -->
-                  <svg class="sap-map-svg-layer" id="sapSvgLayer" width="3000" height="2000">
+                  <svg class="sap-map-svg-layer" id="sapSvgLayer" width="3500" height="2500">
                     <defs>
                       <marker id="sapArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-                        <path d="M 0 1 L 10 5 L 0 9 z" fill="#0284c7" />
+                        <path d="M 0 1 L 10 5 L 0 9 z" fill="#6366f1" />
                       </marker>
                       <marker id="sapArrowGreen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
                         <path d="M 0 1 L 10 5 L 0 9 z" fill="#16a34a" />
                       </marker>
                       <marker id="sapArrowGold" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
                         <path d="M 0 1 L 10 5 L 0 9 z" fill="#d97706" />
+                      </marker>
+                      <marker id="sapArrowPurple" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                        <path d="M 0 1 L 10 5 L 0 9 z" fill="#9333ea" />
                       </marker>
                     </defs>
                     <g id="sapSvgEdges"></g>
@@ -311,24 +339,43 @@
       const q = $(this.container || document).find('#sapSearchDoc').val().trim();
       if (!q) return;
 
-      if (q.startsWith('JO-') || q.startsWith('jo-')) {
+      const upper = q.toUpperCase();
+      if (upper.startsWith('PUR-ORD') || upper.startsWith('PO-')) {
+        this.doctype = 'Purchase Order';
+        this.docname = upper;
+      } else if (upper.startsWith('MAT-MR') || upper.startsWith('MR-')) {
+        this.doctype = 'Material Request';
+        this.docname = upper;
+      } else if (upper.startsWith('MAT-PRE') || upper.startsWith('PR-') || upper.startsWith('PUR-REC')) {
+        this.doctype = 'Purchase Receipt';
+        this.docname = upper;
+      } else if (upper.startsWith('ACC-PINV') || upper.startsWith('PINV-')) {
+        this.doctype = 'Purchase Invoice';
+        this.docname = upper;
+      } else if (upper.startsWith('JO-')) {
         this.doctype = 'Vehicle Job Order';
-        this.docname = q.toUpperCase();
-      } else if (q.startsWith('EST-') || q.startsWith('est-')) {
+        this.docname = upper;
+      } else if (upper.startsWith('EST-')) {
         this.doctype = 'Vehicle Estimate';
-        this.docname = q.toUpperCase();
-      } else if (q.startsWith('INSP-') || q.startsWith('insp-')) {
+        this.docname = upper;
+      } else if (upper.startsWith('INSP-')) {
         this.doctype = 'Vehicle Inspection';
-        this.docname = q.toUpperCase();
-      } else if (q.startsWith('VMSPOS-') || q.startsWith('vmspos-')) {
+        this.docname = upper;
+      } else if (upper.startsWith('VMSPOS-')) {
         this.doctype = 'Vehicle POS Invoice';
-        this.docname = q.toUpperCase();
-      } else if (q.startsWith('ACC-SINV') || q.startsWith('acc-sinv')) {
+        this.docname = upper;
+      } else if (upper.startsWith('ACC-SINV') || upper.startsWith('SINV-')) {
         this.doctype = 'Sales Invoice';
-        this.docname = q.toUpperCase();
-      } else if (q.startsWith('ACC-PAY') || q.startsWith('acc-pay')) {
+        this.docname = upper;
+      } else if (upper.startsWith('ACC-PAY') || upper.startsWith('PAY-')) {
         this.doctype = 'Payment Entry';
-        this.docname = q.toUpperCase();
+        this.docname = upper;
+      } else if (upper.startsWith('MAT-STE') || upper.startsWith('STE-')) {
+        this.doctype = 'Stock Entry';
+        this.docname = upper;
+      } else if (upper.startsWith('SAL-ORD') || upper.startsWith('SO-')) {
+        this.doctype = 'Sales Order';
+        this.docname = upper;
       } else {
         this.doctype = 'Customer Vehicle';
         this.docname = q;
@@ -343,7 +390,7 @@
       $c.find('#sapNodesLayer').html(`
         <div class="sap-loading-spinner text-center p-5" style="width: 100%; min-width: 600px;">
           <i class="fa fa-spinner fa-spin fa-2x text-primary"></i>
-          <p class="mt-2 text-muted">Building relationship graph for ${this.doctype}: ${this.docname || this.vehicle}...</p>
+          <p class="mt-2 text-muted">Building relationship graph for ${this.doctype}: ${this.docname || this.vehicle || this.supplier}...</p>
         </div>
       `);
       $c.find('#sapSvgEdges').empty();
@@ -352,21 +399,22 @@
         doctype: this.doctype,
         docname: this.docname,
         vehicle: this.vehicle,
-        customer: this.customer
+        customer: this.customer,
+        supplier: this.supplier
       };
 
       frappe.call({
         method: "vm_relationship_map",
         args: params,
         callback: (r) => {
-          if (r.message && r.message.nodes) {
+          if (r.message && r.message.nodes && r.message.nodes.length > 0) {
             this.data = r.message;
             this.renderSummary();
             this.renderGraph();
           } else {
             $c.find('#sapNodesLayer').html(`
               <div class="alert alert-warning m-4">
-                <strong>No relationships found</strong> for ${this.doctype}: ${this.docname || this.vehicle}.
+                <strong>No relationships found</strong> for ${this.doctype}: ${this.docname || this.vehicle || this.supplier}.
               </div>
             `);
           }
@@ -387,17 +435,31 @@
 
       $c.find('#sapMapDocTitle').html(`
         <span class="badge badge-info mr-2">${sum.focal_doctype || this.doctype}</span>
-        <strong>${sum.focal_docname || this.docname || sum.vehicle_plate || 'Overview'}</strong>
+        <strong>${sum.focal_docname || this.docname || sum.vehicle_plate || sum.supplier_name || 'Overview'}</strong>
       `);
 
-      $c.find('#sapMetricPlate').text(sum.vehicle_plate || 'N/A');
-      $c.find('#sapMetricCust').text(sum.customer_name || 'N/A');
+      if (sum.is_p2p || sum.supplier_name) {
+        $c.find('#sapMetricPartyLbl').text('Supplier:');
+        $c.find('#sapMetricParty').text(sum.supplier_name || 'N/A');
+        if (!sum.vehicle_plate) {
+          $c.find('#sapMetricVehicleBox').hide();
+        } else {
+          $c.find('#sapMetricVehicleBox').show();
+          $c.find('#sapMetricPlate').text(sum.vehicle_plate);
+        }
+      } else {
+        $c.find('#sapMetricPartyLbl').text('Customer:');
+        $c.find('#sapMetricParty').text(sum.customer_name || 'N/A');
+        $c.find('#sapMetricVehicleBox').show();
+        $c.find('#sapMetricPlate').text(sum.vehicle_plate || 'N/A');
+      }
+
       $c.find('#sapMetricVal').text(format_currency(sum.total_transaction_value || 0, 'PHP'));
       $c.find('#sapMetricPaid').text(format_currency(sum.total_paid_value || 0, 'PHP'));
       $c.find('#sapMetricOutst').text(format_currency(sum.total_outstanding_value || 0, 'PHP'));
 
       const $status = $c.find('#sapMetricStatus');
-      const statusText = sum.status_flow_complete ? 'Completed & Reconciled' : 'Open / In Progress';
+      const statusText = sum.status_flow_complete ? 'Completed & Settled' : 'Open / In Progress';
       if (sum.status_flow_complete) {
         $status.text(statusText).removeClass('sap-status-open').addClass('sap-status-paid');
       } else {
@@ -416,7 +478,7 @@
       } else {
         $c.find('#sapPrintAddress').hide();
       }
-      $c.find('#sapPrintDocTitle').text(`${sum.focal_doctype || this.doctype}: ${sum.focal_docname || this.docname || sum.vehicle_plate || 'Workflow'}`);
+      $c.find('#sapPrintDocTitle').text(`${sum.focal_doctype || this.doctype}: ${sum.focal_docname || this.docname || sum.vehicle_plate || sum.supplier_name || 'Workflow'}`);
       $c.find('#sapPrintUser').text(userName);
       $c.find('#sapPrintDate').text(nowFormatted);
       $c.find('#sapPrintStatus').text(statusText);
@@ -453,43 +515,42 @@
       $nodesLayer.empty();
       $svgEdges.empty();
 
-      // ── Standard Document Flow Layout ──
       const nodes = this.data.nodes || [];
       const edges = this.data.edges || [];
 
       // Group nodes by 5 Sequential Columns:
-      // Column 0: Master Profiles (Customer, Customer Vehicle)
-      // Column 1: Estimates & Diagnostics (Vehicle Estimate, Vehicle Inspection)
-      // Column 2: Workshop Execution (Vehicle Job Order, Stock Entry)
-      // Column 3: Billing & Invoicing (Sales Invoice, Vehicle POS Invoice, POS Invoice)
-      // Column 4: Payments & Settlements (Payment Entry, GL Entry)
+      // Column 0: Master Entities & Requisitions (Customer, Supplier, Vehicle, Material Request)
+      // Column 1: Estimates & Orders (Vehicle Estimate, Inspection, Purchase Order, Sales Order, Quotation)
+      // Column 2: Goods & Work Execution (Vehicle Job Order, Purchase Receipt, Delivery Note, Stock Entry)
+      // Column 3: Billing & Invoicing (Purchase Invoice, Sales Invoice, POS Invoice)
+      // Column 4: Payments & Settlements (Payment Entry, Journal Entry, GL Entry)
       const columns = { 0: [], 1: [], 2: [], 3: [], 4: [] };
       const levelTitles = {
-        0: "Master Profiles",
-        1: "Estimates & Diagnostics",
-        2: "Workshop Execution",
+        0: "Master & Requisitions",
+        1: "Orders & Quotes",
+        2: "Goods & Execution",
         3: "Billing & Invoicing",
-        4: "Payments & General Ledger"
+        4: "Payments & Ledger"
       };
 
       nodes.forEach((n) => {
         let lvl = n.level;
         if (lvl === undefined || lvl === null) {
-          if (n.doctype === "Customer" || n.doctype === "Customer Vehicle") lvl = 0;
-          else if (n.doctype === "Vehicle Estimate" || n.doctype === "Vehicle Inspection") lvl = 1;
-          else if (n.doctype === "Vehicle Job Order" || n.doctype === "Stock Entry") lvl = 2;
-          else if (n.doctype === "Sales Invoice" || n.doctype === "Vehicle POS Invoice" || n.doctype === "POS Invoice") lvl = 3;
-          else if (n.doctype === "Payment Entry" || n.doctype === "GL Entry") lvl = 4;
+          if (["Customer", "Customer Vehicle", "Supplier", "Material Request"].includes(n.doctype)) lvl = 0;
+          else if (["Purchase Order", "Sales Order", "Vehicle Estimate", "Vehicle Inspection", "Quotation", "Supplier Quotation"].includes(n.doctype)) lvl = 1;
+          else if (["Purchase Receipt", "Vehicle Job Order", "Delivery Note", "Stock Entry"].includes(n.doctype)) lvl = 2;
+          else if (["Purchase Invoice", "Sales Invoice", "Vehicle POS Invoice", "POS Invoice"].includes(n.doctype)) lvl = 3;
+          else if (["Payment Entry", "Journal Entry", "GL Entry"].includes(n.doctype)) lvl = 4;
           else lvl = 2;
         }
         if (!columns[lvl]) columns[lvl] = [];
         columns[lvl].push(n);
       });
 
-      const cardWidth = 260;
+      const cardWidth = 265;
       const colGap = 120;
       const rowGap = 35;
-      const cardHeight = 160;
+      const cardHeight = 165;
       const startX = 60;
       const startY = 80;
 
@@ -559,20 +620,25 @@
           const midX = (startPt.x + endPt.x) / 2;
           const midY = (startPt.y + endPt.y) / 2;
 
-          let strokeColor = "#0284c7";
+          let strokeColor = "#6366f1";
           let markerUrl = "url(#sapArrow)";
-          if (edge.type === "accounting") {
+          if (edge.type === "accounting" || edge.label?.includes("Payment")) {
             strokeColor = "#16a34a";
             markerUrl = "url(#sapArrowGreen)";
-          } else if (edge.label && edge.label.includes("Converted")) {
+          } else if (edge.label && (edge.label.includes("Converted") || edge.label.includes("Procured"))) {
             strokeColor = "#d97706";
             markerUrl = "url(#sapArrowGold)";
+          } else if (edge.type === "reference") {
+            strokeColor = "#9333ea";
+            markerUrl = "url(#sapArrowPurple)";
           }
+
+          const labelWidth = Math.max(90, (edge.label || '').length * 7.5);
 
           const edgeSvg = `
             <g class="sap-edge-group">
               <path d="${pathD}" fill="none" stroke="${strokeColor}" stroke-width="2.5" stroke-dasharray="${edge.type === 'reference' ? '5,5' : 'none'}" marker-end="${markerUrl}" />
-              <rect x="${midX - 50}" y="${midY - 11}" width="100" height="22" rx="11" fill="#ffffff" stroke="${strokeColor}" stroke-width="1.2" />
+              <rect x="${midX - (labelWidth / 2)}" y="${midY - 11}" width="${labelWidth}" height="22" rx="11" fill="#ffffff" stroke="${strokeColor}" stroke-width="1.2" />
               <text x="${midX}" y="${midY + 4}" text-anchor="middle" font-size="10" font-weight="700" fill="#334155">${edge.label}</text>
             </g>
           `;
@@ -621,16 +687,22 @@
           </div>
 
           <div class="sap-node-info-grid">
+            ${node.supplier ? `
+              <div class="sap-node-info-row">
+                <span class="text-muted"><i class="fa fa-truck mr-1"></i> Supp:</span>
+                <span class="text-truncate" style="max-width: 145px;" title="${node.supplier}">${node.supplier}</span>
+              </div>
+            ` : ''}
+            ${node.customer && !node.supplier ? `
+              <div class="sap-node-info-row">
+                <span class="text-muted"><i class="fa fa-user mr-1"></i> Cust:</span>
+                <span class="text-truncate" style="max-width: 145px;" title="${node.customer}">${node.customer}</span>
+              </div>
+            ` : ''}
             ${node.vehicle ? `
               <div class="sap-node-info-row">
                 <span class="text-muted"><i class="fa fa-car mr-1"></i> Plate:</span>
                 <span class="font-weight-bold">${node.vehicle}</span>
-              </div>
-            ` : ''}
-            ${node.customer ? `
-              <div class="sap-node-info-row">
-                <span class="text-muted"><i class="fa fa-user mr-1"></i> Cust:</span>
-                <span class="text-truncate" style="max-width: 140px;" title="${node.customer}">${node.customer}</span>
               </div>
             ` : ''}
             ${node.posting_date ? `
@@ -645,7 +717,7 @@
             <div class="sap-node-amt">
               ${node.grand_total > 0 ? `
                 <span class="sap-amt-val">${format_currency(node.grand_total, node.currency || 'PHP')}</span>
-              ` : (node.items_count > 0 ? `<span>${node.items_count} Items</span>` : `<span class="text-muted">Master Info</span>`)}
+              ` : (node.items_count > 0 ? `<span>${node.items_count} Line Items</span>` : `<span class="text-muted">Master Info</span>`)}
             </div>
             <div class="sap-node-actions">
               <button class="btn btn-default btn-xs sap-quick-view-btn" title="Inspect Document">
@@ -663,13 +735,12 @@
       const items = this.data.items || [];
       const sum = this.data.summary || {};
 
-      // Calculate totals using deduplicated metrics
       const totalLaborVal = sum.dedup_services_total !== undefined ? sum.dedup_services_total : 0;
       const totalPartsVal = sum.dedup_parts_total !== undefined ? sum.dedup_parts_total : 0;
       const uniquePartsCount = sum.unique_parts_count !== undefined ? sum.unique_parts_count : 0;
       const uniqueLaborCount = sum.unique_services_count !== undefined ? sum.unique_services_count : 0;
       
-      const billedItems = items.filter(it => it.doc_type === 'Sales Invoice' || it.doc_type === 'POS Invoice' || it.doc_type === 'Vehicle POS Invoice');
+      const billedItems = items.filter(it => it.doc_type === 'Sales Invoice' || it.doc_type === 'POS Invoice' || it.doc_type === 'Purchase Invoice');
       const totalBilledVal = billedItems.length > 0 
         ? billedItems.reduce((a, b) => a + (b.amount || 0), 0)
         : (sum.total_transaction_value || 0);
@@ -679,9 +750,9 @@
       if (this.itemFilter === "labor") {
         filtered = items.filter(it => (it.category === 'service' || (it.type || '').toLowerCase().includes('labor') || (it.type || '').toLowerCase().includes('service')));
       } else if (this.itemFilter === "parts") {
-        filtered = items.filter(it => (it.category === 'part' || (it.type || '').toLowerCase().includes('part') || (it.type || '').toLowerCase().includes('material')));
+        filtered = items.filter(it => (it.category === 'part' || (it.type || '').toLowerCase().includes('part') || (it.type || '').toLowerCase().includes('material') || (it.type || '').toLowerCase().includes('purchased')));
       } else if (this.itemFilter === "billed") {
-        filtered = items.filter(it => (it.type || '').toLowerCase().includes('billed') || it.doc_type === 'Sales Invoice' || it.doc_type === 'POS Invoice');
+        filtered = items.filter(it => (it.type || '').toLowerCase().includes('billed') || it.doc_type === 'Sales Invoice' || it.doc_type === 'Purchase Invoice' || it.doc_type === 'POS Invoice');
       }
 
       if (this.itemSearchTerm) {
@@ -697,7 +768,7 @@
       filtered.forEach((it, idx) => {
         const typeClass = (it.type || '').includes('Labor') || (it.type || '').includes('Service') 
           ? 'badge-warning' 
-          : ((it.type || '').includes('Billed') ? 'badge-success' : 'badge-primary');
+          : ((it.type || '').includes('Billed') || (it.type || '').includes('Purchased') ? 'badge-success' : 'badge-primary');
 
         rowsHtml += `
           <tr>
@@ -714,7 +785,7 @@
             <td class="text-right font-weight-bold" style="white-space: nowrap !important;">${it.qty} ${it.uom || ''}</td>
             <td class="text-right" style="white-space: nowrap !important; min-width: 110px;">${format_currency(it.rate, 'PHP')}</td>
             <td class="text-right font-weight-bold text-primary" style="white-space: nowrap !important; min-width: 120px;">${format_currency(it.amount, 'PHP')}</td>
-            <td style="white-space: nowrap;"><small class="text-muted">${it.account || 'Income / Expense'}</small></td>
+            <td style="white-space: nowrap;"><small class="text-muted">${it.account || 'Expense / Income / Cost Center'}</small></td>
           </tr>
         `;
       });
@@ -723,19 +794,19 @@
         rowsHtml = `<tr><td colspan="8" class="text-center text-muted p-4">No line items matching the current filter.</td></tr>`;
       }
 
-      const totalUniqueItems = (uniquePartsCount + uniqueLaborCount) || 1;
+      const totalUniqueItems = (uniquePartsCount + uniqueLaborCount) || items.length;
 
       $itemsView.html(`
         <div class="sap-items-container" style="max-width: 1100px; margin: 0 auto; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); border: 1px solid #e2e8f0; padding: 24px;">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
-              <h4 class="font-weight-bold m-0 text-dark"><i class="fa fa-list-alt text-primary mr-2"></i> Consolidated Related Items & Services Matrix</h4>
-              <p class="text-muted mb-0 font-size-sm">Full lifecycle trace of all services, labor, parts, materials, and billed items in this workflow.</p>
+              <h4 class="font-weight-bold m-0 text-dark"><i class="fa fa-list-alt text-primary mr-2"></i> Consolidated Related Items, Materials & Services Matrix</h4>
+              <p class="text-muted mb-0 font-size-sm">Full lifecycle trace of all materials, stock items, parts, services, and line items in this workflow.</p>
             </div>
             <div class="sap-items-filter-bar btn-group">
               <button class="btn btn-xs ${this.itemFilter === 'all' ? 'btn-primary' : 'btn-default'} sap-item-filter-btn" data-filter="all">All (${items.length})</button>
-              <button class="btn btn-xs ${this.itemFilter === 'labor' ? 'btn-primary' : 'btn-default'} sap-item-filter-btn" data-filter="labor"><i class="fa fa-wrench mr-1"></i> Labor / Services (${uniqueLaborCount})</button>
-              <button class="btn btn-xs ${this.itemFilter === 'parts' ? 'btn-primary' : 'btn-default'} sap-item-filter-btn" data-filter="parts"><i class="fa fa-cogs mr-1"></i> Parts / Materials (${uniquePartsCount})</button>
+              <button class="btn btn-xs ${this.itemFilter === 'parts' ? 'btn-primary' : 'btn-default'} sap-item-filter-btn" data-filter="parts"><i class="fa fa-boxes mr-1"></i> Materials & Items (${uniquePartsCount || items.length})</button>
+              <button class="btn btn-xs ${this.itemFilter === 'labor' ? 'btn-primary' : 'btn-default'} sap-item-filter-btn" data-filter="labor"><i class="fa fa-wrench mr-1"></i> Services / Labor (${uniqueLaborCount})</button>
               <button class="btn btn-xs ${this.itemFilter === 'billed' ? 'btn-primary' : 'btn-default'} sap-item-filter-btn" data-filter="billed"><i class="fa fa-check-circle mr-1"></i> Invoiced Lines</button>
             </div>
           </div>
@@ -744,26 +815,26 @@
           <div class="row mb-3">
             <div class="col-md-3">
               <div class="p-2 border rounded bg-light text-center">
-                <small class="text-muted text-uppercase font-weight-bold">Total Services / Labor</small>
-                <div class="font-weight-bold text-warning font-size-lg" style="white-space: nowrap;">${format_currency(totalLaborVal, 'PHP')} (${uniqueLaborCount} items)</div>
+                <small class="text-muted text-uppercase font-weight-bold">Materials & Parts Value</small>
+                <div class="font-weight-bold text-primary font-size-lg" style="white-space: nowrap;">${format_currency(totalPartsVal || sum.total_transaction_value || 0, 'PHP')}</div>
               </div>
             </div>
             <div class="col-md-3">
               <div class="p-2 border rounded bg-light text-center">
-                <small class="text-muted text-uppercase font-weight-bold">Total Spare Parts</small>
-                <div class="font-weight-bold text-primary font-size-lg" style="white-space: nowrap;">${format_currency(totalPartsVal, 'PHP')} (${uniquePartsCount} items)</div>
+                <small class="text-muted text-uppercase font-weight-bold">Services & Labor Value</small>
+                <div class="font-weight-bold text-warning font-size-lg" style="white-space: nowrap;">${format_currency(totalLaborVal, 'PHP')}</div>
               </div>
             </div>
             <div class="col-md-3">
               <div class="p-2 border rounded bg-light text-center">
-                <small class="text-muted text-uppercase font-weight-bold">Final Billed Value</small>
+                <small class="text-muted text-uppercase font-weight-bold">Total Flow Value</small>
                 <div class="font-weight-bold text-success font-size-lg" style="white-space: nowrap;">${format_currency(totalBilledVal, 'PHP')}</div>
               </div>
             </div>
             <div class="col-md-3">
               <div class="p-2 border rounded bg-light text-center">
                 <small class="text-muted text-uppercase font-weight-bold">Distinct Workflow Items</small>
-                <div class="font-weight-bold text-dark font-size-lg" style="white-space: nowrap;">${totalUniqueItems} Item (${items.length} Doc Lines)</div>
+                <div class="font-weight-bold text-dark font-size-lg" style="white-space: nowrap;">${totalUniqueItems} Items (${items.length} Lines)</div>
               </div>
             </div>
           </div>
@@ -775,7 +846,7 @@
                   <th style="width: 40px; white-space: nowrap;">#</th>
                   <th style="white-space: nowrap; min-width: 140px;">Source Document</th>
                   <th style="white-space: nowrap; min-width: 140px;">Category</th>
-                  <th style="min-width: 180px;">Item / Service Code & Name</th>
+                  <th style="min-width: 180px;">Item / Material Code & Name</th>
                   <th class="text-right" style="white-space: nowrap; min-width: 90px;">Qty / Hours</th>
                   <th class="text-right" style="white-space: nowrap; min-width: 110px;">Rate</th>
                   <th class="text-right" style="white-space: nowrap; min-width: 120px;">Total Amount</th>
@@ -809,7 +880,6 @@
       const $acctView = $c.find('#sapAccountingView');
       const acct = this.data.accounting || {};
       const sum = this.data.summary || {};
-      const glEntries = acct.gl_entries || [];
       const vouchersGlMap = acct.vouchers_gl_map || {};
       const pleList = acct.payment_ledger || [];
 
@@ -847,7 +917,7 @@
             <div class="card mb-4 shadow-sm border" style="border-radius: 10px; overflow: hidden;">
               <div class="card-header bg-light d-flex justify-content-between align-items-center py-2 px-3 border-bottom">
                 <div style="white-space: nowrap !important;">
-                  <span class="badge ${vType === 'Sales Invoice' ? 'badge-primary' : 'badge-success'} mr-2 font-size-sm">${vType}</span>
+                  <span class="badge ${['Sales Invoice', 'POS Invoice'].includes(vType) ? 'badge-primary' : (['Purchase Invoice'].includes(vType) ? 'badge-warning' : 'badge-success')} mr-2 font-size-sm">${vType}</span>
                   <a href="javascript:void(0)" class="sap-doc-link font-weight-bold text-dark" data-dt="${vType}" data-dn="${vNo}">${vNo}</a>
                 </div>
                 <div style="white-space: nowrap !important;">
@@ -910,19 +980,19 @@
           <div class="row mb-4">
             <div class="col-md-4">
               <div class="p-3 border rounded bg-light text-center">
-                <small class="text-muted text-uppercase font-weight-bold">Total Invoiced / GL Revenue</small>
+                <small class="text-muted text-uppercase font-weight-bold">${sum.is_p2p ? 'Total Invoiced Purchases' : 'Total Invoiced / GL Revenue'}</small>
                 <div class="font-weight-bold text-primary font-size-lg" style="white-space: nowrap !important;">${format_currency(totalRevenueVal, 'PHP')}</div>
               </div>
             </div>
             <div class="col-md-4">
               <div class="p-3 border rounded bg-light text-center">
-                <small class="text-muted text-uppercase font-weight-bold">Total Collections (Cash/Bank)</small>
+                <small class="text-muted text-uppercase font-weight-bold">${sum.is_p2p ? 'Total Disbursements (Cash/Bank)' : 'Total Collections (Cash/Bank)'}</small>
                 <div class="font-weight-bold text-success font-size-lg" style="white-space: nowrap !important;">${format_currency(totalCollectedVal, 'PHP')}</div>
               </div>
             </div>
             <div class="col-md-4">
               <div class="p-3 border rounded bg-light text-center">
-                <small class="text-muted text-uppercase font-weight-bold">Party Net Receivable Balance</small>
+                <small class="text-muted text-uppercase font-weight-bold">${sum.is_p2p ? 'Net Payable Balance' : 'Net Receivable Balance'}</small>
                 <div class="font-weight-bold ${outstandingVal === 0 ? 'text-success' : 'text-danger'} font-size-lg" style="white-space: nowrap !important;">
                   ${format_currency(outstandingVal, 'PHP')}
                 </div>
@@ -982,7 +1052,7 @@
       if (node.items && node.items.length > 0) {
         itemsHtml = `
           <div class="sap-drawer-sec">
-            <div class="sap-drawer-sec-title">Line Items & Services (${node.items.length})</div>
+            <div class="sap-drawer-sec-title">Line Items & Materials (${node.items.length})</div>
             <div class="table-responsive">
               <table class="table table-sm table-bordered">
                 <thead class="thead-light">
@@ -1013,8 +1083,9 @@
           <table class="table table-sm table-borderless">
             <tr><td class="text-muted" style="width: 40%;">Status:</td><td><span class="badge badge-info">${node.status}</span></td></tr>
             <tr><td class="text-muted">Posting Date:</td><td>${node.posting_date || 'N/A'}</td></tr>
-            <tr><td class="text-muted">Customer:</td><td><strong>${node.customer || 'N/A'}</strong></td></tr>
-            <tr><td class="text-muted">Vehicle Plate:</td><td><strong>${node.vehicle || 'N/A'}</strong></td></tr>
+            ${node.supplier ? `<tr><td class="text-muted">Supplier:</td><td><strong>${node.supplier}</strong></td></tr>` : ''}
+            ${node.customer ? `<tr><td class="text-muted">Customer:</td><td><strong>${node.customer}</strong></td></tr>` : ''}
+            ${node.vehicle ? `<tr><td class="text-muted">Vehicle Plate:</td><td><strong>${node.vehicle}</strong></td></tr>` : ''}
             <tr><td class="text-muted">Company:</td><td>${node.company || 'ULTRA MRF'}</td></tr>
             ${node.grand_total > 0 ? `<tr><td class="text-muted">Grand Total:</td><td class="font-weight-bold text-primary">${format_currency(node.grand_total, node.currency || 'PHP')}</td></tr>` : ''}
             ${node.paid_amount > 0 ? `<tr><td class="text-muted">Paid Amount:</td><td class="font-weight-bold text-success">${format_currency(node.paid_amount, node.currency || 'PHP')}</td></tr>` : ''}
@@ -1055,9 +1126,9 @@
 
   window.SAPRelationshipMap.Viewer = SAPMapViewer;
 
-  window.SAPRelationshipMap.openModal = function (doctype, docname, vehicle, customer) {
+  window.SAPRelationshipMap.openModal = function (doctype, docname, vehicle, customer, supplier) {
     const d = new frappe.ui.Dialog({
-      title: `<span class="badge badge-info mr-1">VMS</span> Relationship Map & Document Flow`,
+      title: `<span class="badge badge-info mr-1">VMS & P2P</span> Relationship Map & Document Flow`,
       size: 'extra-large',
       fields: [
         {
@@ -1111,31 +1182,50 @@
       docname: docname,
       vehicle: vehicle,
       customer: customer,
+      supplier: supplier,
       container: container,
       isModal: true,
       dialog: d
     });
   };
 
-  // Attach button to supported DocTypes
+  // Attach button to all supported DocTypes (P2P + O2C + VMS)
   const targetDocTypes = [
+    // P2P DocTypes
+    'Material Request',
+    'Purchase Order',
+    'Purchase Receipt',
+    'Purchase Invoice',
+    'Supplier',
+    'Supplier Quotation',
+
+    // VMS & O2C DocTypes
     'Vehicle Job Order',
     'Vehicle Estimate',
     'Vehicle Inspection',
     'Vehicle POS Invoice',
     'Customer Vehicle',
     'Sales Invoice',
-    'Payment Entry'
+    'POS Invoice',
+    'Sales Order',
+    'Delivery Note',
+    'Quotation',
+    'Customer',
+
+    // Financial & Stock
+    'Payment Entry',
+    'Stock Entry'
   ];
 
   targetDocTypes.forEach(dt => {
     frappe.ui.form.on(dt, {
       refresh: function (frm) {
         if (!frm.is_new()) {
-          frm.add_custom_button(__('VMS Relationship Map'), function () {
+          frm.add_custom_button(__('🗺️ VMS / P2P Relationship Map'), function () {
             let veh = frm.doc.plate_no || frm.doc.vehicle || frm.doc.custom_vehicle_plate || '';
-            let cust = frm.doc.customer_name || frm.doc.customer || frm.doc.party_name || '';
-            window.SAPRelationshipMap.openModal(frm.doctype, frm.doc.name, veh, cust);
+            let cust = frm.doc.customer_name || frm.doc.customer || (frm.doc.party_type === 'Customer' ? frm.doc.party : '') || '';
+            let supp = frm.doc.supplier_name || frm.doc.supplier || (frm.doc.party_type === 'Supplier' ? frm.doc.party : '') || '';
+            window.SAPRelationshipMap.openModal(frm.doctype, frm.doc.name, veh, cust, supp);
           }, __('View'));
         }
       }

@@ -1,13 +1,4 @@
-import requests, json, sys
-sys.stdout.reconfigure(encoding='utf-8')
-
-BASE_URL = "http://38.247.138.224:10017"
-session = requests.Session()
-login_res = session.post(f"{BASE_URL}/api/method/login", data={'usr': 'Administrator', 'pwd': 'admin'}, timeout=30)
-login_res.raise_for_status()
-print("[OK] Logged in to VPS as Administrator")
-
-SERVER_SCRIPT_CODE = '''# Server Script: VM Consolidated Financials API
+# Server Script: VM Consolidated Financials API
 # Method: vm_consolidated_financials
 
 def get_data():
@@ -33,7 +24,7 @@ def get_data():
     companies = all_companies
     if selected_companies_raw:
         if isinstance(selected_companies_raw, str):
-            clean_str = selected_companies_raw.replace("[", "").replace("]", "").replace("\\"", "").replace("'", "")
+            clean_str = selected_companies_raw.replace("[", "").replace("]", "").replace("\"", "").replace("'", "")
             parts = [p.strip() for p in clean_str.split(",") if p.strip()]
             if parts:
                 filtered = [c for c in all_companies if c in parts]
@@ -626,61 +617,3 @@ def get_stock_ledger_drilldown(item_code, company, from_date, to_date):
     }
 
 frappe.response["message"] = get_data()
-'''
-
-def deploy_server_script():
-    print("\n--- Deploying Server Script 'VM Consolidated Financials API' ---")
-    ss_doc = {
-        "doctype": "Server Script",
-        "name": "VM Consolidated Financials API",
-        "script_type": "API",
-        "api_method": "vm_consolidated_financials",
-        "allow_guest": 0,
-        "disabled": 0,
-        "script": SERVER_SCRIPT_CODE
-    }
-
-    chk = session.get(f"{BASE_URL}/api/resource/Server%20Script/VM%20Consolidated%20Financials%20API")
-    if chk.status_code == 200:
-        res = session.put(f"{BASE_URL}/api/resource/Server%20Script/VM%20Consolidated%20Financials%20API", json=ss_doc)
-        print("Updated Server Script:", res.status_code)
-    else:
-        res = session.post(f"{BASE_URL}/api/resource/Server%20Script", json=ss_doc)
-        print("Created Server Script:", res.status_code)
-    
-    if res.status_code not in (200, 201):
-        print("Error deploying server script:", res.text)
-    else:
-        print("[OK] Server Script successfully deployed!")
-
-def test_api():
-    print("\n--- Testing API Endpoints with Company Filter & Running Stock Ledger ---")
-    # 1. Test P&L with 2 selected companies
-    selected = "Ultra MRF Dau Annex,ULTRA MRF"
-    pnl_res = session.get(f"{BASE_URL}/api/method/vm_consolidated_financials?report_type=pnl&from_date=2026-01-01&to_date=2026-12-31&selected_companies={requests.utils.quote(selected)}")
-    print(f"P&L (Filtered 2 Companies) Status: {pnl_res.status_code}")
-    pnl_data = pnl_res.json().get("message", {})
-    print(f" - Filtered Companies Returned: {pnl_data.get('companies')}")
-    print(f" - All Companies Available: {len(pnl_data.get('all_companies', []))}")
-
-    # 2. Test Inventory Audit with ALL items and Running Balances
-    inv_res = session.get(f"{BASE_URL}/api/method/vm_consolidated_financials?report_type=inventory_audit&to_date=2026-12-31")
-    print(f"\nInventory Audit Status: {inv_res.status_code}")
-    inv_data = inv_res.json().get("message", {})
-    print(f" - Total ALL Items: {inv_data.get('total_sku_count')}")
-    print(f" - Total Inflow Units: {inv_data.get('total_in_qty')}")
-    print(f" - Total Outflow Units: {inv_data.get('total_out_qty')}")
-    print(f" - Total Ending Balance Units: {inv_data.get('total_qty')}")
-    print(f" - Total Stock Valuation: PHP {inv_data.get('total_val', 0):,.2f}")
-
-    # 3. Test Stock Ledger Drilldown for an item
-    stock_dd = session.get(f"{BASE_URL}/api/method/vm_consolidated_financials?report_type=stock_ledger_drilldown&item_code={requests.utils.quote('185/70 R14 YOKOHAMA ES32')}")
-    print(f"\nStock Ledger Drilldown Status: {stock_dd.status_code}")
-    stock_dd_data = stock_dd.json().get("message", {})
-    print(f" - SLE Transaction Entries: {len(stock_dd_data.get('entries', []))}")
-    print(f" - Ending Qty: {stock_dd_data.get('ending_qty')}")
-    print(f" - Ending Value: PHP {stock_dd_data.get('ending_value', 0):,.2f}")
-
-if __name__ == "__main__":
-    deploy_server_script()
-    test_api()

@@ -390,7 +390,7 @@ def get_consolidated_inventory_audit(companies, company_meta, all_companies, fro
         "Item",
         fields=["name", "item_name", "item_group", "stock_uom", "valuation_rate", "is_stock_item"],
         order_by="name asc",
-        limit_page_length=2000
+        limit_page_length=0
     )
 
     placeholders = ", ".join(["%s"] * len(companies))

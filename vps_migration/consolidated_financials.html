@@ -1027,10 +1027,22 @@
             
             <div class="search-box-wrap">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-              <input type="text" id="search-inv" class="search-input" placeholder="Search all items code, name, group..." oninput="filterTableRows('table-inv', this.value)">
+              <input type="text" id="search-inv" class="search-input" placeholder="Search all items code, name, group..." oninput="inventoryRefreshFilter()">
             </div>
           </div>
 
+          <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;padding:12px 20px">
+            <label><input id="inv-stock-only" type="checkbox" onchange="inventoryRefreshFilter()"> Only items with stock</label>
+            <details><summary id="inv-selection-label" style="cursor:pointer">All items</summary>
+              <div style="padding:10px;display:grid;gap:8px">
+                <div><button class="btn-action" onclick="inventorySelectAll(true)">Select All Items</button>
+                <button class="btn-action" onclick="inventorySelectAll(false)">Clear Selection</button></div>
+                <label for="inv-item-select">Choose items (Ctrl / Cmd to select multiple)</label>
+                <select id="inv-item-select" multiple size="10" onchange="inventorySelectChanged()" style="max-width:80vw;width:440px;background:var(--bg-card);color:var(--text-primary)"></select>
+              </div>
+            </details>
+            <small>Stock means positive on-hand quantity in at least one selected company. Totals and Excel use the filtered items.</small>
+          </div>
           <div class="table-container">
             <table class="table-matrix" id="table-inv">
               <thead id="thead-inv">
@@ -1598,8 +1610,58 @@
     }
 
     // ── Render Tab 4: Inventory Audit with Running Balance & On Hand ──
+    let inventorySelection = null; // null means all items, including newly loaded items.
+    function inventoryFilteredData(data) {
+      const query = (document.getElementById('search-inv').value || '').trim().toLowerCase();
+      const stockOnly = document.getElementById('inv-stock-only').checked;
+      const rows = (data.rows || []).filter(row =>
+        (inventorySelection === null || inventorySelection.has(row.item_code)) &&
+        (!stockOnly || data.companies.some(co => Number((row.companies_qty || {})[co] || 0) > 0)) &&
+        (!query || [row.item_code,row.item_name,row.item_group].join(' ').toLowerCase().includes(query)));
+      const result = {...data,rows,total_sku_count:rows.length,total_qty:0,total_val:0,total_in_qty:0,total_out_qty:0,
+        company_val_totals:{},company_qty_totals:{},company_in_totals:{},company_out_totals:{}};
+      for (const row of rows) {
+        result.total_qty += Number(row.total_qty || 0); result.total_val += Number(row.total_val || 0);
+        result.total_in_qty += Number(row.total_in || 0); result.total_out_qty += Number(row.total_out || 0);
+        for(const co of data.companies) {
+          for(const [total, field] of [['company_qty_totals','companies_qty'],['company_val_totals','companies_val'],['company_in_totals','companies_in'],['company_out_totals','companies_out']])
+            result[total][co] = (result[total][co] || 0) + Number((row[field] || {})[co] || 0);
+        }
+      }
+      return result;
+    }
+    function inventoryRefreshFilter() {
+      if(currentData.inventory_audit) renderInventoryTable(currentData.inventory_audit);
+    }
+    function inventorySelectAll(all) {
+      inventorySelection = all ? null : new Set();
+      for(const option of document.getElementById('inv-item-select').options) option.selected = all;
+      inventoryRefreshFilter();
+    }
+    function inventorySelectChanged() {
+      inventorySelection = new Set(Array.from(document.getElementById('inv-item-select').selectedOptions, o => o.value));
+      inventoryRefreshFilter();
+    }
+    function inventoryPopulateItems(data) {
+      const select = document.getElementById('inv-item-select');
+      // Refresh options only when report data changes, so selections remain stable while filtering.
+      if(select.inventorySource !== data) {
+        select.replaceChildren();
+        for(const row of data.rows || []) {
+          const option = document.createElement('option'); option.value = row.item_code;
+          option.textContent = `${row.item_code} — ${row.item_name || ''}`;
+          option.selected = inventorySelection === null || inventorySelection.has(row.item_code);
+          select.appendChild(option);
+        }
+        select.inventorySource = data;
+      }
+      document.getElementById('inv-selection-label').textContent = inventorySelection === null ? 'All items' : `${Array.from(select.selectedOptions).length} items selected`;
+    }
+
     function renderInventoryTable(data) {
       if (!data || !data.companies) return;
+      inventoryPopulateItems(data);
+      data = inventoryFilteredData(data);
       const companies = data.companies;
       const meta = data.company_meta || {};
 

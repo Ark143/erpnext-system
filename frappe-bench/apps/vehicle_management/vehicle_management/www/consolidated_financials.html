@@ -1,0 +1,1586 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Consolidated Multi-Company Financials &amp; Inventory Audit</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ── Website Chrome Suppression ── */
+    header.navbar, footer, .navbar, .web-footer, .page-header, .page-breadcrumbs, .standard-breadcrumbs, .sidebar-column, .web-page-sidebar, .page-container > .col-sm-3 {
+      display: none !important;
+    }
+    .page-container, .container, .page-content, .main-section, .body-content, main {
+      padding: 0 !important;
+      margin: 0 !important;
+      max-width: 100% !important;
+      width: 100% !important;
+      background: transparent !important;
+      border: none !important;
+    }
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    /* ── Monochrome Black & White Theme System ── */
+    :root {
+      --bg-canvas: #040404;
+      --bg-surface: #0c0c0c;
+      --bg-surface-elevated: #141414;
+      --bg-surface-hover: #1c1c1c;
+      --bg-cell-zebra: #080808;
+      --bg-sticky: #111111;
+      --border-hairline: #1e1e1e;
+      --border-subtle: #2a2a2a;
+      --border-strong: #3f3f46;
+      --border-highlight: #ffffff;
+      --text-primary: #ffffff;
+      --text-secondary: #a1a1aa;
+      --text-muted: #52525b;
+      --text-dimmed: #3f3f46;
+      --accent-solid: #ffffff;
+      --accent-contrast: #000000;
+      --badge-neutral-bg: #18181b;
+      --badge-neutral-border: #27272a;
+      --positive-color: #22c55e;
+      --negative-color: #ef4444;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --shadow-elevation-1: 0 4px 20px rgba(0, 0, 0, 0.8);
+      --shadow-elevation-2: 0 10px 40px rgba(0, 0, 0, 0.9);
+      --scrollbar-thumb: #27272a;
+    }
+
+    [data-theme="light"] {
+      --bg-canvas: #f8fafc;
+      --bg-surface: #ffffff;
+      --bg-surface-elevated: #f1f5f9;
+      --bg-surface-hover: #e2e8f0;
+      --bg-cell-zebra: #f8fafc;
+      --bg-sticky: #ffffff;
+      --border-hairline: #e2e8f0;
+      --border-subtle: #cbd5e1;
+      --border-strong: #94a3b8;
+      --border-highlight: #0f172a;
+      --text-primary: #09090b;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --text-dimmed: #94a3b8;
+      --accent-solid: #09090b;
+      --accent-contrast: #ffffff;
+      --badge-neutral-bg: #f1f5f9;
+      --badge-neutral-border: #e2e8f0;
+      --positive-color: #16a34a;
+      --negative-color: #dc2626;
+      --shadow-elevation-1: 0 4px 20px rgba(0, 0, 0, 0.05);
+      --shadow-elevation-2: 0 10px 40px rgba(0, 0, 0, 0.1);
+      --scrollbar-thumb: #cbd5e1;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100vh;
+      background-color: var(--bg-canvas);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 13px;
+      line-height: 1.45;
+      overflow-x: hidden;
+    }
+
+    /* ── Scrollbars ── */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg-canvas);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--scrollbar-thumb);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--border-strong);
+    }
+
+    /* ── Layout & Container ── */
+    .app-shell {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      width: 100%;
+    }
+
+    /* ── Sticky Top Header Bar ── */
+    .top-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(12, 12, 12, 0.95);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-hairline);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-logo {
+      width: 34px;
+      height: 34px;
+      background: var(--accent-solid);
+      color: var(--accent-contrast);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 15px;
+      letter-spacing: -0.5px;
+    }
+    .brand-title-wrap {
+      display: flex;
+      flex-direction: column;
+    }
+    .brand-title {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      color: var(--text-primary);
+      margin: 0;
+    }
+    .brand-subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.2px;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    /* ── Header Controls ── */
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .date-pill-group {
+      display: flex;
+      align-items: center;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 2px;
+      gap: 2px;
+    }
+    .date-preset-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 5px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .date-preset-btn:hover {
+      color: var(--text-primary);
+      background: var(--bg-surface-hover);
+    }
+    .date-preset-btn.active {
+      background: var(--accent-solid);
+      color: var(--accent-contrast);
+    }
+    .date-inputs {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 4px 8px;
+    }
+    .date-input {
+      background: transparent;
+      border: none;
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      outline: none;
+      cursor: pointer;
+    }
+    .date-input::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+      cursor: pointer;
+    }
+
+    .btn-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: var(--font-sans);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-surface-elevated);
+      color: var(--text-primary);
+    }
+    .btn-action:hover {
+      background: var(--bg-surface-hover);
+      border-color: var(--border-strong);
+    }
+    .btn-action.btn-primary {
+      background: var(--accent-solid);
+      color: var(--accent-contrast);
+      border-color: var(--accent-solid);
+    }
+
+    /* ── Sticky Tab Navigation Bar ── */
+    .nav-tabs-bar {
+      position: sticky;
+      top: 59px;
+      z-index: 95;
+      background: rgba(12, 12, 12, 0.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-hairline);
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .tabs-list {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      overflow-x: auto;
+    }
+    .tab-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+      user-select: none;
+    }
+    .tab-item:hover {
+      color: var(--text-primary);
+      background: var(--bg-surface-hover);
+    }
+    .tab-item.active {
+      color: var(--text-primary);
+      border-bottom-color: var(--accent-solid);
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .tab-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 10px;
+      background: var(--badge-neutral-bg);
+      border: 1px solid var(--badge-neutral-border);
+      color: var(--text-secondary);
+    }
+
+    /* ── KPI Metric Ribbon ── */
+    .kpi-ribbon {
+      padding: 16px 24px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      background: var(--bg-canvas);
+    }
+    .kpi-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-hairline);
+      border-radius: 10px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .kpi-card:hover {
+      border-color: var(--border-strong);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-elevation-1);
+    }
+    .kpi-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .kpi-value {
+      font-family: var(--font-mono);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.5px;
+    }
+    .kpi-subtext {
+      font-size: 11px;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* ── Content Viewport ── */
+    .content-viewport {
+      padding: 0 24px 40px 24px;
+      flex: 1;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.2s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Tables & Multi-Column Matrix ── */
+    .matrix-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-hairline);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--shadow-elevation-1);
+    }
+    .matrix-toolbar {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-hairline);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      background: var(--bg-surface-elevated);
+    }
+    .matrix-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .search-box-wrap {
+      display: flex;
+      align-items: center;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 4px 10px;
+      gap: 8px;
+      min-width: 240px;
+    }
+    .search-input {
+      background: transparent;
+      border: none;
+      color: var(--text-primary);
+      font-size: 12px;
+      font-family: var(--font-sans);
+      outline: none;
+      width: 100%;
+    }
+    .search-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      max-height: calc(100vh - 280px);
+    }
+    .table-matrix {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      text-align: left;
+    }
+    .table-matrix th, .table-matrix td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border-hairline);
+      white-space: nowrap;
+    }
+    .table-matrix thead th {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: var(--bg-surface-elevated);
+      font-weight: 700;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      color: var(--text-secondary);
+      border-bottom: 2px solid var(--border-subtle);
+    }
+    
+    /* Sticky First Column */
+    .table-matrix th.sticky-col,
+    .table-matrix td.sticky-col {
+      position: sticky;
+      left: 0;
+      z-index: 5;
+      background: var(--bg-surface);
+      font-weight: 600;
+      color: var(--text-primary);
+      border-right: 1px solid var(--border-subtle);
+      min-width: 260px;
+      max-width: 320px;
+    }
+    .table-matrix thead th.sticky-col {
+      z-index: 15;
+      background: var(--bg-surface-elevated);
+    }
+
+    /* Sticky Total Column */
+    .table-matrix th.sticky-total,
+    .table-matrix td.sticky-total {
+      position: sticky;
+      right: 0;
+      z-index: 5;
+      background: var(--bg-surface-elevated);
+      font-weight: 700;
+      border-left: 2px solid var(--border-subtle);
+      text-align: right;
+    }
+    .table-matrix thead th.sticky-total {
+      z-index: 15;
+    }
+
+    /* Row Hover & Alternating */
+    .table-matrix tbody tr:hover td {
+      background-color: var(--bg-surface-hover) !important;
+    }
+    .table-matrix tbody tr:nth-child(even) td {
+      background-color: var(--bg-cell-zebra);
+    }
+
+    /* Section Category Headers */
+    .row-section-header td {
+      background: var(--bg-surface-elevated) !important;
+      font-weight: 800;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--text-primary);
+      padding-top: 14px;
+      padding-bottom: 8px;
+      border-top: 2px solid var(--border-subtle);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .row-section-total td {
+      background: rgba(255, 255, 255, 0.03) !important;
+      font-weight: 700;
+      border-top: 1px solid var(--border-strong);
+      border-bottom: 1px solid var(--border-strong);
+      color: var(--text-primary);
+    }
+    .row-grand-total td {
+      background: rgba(255, 255, 255, 0.08) !important;
+      font-weight: 800;
+      font-size: 13px;
+      border-top: 2px solid var(--border-highlight);
+      border-bottom: 2px solid var(--border-highlight);
+      color: var(--text-primary);
+    }
+
+    /* Number & Accounting Formatting */
+    .num-cell {
+      font-family: var(--font-mono);
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      cursor: pointer;
+    }
+    .num-cell:hover {
+      text-decoration: underline;
+      color: var(--accent-solid);
+    }
+    .num-negative {
+      color: var(--text-muted);
+    }
+    .num-zero {
+      color: var(--text-dimmed);
+    }
+
+    /* ── Drill-down Modal ── */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .modal-overlay.open {
+      display: flex;
+    }
+    .modal-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-strong);
+      border-radius: 12px;
+      width: 100%;
+      max-width: 900px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-elevation-2);
+      animation: modalPop 0.2s ease-out;
+    }
+    @keyframes modalPop {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-hairline);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .modal-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin: 0;
+    }
+    .modal-body {
+      padding: 16px 20px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .modal-footer {
+      padding: 12px 20px;
+      border-top: 1px solid var(--border-hairline);
+      display: flex;
+      justify-content: flex-end;
+      background: var(--bg-surface-elevated);
+    }
+
+    /* ── Loading Spinner ── */
+    .loading-overlay {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(3px);
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      border-radius: 12px;
+    }
+    .loading-overlay.active {
+      display: flex;
+    }
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid var(--border-subtle);
+      border-top-color: var(--accent-solid);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ── Badges ── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      font-family: var(--font-sans);
+    }
+    .badge-success {
+      background: rgba(34, 197, 94, 0.1);
+      color: #22c55e;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+    .badge-danger {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+    .badge-neutral {
+      background: var(--badge-neutral-bg);
+      color: var(--text-secondary);
+      border: 1px solid var(--badge-neutral-border);
+    }
+
+    /* ── Print Styles ── */
+    @media print {
+      body {
+        background: #fff !important;
+        color: #000 !important;
+      }
+      .top-header, .nav-tabs-bar, .matrix-toolbar, .header-controls, .btn-action {
+        display: none !important;
+      }
+      .table-matrix th, .table-matrix td {
+        border-color: #ddd !important;
+        color: #000 !important;
+      }
+      .matrix-card {
+        border: none !important;
+        box-shadow: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    
+    <!-- ── Top Header Bar ── -->
+    <header class="top-header">
+      <div class="brand-section">
+        <div class="brand-logo">UM</div>
+        <div class="brand-title-wrap">
+          <h1 class="brand-title">Consolidated Multi-Company Financials &amp; Inventory Audit</h1>
+          <span class="brand-subtitle">Enterprise Group Reporting • 13 Operating Companies</span>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <!-- Date Presets -->
+        <div class="date-pill-group">
+          <button class="date-preset-btn" onclick="setPreset('today')">Today</button>
+          <button class="date-preset-btn" onclick="setPreset('mtd')">MTD</button>
+          <button class="date-preset-btn" onclick="setPreset('qtd')">QTD</button>
+          <button class="date-preset-btn active" onclick="setPreset('ytd')">YTD 2026</button>
+          <button class="date-preset-btn" onclick="setPreset('all')">All Time</button>
+        </div>
+
+        <!-- Custom Date Range -->
+        <div class="date-inputs">
+          <input type="date" id="input-from-date" class="date-input" value="2026-01-01" onchange="reloadActiveTab()">
+          <span style="color: var(--text-muted);">→</span>
+          <input type="date" id="input-to-date" class="date-input" value="2026-12-31" onchange="reloadActiveTab()">
+        </div>
+
+        <!-- Action Buttons -->
+        <button class="btn-action" onclick="reloadActiveTab()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+          Refresh
+        </button>
+
+        <button class="btn-action" onclick="exportCurrentTableCSV()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export CSV
+        </button>
+
+        <button class="btn-action" onclick="window.print()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          Print
+        </button>
+
+        <button class="btn-action" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+          <svg id="theme-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- ── Tab Navigation ── -->
+    <nav class="nav-tabs-bar">
+      <ul class="tabs-list">
+        <li class="tab-item active" id="tab-nav-pnl" onclick="switchTab('pnl')">
+          <span>📊 Consolidated Profit &amp; Loss</span>
+          <span class="tab-badge" id="badge-pnl-status">Live</span>
+        </li>
+        <li class="tab-item" id="tab-nav-balance_sheet" onclick="switchTab('balance_sheet')">
+          <span>🏛️ Consolidated Balance Sheet</span>
+          <span class="tab-badge" id="badge-bs-status">Balanced</span>
+        </li>
+        <li class="tab-item" id="tab-nav-general_ledger" onclick="switchTab('general_ledger')">
+          <span>📜 Multi-Company General Ledger</span>
+          <span class="tab-badge" id="badge-gl-count">0</span>
+        </li>
+        <li class="tab-item" id="tab-nav-inventory_audit" onclick="switchTab('inventory_audit')">
+          <span>📦 Multi-Company Inventory Audit</span>
+          <span class="tab-badge" id="badge-inv-count">0 Items</span>
+        </li>
+      </ul>
+      <div style="font-size: 11px; color: var(--text-muted); font-family: var(--font-mono);">
+        Currency: <strong style="color: var(--text-primary);">PHP (₱)</strong>
+      </div>
+    </nav>
+
+    <!-- ── Dynamic KPI Ribbon ── -->
+    <section class="kpi-ribbon">
+      <div class="kpi-card" onclick="switchTab('pnl')">
+        <div class="kpi-label">
+          <span>Consolidated Net Revenue</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <div class="kpi-value" id="kpi-revenue">₱0.00</div>
+        <div class="kpi-subtext">Across 13 operating companies</div>
+      </div>
+
+      <div class="kpi-card" onclick="switchTab('pnl')">
+        <div class="kpi-label">
+          <span>Consolidated Gross Profit</span>
+          <span id="kpi-gross-margin" class="badge badge-neutral">0.0% Margin</span>
+        </div>
+        <div class="kpi-value" id="kpi-gross-profit">₱0.00</div>
+        <div class="kpi-subtext" id="kpi-cogs-subtext">COGS: ₱0.00</div>
+      </div>
+
+      <div class="kpi-card" onclick="switchTab('pnl')">
+        <div class="kpi-label">
+          <span>Consolidated Net Operating Income</span>
+          <span id="kpi-net-margin" class="badge badge-neutral">0.0% Margin</span>
+        </div>
+        <div class="kpi-value" id="kpi-net-profit">₱0.00</div>
+        <div class="kpi-subtext" id="kpi-expenses-subtext">Expenses: ₱0.00</div>
+      </div>
+
+      <div class="kpi-card" onclick="switchTab('balance_sheet')">
+        <div class="kpi-label">
+          <span>Consolidated Total Assets</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        </div>
+        <div class="kpi-value" id="kpi-assets">₱0.00</div>
+        <div class="kpi-subtext" id="kpi-equity-subtext">Liab + Equity: ₱0.00</div>
+      </div>
+
+      <div class="kpi-card" onclick="switchTab('inventory_audit')">
+        <div class="kpi-label">
+          <span>Total Stock Valuation</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+        </div>
+        <div class="kpi-value" id="kpi-inventory-val">₱0.00</div>
+        <div class="kpi-subtext" id="kpi-inventory-qty-subtext">0 Units in Stock</div>
+      </div>
+    </section>
+
+    <!-- ── Main Viewport Content ── -->
+    <main class="content-viewport">
+      
+      <!-- ── TAB 1: Consolidated P&L ── -->
+      <section id="tab-pnl" class="tab-content active">
+        <div class="matrix-card" style="position: relative;">
+          <div class="loading-overlay" id="loading-pnl"><div class="spinner"></div></div>
+          
+          <div class="matrix-toolbar">
+            <div class="matrix-title">
+              <span>📊 Consolidated Profit &amp; Loss Matrix</span>
+              <span class="badge badge-neutral" id="pnl-date-badge">2026-01-01 to 2026-12-31</span>
+            </div>
+            <div class="search-box-wrap">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="search-pnl" class="search-input" placeholder="Filter P&amp;L accounts..." oninput="filterTableRows('table-pnl', this.value)">
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table class="table-matrix" id="table-pnl">
+              <thead id="thead-pnl">
+                <!-- Dynamically generated company columns -->
+              </thead>
+              <tbody id="tbody-pnl">
+                <!-- Dynamically generated rows -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── TAB 2: Consolidated Balance Sheet ── -->
+      <section id="tab-balance_sheet" class="tab-content">
+        <div class="matrix-card" style="position: relative;">
+          <div class="loading-overlay" id="loading-bs"><div class="spinner"></div></div>
+          
+          <div class="matrix-toolbar">
+            <div class="matrix-title">
+              <span>🏛️ Consolidated Balance Sheet Matrix</span>
+              <span class="badge badge-neutral" id="bs-date-badge">As of 2026-12-31</span>
+            </div>
+            <div class="search-box-wrap">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="search-bs" class="search-input" placeholder="Filter balance sheet accounts..." oninput="filterTableRows('table-bs', this.value)">
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table class="table-matrix" id="table-bs">
+              <thead id="thead-bs">
+                <!-- Dynamically generated company columns -->
+              </thead>
+              <tbody id="tbody-bs">
+                <!-- Dynamically generated rows -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── TAB 3: Multi-Company General Ledger ── -->
+      <section id="tab-general_ledger" class="tab-content">
+        <div class="matrix-card" style="position: relative;">
+          <div class="loading-overlay" id="loading-gl"><div class="spinner"></div></div>
+          
+          <div class="matrix-toolbar">
+            <div class="matrix-title">
+              <span>📜 General Ledger Journal Explorer</span>
+              <span class="badge badge-neutral" id="gl-records-badge">0 Entries</span>
+            </div>
+            
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <select id="gl-voucher-type-filter" class="btn-action" onchange="loadGLData()">
+                <option value="">All Voucher Types</option>
+                <option value="Sales Invoice">Sales Invoice</option>
+                <option value="Purchase Invoice">Purchase Invoice</option>
+                <option value="Payment Entry">Payment Entry</option>
+                <option value="Journal Entry">Journal Entry</option>
+                <option value="Stock Entry">Stock Entry</option>
+                <option value="POS Invoice">POS Invoice</option>
+              </select>
+
+              <div class="search-box-wrap">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="search-gl" class="search-input" placeholder="Search voucher #, account, remarks..." onkeydown="if(event.key==='Enter') loadGLData()">
+              </div>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table class="table-matrix" id="table-gl">
+              <thead>
+                <tr>
+                  <th>Posting Date</th>
+                  <th>Company</th>
+                  <th>Account</th>
+                  <th>Voucher Type</th>
+                  <th>Voucher No</th>
+                  <th>Against</th>
+                  <th style="text-align: right;">Debit (₱)</th>
+                  <th style="text-align: right;">Credit (₱)</th>
+                  <th>Remarks</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-gl">
+                <!-- GL Entries -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── TAB 4: Multi-Company Inventory Audit ── -->
+      <section id="tab-inventory_audit" class="tab-content">
+        <div class="matrix-card" style="position: relative;">
+          <div class="loading-overlay" id="loading-inv"><div class="spinner"></div></div>
+          
+          <div class="matrix-toolbar">
+            <div class="matrix-title">
+              <span>📦 Multi-Company Inventory Valuation Matrix</span>
+              <span class="badge badge-neutral" id="inv-sku-badge">0 SKUs</span>
+            </div>
+            
+            <div class="search-box-wrap">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="search-inv" class="search-input" placeholder="Search item code or item name..." oninput="filterTableRows('table-inv', this.value)">
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table class="table-matrix" id="table-inv">
+              <thead id="thead-inv">
+                <!-- Dynamically generated company columns -->
+              </thead>
+              <tbody id="tbody-inv">
+                <!-- Dynamically generated inventory rows -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ── Drill-Down Modal ── -->
+    <div class="modal-overlay" id="drilldown-modal">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div>
+            <h3 class="modal-title" id="drilldown-title">GL Breakdown</h3>
+            <span style="font-size: 11px; color: var(--text-muted);" id="drilldown-subtitle">Detailed transaction ledger</span>
+          </div>
+          <button class="btn-action" onclick="closeDrilldown()">✕</button>
+        </div>
+        <div class="modal-body">
+          <table class="table-matrix" style="width: 100%;">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Voucher Type</th>
+                <th>Voucher No</th>
+                <th style="text-align: right;">Debit (₱)</th>
+                <th style="text-align: right;">Credit (₱)</th>
+                <th>Remarks</th>
+              </tr>
+            </thead>
+            <tbody id="drilldown-tbody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-action btn-primary" onclick="closeDrilldown()">Close</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // ── Global State ──
+    let activeTab = 'pnl';
+    let currentData = {
+      pnl: null,
+      balance_sheet: null,
+      general_ledger: null,
+      inventory_audit: null
+    };
+
+    const API_BASE = '/api/method/vehicle_management.vehicle_management.consolidated_financials_api.get_consolidated_financials';
+    const FALLBACK_API = '/api/method/vm_consolidated_financials';
+
+    // Format currency helpers
+    function fmt(num) {
+      if (num === null || num === undefined || isNaN(num)) return '₱0.00';
+      const val = parseFloat(num);
+      if (val === 0) return '<span class="num-zero">₱0.00</span>';
+      const formatted = '₱' + Math.abs(val).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      if (val < 0) {
+        return `<span class="num-negative">(${formatted})</span>`;
+      }
+      return formatted;
+    }
+
+    function fmtQty(num, uom = '') {
+      if (!num || isNaN(num)) return '<span class="num-zero">0</span>';
+      const val = parseFloat(num);
+      return val.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + (uom ? ' ' + uom : '');
+    }
+
+    // ── Tab Switching ──
+    function switchTab(tabId) {
+      activeTab = tabId;
+      window.location.hash = tabId;
+      
+      document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+
+      const navEl = document.getElementById(`tab-nav-${tabId}`);
+      if (navEl) navEl.classList.add('active');
+
+      const contentEl = document.getElementById(`tab-${tabId}`);
+      if (contentEl) contentEl.classList.add('active');
+
+      loadDataForTab(tabId);
+    }
+
+    // ── Date Presets ──
+    function setPreset(preset) {
+      document.querySelectorAll('.date-preset-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+
+      const now = new Date();
+      const currYear = now.getFullYear();
+      let fromDate = `${currYear}-01-01`;
+      let toDate = `${currYear}-12-31`;
+
+      if (preset === 'today') {
+        const todayStr = now.toISOString().split('T')[0];
+        fromDate = todayStr;
+        toDate = todayStr;
+      } else if (preset === 'mtd') {
+        const m = String(now.getMonth() + 1).padStart(2, '0');
+        fromDate = `${currYear}-${m}-01`;
+        toDate = now.toISOString().split('T')[0];
+      } else if (preset === 'qtd') {
+        const qMonth = Math.floor(now.getMonth() / 3) * 3 + 1;
+        fromDate = `${currYear}-${String(qMonth).padStart(2, '0')}-01`;
+        toDate = now.toISOString().split('T')[0];
+      } else if (preset === 'ytd') {
+        fromDate = `${currYear}-01-01`;
+        toDate = `${currYear}-12-31`;
+      } else if (preset === 'all') {
+        fromDate = '2020-01-01';
+        toDate = '2030-12-31';
+      }
+
+      document.getElementById('input-from-date').value = fromDate;
+      document.getElementById('input-to-date').value = toDate;
+      reloadActiveTab();
+    }
+
+    function reloadActiveTab() {
+      loadDataForTab(activeTab, true);
+    }
+
+    // ── API Fetcher ──
+    async function fetchFinancialAPI(params) {
+      const urlParams = new URLSearchParams(params);
+      let response = await fetch(`${FALLBACK_API}?${urlParams.toString()}`);
+      if (!response.ok) {
+        response = await fetch(`${API_BASE}?${urlParams.toString()}`);
+      }
+      const json = await response.json();
+      return json.message || json;
+    }
+
+    // ── Tab Data Loaders ──
+    async function loadDataForTab(tabId, force = false) {
+      const fromDate = document.getElementById('input-from-date').value;
+      const toDate = document.getElementById('input-to-date').value;
+
+      if (tabId === 'pnl') {
+        document.getElementById('loading-pnl').classList.add('active');
+        document.getElementById('pnl-date-badge').innerText = `${fromDate} to ${toDate}`;
+        try {
+          const data = await fetchFinancialAPI({ report_type: 'pnl', from_date: fromDate, to_date: toDate });
+          currentData.pnl = data;
+          renderPNLTable(data);
+          updateKPIs();
+        } catch (e) {
+          console.error(e);
+        } finally {
+          document.getElementById('loading-pnl').classList.remove('active');
+        }
+      } else if (tabId === 'balance_sheet') {
+        document.getElementById('loading-bs').classList.add('active');
+        document.getElementById('bs-date-badge').innerText = `As of ${toDate}`;
+        try {
+          const data = await fetchFinancialAPI({ report_type: 'balance_sheet', to_date: toDate });
+          currentData.balance_sheet = data;
+          renderBalanceSheetTable(data);
+          updateKPIs();
+        } catch (e) {
+          console.error(e);
+        } finally {
+          document.getElementById('loading-bs').classList.remove('active');
+        }
+      } else if (tabId === 'general_ledger') {
+        loadGLData();
+      } else if (tabId === 'inventory_audit') {
+        document.getElementById('loading-inv').classList.add('active');
+        try {
+          const data = await fetchFinancialAPI({ report_type: 'inventory_audit' });
+          currentData.inventory_audit = data;
+          renderInventoryTable(data);
+          updateKPIs();
+        } catch (e) {
+          console.error(e);
+        } finally {
+          document.getElementById('loading-inv').classList.remove('active');
+        }
+      }
+    }
+
+    // ── Render Tab 1: P&L Table ──
+    function renderPNLTable(data) {
+      if (!data || !data.companies) return;
+      const companies = data.companies;
+      const meta = data.company_meta || {};
+
+      // Build Thead
+      let theadHtml = `<tr>
+        <th class="sticky-col">Operating Accounts &amp; Line Items</th>`;
+      companies.forEach(co => {
+        const abbr = meta[co] ? meta[co].abbr : co;
+        theadHtml += `<th style="text-align: right;" title="${co}">${co} <br><span style="font-size: 9px; color: var(--text-muted);">${abbr}</span></th>`;
+      });
+      theadHtml += `<th class="sticky-total">Consolidated Total (₱)</th></tr>`;
+      document.getElementById('thead-pnl').innerHTML = theadHtml;
+
+      // Build Tbody
+      let tbodyHtml = '';
+      const s = data.sections;
+
+      // 1. Revenue
+      tbodyHtml += `<tr class="row-section-header"><td class="sticky-col" colspan="${companies.length + 2}">1. OPERATING REVENUE / INCOME</td></tr>`;
+      s.income.rows.forEach(r => {
+        tbodyHtml += `<tr>
+          <td class="sticky-col">${r.account_name}</td>`;
+        companies.forEach(co => {
+          const val = r.companies[co] || 0;
+          tbodyHtml += `<td class="num-cell" onclick="openDrilldown('${co}', '${r.account_name}')">${fmt(val)}</td>`;
+        });
+        tbodyHtml += `<td class="sticky-total num-cell" onclick="openDrilldown('', '${r.account_name}')">${fmt(r.total)}</td></tr>`;
+      });
+      // Revenue Total Row
+      tbodyHtml += `<tr class="row-section-total">
+        <td class="sticky-col">Total Operating Revenue</td>`;
+      companies.forEach(co => {
+        tbodyHtml += `<td class="num-cell">${fmt(s.income.totals[co] || 0)}</td>`;
+      });
+      tbodyHtml += `<td class="sticky-total num-cell">${fmt(s.income.consolidated)}</td></tr>`;
+
+      // 2. Cost of Goods Sold
+      tbodyHtml += `<tr class="row-section-header"><td class="sticky-col" colspan="${companies.length + 2}">2. COST OF GOODS SOLD &amp; DIRECT COSTS</td></tr>`;
+      if (s.cogs.rows.length === 0) {
+        tbodyHtml += `<tr><td class="sticky-col" style="color: var(--text-muted); font-style: italic;">No direct cost entries</td><td colspan="${companies.length + 1}"></td></tr>`;
+      } else {
+        s.cogs.rows.forEach(r => {
+          tbodyHtml += `<tr>
+            <td class="sticky-col">${r.account_name}</td>`;
+          companies.forEach(co => {
+            const val = r.companies[co] || 0;
+            tbodyHtml += `<td class="num-cell" onclick="openDrilldown('${co}', '${r.account_name}')">${fmt(val)}</td>`;
+          });
+          tbodyHtml += `<td class="sticky-total num-cell" onclick="openDrilldown('', '${r.account_name}')">${fmt(r.total)}</td></tr>`;
+        });
+      }
+      // COGS Total Row
+      tbodyHtml += `<tr class="row-section-total">
+        <td class="sticky-col">Total Cost of Goods Sold</td>`;
+      companies.forEach(co => {
+        tbodyHtml += `<td class="num-cell">${fmt(s.cogs.totals[co] || 0)}</td>`;
+      });
+      tbodyHtml += `<td class="sticky-total num-cell">${fmt(s.cogs.consolidated)}</td></tr>`;
+
+      // 3. Gross Profit
+      tbodyHtml += `<tr class="row-grand-total">
+        <td class="sticky-col">GROSS PROFIT</td>`;
+      companies.forEach(co => {
+        tbodyHtml += `<td class="num-cell">${fmt(s.gross_profit.totals[co] || 0)}</td>`;
+      });
+      tbodyHtml += `<td class="sticky-total num-cell">${fmt(s.gross_profit.consolidated)}</td></tr>`;
+
+      // 4. Operating Expenses
+      tbodyHtml += `<tr class="row-section-header"><td class="sticky-col" colspan="${companies.length + 2}">3. OPERATING &amp; ADMINISTRATIVE EXPENSES</td></tr>`;
+      if (s.operating_expenses.rows.length === 0) {
+        tbodyHtml += `<tr><td class="sticky-col" style="color: var(--text-muted); font-style: italic;">No operating expense entries</td><td colspan="${companies.length + 1}"></td></tr>`;
+      } else {
+        s.operating_expenses.rows.forEach(r => {
+          tbodyHtml += `<tr>
+            <td class="sticky-col">${r.account_name}</td>`;
+          companies.forEach(co => {
+            const val = r.companies[co] || 0;
+            tbodyHtml += `<td class="num-cell" onclick="openDrilldown('${co}', '${r.account_name}')">${fmt(val)}</td>`;
+          });
+          tbodyHtml += `<td class="sticky-total num-cell" onclick="openDrilldown('', '${r.account_name}')">${fmt(r.total)}</td></tr>`;
+        });
+      }
+      // Operating Expenses Total Row
+      tbodyHtml += `<tr class="row-section-total">
+        <td class="sticky-col">Total Operating Expenses</td>`;
+      companies.forEach(co => {
+        tbodyHtml += `<td class="num-cell">${fmt(s.operating_expenses.totals[co] || 0)}</td>`;
+      });
+      tbodyHtml += `<td class="sticky-total num-cell">${fmt(s.operating_expenses.consolidated)}</td></tr>`;
+
+      // 5. Net Profit
+      tbodyHtml += `<tr class="row-grand-total" style="background: rgba(255,255,255,0.12) !important;">
+        <td class="sticky-col">NET OPERATING PROFIT / (LOSS)</td>`;
+      companies.forEach(co => {
+        tbodyHtml += `<td class="num-cell">${fmt(s.net_profit.totals[co] || 0)}</td>`;
+      });
+      tbodyHtml += `<td class="sticky-total num-cell">${fmt(s.net_profit.consolidated)}</td></tr>`;
+
+      document.getElementById('tbody-pnl').innerHTML = tbodyHtml;
+    }
+
+    // ── Render Tab 2: Balance Sheet Table ──
+    function renderBalanceSheetTable(data) {
+      if (!data || !data.companies) return;
+      const companies = data.companies;
+      const meta = data.company_meta || {};
+
+      // Build Thead
+      let theadHtml = `<tr>
+        <th class="sticky-col">Balance Sheet Accounts</th>`;
+      companies.forEach(co => {
+        const abbr = meta[co] ? meta[co].abbr : co;
+        theadHtml += `<th style="text-align: right;" title="${co}">${co} <br><span style="font-size: 9px; color: var(--text-muted);">${abbr}</span></th>`;
+      });
+      theadHtml += `<th class="sticky-total">Consolidated Total (₱)</th></tr>`;
+      document.getElementById('thead-bs').innerHTML = theadHtml;
+
+      // Build Tbody
+      let tbodyHtml = '';
+      const s = data.sections;
+
+      // 1. Assets
+      tbodyHtml += `<tr class="row-section-header"><td class="sticky-col" colspan="${companies.length + 2}">1. ASSETS (CURRENT &amp; FIXED)</td></tr>`;
+      s.assets.rows.forEach(r => {
+        tbodyHtml += `<tr>
+          <td class="sticky-col">${r.account_name}</td>`;
+        companies.forEach(co => {
+          const val = r.companies[co] || 0;
+          tbodyHtml += `<td class="num-cell" onclick="openDrilldown('${co}', '${r.account_name}')">${fmt(val)}</td>`;
+        });
+        tbodyHtml += `<td class="sticky-total num-cell" onclick="openDrilldown('', '${r.account_name}')">${fmt(r.total)}</td></tr>`;
+      });
+      tbodyHtml += `<tr class="row-section-total">
+        <td class="sticky-col">TOTAL ASSETS</td>`;
+      companies.forEach(co => {
+        tbodyHtml += `<td class="num-cell">${fmt(s.assets.totals[co] || 0)}</td>`;
+      });
+      tbodyHtml += `<td class="sticky-total num-cell">${fmt(s.assets.consolidated)}</td></tr>`;
+
+      // 2. Liabilities
+      tbodyHtml += `<tr class="row-section-header"><td class="sticky-col" colspan="${companies.length + 2}">2. LIABILITIES (PAYABLES &amp; OBLIGATIONS)</td></tr>`;
+      s.liabilities.rows.forEach(r => {
+        tbodyHtml += `<tr>
+          <td class="sticky-col">${r.account_name}</td>`;
+        companies.forEach(co => {
+          const val = r.companies[co] || 0;
+          tbodyHtml += `<td class="num-cell" onclick="openDrilldown('${co}', '${r.account_name}')">${fmt(val)}</td>`;
+        });
+        tbodyHtml += `<td class="sticky-total num-cell" onclick="openDrilldown('', '${r.account_name}')">${fmt(r.total)}</td></tr>`;
+      });
+      tbodyHtml += `<tr class="row-section-total">
+        <td class="sticky-col">TOTAL LIABILITIES</td>`;
+      companies.forEach(co => {
+        tbodyHtml += `<td class="num-cell">${fmt(s.liabilities.totals[co] || 0)}</td>`;
+      });
+      tbodyHtml += `<td class="sticky-total num-cell">${fmt(s.liabilities.consolidated)}</td></tr>`;
+
+      // 3. Equity
+      tbodyHtml += `<tr class="row-section-header"><td class="sticky-col" colspan="${companies.length + 2}">3. EQUITY &amp; RETAINED RESERVES</td></tr>`;
+      s.equity.rows.forEach(r => {
+        tbodyHtml += `<tr>
+          <td class="sticky-col">${r.account_name}</td>`;
+        companies.forEach(co => {
+          const val = r.companies[co] || 0;
+          tbodyHtml += `<td class="num-cell" onclick="openDrilldown('${co}', '${r.account_name}')">${fmt(val)}</td>`;
+        });
+        tbodyHtml += `<td class="sticky-total num-cell" onclick="openDrilldown('', '${r.account_name}')">${fmt(r.total)}</td></tr>`;
+      });
+      tbodyHtml += `<tr class="row-section-total">
+        <td class="sticky-col">TOTAL EQUITY</td>`;
+      companies.forEach(co => {
+        tbodyHtml += `<td class="num-cell">${fmt(s.equity.totals[co] || 0)}</td>`;
+      });
+      tbodyHtml += `<td class="sticky-total num-cell">${fmt(s.equity.consolidated)}</td></tr>`;
+
+      // 4. Total Liabilities & Equity
+      tbodyHtml += `<tr class="row-grand-total">
+        <td class="sticky-col">TOTAL LIABILITIES &amp; EQUITY</td>`;
+      companies.forEach(co => {
+        tbodyHtml += `<td class="num-cell">${fmt(s.total_liabilities_equity.totals[co] || 0)}</td>`;
+      });
+      tbodyHtml += `<td class="sticky-total num-cell">${fmt(s.total_liabilities_equity.consolidated)}</td></tr>`;
+
+      // Balance Status
+      const isBalanced = s.balance_check.is_balanced;
+      document.getElementById('badge-bs-status').className = isBalanced ? 'tab-badge badge-success' : 'tab-badge badge-danger';
+      document.getElementById('badge-bs-status').innerText = isBalanced ? '✓ Balanced' : `Diff: ₱${Math.abs(s.balance_check.consolidated)}`;
+
+      document.getElementById('tbody-bs').innerHTML = tbodyHtml;
+    }
+
+    // ── Render Tab 3: General Ledger ──
+    async function loadGLData() {
+      document.getElementById('loading-gl').classList.add('active');
+      const fromDate = document.getElementById('input-from-date').value;
+      const toDate = document.getElementById('input-to-date').value;
+      const vtype = document.getElementById('gl-voucher-type-filter').value;
+      const search = document.getElementById('search-gl').value;
+
+      try {
+        const data = await fetchFinancialAPI({
+          report_type: 'general_ledger',
+          from_date: fromDate,
+          to_date: toDate,
+          voucher_type: vtype,
+          search_text: search,
+          page_length: 100
+        });
+
+        document.getElementById('gl-records-badge').innerText = `${data.total_records || 0} Entries`;
+        document.getElementById('badge-gl-count').innerText = `${data.total_records || 0}`;
+
+        let tbodyHtml = '';
+        (data.rows || []).forEach(r => {
+          tbodyHtml += `<tr>
+            <td style="font-family: var(--font-mono);">${r.posting_date}</td>
+            <td><strong>${r.company}</strong></td>
+            <td>${r.account}</td>
+            <td><span class="badge badge-neutral">${r.voucher_type}</span></td>
+            <td><a href="/desk/form/${encodeURIComponent(r.voucher_type)}/${encodeURIComponent(r.voucher_no)}" target="_blank" style="color: var(--text-primary); text-decoration: underline; font-family: var(--font-mono);">${r.voucher_no}</a></td>
+            <td style="color: var(--text-muted);">${r.against || '-'}</td>
+            <td class="num-cell">${fmt(r.debit)}</td>
+            <td class="num-cell">${fmt(r.credit)}</td>
+            <td style="font-size: 11px; color: var(--text-muted); max-width: 200px; overflow: hidden; text-overflow: ellipsis;">${r.remarks || ''}</td>
+          </tr>`;
+        });
+
+        if (!data.rows || data.rows.length === 0) {
+          tbodyHtml = `<tr><td colspan="9" style="text-align: center; color: var(--text-muted); padding: 24px;">No General Ledger entries found for this period.</td></tr>`;
+        }
+
+        document.getElementById('tbody-gl').innerHTML = tbodyHtml;
+      } catch (e) {
+        console.error(e);
+      } finally {
+        document.getElementById('loading-gl').classList.remove('active');
+      }
+    }
+
+    // ── Render Tab 4: Inventory Audit ──
+    function renderInventoryTable(data) {
+      if (!data || !data.companies) return;
+      const companies = data.companies;
+      const meta = data.company_meta || {};
+
+      document.getElementById('inv-sku-badge').innerText = `${data.total_sku_count || 0} SKUs`;
+      document.getElementById('badge-inv-count').innerText = `${data.total_sku_count || 0} Items`;
+
+      // Build Thead
+      let theadHtml = `<tr>
+        <th class="sticky-col">Item Details (Code / Description)</th>
+        <th>Group</th>
+        <th>UOM</th>
+        <th style="text-align: right;">Avg Rate</th>`;
+      companies.forEach(co => {
+        const abbr = meta[co] ? meta[co].abbr : co;
+        theadHtml += `<th style="text-align: right;" title="${co}">${abbr} Qty <br><span style="font-size: 9px; color: var(--text-muted);">Stock Val</span></th>`;
+      });
+      theadHtml += `<th class="sticky-total">Total Units <br><span style="font-size: 9px; color: var(--text-muted);">Total Value (₱)</span></th></tr>`;
+      document.getElementById('thead-inv').innerHTML = theadHtml;
+
+      // Build Tbody
+      let tbodyHtml = '';
+      (data.rows || []).forEach(r => {
+        tbodyHtml += `<tr>
+          <td class="sticky-col">
+            <strong>${r.item_code}</strong><br>
+            <span style="font-size: 11px; color: var(--text-secondary);">${r.item_name}</span>
+          </td>
+          <td><span class="badge badge-neutral">${r.item_group}</span></td>
+          <td>${r.stock_uom}</td>
+          <td class="num-cell">${fmt(r.avg_valuation_rate)}</td>`;
+        
+        companies.forEach(co => {
+          const q = r.companies_qty[co] || 0;
+          const v = r.companies_val[co] || 0;
+          tbodyHtml += `<td class="num-cell">
+            ${fmtQty(q)}<br>
+            <span style="font-size: 10px; color: var(--text-muted);">${fmt(v)}</span>
+          </td>`;
+        });
+
+        tbodyHtml += `<td class="sticky-total num-cell">
+          <strong>${fmtQty(r.total_qty, r.stock_uom)}</strong><br>
+          <span style="font-size: 11px; color: var(--accent-solid); font-weight: 700;">${fmt(r.total_val)}</span>
+        </td></tr>`;
+      });
+
+      // Total Inventory Valuation Row
+      tbodyHtml += `<tr class="row-grand-total">
+        <td class="sticky-col" colspan="4">TOTAL CONSOLIDATED INVENTORY VALUATION</td>`;
+      companies.forEach(co => {
+        const v = data.company_val_totals[co] || 0;
+        const q = data.company_qty_totals[co] || 0;
+        tbodyHtml += `<td class="num-cell">
+          ${fmtQty(q)}<br>
+          <span style="font-size: 10px;">${fmt(v)}</span>
+        </td>`;
+      });
+      tbodyHtml += `<td class="sticky-total num-cell">
+        <strong>${fmtQty(data.total_qty)}</strong><br>
+        <span style="font-size: 12px; color: var(--accent-solid);">${fmt(data.total_val)}</span>
+      </td></tr>`;
+
+      document.getElementById('tbody-inv').innerHTML = tbodyHtml;
+    }
+
+    // ── Update Global KPI Ribbon ──
+    function updateKPIs() {
+      if (currentData.pnl && currentData.pnl.kpis) {
+        const k = currentData.pnl.kpis;
+        document.getElementById('kpi-revenue').innerHTML = fmt(k.consolidated_revenue);
+        document.getElementById('kpi-gross-profit').innerHTML = fmt(k.consolidated_gross_profit);
+        document.getElementById('kpi-cogs-subtext').innerText = `COGS: ₱${Math.abs(k.consolidated_cogs).toLocaleString('en-US', {minimumFractionDigits:2})}`;
+        document.getElementById('kpi-net-profit').innerHTML = fmt(k.consolidated_net_profit);
+        document.getElementById('kpi-expenses-subtext').innerText = `Expenses: ₱${Math.abs(k.consolidated_expenses).toLocaleString('en-US', {minimumFractionDigits:2})}`;
+
+        document.getElementById('kpi-gross-margin').innerText = `${currentData.pnl.sections.gross_profit.consolidated_margin_pct}% Margin`;
+        document.getElementById('kpi-net-margin').innerText = `${k.consolidated_net_margin}% Margin`;
+      }
+      if (currentData.balance_sheet && currentData.balance_sheet.kpis) {
+        const k = currentData.balance_sheet.kpis;
+        document.getElementById('kpi-assets').innerHTML = fmt(k.consolidated_assets);
+        document.getElementById('kpi-equity-subtext').innerText = `Liab + Equity: ₱${Math.abs(k.consolidated_liabilities + k.consolidated_equity).toLocaleString('en-US', {minimumFractionDigits:2})}`;
+      }
+      if (currentData.inventory_audit) {
+        const k = currentData.inventory_audit;
+        document.getElementById('kpi-inventory-val').innerHTML = fmt(k.total_val);
+        document.getElementById('kpi-inventory-qty-subtext').innerText = `${fmtQty(k.total_qty)} Units across warehouses`;
+      }
+    }
+
+    // ── GL Drill-down Modal ──
+    async function openDrilldown(company, account) {
+      const fromDate = document.getElementById('input-from-date').value;
+      const toDate = document.getElementById('input-to-date').value;
+      document.getElementById('drilldown-title').innerText = account;
+      document.getElementById('drilldown-subtitle').innerText = company ? `Company: ${company} (${fromDate} to ${toDate})` : `All Companies Consolidated (${fromDate} to ${toDate})`;
+      
+      document.getElementById('drilldown-modal').classList.add('open');
+      document.getElementById('drilldown-tbody').innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 20px;"><div class="spinner" style="margin: 0 auto;"></div></td></tr>`;
+
+      try {
+        const data = await fetchFinancialAPI({
+          report_type: 'drilldown',
+          company: company,
+          account: account,
+          from_date: fromDate,
+          to_date: toDate
+        });
+
+        let rowsHtml = '';
+        (data.entries || []).forEach(e => {
+          rowsHtml += `<tr>
+            <td style="font-family: var(--font-mono);">${e.posting_date}</td>
+            <td><span class="badge badge-neutral">${e.voucher_type}</span></td>
+            <td><a href="/desk/form/${encodeURIComponent(e.voucher_type)}/${encodeURIComponent(e.voucher_no)}" target="_blank" style="color: var(--text-primary); text-decoration: underline; font-family: var(--font-mono);">${e.voucher_no}</a></td>
+            <td class="num-cell">${fmt(e.debit)}</td>
+            <td class="num-cell">${fmt(e.credit)}</td>
+            <td style="color: var(--text-muted); font-size: 11px;">${e.remarks || ''}</td>
+          </tr>`;
+        });
+
+        if (!data.entries || data.entries.length === 0) {
+          rowsHtml = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 16px;">No detailed records found.</td></tr>`;
+        } else {
+          rowsHtml += `<tr class="row-section-total">
+            <td colspan="3">Total</td>
+            <td class="num-cell">${fmt(data.total_debit)}</td>
+            <td class="num-cell">${fmt(data.total_credit)}</td>
+            <td></td>
+          </tr>`;
+        }
+
+        document.getElementById('drilldown-tbody').innerHTML = rowsHtml;
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function closeDrilldown() {
+      document.getElementById('drilldown-modal').classList.remove('open');
+    }
+
+    // ── Table Search Filter ──
+    function filterTableRows(tableId, query) {
+      const q = (query || '').toLowerCase();
+      const rows = document.querySelectorAll(`#${tableId} tbody tr`);
+      rows.forEach(r => {
+        if (r.classList.contains('row-section-header') || r.classList.contains('row-section-total') || r.classList.contains('row-grand-total')) {
+          return;
+        }
+        const text = r.innerText.toLowerCase();
+        r.style.display = text.includes(q) ? '' : 'none';
+      });
+    }
+
+    // ── CSV Export ──
+    function exportCurrentTableCSV() {
+      let tableId = `table-${activeTab}`;
+      if (activeTab === 'pnl') tableId = 'table-pnl';
+      else if (activeTab === 'balance_sheet') tableId = 'table-bs';
+      else if (activeTab === 'general_ledger') tableId = 'table-gl';
+      else if (activeTab === 'inventory_audit') tableId = 'table-inv';
+
+      const table = document.getElementById(tableId);
+      if (!table) return;
+
+      let csv = [];
+      for (let r of table.rows) {
+        let rowData = [];
+        for (let cell of r.cells) {
+          let text = cell.innerText.replace(/"/g, '""').replace(/\n/g, ' ');
+          rowData.push(`"${text}"`);
+        }
+        csv.push(rowData.join(','));
+      }
+
+      const blob = new Blob([csv.join('\n')], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute('download', `Consolidated_${activeTab.toUpperCase()}_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // ── Theme Toggle ──
+    function toggleTheme() {
+      const html = document.documentElement;
+      const current = html.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+    }
+
+    // ── Initialize on Load ──
+    window.addEventListener('DOMContentLoaded', () => {
+      // Check hash
+      const hash = window.location.hash.replace('#', '');
+      if (hash && ['pnl', 'balance_sheet', 'general_ledger', 'inventory_audit'].includes(hash)) {
+        switchTab(hash);
+      } else {
+        switchTab('pnl');
+      }
+
+      // Background load other tabs
+      setTimeout(() => loadDataForTab('balance_sheet'), 300);
+      setTimeout(() => loadDataForTab('inventory_audit'), 600);
+    });
+  </script>
+</body>
+</html>

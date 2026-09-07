@@ -108,7 +108,6 @@
       background: var(--border-strong);
     }
 
-    /* ── Layout & Container ── */
     .app-shell {
       display: flex;
       flex-direction: column;
@@ -242,6 +241,7 @@
       border: 1px solid var(--border-subtle);
       background: var(--bg-surface-elevated);
       color: var(--text-primary);
+      position: relative;
     }
     .btn-action:hover {
       background: var(--bg-surface-hover);
@@ -251,6 +251,77 @@
       background: var(--accent-solid);
       color: var(--accent-contrast);
       border-color: var(--accent-solid);
+    }
+
+    /* ── Company Filter Dropdown Popover ── */
+    .company-dropdown-popover {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      margin-top: 6px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-strong);
+      border-radius: 10px;
+      box-shadow: var(--shadow-elevation-2);
+      width: 320px;
+      max-height: 400px;
+      z-index: 200;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      animation: popoverFade 0.15s ease-out;
+    }
+    .company-dropdown-popover.open {
+      display: flex;
+    }
+    @keyframes popoverFade {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .popover-header {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border-hairline);
+      background: var(--bg-surface-elevated);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 700;
+      font-size: 12px;
+    }
+    .popover-list {
+      padding: 8px 12px;
+      overflow-y: auto;
+      max-height: 280px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .company-check-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      cursor: pointer;
+      padding: 4px 6px;
+      border-radius: 6px;
+      transition: background 0.1s ease;
+    }
+    .company-check-item:hover {
+      background: var(--bg-surface-hover);
+    }
+    .company-check-item input[type="checkbox"] {
+      cursor: pointer;
+      accent-color: var(--accent-solid);
+      width: 14px;
+      height: 14px;
+    }
+    .popover-footer {
+      padding: 8px 14px;
+      border-top: 1px solid var(--border-hairline);
+      background: var(--bg-surface-elevated);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     /* ── Sticky Tab Navigation Bar ── */
@@ -565,7 +636,7 @@
       border: 1px solid var(--border-strong);
       border-radius: 12px;
       width: 100%;
-      max-width: 900px;
+      max-width: 960px;
       max-height: 85vh;
       display: flex;
       flex-direction: column;
@@ -687,11 +758,38 @@
         <div class="brand-logo">UM</div>
         <div class="brand-title-wrap">
           <h1 class="brand-title">Consolidated Multi-Company Financials &amp; Inventory Audit</h1>
-          <span class="brand-subtitle">Enterprise Group Reporting • 13 Operating Companies</span>
+          <span class="brand-subtitle">Enterprise Group Reporting • Dynamic Column Filtering</span>
         </div>
       </div>
 
       <div class="header-controls">
+        <!-- Company Filter Popover Trigger -->
+        <div style="position: relative;">
+          <button class="btn-action" id="btn-company-filter" onclick="toggleCompanyPopover()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span id="company-filter-label">🏢 Companies (13)</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+
+          <!-- Company Filter Popover Dropdown -->
+          <div class="company-dropdown-popover" id="company-popover">
+            <div class="popover-header">
+              <span>Filter Company Columns</span>
+              <div style="display: flex; gap: 6px;">
+                <button class="date-preset-btn" style="padding: 2px 6px; font-size: 10px;" onclick="selectAllCompanies(true)">Select All</button>
+                <button class="date-preset-btn" style="padding: 2px 6px; font-size: 10px;" onclick="selectAllCompanies(false)">Clear</button>
+              </div>
+            </div>
+            <div class="popover-list" id="company-checkboxes-container">
+              <!-- Dynamically populated company checkboxes -->
+            </div>
+            <div class="popover-footer">
+              <span style="font-size: 11px; color: var(--text-muted);" id="popover-selected-count">13 selected</span>
+              <button class="btn-action btn-primary" style="padding: 4px 10px; font-size: 11px;" onclick="applyCompanyFilter()">Apply Filter</button>
+            </div>
+          </div>
+        </div>
+
         <!-- Date Presets -->
         <div class="date-pill-group">
           <button class="date-preset-btn" onclick="setPreset('today')">Today</button>
@@ -763,7 +861,7 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
         </div>
         <div class="kpi-value" id="kpi-revenue">₱0.00</div>
-        <div class="kpi-subtext">Across 13 operating companies</div>
+        <div class="kpi-subtext" id="kpi-companies-subtext">Across 13 operating companies</div>
       </div>
 
       <div class="kpi-card" onclick="switchTab('pnl')">
@@ -923,13 +1021,13 @@
           
           <div class="matrix-toolbar">
             <div class="matrix-title">
-              <span>📦 Multi-Company Inventory Valuation Matrix</span>
+              <span>📦 Multi-Company Inventory Audit • Running Balance &amp; On Hand</span>
               <span class="badge badge-neutral" id="inv-sku-badge">0 SKUs</span>
             </div>
             
             <div class="search-box-wrap">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-              <input type="text" id="search-inv" class="search-input" placeholder="Search item code or item name..." oninput="filterTableRows('table-inv', this.value)">
+              <input type="text" id="search-inv" class="search-input" placeholder="Search all items code, name, group..." oninput="filterTableRows('table-inv', this.value)">
             </div>
           </div>
 
@@ -948,7 +1046,7 @@
 
     </main>
 
-    <!-- ── Drill-Down Modal ── -->
+    <!-- ── GL Drill-Down Modal ── -->
     <div class="modal-overlay" id="drilldown-modal">
       <div class="modal-card">
         <div class="modal-header">
@@ -981,11 +1079,63 @@
       </div>
     </div>
 
+    <!-- ── Stock Ledger Running Balance Drill-Down Modal ── -->
+    <div class="modal-overlay" id="stock-modal">
+      <div class="modal-card" style="max-width: 1050px;">
+        <div class="modal-header">
+          <div>
+            <h3 class="modal-title" id="stock-modal-title">Running Stock Ledger Audit</h3>
+            <span style="font-size: 11px; color: var(--text-muted);" id="stock-modal-subtitle">Chronological running transactions &amp; balance on hand</span>
+          </div>
+          <button class="btn-action" onclick="closeStockModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 12px; padding: 8px 12px; background: var(--bg-surface-elevated); border-radius: 8px;">
+            <div style="font-size: 12px;">
+              <span style="color: var(--text-muted);">Item Code:</span> <strong id="stock-item-code">-</strong> • 
+              <span style="color: var(--text-muted);">Company:</span> <strong id="stock-company-name">All Companies</strong>
+            </div>
+            <div style="display: flex; gap: 16px; font-size: 12px;">
+              <div>In: <strong style="color: var(--positive-color);" id="stock-total-in">0</strong></div>
+              <div>Out: <strong style="color: var(--negative-color);" id="stock-total-out">0</strong></div>
+              <div>Ending On Hand: <strong style="color: var(--accent-solid);" id="stock-ending-qty">0</strong></div>
+              <div>Valuation: <strong id="stock-ending-val">₱0.00</strong></div>
+            </div>
+          </div>
+
+          <table class="table-matrix" style="width: 100%;">
+            <thead>
+              <tr>
+                <th>Posting Date &amp; Time</th>
+                <th>Company</th>
+                <th>Warehouse</th>
+                <th>Voucher Type</th>
+                <th>Voucher No</th>
+                <th style="text-align: right;">Qty In/Out</th>
+                <th style="text-align: right;">Running Balance</th>
+                <th style="text-align: right;">Incoming Rate</th>
+                <th style="text-align: right;">Stock Valuation (₱)</th>
+              </tr>
+            </thead>
+            <tbody id="stock-modal-tbody">
+              <!-- Dynamically populated SLE rows -->
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-action btn-primary" onclick="closeStockModal()">Close</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <script>
     // ── Global State ──
     let activeTab = 'pnl';
+    let allAvailableCompanies = [];
+    let selectedCompanies = []; // Array of strings
+
     let currentData = {
       pnl: null,
       balance_sheet: null,
@@ -1009,8 +1159,9 @@
     }
 
     function fmtQty(num, uom = '') {
-      if (!num || isNaN(num)) return '<span class="num-zero">0</span>';
+      if (num === null || num === undefined || isNaN(num)) return '<span class="num-zero">0</span>';
       const val = parseFloat(num);
+      if (val === 0) return '<span class="num-zero">0</span>';
       return val.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + (uom ? ' ' + uom : '');
     }
 
@@ -1029,6 +1180,68 @@
       if (contentEl) contentEl.classList.add('active');
 
       loadDataForTab(tabId);
+    }
+
+    // ── Company Filter Popover Management ──
+    function toggleCompanyPopover() {
+      const p = document.getElementById('company-popover');
+      p.classList.toggle('open');
+    }
+
+    // Close popover when clicked outside
+    document.addEventListener('click', (e) => {
+      const popover = document.getElementById('company-popover');
+      const btn = document.getElementById('btn-company-filter');
+      if (popover && btn && !popover.contains(e.target) && !btn.contains(e.target)) {
+        popover.classList.remove('open');
+      }
+    });
+
+    function renderCompanyCheckboxes(companies) {
+      allAvailableCompanies = companies;
+      if (selectedCompanies.length === 0) {
+        selectedCompanies = [...companies];
+      }
+
+      const container = document.getElementById('company-checkboxes-container');
+      let html = '';
+      companies.forEach(co => {
+        const isChecked = selectedCompanies.includes(co);
+        html += `<label class="company-check-item">
+          <input type="checkbox" value="${co}" ${isChecked ? 'checked' : ''} onchange="updateSelectedCompaniesState()">
+          <span>${co}</span>
+        </label>`;
+      });
+      container.innerHTML = html;
+      updatePopoverSelectedCount();
+    }
+
+    function updateSelectedCompaniesState() {
+      const checkboxes = document.querySelectorAll('#company-checkboxes-container input[type="checkbox"]');
+      selectedCompanies = [];
+      checkboxes.forEach(cb => {
+        if (cb.checked) selectedCompanies.push(cb.value);
+      });
+      updatePopoverSelectedCount();
+    }
+
+    function updatePopoverSelectedCount() {
+      const label = selectedCompanies.length === allAvailableCompanies.length
+        ? `🏢 Companies (${allAvailableCompanies.length})`
+        : `🏢 Companies (${selectedCompanies.length}/${allAvailableCompanies.length})`;
+      document.getElementById('company-filter-label').innerText = label;
+      document.getElementById('popover-selected-count').innerText = `${selectedCompanies.length} selected`;
+    }
+
+    function selectAllCompanies(selectAll) {
+      const checkboxes = document.querySelectorAll('#company-checkboxes-container input[type="checkbox"]');
+      checkboxes.forEach(cb => { cb.checked = selectAll; });
+      updateSelectedCompaniesState();
+    }
+
+    function applyCompanyFilter() {
+      document.getElementById('company-popover').classList.remove('open');
+      reloadActiveTab();
     }
 
     // ── Date Presets ──
@@ -1072,6 +1285,9 @@
 
     // ── API Fetcher ──
     async function fetchFinancialAPI(params) {
+      if (selectedCompanies.length > 0 && selectedCompanies.length < allAvailableCompanies.length) {
+        params.selected_companies = selectedCompanies.join(',');
+      }
       const urlParams = new URLSearchParams(params);
       let response = await fetch(`${FALLBACK_API}?${urlParams.toString()}`);
       if (!response.ok) {
@@ -1092,6 +1308,9 @@
         try {
           const data = await fetchFinancialAPI({ report_type: 'pnl', from_date: fromDate, to_date: toDate });
           currentData.pnl = data;
+          if (data.all_companies && allAvailableCompanies.length === 0) {
+            renderCompanyCheckboxes(data.all_companies);
+          }
           renderPNLTable(data);
           updateKPIs();
         } catch (e) {
@@ -1105,6 +1324,9 @@
         try {
           const data = await fetchFinancialAPI({ report_type: 'balance_sheet', to_date: toDate });
           currentData.balance_sheet = data;
+          if (data.all_companies && allAvailableCompanies.length === 0) {
+            renderCompanyCheckboxes(data.all_companies);
+          }
           renderBalanceSheetTable(data);
           updateKPIs();
         } catch (e) {
@@ -1117,8 +1339,11 @@
       } else if (tabId === 'inventory_audit') {
         document.getElementById('loading-inv').classList.add('active');
         try {
-          const data = await fetchFinancialAPI({ report_type: 'inventory_audit' });
+          const data = await fetchFinancialAPI({ report_type: 'inventory_audit', to_date: toDate });
           currentData.inventory_audit = data;
+          if (data.all_companies && allAvailableCompanies.length === 0) {
+            renderCompanyCheckboxes(data.all_companies);
+          }
           renderInventoryTable(data);
           updateKPIs();
         } catch (e) {
@@ -1371,7 +1596,7 @@
       }
     }
 
-    // ── Render Tab 4: Inventory Audit ──
+    // ── Render Tab 4: Inventory Audit with Running Balance & On Hand ──
     function renderInventoryTable(data) {
       if (!data || !data.companies) return;
       const companies = data.companies;
@@ -1386,19 +1611,30 @@
         <th>Group</th>
         <th>UOM</th>
         <th style="text-align: right;">Avg Rate</th>`;
+      
       companies.forEach(co => {
         const abbr = meta[co] ? meta[co].abbr : co;
-        theadHtml += `<th style="text-align: right;" title="${co}">${abbr} Qty <br><span style="font-size: 9px; color: var(--text-muted);">Stock Val</span></th>`;
+        theadHtml += `<th style="text-align: right; min-width: 140px;" title="${co}">
+          ${co}<br>
+          <span style="font-size: 9px; color: var(--text-muted);">In / Out / <strong>On Hand</strong> (Val)</span>
+        </th>`;
       });
-      theadHtml += `<th class="sticky-total">Total Units <br><span style="font-size: 9px; color: var(--text-muted);">Total Value (₱)</span></th></tr>`;
+
+      theadHtml += `<th class="sticky-total" style="min-width: 160px;">
+        Consolidated Summary<br>
+        <span style="font-size: 9px; color: var(--text-muted);">In / Out / <strong>Total On Hand</strong> (Val)</span>
+      </th></tr>`;
       document.getElementById('thead-inv').innerHTML = theadHtml;
 
       // Build Tbody
       let tbodyHtml = '';
       (data.rows || []).forEach(r => {
         tbodyHtml += `<tr>
-          <td class="sticky-col">
-            <strong>${r.item_code}</strong><br>
+          <td class="sticky-col" onclick="openStockLedgerModal('${r.item_code}', '')" style="cursor: pointer;" title="Click to view running stock ledger">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <strong>${r.item_code}</strong>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
             <span style="font-size: 11px; color: var(--text-secondary);">${r.item_name}</span>
           </td>
           <td><span class="badge badge-neutral">${r.item_group}</span></td>
@@ -1406,17 +1642,22 @@
           <td class="num-cell">${fmt(r.avg_valuation_rate)}</td>`;
         
         companies.forEach(co => {
-          const q = r.companies_qty[co] || 0;
-          const v = r.companies_val[co] || 0;
-          tbodyHtml += `<td class="num-cell">
-            ${fmtQty(q)}<br>
-            <span style="font-size: 10px; color: var(--text-muted);">${fmt(v)}</span>
+          const inQ = r.companies_in[co] || 0;
+          const outQ = r.companies_out[co] || 0;
+          const endQ = r.companies_qty[co] || 0;
+          const val = r.companies_val[co] || 0;
+          
+          tbodyHtml += `<td class="num-cell" onclick="openStockLedgerModal('${r.item_code}', '${co}')" title="Click for ${co} stock ledger">
+            <span style="color: var(--text-muted); font-size: 10px;">+${inQ} / -${outQ}</span><br>
+            <strong style="color: var(--text-primary); font-size: 12px;">${fmtQty(endQ)}</strong> 
+            <span style="font-size: 10px; color: var(--text-muted); display: block;">${fmt(val)}</span>
           </td>`;
         });
 
-        tbodyHtml += `<td class="sticky-total num-cell">
-          <strong>${fmtQty(r.total_qty, r.stock_uom)}</strong><br>
-          <span style="font-size: 11px; color: var(--accent-solid); font-weight: 700;">${fmt(r.total_val)}</span>
+        tbodyHtml += `<td class="sticky-total num-cell" onclick="openStockLedgerModal('${r.item_code}', '')" title="Click for consolidated stock ledger">
+          <span style="color: var(--text-muted); font-size: 10px;">+${r.total_in} / -${r.total_out}</span><br>
+          <strong style="color: var(--accent-solid); font-size: 13px;">${fmtQty(r.total_qty, r.stock_uom)}</strong>
+          <span style="font-size: 11px; color: var(--accent-solid); display: block; font-weight: 700;">${fmt(r.total_val)}</span>
         </td></tr>`;
       });
 
@@ -1426,14 +1667,18 @@
       companies.forEach(co => {
         const v = data.company_val_totals[co] || 0;
         const q = data.company_qty_totals[co] || 0;
+        const inQ = data.company_in_totals[co] || 0;
+        const outQ = data.company_out_totals[co] || 0;
         tbodyHtml += `<td class="num-cell">
-          ${fmtQty(q)}<br>
-          <span style="font-size: 10px;">${fmt(v)}</span>
+          <span style="color: var(--text-muted); font-size: 10px;">+${inQ} / -${outQ}</span><br>
+          <strong>${fmtQty(q)}</strong><br>
+          <span style="font-size: 11px;">${fmt(v)}</span>
         </td>`;
       });
       tbodyHtml += `<td class="sticky-total num-cell">
-        <strong>${fmtQty(data.total_qty)}</strong><br>
-        <span style="font-size: 12px; color: var(--accent-solid);">${fmt(data.total_val)}</span>
+        <span style="color: var(--text-muted); font-size: 10px;">+${data.total_in_qty} / -${data.total_out_qty}</span><br>
+        <strong style="font-size: 13px;">${fmtQty(data.total_qty)}</strong><br>
+        <span style="font-size: 13px; color: var(--accent-solid);">${fmt(data.total_val)}</span>
       </td></tr>`;
 
       document.getElementById('tbody-inv').innerHTML = tbodyHtml;
@@ -1451,6 +1696,7 @@
 
         document.getElementById('kpi-gross-margin').innerText = `${currentData.pnl.sections.gross_profit.consolidated_margin_pct}% Margin`;
         document.getElementById('kpi-net-margin').innerText = `${k.consolidated_net_margin}% Margin`;
+        document.getElementById('kpi-companies-subtext').innerText = `Across ${currentData.pnl.companies.length} operating companies`;
       }
       if (currentData.balance_sheet && currentData.balance_sheet.kpis) {
         const k = currentData.balance_sheet.kpis;
@@ -1460,7 +1706,7 @@
       if (currentData.inventory_audit) {
         const k = currentData.inventory_audit;
         document.getElementById('kpi-inventory-val').innerHTML = fmt(k.total_val);
-        document.getElementById('kpi-inventory-qty-subtext').innerText = `${fmtQty(k.total_qty)} Units across warehouses`;
+        document.getElementById('kpi-inventory-qty-subtext').innerText = `${fmtQty(k.total_qty)} Units on hand across warehouses`;
       }
     }
 
@@ -1516,6 +1762,64 @@
       document.getElementById('drilldown-modal').classList.remove('open');
     }
 
+    // ── Stock Ledger Running Balance Drill-Down Modal ──
+    async function openStockLedgerModal(itemCode, company) {
+      const fromDate = document.getElementById('input-from-date').value;
+      const toDate = document.getElementById('input-to-date').value;
+
+      document.getElementById('stock-item-code').innerText = itemCode;
+      document.getElementById('stock-company-name').innerText = company || 'All Companies';
+      document.getElementById('stock-modal-subtitle').innerText = company ? `Chronological stock audit for ${company}` : `Consolidated stock ledger across all companies`;
+
+      document.getElementById('stock-modal').classList.add('open');
+      document.getElementById('stock-modal-tbody').innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 20px;"><div class="spinner" style="margin: 0 auto;"></div></td></tr>`;
+
+      try {
+        const data = await fetchFinancialAPI({
+          report_type: 'stock_ledger_drilldown',
+          item_code: itemCode,
+          company: company,
+          to_date: toDate
+        });
+
+        document.getElementById('stock-total-in').innerText = `+${data.total_in || 0}`;
+        document.getElementById('stock-total-out').innerText = `-${data.total_out || 0}`;
+        document.getElementById('stock-ending-qty').innerText = `${data.ending_qty || 0}`;
+        document.getElementById('stock-ending-val').innerText = fmt(data.ending_value);
+
+        let rowsHtml = '';
+        (data.entries || []).forEach(e => {
+          const qty = parseFloat(e.actual_qty || 0);
+          const qtyColor = qty > 0 ? 'var(--positive-color)' : 'var(--negative-color)';
+          const qtyPrefix = qty > 0 ? '+' : '';
+
+          rowsHtml += `<tr>
+            <td style="font-family: var(--font-mono);">${e.posting_date} <span style="font-size: 10px; color: var(--text-muted);">${(e.posting_time || '').slice(0,8)}</span></td>
+            <td><strong>${e.company}</strong></td>
+            <td><span class="badge badge-neutral">${e.warehouse}</span></td>
+            <td><span class="badge badge-neutral">${e.voucher_type}</span></td>
+            <td><a href="/desk/form/${encodeURIComponent(e.voucher_type)}/${encodeURIComponent(e.voucher_no)}" target="_blank" style="color: var(--text-primary); text-decoration: underline; font-family: var(--font-mono);">${e.voucher_no}</a></td>
+            <td class="num-cell" style="color: ${qtyColor}; font-weight: 700;">${qtyPrefix}${qty}</td>
+            <td class="num-cell" style="font-weight: 700; color: var(--accent-solid);">${e.qty_after_transaction}</td>
+            <td class="num-cell">${fmt(e.incoming_rate || e.valuation_rate)}</td>
+            <td class="num-cell">${fmt(e.stock_value)}</td>
+          </tr>`;
+        });
+
+        if (!data.entries || data.entries.length === 0) {
+          rowsHtml = `<tr><td colspan="9" style="text-align: center; color: var(--text-muted); padding: 20px;">No Stock Ledger transactions recorded for this item.</td></tr>`;
+        }
+
+        document.getElementById('stock-modal-tbody').innerHTML = rowsHtml;
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function closeStockModal() {
+      document.getElementById('stock-modal').classList.remove('open');
+    }
+
     // ── Table Search Filter ──
     function filterTableRows(tableId, query) {
       const q = (query || '').toLowerCase();
@@ -1569,7 +1873,6 @@
 
     // ── Initialize on Load ──
     window.addEventListener('DOMContentLoaded', () => {
-      // Check hash
       const hash = window.location.hash.replace('#', '');
       if (hash && ['pnl', 'balance_sheet', 'general_ledger', 'inventory_audit'].includes(hash)) {
         switchTab(hash);

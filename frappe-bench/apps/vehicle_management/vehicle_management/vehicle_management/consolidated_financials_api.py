@@ -2,7 +2,7 @@
 """
 Consolidated Multi-Company Financial & Inventory Audit Engine
 Provides multi-column P&L, Balance Sheet, General Ledger Explorer, and Inventory Audit
-across all companies with consolidated totals and drill-downs.
+across all companies with dynamic company column filtering, all-item running balances, and drill-downs.
 """
 
 import frappe
@@ -23,10 +23,6 @@ def get_consolidated_financials(
     page=1,
     page_length=100
 ):
-    """
-    Main entry point for Consolidated Financials API.
-    report_type: 'pnl' | 'balance_sheet' | 'general_ledger' | 'inventory_audit' | 'drilldown'
-    """
     if not to_date:
         to_date = nowdate()
     if not from_date:
@@ -39,37 +35,40 @@ def get_consolidated_financials(
         fields=["name", "abbr", "default_currency", "country"],
         order_by="name asc"
     )
-    
-    if selected_companies:
-        if isinstance(selected_companies, str):
-            import json
-            try:
-                selected_companies = json.loads(selected_companies)
-            except Exception:
-                selected_companies = [c.strip() for c in selected_companies.split(",") if c.strip()]
-        if selected_companies and len(selected_companies) > 0:
-            companies_records = [c for c in companies_records if c.name in selected_companies]
-
-    companies = [c.name for c in companies_records]
+    all_companies = [c.name for c in companies_records]
     company_meta = {c.name: {"abbr": c.abbr, "currency": c.default_currency or "PHP"} for c in companies_records}
 
+    companies = all_companies
+    if selected_companies:
+        if isinstance(selected_companies, str):
+            clean_str = selected_companies.replace("[", "").replace("]", "").replace('"', '').replace("'", "")
+            parts = [p.strip() for p in clean_str.split(",") if p.strip()]
+            if parts:
+                filtered = [c for c in all_companies if c in parts]
+                if filtered:
+                    companies = filtered
+
     if report_type == "pnl":
-        return get_consolidated_pnl(companies, company_meta, from_date, to_date)
+        return get_consolidated_pnl(companies, company_meta, all_companies, from_date, to_date)
     elif report_type == "balance_sheet":
-        return get_consolidated_balance_sheet(companies, company_meta, to_date)
+        return get_consolidated_balance_sheet(companies, company_meta, all_companies, to_date)
     elif report_type == "general_ledger":
         return get_multi_company_gl(companies, from_date, to_date, voucher_type, search_text, page, page_length)
     elif report_type == "inventory_audit":
-        return get_consolidated_inventory_audit(companies, company_meta, item_group, warehouse, search_text)
+        return get_consolidated_inventory_audit(companies, company_meta, all_companies, from_date, to_date, search_text)
     elif report_type == "drilldown":
         account = frappe.form_dict.get("account")
         company = frappe.form_dict.get("company")
         return get_account_drilldown(company, account, from_date, to_date)
+    elif report_type == "stock_ledger_drilldown":
+        item_code = frappe.form_dict.get("item_code")
+        company = frappe.form_dict.get("company")
+        return get_stock_ledger_drilldown(item_code, company, from_date, to_date)
     else:
         frappe.throw(_("Invalid report type: {0}").format(report_type))
 
 
-def get_consolidated_pnl(companies, company_meta, from_date, to_date):
+def get_consolidated_pnl(companies, company_meta, all_companies, from_date, to_date):
     placeholders = ", ".join(["%s"] * len(companies))
     query = f"""
         SELECT 
@@ -154,6 +153,7 @@ def get_consolidated_pnl(companies, company_meta, from_date, to_date):
         "from_date": from_date,
         "to_date": to_date,
         "companies": companies,
+        "all_companies": all_companies,
         "company_meta": company_meta,
         "sections": {
             "income": {
@@ -198,7 +198,7 @@ def get_consolidated_pnl(companies, company_meta, from_date, to_date):
     }
 
 
-def get_consolidated_balance_sheet(companies, company_meta, to_date):
+def get_consolidated_balance_sheet(companies, company_meta, all_companies, to_date):
     placeholders = ", ".join(["%s"] * len(companies))
     query = f"""
         SELECT 
@@ -296,6 +296,7 @@ def get_consolidated_balance_sheet(companies, company_meta, to_date):
         "report": "Consolidated Balance Sheet",
         "as_of_date": to_date,
         "companies": companies,
+        "all_companies": all_companies,
         "company_meta": company_meta,
         "sections": {
             "assets": {
@@ -384,74 +385,164 @@ def get_multi_company_gl(companies, from_date, to_date, voucher_type=None, searc
     }
 
 
-def get_consolidated_inventory_audit(companies, company_meta, item_group=None, warehouse=None, search_text=None):
-    conditions = ["(b.actual_qty != 0 OR b.stock_value != 0)"]
-    values = []
+def get_consolidated_inventory_audit(companies, company_meta, all_companies, from_date, to_date, search_text=None):
+    items_all = frappe.get_all(
+        "Item",
+        fields=["name", "item_name", "item_group", "stock_uom", "valuation_rate", "is_stock_item"],
+        order_by="name asc",
+        limit_page_length=2000
+    )
 
-    if search_text:
-        conditions.append("(b.item_code LIKE %s OR item.item_name LIKE %s)")
-        wildcard = f"%{search_text}%"
-        values.extend([wildcard, wildcard])
+    placeholders = ", ".join(["%s"] * len(companies))
+    
+    sle_query = f"""
+        SELECT 
+            sle.item_code,
+            sle.company,
+            SUM(CASE WHEN sle.actual_qty > 0 THEN sle.actual_qty ELSE 0 END) as total_in_qty,
+            SUM(CASE WHEN sle.actual_qty < 0 THEN ABS(sle.actual_qty) ELSE 0 END) as total_out_qty,
+            SUM(sle.actual_qty) as ending_balance_qty,
+            AVG(sle.valuation_rate) as avg_valuation_rate,
+            SUM(sle.stock_value_difference) as total_stock_value
+        FROM `tabStock Ledger Entry` sle
+        WHERE sle.is_cancelled = 0
+          AND sle.posting_date <= %s
+          AND sle.company IN ({placeholders})
+        GROUP BY sle.item_code, sle.company
+    """
+    sle_data = frappe.db.sql(sle_query, [to_date] + companies, as_dict=True)
+    sle_map = {}
+    for s in sle_data:
+        sle_map[(s.get("item_code"), s.get("company"))] = s
 
-    where_clause = " AND ".join(conditions)
-
-    bins = frappe.db.sql(f"""
+    bin_query = f"""
         SELECT 
             b.item_code,
-            MAX(item.item_name) as item_name,
-            MAX(item.item_group) as item_group,
-            MAX(item.stock_uom) as stock_uom,
             wh.company,
             SUM(b.actual_qty) as actual_qty,
             AVG(b.valuation_rate) as valuation_rate,
             SUM(b.stock_value) as stock_value
         FROM `tabBin` b
-        LEFT JOIN `tabItem` item ON item.name = b.item_code
         LEFT JOIN `tabWarehouse` wh ON wh.name = b.warehouse
-        WHERE {where_clause}
+        WHERE wh.company IN ({placeholders})
         GROUP BY b.item_code, wh.company
-        ORDER BY b.item_code asc
-    """, values, as_dict=True)
+    """
+    bin_data = frappe.db.sql(bin_query, companies, as_dict=True)
+    bin_map = {}
+    for b in bin_data:
+        bin_map[(b.get("item_code"), b.get("company"))] = b
 
-    item_matrix = {}
-    for row in bins:
-        code = row.item_code
-        co = row.company or "Other"
-        if code not in item_matrix:
-            item_matrix[code] = {
-                "item_code": code,
-                "item_name": row.item_name or code,
-                "item_group": row.item_group or "Standard",
-                "stock_uom": row.stock_uom or "Unit",
-                "avg_valuation_rate": flt(row.valuation_rate),
-                "companies_qty": {c: 0.0 for c in companies},
-                "companies_val": {c: 0.0 for c in companies},
-                "total_qty": 0.0,
-                "total_val": 0.0
-            }
-        
-        qty = flt(row.actual_qty)
-        val = flt(row.stock_value)
-        
-        if co in item_matrix[code]["companies_qty"]:
-            item_matrix[code]["companies_qty"][co] += qty
-            item_matrix[code]["companies_val"][co] += val
-        
-        item_matrix[code]["total_qty"] += qty
-        item_matrix[code]["total_val"] += val
+    matrix_rows = []
+    total_qty_all = 0.0
+    total_val_all = 0.0
+    total_in_all = 0.0
+    total_out_all = 0.0
 
-    matrix_rows = list(item_matrix.values())
+    company_qty_totals = {c: 0.0 for c in companies}
+    company_val_totals = {c: 0.0 for c in companies}
+    company_in_totals = {c: 0.0 for c in companies}
+    company_out_totals = {c: 0.0 for c in companies}
 
-    company_qty_totals = {c: sum(r["companies_qty"].get(c, 0.0) for r in matrix_rows) for c in companies}
-    company_val_totals = {c: sum(r["companies_val"].get(c, 0.0) for r in matrix_rows) for c in companies}
+    search_lower = str(search_text).lower() if search_text else None
+
+    for it in items_all:
+        code = it.get("name")
+        name = it.get("item_name") or code
+        group = it.get("item_group") or "Standard"
+        uom = it.get("stock_uom") or "Unit"
+        def_rate = flt(it.get("valuation_rate"))
+
+        if search_lower and (search_lower not in code.lower() and search_lower not in name.lower() and search_lower not in group.lower()):
+            continue
+
+        row_item = {
+            "item_code": code,
+            "item_name": name,
+            "item_group": group,
+            "stock_uom": uom,
+            "is_stock_item": it.get("is_stock_item"),
+            "avg_valuation_rate": def_rate,
+            "companies_qty": {c: 0.0 for c in companies},
+            "companies_in": {c: 0.0 for c in companies},
+            "companies_out": {c: 0.0 for c in companies},
+            "companies_val": {c: 0.0 for c in companies},
+            "total_in": 0.0,
+            "total_out": 0.0,
+            "total_qty": 0.0,
+            "total_val": 0.0,
+            "has_transactions": False
+        }
+
+        rates = []
+        for co in companies:
+            k = (code, co)
+            in_q = 0.0
+            out_q = 0.0
+            end_q = 0.0
+            val = 0.0
+
+            if k in sle_map:
+                s = sle_map[k]
+                in_q = flt(s.get("total_in_qty"))
+                out_q = flt(s.get("total_out_qty"))
+                end_q = flt(s.get("ending_balance_qty"))
+                val = flt(s.get("total_stock_value"))
+                v_rate = flt(s.get("avg_valuation_rate"))
+                if v_rate > 0:
+                    rates.append(v_rate)
+                row_item["has_transactions"] = True
+
+            if k in bin_map:
+                b = bin_map[k]
+                b_qty = flt(b.get("actual_qty"))
+                b_val = flt(b.get("stock_value"))
+                b_rate = flt(b.get("valuation_rate"))
+                if b_qty != 0 or end_q == 0:
+                    end_q = b_qty
+                    val = b_val
+                if b_rate > 0:
+                    rates.append(b_rate)
+                row_item["has_transactions"] = True
+
+            row_item["companies_in"][co] = in_q
+            row_item["companies_out"][co] = out_q
+            row_item["companies_qty"][co] = end_q
+            row_item["companies_val"][co] = val
+
+            row_item["total_in"] += in_q
+            row_item["total_out"] += out_q
+            row_item["total_qty"] += end_q
+            row_item["total_val"] += val
+
+            company_in_totals[co] += in_q
+            company_out_totals[co] += out_q
+            company_qty_totals[co] += end_q
+            company_val_totals[co] += val
+
+        if rates:
+            row_item["avg_valuation_rate"] = sum(rates) / len(rates)
+
+        total_in_all += row_item["total_in"]
+        total_out_all += row_item["total_out"]
+        total_qty_all += row_item["total_qty"]
+        total_val_all += row_item["total_val"]
+
+        matrix_rows.append(row_item)
 
     return {
         "report": "Multi-Company Inventory Audit",
+        "from_date": from_date,
+        "to_date": to_date,
         "companies": companies,
+        "all_companies": all_companies,
         "company_meta": company_meta,
         "total_sku_count": len(matrix_rows),
-        "total_qty": sum(r["total_qty"] for r in matrix_rows),
-        "total_val": sum(r["total_val"] for r in matrix_rows),
+        "total_in_qty": total_in_all,
+        "total_out_qty": total_out_all,
+        "total_qty": total_qty_all,
+        "total_val": total_val_all,
+        "company_in_totals": company_in_totals,
+        "company_out_totals": company_out_totals,
         "company_qty_totals": company_qty_totals,
         "company_val_totals": company_val_totals,
         "rows": matrix_rows
@@ -492,4 +583,53 @@ def get_account_drilldown(company, account, from_date, to_date):
         "entries": entries,
         "total_debit": sum(flt(e.debit) for e in entries),
         "total_credit": sum(flt(e.credit) for e in entries)
+    }
+
+
+def get_stock_ledger_drilldown(item_code, company, from_date, to_date):
+    conditions = ["sle.is_cancelled = 0"]
+    values = []
+
+    if item_code:
+        conditions.append("sle.item_code = %s")
+        values.append(item_code)
+
+    if company:
+        conditions.append("sle.company = %s")
+        values.append(company)
+
+    if to_date:
+        conditions.append("sle.posting_date <= %s")
+        values.append(to_date)
+
+    where_clause = " AND ".join(conditions)
+
+    entries = frappe.db.sql(f"""
+        SELECT 
+            sle.posting_date,
+            sle.posting_time,
+            sle.company,
+            sle.warehouse,
+            sle.voucher_type,
+            sle.voucher_no,
+            sle.actual_qty,
+            sle.qty_after_transaction,
+            sle.incoming_rate,
+            sle.valuation_rate,
+            sle.stock_value,
+            sle.stock_value_difference
+        FROM `tabStock Ledger Entry` sle
+        WHERE {where_clause}
+        ORDER BY sle.posting_date asc, sle.posting_time asc, sle.creation asc
+        LIMIT 200
+    """, values, as_dict=True)
+
+    return {
+        "item_code": item_code,
+        "company": company,
+        "entries": entries,
+        "total_in": sum(flt(e.actual_qty) for e in entries if flt(e.actual_qty) > 0),
+        "total_out": sum(abs(flt(e.actual_qty)) for e in entries if flt(e.actual_qty) < 0),
+        "ending_qty": entries[-1].get("qty_after_transaction") if entries else 0.0,
+        "ending_value": entries[-1].get("stock_value") if entries else 0.0
     }

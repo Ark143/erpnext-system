@@ -3,6 +3,7 @@ volume_backup/
 backups/*.sql.gz
 backups/*.tar.gz
 vps_migration/backups/reconciliation_deploy_*/
+vps_migration/backups/consolidated_financials_before_*.json
 *.dump
 __pycache__/
 *.pyc

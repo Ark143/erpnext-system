@@ -7,3 +7,4 @@ vps_migration/backups/consolidated_financials_before_*.json
 *.dump
 __pycache__/
 *.pyc
+vps_migration/backups/inventory_map_*/

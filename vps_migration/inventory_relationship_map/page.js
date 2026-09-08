@@ -36,6 +36,12 @@
   function render() {
     if (!data.item) { $('im-results').innerHTML = '<div class="im-empty">'+esc(data.empty_reason || 'No inventory movements found. Select an item to explore its relationships.')+'</div>'; return; }
     const rows = data.movements, balances = data.balances, uom = esc(data.item.stock_uom);
+    const locationCell = row => {
+      if (!row.bin_location) return '<span class="im-muted">Not recorded</span>';
+      const location = (data.locations || []).find(l=>l.name===row.bin_location);
+      return (location ? link('Bin Location',location.name) : esc(row.bin_location)) +
+        (location ? '<br><small>'+esc([location.zone,location.rack,location.shelf,location.bin_no].filter(Boolean).join(' / '))+'</small>' : '');
+    };
     const incoming = rows.reduce((n,r)=>n+Math.max(0,Number(r.actual_qty)),0);
     const outgoing = rows.reduce((n,r)=>n+Math.abs(Math.min(0,Number(r.actual_qty))),0);
     const current = balances.reduce((n,r)=>n+Number(r.actual_qty),0);
@@ -44,17 +50,18 @@
       [rows.length,'Ledger entries',data.truncated?'Latest entries only · limit '+data.limit:'All entries matching the filters']];
     $('im-results').innerHTML = `<div class="im-item-title"><div><h2>${esc(data.item.item_name)}</h2><div class="im-muted">${link('Item',data.item.name)} · Stock UOM: ${uom}${data.company?' · '+esc(data.company):''}</div></div><span class="im-badge">${data.item.is_stock_item?'Stock item':'Non-stock item'}</span></div>
       <div class="im-summary">${stats.map(s=>`<div class="im-stat"><small>${s[1]}</small><strong>${s[0]}</strong><span>${s[2]}</span></div>`).join('')}</div>
-      <div class="im-muted">Current stock is the live Bin balance; date filters affect movements only. Transfers contribute to both inward and outward quantities.</div>
+      <div class="im-muted">Current stock is the warehouse-level Bin balance; date and bin-location filters affect movements only. Location cards show the net of displayed movements, not current bin stock. Transfers contribute to both inward and outward quantities.</div>
       <div class="im-tabs" role="tablist" aria-label="Inventory views">${['Relationship map','Movement ledger','Warehouse balances','Document references'].map((n,i)=>`<button type="button" class="im-button" role="tab" id="im-tab-${i}" aria-controls="im-panel-${i}" aria-selected="${i===0}" data-panel="${i}">${n}</button>`).join('')}</div>
       <section class="im-panel" role="tabpanel" aria-labelledby="im-tab-0" id="im-panel-0"><div class="im-graph-toolbar"><p id="im-graph-caption"></p><div><button class="im-button" type="button" id="im-minus" aria-label="Zoom out">−</button> <button class="im-button" type="button" id="im-reset">100%</button> <button class="im-button" type="button" id="im-plus" aria-label="Zoom in">+</button></div></div><div class="im-graph-viewport"><div id="im-graph" class="im-graph"></div></div><div class="im-legend"><span><i style="background:#077c78"></i>Inward movement</span><span><i style="background:#bd7348"></i>Outward / zero-qty adjustment</span><span><i style="background:#536fc1"></i>Warehouse</span></div></section>
-      <section class="im-panel" role="tabpanel" aria-labelledby="im-tab-1" id="im-panel-1" hidden>${table(['Posted','Source document','Company / warehouse','Movement qty','Warehouse balance after','Batch / serial'], rows.map(r=>[
+      <section class="im-panel" role="tabpanel" aria-labelledby="im-tab-1" id="im-panel-1" hidden>${table(['Posted','Source document','Company / warehouse','Bin location','Movement qty','Warehouse balance after','Batch / serial'], rows.map(r=>[
         esc(r.posting_date)+'<br><small>'+esc(r.posting_time)+'</small>',
         '<small>'+esc(r.voucher_type)+'</small><br>'+(r.can_open_voucher?link(r.voucher_type,r.voucher_no):'Source document restricted'),
         esc(r.company)+'<br>'+link('Warehouse',r.warehouse),
+        locationCell(r),
         `<span class="${r.actual_qty<0?'im-negative':'im-positive'}">${r.actual_qty>0?'+':''}${num(r.actual_qty)}</span> ${uom}`,
         num(r.qty_after_transaction)+' '+uom,
         esc([r.batch_no,r.serial_no,r.serial_and_batch_bundle].filter(Boolean).join(' / ') || '—')]))}</section>
-      <section class="im-panel" role="tabpanel" aria-labelledby="im-tab-2" id="im-panel-2" hidden><p class="im-muted">Current balances, regardless of the selected movement dates. All quantities use ${uom}.</p>${table(['Warehouse','Company','Actual qty','Reserved qty','Ordered qty','Projected qty'],balances.map(b=>[link('Warehouse',b.warehouse),esc(b.company),num(b.actual_qty),num(b.reserved_qty),num(b.ordered_qty),num(b.projected_qty)]))}</section>
+      <section class="im-panel" role="tabpanel" aria-labelledby="im-tab-2" id="im-panel-2" hidden><p class="im-muted">Current warehouse totals across all bin locations, regardless of movement dates or bin-location filter. All quantities use ${uom}.</p>${table(['Warehouse','Company','Actual qty','Reserved qty','Ordered qty','Projected qty'],balances.map(b=>[link('Warehouse',b.warehouse),esc(b.company),num(b.actual_qty),num(b.reserved_qty),num(b.ordered_qty),num(b.projected_qty)]))}</section>
       <section class="im-panel" role="tabpanel" aria-labelledby="im-tab-3" id="im-panel-3" hidden><p class="im-muted">Explicit source links on document item rows for this item. Orders and requests are references; they do not themselves change stock.</p>${data.references.length?data.references.map(r=>`<div class="im-reference">${link(r.doctype,r.name,r.doctype+' · '+r.name)}<span>→ ${esc(r.label || 'Referenced by')} →</span>${link(r.to.split('::')[0],r.to.split('::').slice(1).join('::'))}</div>`).join(''):'<div class="im-empty">No readable upstream document references found for the displayed movements.</div>'}</section>`;
     app.querySelectorAll('[data-panel]').forEach(button=>button.addEventListener('click',()=>{
       app.querySelectorAll('[data-panel]').forEach(b=>b.setAttribute('aria-selected',String(b===button)));
@@ -71,7 +78,9 @@
     $('im-plus').onclick=()=>setZoom(zoom+.1);$('im-minus').onclick=()=>setZoom(zoom-.1);$('im-reset').onclick=()=>setZoom(1);
   }
   function drawGraph() {
-    const rows=data.movements.slice(0,graphLimit), whs=[...new Set(rows.map(r=>r.warehouse))];
+    const rows=data.movements.slice(0,graphLimit);
+    const locationKey = row => JSON.stringify([row.warehouse,row.bin_location || '']);
+    const whs=[...new Set(rows.map(locationKey))];
     $('im-graph-caption').textContent=`${rows.length} of ${data.movements.length} loaded ledger entries shown. Open a card to view its record; scroll to explore. The movement ledger contains every loaded entry.`;
     if (!rows.length) { $('im-graph').innerHTML='<div class="im-empty">No stock movements for this item in the selected period.</div>'; return; }
     const ins=rows.filter(r=>r.actual_qty>0), outs=rows.filter(r=>r.actual_qty<=0);
@@ -80,11 +89,15 @@
     let cards='',paths='';
     const node=(x,y,cls,href,type,title,detail,qty)=>`<a class="im-node ${cls}" style="left:${x}px;top:${y}px" href="${esc(href)}" target="_blank" rel="noopener" title="${esc(type+' · '+title)}"><small>${esc(type)}</small><strong>${esc(title)}</strong><small>${esc(detail)}</small><span class="im-quantity">${esc(qty)}</span></a>`;
     whs.forEach(w=>{
-      const b=data.balances.find(b=>b.warehouse===w);
-      cards+=node(365,whY[w],'im-wh',url('Warehouse',w),'WAREHOUSE',w,b?.company || rows.find(r=>r.warehouse===w).company,b?'Current: '+num(b.actual_qty)+' '+data.item.stock_uom:'No readable Bin balance');
+      const matching=rows.filter(r=>locationKey(r)===w), first=matching[0];
+      const location=(data.locations || []).find(l=>l.name===first.bin_location);
+      const title=first.bin_location || 'Bin not recorded';
+      const details=[first.warehouse,location?.zone,location?.rack,location?.shelf,location?.bin_no].filter(Boolean).join(' / ');
+      const href=location?url('Bin Location',location.name):url('Warehouse',first.warehouse);
+      cards+=node(365,whY[w],'im-wh',href,'WAREHOUSE / BIN LOCATION',title,details,'Displayed net: '+num(matching.reduce((n,r)=>n+Number(r.actual_qty),0))+' '+data.item.stock_uom);
     });
     [ins,outs].forEach((set,side)=>set.forEach((r,i)=>{
-      const y=64+i*108,wy=whY[r.warehouse]+44,inward=side===0;
+      const y=64+i*108,wy=whY[locationKey(r)]+44,inward=side===0;
       const dt=data.documents.find(d=>d.id===r.voucher_type+'::'+r.voucher_no);
       const href=r.can_open_voucher?url(r.voucher_type,r.voucher_no):url('Stock Ledger Entry',r.name);
       cards+=node(inward?35:695,y,inward?'':'im-out',href,r.voucher_type,r.can_open_voucher?r.voucher_no:'Source document restricted',r.posting_date+(dt?.purpose?' · '+dt.purpose:''),(r.actual_qty>0?'+':'')+num(r.actual_qty)+' '+data.item.stock_uom);
@@ -97,7 +110,7 @@
   async function load() {
     const id=++requestId;
     notice('Loading inventory relationships…');$('im-results').innerHTML='';
-    const params={...source,item_code:$('im-item').value.trim(),company:$('im-company').value,warehouse:$('im-warehouse').value.trim(),from_date:$('im-from').value,to_date:$('im-to').value};
+    const params={...source,item_code:$('im-item').value.trim(),company:$('im-company').value,warehouse:$('im-warehouse').value.trim(),bin_location:$('im-bin').value.trim(),from_date:$('im-from').value,to_date:$('im-to').value};
     if(params.from_date && params.to_date && params.from_date>params.to_date){notice('From date must be on or before To date.',true);return;}
     try {
       const result=await api('/api/method/inventory_relationship_map',params);
@@ -116,15 +129,20 @@
     }catch(e){notice(e.message,true);}
   },250);});
   async function warehouses(){const filters=$('im-company').value?{company:$('im-company').value}:{};const values=await list('Warehouse',['name'],filters,{limit_page_length:500});$('im-warehouses').innerHTML=values.map(v=>`<option value="${esc(v.name)}"></option>`).join('');}
-  $('im-company').addEventListener('change',()=>{$('im-warehouse').value='';warehouses().catch(e=>notice(e.message,true));});
+  let binLookupId=0;
+  async function binLocations(){const id=++binLookupId;const filters={};if($('im-company').value)filters.company=$('im-company').value;if($('im-warehouse').value.trim())filters.warehouse=$('im-warehouse').value.trim();if($('im-bin').value.trim())filters.name=['like','%'+$('im-bin').value.trim()+'%'];const values=await list('Bin Location',['name','zone','rack','shelf','bin_no'],filters,{limit_page_length:100});if(id===binLookupId)$('im-bins').innerHTML=values.map(v=>`<option value="${esc(v.name)}">${esc([v.zone,v.rack,v.shelf,v.bin_no].filter(Boolean).join(' / '))}</option>`).join('');}
+  $('im-company').addEventListener('change',()=>{$('im-warehouse').value='';$('im-bin').value='';Promise.all([warehouses(),binLocations()]).catch(e=>notice(e.message,true));});
+  $('im-warehouse').addEventListener('change',()=>{$('im-bin').value='';binLocations().catch(e=>notice(e.message,true));});
+  let binTimer;
+  $('im-bin').addEventListener('input',()=>{clearTimeout(binTimer);++binLookupId;binTimer=setTimeout(()=>binLocations().catch(e=>notice(e.message,true)),250);});
   $('im-filters').addEventListener('submit',event=>{event.preventDefault();load();});
   async function init(){
     try{
       await api('/api/method/frappe.auth.get_logged_user');
       const companies=await list('Company',['name'],{});
       $('im-company').innerHTML='<option value="">All permitted companies</option>'+companies.map(c=>`<option value="${esc(c.name)}">${esc(c.name)}</option>`).join('');
-      for(const [key,id] of [['item_code','im-item'],['company','im-company'],['warehouse','im-warehouse'],['from_date','im-from'],['to_date','im-to']])if(initial.has(key))$(id).value=initial.get(key);
-      await warehouses();await load();
+      for(const [key,id] of [['item_code','im-item'],['company','im-company'],['warehouse','im-warehouse'],['bin_location','im-bin'],['from_date','im-from'],['to_date','im-to']])if(initial.has(key))$(id).value=initial.get(key);
+      await Promise.all([warehouses(),binLocations()]);await load();
     }catch(e){notice(e.message,true);if(e.message.includes('sign in'))$('im-results').innerHTML='<a class="im-button im-primary" href="/login?redirect-to=%2Finventory-relationship-map">Sign in to ERPNext</a>';}
   }
   init();

@@ -12,6 +12,7 @@ def build_map(params):
     item_code = params.get("item_code")
     company = params.get("company")
     warehouse = params.get("warehouse")
+    bin_location = params.get("bin_location")
     from_date = params.get("from_date")
     to_date = params.get("to_date")
     limit = min(300, max(1, int(params.get("limit") or 120)))
@@ -62,7 +63,14 @@ def build_map(params):
         company_by_wh[w.get("name")] = w.get("company")
     if warehouse and not wh_names:
         frappe.throw("Warehouse is unavailable for the selected company or your permissions.")
+    if bin_location:
+        selected_bins = frappe.get_list("Bin Location", filters={"name": bin_location,
+            "warehouse": ["in", wh_names]}, fields=["name"], limit_page_length=1)
+        if not selected_bins:
+            frappe.throw("Bin location is unavailable for the selected company, warehouse or your permissions.")
     filters = {"is_cancelled": 0, "warehouse": ["in", wh_names]}
+    if bin_location:
+        filters["bin_location"] = bin_location
     if company:
         filters["company"] = company
     if not item_code:
@@ -87,10 +95,19 @@ def build_map(params):
     rows = frappe.get_list("Stock Ledger Entry", filters=filters,
         fields=["name", "item_code", "warehouse", "company", "posting_date", "posting_time",
                 "voucher_type", "voucher_no", "actual_qty", "qty_after_transaction", "stock_uom",
-                "batch_no", "serial_no", "serial_and_batch_bundle"],
+                "batch_no", "serial_no", "serial_and_batch_bundle", "bin_location"],
         order_by="posting_date desc, posting_time desc, creation desc, name desc", limit_page_length=limit + 1)
     truncated = len(rows) > limit
     rows = rows[:limit]
+    location_names = []
+    for row in rows:
+        if row.get("bin_location") and row.get("bin_location") not in location_names:
+            location_names.append(row.get("bin_location"))
+    locations = []
+    if location_names:
+        locations = frappe.get_list("Bin Location", filters={"name": ["in", location_names],
+            "warehouse": ["in", wh_names]}, fields=["name", "warehouse", "company", "zone", "rack", "shelf", "bin_no"],
+            order_by="name asc", limit_page_length=300)
     # Bin is a current snapshot, independent of the selected ledger dates.
     balances = frappe.get_list("Bin", filters={"item_code": item_code, "warehouse": ["in", wh_names]},
         fields=["name", "warehouse", "actual_qty", "reserved_qty", "ordered_qty", "projected_qty"],
@@ -147,6 +164,7 @@ def build_map(params):
     for row in rows:
         row["can_open_voucher"] = row.get("voucher_type") + "::" + row.get("voucher_no") in readable
     return {"item": items[0], "source_items": source_items, "company": company,
+            "bin_location": bin_location, "locations": locations,
             "movements": rows, "balances": balances, "documents": documents,
             "references": references, "truncated": truncated, "limit": limit,
             "from_date": from_date, "to_date": to_date}

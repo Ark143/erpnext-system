@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parent
 ASSETS = ROOT / "inventory_relationship_map"
 SCRIPT_NAME = "Inventory Relationship Map API"
 PAGE_NAME = "inventory-relationship-map"
-FORM_TYPES = ["Item", "Warehouse", "Stock Entry", "Stock Reconciliation", "Purchase Receipt",
+FORM_TYPES = ["Item", "Warehouse", "Bin Location", "Stock Entry", "Stock Reconciliation", "Purchase Receipt",
               "Delivery Note", "Purchase Invoice", "Sales Invoice", "POS Invoice"]
 
 
@@ -37,6 +37,7 @@ def client_script(doctype):
             const params = new URLSearchParams();
             if (frm.doctype === 'Item') params.set('item_code', frm.doc.name);
             else if (frm.doctype === 'Warehouse') params.set('warehouse', frm.doc.name);
+            else if (frm.doctype === 'Bin Location') { params.set('bin_location', frm.doc.name); if (frm.doc.warehouse) params.set('warehouse', frm.doc.warehouse); }
             else { params.set('doctype', frm.doctype); params.set('docname', frm.doc.name); }
             if (frm.doc.company) params.set('company', frm.doc.company);
             window.open('/inventory-relationship-map?' + params.toString(), '_blank', 'noopener');

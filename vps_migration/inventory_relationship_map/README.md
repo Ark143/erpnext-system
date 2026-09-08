@@ -2,14 +2,18 @@
 
 Live page: http://38.247.138.224:10017/inventory-relationship-map
 
-Open **Stock → Inventory Relationship Map**, or open a saved Item, Warehouse,
+Open **Stock → Inventory Relationship Map**, or open a saved Item, Warehouse, Bin Location,
 Stock Entry, Stock Reconciliation, Purchase Receipt, Delivery Note, Purchase
 Invoice, Sales Invoice, or POS Invoice and choose
 **View → Inventory Relationship Map**.
 
 ## Behaviour
 
-- Search an item by code or name; filter by company, warehouse and posting dates.
+- Search an item by code or name; filter by company, warehouse, bin location and posting dates.
+- Location nodes separate each recorded warehouse/bin combination and link to
+  its Bin Location master. The movement ledger shows the zone, rack, shelf and
+  bin number. Missing recorded locations are explicitly labeled. Location-node
+  quantities are the net of displayed movements, not current per-bin balances.
 - Form launch preselects the document's first item and company. The item input
   offers the document's other item codes. The view traces that item's history,
   not just the source document's movements.
@@ -21,7 +25,8 @@ Invoice, Sales Invoice, or POS Invoice and choose
 - The movement ledger includes quantities, warehouse balance after each entry,
   company, document, dates and recorded batch/serial/bundle references.
 - Warehouse balances come from current Bin records. Dates filter movements,
-  never the current stock snapshot. Quantities use the item's stock UOM.
+  never the current stock snapshot. The bin-location filter also affects only
+  movements; warehouse balances remain totals across all bins. Quantities use the item's stock UOM.
 - Document references show explicit item-row links to purchase/sales orders,
   material requests, receipts and delivery notes, plus return-against links.
   Reference documents do not add to movement totals.
@@ -44,7 +49,7 @@ python vps_migration/deploy_inventory_relationship_map.py
 python vps_migration/inventory_relationship_map/test_live.py
 ```
 
-The deployer installs its own API Server Script, Web Page and nine Client
+The deployer installs its own API Server Script, Web Page and ten Client
 Scripts, then appends one Stock workspace shortcut. Existing vehicle/P2P maps
 and unrelated workspace entries are preserved. It reads each changed document
 back and checks stored scalar fields against the source. The API smoke check
@@ -80,21 +85,24 @@ python vps_migration/deploy_inventory_relationship_map.py --rollback "vps_migrat
 
 Rollback restores updated fields and removes records newly created by that
 deployment. It also restores the Stock workspace's previous shortcut/content
-fields; review concurrent workspace edits before rolling back. For complete
-removal of the initial installation on 2026-09-08, the first backup is
-`inventory_map_20260908_230140`.
+fields; review concurrent workspace edits before rolling back. To remove the
+feature completely, roll back later deployments in reverse chronological order
+before restoring the initial backup `inventory_map_20260908_230140`; later
+deployments may have added new records such as the Bin Location form action.
 
 ## Verified on 2026-09-08
 
-Eight read-only integration checks passed against the VPS: ledger IDs and signed
+Ten read-only integration checks passed against the VPS: ledger IDs and signed
 quantity reconciliation, company/warehouse isolation and Bin reconciliation,
 empty date periods with unchanged current balances, truncation and invalid date
 rejection, form source context with upstream PO links, unsupported/missing input
-rejection, unauthenticated access denial, and page/shortcut installation.
+rejection, unauthenticated access denial, page/shortcut installation, bin-location
+filtering reconciled to the ledger and Bin Location master, and missing-bin rejection.
 
 Browser checks verified item selection, company filtering, reference-tab
 navigation, real graph rendering, and opening the map from a Purchase Receipt's
-View menu with the expected item/company. No browser console errors were captured
+View menu with the expected item/company. Bin filtering and zone/rack/shelf/bin
+details were also verified in the graph and movement ledger. No browser console errors were captured
 on the map. Python compilation and JavaScript syntax checks passed. Restricted
 staff-role combinations were not separately exercised through a logged-in staff
 browser session.

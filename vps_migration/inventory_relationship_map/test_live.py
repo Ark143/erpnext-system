@@ -57,6 +57,25 @@ class LiveInventoryMap(unittest.TestCase):
         self.assertEqual(empty["movements"], [])
         self.assertEqual(empty["balances"], full["balances"])
 
+    def test_bin_location_matches_ledger_and_master(self):
+        entries = self.resource("Stock Ledger Entry", ["item_code", "warehouse", "bin_location"],
+            {"is_cancelled": 0, "bin_location": ["is", "set"]})
+        seed = entries[0]
+        data = self.call(item_code=seed["item_code"], warehouse=seed["warehouse"], bin_location=seed["bin_location"], limit=300)
+        raw = self.resource("Stock Ledger Entry", ["name"], {"item_code": seed["item_code"],
+            "warehouse": seed["warehouse"], "bin_location": seed["bin_location"], "is_cancelled": 0})
+        self.assertEqual({r["name"] for r in raw}, {r["name"] for r in data["movements"]})
+        self.assertTrue(all(r["bin_location"] == seed["bin_location"] for r in data["movements"]))
+        location = self.resource("Bin Location", ["name", "warehouse", "company", "zone", "rack", "shelf", "bin_no"], {"name": seed["bin_location"]})
+        self.assertEqual(data["locations"], location)
+        unfiltered = self.call(item_code=seed["item_code"], warehouse=seed["warehouse"])
+        self.assertEqual(data["balances"], unfiltered["balances"], "Bin filter must not relabel warehouse totals as bin stock")
+
+    def test_missing_bin_location_rejected(self):
+        response = self.s.get(self.base + "/api/method/inventory_relationship_map", params={
+            "item_code": self.seed["item_code"], "bin_location": "__missing_bin_location__"}, timeout=30)
+        self.assertGreaterEqual(response.status_code, 400)
+
     def test_limit_and_date_validation(self):
         data = self.call(item_code=self.seed["item_code"], limit=1)
         self.assertEqual(len(data["movements"]), 1)

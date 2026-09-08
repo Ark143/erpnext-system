@@ -1,0 +1,559 @@
+<html><head><base href="http://38.247.138.224:10017/"><style>@media screen {
+	.print-format-gutter {
+		background-color: #d1d8dd;
+		padding: 30px 0px;
+	}
+	.print-format {
+		background-color: white;
+		border-radius: 8px;
+		max-width: 8.3in;
+		min-height: 11.69in;
+		padding: 0.75in;
+		margin: auto;
+		color: var(--gray-900);
+	}
+
+	.print-format.landscape {
+		max-width: 11.69in;
+		padding: 0.2in;
+	}
+
+	.page-break {
+		/* padding: 15px 0px; */
+		border-bottom: 1px dashed #888;
+	}
+
+	/* .page-break:first-child {
+		padding-top: 0px;
+	} */
+
+	.page-break:last-child {
+		border-bottom: 0px;
+	}
+
+	/* mozilla hack for images in table */
+	body:last-child .print-format td img {
+		width: 100% !important;
+	}
+
+	@media(max-width: 767px) {
+		.print-format {
+			padding: 0.2in;
+		}
+	}
+}
+
+@media print {
+	.print-format p {
+		margin-left: 1px;
+		margin-right: 1px;
+	}
+}
+
+.disabled-check {
+	color: #eee;
+}
+
+.data-field {
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
+.data-field .value {
+	word-wrap: break-word;
+}
+
+.important .value {
+	font-size: 120%;
+	font-weight: bold;
+}
+
+.important label {
+	line-height: 1.8;
+	margin: 0px;
+}
+
+.table {
+	font-size: inherit;
+	margin: 20px 0px;
+}
+
+.checkbox-options {
+	columns: var(--checkbox-options-columns);
+}
+
+.square-image {
+	width: 100%;
+	height: 0;
+	padding: 50% 0;
+	background-size: contain;
+	/*background-size: cover;*/
+	background-repeat: no-repeat !important;
+	background-position: center center;
+	border-radius: 4px;
+}
+
+.print-item-image {
+	object-fit: contain;
+}
+
+.pdf-variables,
+.pdf-variable,
+.visible-pdf {
+	display: none !important;
+}
+
+.print-format {
+	font-size: 9pt;
+	font-family: 
+	"InterVariable", "Inter", -apple-system", "BlinkMacSystemFont",
+		"Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+		"Helvetica Neue", sans-serif;
+	;
+	-webkit-print-color-adjust:exact;
+}
+
+.page-break {
+	page-break-after: always;
+}
+
+.print-heading {
+	border-bottom: 1px solid #aaa;
+	margin-bottom: 10px;
+}
+
+.print-heading h2 {
+	margin: 0px;
+}
+.print-heading h4 {
+	margin-top: 5px;
+}
+
+table.no-border, table.no-border td {
+	border: 0px;
+}
+
+.print-format label {
+	/* wkhtmltopdf breaks label into multiple lines when it is inline-block */
+	display: block;
+	font-weight: 700;
+}
+
+.print-format img {
+	max-width: 100%;
+}
+
+.print-format table td > .primary:first-child {
+	font-weight: bold;
+}
+
+.print-format td, .print-format th {
+	vertical-align: top !important;
+	padding: 6px !important;
+}
+
+.print-format p {
+	margin: 3px 0px 3px;
+}
+
+.print-format .ql-snow p {
+	margin-top: 0px;
+}
+
+.print-format table td pre {
+	white-space: normal;
+	word-break: normal;
+}
+
+table td div {
+	
+	/* needed to avoid partial cutting of text between page break in wkhtmltopdf */
+	page-break-inside: avoid !important;
+	
+}
+
+/* hack for webkit specific browser */
+@media (-webkit-min-device-pixel-ratio:0) {
+	thead, tfoot {
+		display: table-header-group;
+	}
+}
+
+[document-status] {
+	margin-bottom: 5mm;
+}
+
+.signature-img {
+	background: #fff;
+	border-radius: 3px;
+	margin-top: 5px;
+	max-height: 150px;
+}
+
+.print-format-preview [data-fieldtype="Table"] {
+	overflow: auto;
+}
+.print-format {
+    font-size: 13px;
+    background: white;
+}
+
+.print-heading {
+    border-bottom: 1px solid #f4f5f6;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+
+.print-heading h2 {
+    font-size: 24px;
+}
+
+.print-heading h2 div {
+    font-weight: 600;
+}
+
+.print-heading small {
+    font-size: 13px !important;
+    font-weight: normal;
+    line-height: 2.5;
+    color: #4c5a67;
+}
+
+.print-format .letter-head {
+    margin-bottom: 30px;
+}
+
+.print-format label {
+    font-weight: normal;
+    font-size: 13px;
+    color: #4C5A67;
+    margin-bottom: 0;
+}
+
+.print-format .data-field {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.print-format .value {
+    color: #192734;
+    line-height: 1.8;
+}
+
+.print-format .section-break:not(:last-child) {
+    margin-bottom: 0;
+}
+
+.print-format .row:not(.section-break) {
+    line-height: 1.6;
+    margin-top: 15px !important;
+}
+
+.print-format .important .value {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.print-format th {
+    color: #74808b;
+    font-weight: normal;
+    border-bottom-width: 1px !important;
+}
+
+.print-format .table-bordered td, .print-format .table-bordered th {
+    border: 1px solid #f4f5f6;
+}
+
+.print-format .table-bordered {
+    border: 1px solid #f4f5f6;
+}
+
+.print-format td, .print-format th {
+    padding: 10px !important;
+}
+
+.print-format .primary.compact-item {
+    font-weight: normal;
+}
+
+.print-format table td .value {
+    font-size: 12px;
+    line-height: 1.8;
+}
+.print-format table tr td.table-sr{
+	line-height: 1.8;
+	font-size: 12px;
+}
+</style></head><body><div class="bir-2307-container">
+    <style>
+        /* Force reset of parent wrappers, margins, paddings, headers and footers */
+        html, body, .print-format, .print-format-builder, .print-preview, .print-format-builder-body, [data-doctype="BIR Form 2307"] {
+            margin: 0 !important;
+            padding: 0 !important;
+            border: none !important;
+            background-color: transparent !important;
+            box-shadow: none !important;
+        }
+        .print-heading, .print-format-builder-header, .print-format-builder-footer, .page-break-header, .page-break-footer, .page-break {
+            display: none !important;
+        }
+        
+        /* US Letter Sizing absolute container starting exactly at top-left */
+        .bir-2307-container {
+            width: 8.5in;
+            height: 11in;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-image: url("/files/bir_2307_page1.png");
+            background-size: 100% 100% !important;
+            background-repeat: no-repeat;
+            font-family: Arial, sans-serif;
+            color: #000;
+            box-sizing: border-box;
+        }
+        
+        /* General field values style */
+        .field-val {
+            position: absolute;
+            font-size: 11px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+        
+        /* Date elements */
+        .date-digit {
+            position: absolute;
+            width: 1.8%;
+            text-align: center;
+            font-size: 11.5px;
+            font-weight: bold;
+            top: 11.8%; /* Shifted down from 9.38% */
+        }
+
+        /* TIN digits */
+        .tin-digit {
+            position: absolute;
+            width: 1.6%;
+            text-align: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* Part III Table overlay */
+        .table-overlay {
+            position: absolute;
+            left: 2.90%;
+            top: 39.6%; /* Shifted down from 39.08% */
+            width: 94.67%;
+            height: 14.38%;
+        }
+        .overlay-row {
+            position: absolute;
+            width: 100%;
+            display: flex;
+            height: 6.74%;
+            align-items: center;
+        }
+        
+        /* Shift columns to the left using adjusted widths and paddings */
+        .col-nature { width: 28.0%; padding-left: 3px; font-size: 8.5px; overflow: hidden; white-space: wrap; text-overflow: ellipsis; text-align: left; }
+        .col-atc { width: 7.5%; text-align: center; font-size: 9.5px; font-weight: bold; padding-right: 15px; } /* Pushed left */
+        .col-m1 { width: 12.5%; text-align: right; padding-right: 22px; font-size: 9.5px; } /* Pushed left */
+        .col-m2 { width: 14.5%; text-align: right; padding-right: 22px; font-size: 9.5px; }
+        .col-m3 { width: 14.5%; text-align: right; padding-right: 22px; font-size: 9.5px; }
+        .col-total { width: 10.0%; text-align: right; padding-right: 22px; font-size: 9.5px; font-weight: bold; } /* Pushed left */
+        .col-withheld { width: 10.0%; text-align: right; padding-right: 15px; font-size: 9.5px; font-weight: bold; }
+        
+        /* Total Row */
+        .totals-overlay {
+            position: absolute;
+            left: 2.90%;
+            top: 53.75%; /* Shifted down from 53.74% */
+            width: 94.67%;
+            display: flex;
+            height: 1.33%;
+            align-items: center;
+            font-weight: bold;
+        }
+        
+        @media print {
+            @page {
+                size: letter portrait;
+                margin: 0;
+            }
+            body {
+                margin: 0;
+                padding: 0;
+            }
+            .bir-2307-container {
+                width: 8.5in;
+                height: 11in;
+                page-break-before: avoid;
+                page-break-after: avoid;
+            }
+        }
+    </style>
+
+    <!-- Dates Parsing -->
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    <!-- From Date MM/DD/YYYY -->
+    <div class="date-digit" style="left: 25.35%;">0</div>
+    <div class="date-digit" style="left: 27.31%;">1</div>
+    <div class="date-digit" style="left: 29.24%;">0</div>
+    <div class="date-digit" style="left: 31.20%;">1</div>
+    <div class="date-digit" style="left: 33.73%;">2</div>
+    <div class="date-digit" style="left: 35.69%;">0</div>
+    <div class="date-digit" style="left: 37.65%;">2</div>
+    <div class="date-digit" style="left: 39.61%;">6</div>
+
+    <!-- To Date MM/DD/YYYY -->
+    <div class="date-digit" style="left: 66.16%;">1</div>
+    <div class="date-digit" style="left: 68.12%;">2</div>
+    <div class="date-digit" style="left: 70.04%;">3</div>
+    <div class="date-digit" style="left: 72.00%;">1</div>
+    <div class="date-digit" style="left: 74.53%;">2</div>
+    <div class="date-digit" style="left: 76.49%;">0</div>
+    <div class="date-digit" style="left: 78.45%;">2</div>
+    <div class="date-digit" style="left: 80.41%;">6</div>
+
+    <!-- Payee Info -->
+    
+    
+    
+        <div class="tin-digit" style="left: 34.4%; top: 14.8%;"> <!-- Shifted down from 14.25% -->
+            9
+        </div>
+    
+        <div class="tin-digit" style="left: 36.4%; top: 14.8%;"> <!-- Shifted down from 14.25% -->
+            8
+        </div>
+    
+        <div class="tin-digit" style="left: 38.4%; top: 14.8%;"> <!-- Shifted down from 14.25% -->
+            7
+        </div>
+    
+        <div class="tin-digit" style="left: 42.75%; top: 14.8%;"> <!-- Shifted down from 14.25% -->
+            6
+        </div>
+    
+        <div class="tin-digit" style="left: 44.75%; top: 14.8%;"> <!-- Shifted down from 14.25% -->
+            5
+        </div>
+    
+        <div class="tin-digit" style="left: 46.75%; top: 14.8%;"> <!-- Shifted down from 14.25% -->
+            4
+        </div>
+    
+        <div class="tin-digit" style="left: 50.75%; top: 14.8%;"> <!-- Shifted down from 14.25% -->
+            3
+        </div>
+    
+        <div class="tin-digit" style="left: 52.75%; top: 14.8%;"> <!-- Shifted down from 14.25% -->
+            2
+        </div>
+    
+        <div class="tin-digit" style="left: 54.75%; top: 14.8%;"> <!-- Shifted down from 14.25% -->
+            1
+        </div>
+    
+        <div class="tin-digit" style="left: 59.75%; top: 14.8%;"> <!-- Shifted down from 14.25% -->
+            0
+        </div>
+    
+        <div class="tin-digit" style="left: 61.75%; top: 14.8%;"> <!-- Shifted down from 14.25% -->
+            0
+        </div>
+    
+        <div class="tin-digit" style="left: 63.75%; top: 14.8%;"> <!-- Shifted down from 14.25% -->
+            0
+        </div>
+    
+    <div class="field-val" style="left: 15.5%; top: 18%; width: 90.5%; height: 1.44%;">Fleet Logistics Hub Inc.</div> <!-- Shifted down and right -->
+    <div class="field-val" style="left: 15.5%; top: 20.6%; width: 81.1%; height: 1.44%; font-size: 9.5px; font-weight: normal;">Dau, Mabalacat City, Pampanga</div> <!-- Shifted down and right -->
+    <div class="field-val" style="left: 87.84%; top: 20.6%; width: 8.63%; height: 1.44%; justify-content: center;">2010</div> <!-- Shifted down -->
+
+    <!-- Payor Info -->
+    
+    
+        <div class="tin-digit" style="left: 34.4%; top: 27%;"> <!-- Shifted down from 26.66% -->
+            1
+        </div>
+    
+        <div class="tin-digit" style="left: 36.4%; top: 27%;"> <!-- Shifted down from 26.66% -->
+            2
+        </div>
+    
+        <div class="tin-digit" style="left: 38.4%; top: 27%;"> <!-- Shifted down from 26.66% -->
+            3
+        </div>
+    
+        <div class="tin-digit" style="left: 42.75%; top: 27%;"> <!-- Shifted down from 26.66% -->
+            4
+        </div>
+    
+        <div class="tin-digit" style="left: 44.75%; top: 27%;"> <!-- Shifted down from 26.66% -->
+            5
+        </div>
+    
+        <div class="tin-digit" style="left: 46.75%; top: 27%;"> <!-- Shifted down from 26.66% -->
+            6
+        </div>
+    
+        <div class="tin-digit" style="left: 50.75%; top: 27%;"> <!-- Shifted down from 26.66% -->
+            7
+        </div>
+    
+        <div class="tin-digit" style="left: 52.75%; top: 27%;"> <!-- Shifted down from 26.66% -->
+            8
+        </div>
+    
+        <div class="tin-digit" style="left: 54.75%; top: 27%;"> <!-- Shifted down from 26.66% -->
+            9
+        </div>
+    
+        <div class="tin-digit" style="left: 59.75%; top: 27%;"> <!-- Shifted down from 26.66% -->
+            0
+        </div>
+    
+        <div class="tin-digit" style="left: 61.75%; top: 27%;"> <!-- Shifted down from 26.66% -->
+            0
+        </div>
+    
+        <div class="tin-digit" style="left: 63.75%; top: 27%;"> <!-- Shifted down from 26.66% -->
+            0
+        </div>
+    
+    <div class="field-val" style="left: 15.5%; top: 29.8%; width: 92.5%; height: 1.44%;">Ultra MRF Mexico Warehouse</div> <!-- Shifted down and right -->
+    <div class="field-val" style="left: 5.5%; top: 32.8%; width: 83.1%; height: 1.44%; font-size: 9.5px; font-weight: normal;">MacArthur Highway, Dau, Pampanga</div> <!-- Shifted down and right -->
+    <div class="field-val" style="left: 87.84%; top: 32.8%; width: 8.63%; height: 1.44%; justify-content: center;">2010</div> <!-- Shifted down -->
+
+    <!-- Part III Table Rows Overlay -->
+    <div class="table-overlay">
+        
+        
+        
+    </div>
+
+    <!-- Totals Line -->
+    <div class="totals-overlay">
+        <div class="col-nature" style="font-weight: bold; font-size: 8px; padding-left: 5px;"></div>
+        <div class="col-atc">&nbsp;</div>
+        <div class="col-m1"></div>
+        <div class="col-m2"></div>
+        <div class="col-m3"></div>
+        <div class="col-total"></div>
+        <div class="col-withheld"></div>
+    </div>
+</div></body></html>

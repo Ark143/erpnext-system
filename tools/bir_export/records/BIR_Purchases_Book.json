@@ -1,0 +1,49 @@
+[
+  {
+    "name": "8ls237dnum",
+    "owner": "Administrator",
+    "creation": "2026-06-28 06:03:44.208439",
+    "modified": "2026-06-28 06:03:44.208439",
+    "modified_by": "Administrator",
+    "docstatus": 0,
+    "idx": 0,
+    "company": "JMIT",
+    "from_date": "2026-06-01",
+    "to_date": "2026-06-30",
+    "rdo": "132",
+    "line_of_business": "Services",
+    "zip": "8000",
+    "email": "orbyleofficial@gmail.com",
+    "mobile": "09458269902",
+    "telephone": "09458269902",
+    "doctype": "BIR Purchases Book",
+    "purchase_entries": [
+      {
+        "name": "8ls211507p",
+        "owner": "Administrator",
+        "creation": "2026-06-28 06:03:44.208439",
+        "modified": "2026-06-28 06:03:44.208439",
+        "modified_by": "Administrator",
+        "docstatus": 0,
+        "idx": 1,
+        "date": "2026-06-28",
+        "payee": "china tech",
+        "tin": "",
+        "address": "",
+        "invoice_no": "ACC-PINV-2026-00001",
+        "discount_type": "NONE",
+        "discount_amount": 0.0,
+        "vatable": 15000000.0,
+        "input_vat": 0.0,
+        "total_expense": 15000000.0,
+        "status_ref_date": "PAID / INV No. ACC-PINV-2026-00001",
+        "payment_date": "06-28-2026",
+        "remarks": "",
+        "parent": "8ls237dnum",
+        "parentfield": "purchase_entries",
+        "parenttype": "BIR Purchases Book",
+        "doctype": "BIR Purchases Book Row"
+      }
+    ]
+  }
+]

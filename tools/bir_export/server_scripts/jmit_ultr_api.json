@@ -1,0 +1,21 @@
+{
+  "name": "jmit_ultr_api",
+  "owner": "josemangiliman.xansux.kun@gmail.com",
+  "creation": "2026-08-16 04:39:01.740590",
+  "modified": "2026-08-17 21:44:31.851438",
+  "modified_by": "josemangiliman.xansux.kun@gmail.com",
+  "docstatus": 0,
+  "idx": 0,
+  "script_type": "API",
+  "event_frequency": "All",
+  "doctype_event": "",
+  "api_method": "jmit_ultr_api_clear_cache",
+  "allow_guest": 0,
+  "module": "Custom",
+  "disabled": 0,
+  "script": "frappe.clear_cache()\nfrappe.response[\"message\"] = \"Cache cleared successfully!\"",
+  "enable_rate_limit": 0,
+  "rate_limit_count": 5,
+  "rate_limit_seconds": 86400,
+  "doctype": "Server Script"
+}

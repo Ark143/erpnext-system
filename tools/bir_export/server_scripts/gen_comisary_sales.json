@@ -1,0 +1,20 @@
+{
+  "name": "gen_comisary_sales",
+  "owner": "josemangiliman.xansux.kun@gmail.com",
+  "creation": "2026-08-15 04:33:55.874088",
+  "modified": "2026-08-15 04:33:55.874088",
+  "modified_by": "josemangiliman.xansux.kun@gmail.com",
+  "docstatus": 0,
+  "idx": 0,
+  "script_type": "API",
+  "event_frequency": "All",
+  "doctype_event": "Before Insert",
+  "api_method": "gen_comisary_sales",
+  "allow_guest": 0,
+  "disabled": 0,
+  "script": "# Server Script (API) \u2014 gen_comisary_sales\n# RestrictedPython-safe: no import. Creates 50 submitted Sales Invoices where\n# Comisary sells Finished Chicken to branches (cost center Comisary - JMIT, source warehouse Comisary FG - JMIT).\ncount = 50\nbranches = [\"Resto-Pasay\", \"Resto-MOA\", \"Resto-Pasig\"]\nitems = [\n    {\"c\": \"INASAL-PAA\", \"r\": 150.0},\n    {\"c\": \"INASAL-PECHO\", \"r\": 180.0},\n    {\"c\": \"INASAL-BBQ\", \"r\": 160.0},\n]\ncreated = 0\nsubmitted = 0\nfailed = 0\nerrors = []\nfor i in range(count):\n    br = branches[i % 3]\n    it = items[i % 3]\n    day = 1 + (i % 27)\n    dstr = \"2026-08-\" + (\"0\" + str(day))[-2:]\n    qty = 10 + (i % 30)\n    rate = it[\"r\"] + ((i % 20) - 10)\n    doc = frappe.get_doc({\n        \"doctype\": \"Sales Invoice\",\n        \"customer\": br,\n        \"posting_date\": dstr,\n        \"due_date\": dstr,\n        \"company\": \"JMIT\",\n        \"set_posting_time\": 1,\n        \"update_stock\": 0,\n        \"items\": [\n            {\n                \"item_code\": it[\"c\"],\n                \"qty\": qty,\n                \"rate\": rate,\n                \"warehouse\": \"Comisary FG - JMIT\",\n                \"cost_center\": \"Comisary - JMIT\",\n            }\n        ],\n    })\n    try:\n        doc.insert(ignore_permissions=True)\n        created = created + 1\n        try:\n            doc.submit()\n            submitted = submitted + 1\n        except Exception as e:\n            errors.append(\"submit \" + doc.name + \": \" + str(e))\n    except Exception as e:\n        failed = failed + 1\n        errors.append(\"insert \" + str(e))\n\nresult = {\n    \"created\": created,\n    \"submitted\": submitted,\n    \"failed\": failed,\n    \"errors\": errors[:5],\n}\nfrappe.response[\"message\"] = result\n",
+  "enable_rate_limit": 0,
+  "rate_limit_count": 5,
+  "rate_limit_seconds": 86400,
+  "doctype": "Server Script"
+}

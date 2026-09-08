@@ -1,0 +1,20 @@
+{
+  "name": "JMIT Inventory Dashboard API",
+  "owner": "josemangiliman.xansux.kun@gmail.com",
+  "creation": "2026-08-16 04:43:03.007479",
+  "modified": "2026-08-16 04:43:03.007479",
+  "modified_by": "josemangiliman.xansux.kun@gmail.com",
+  "docstatus": 0,
+  "idx": 0,
+  "script_type": "API",
+  "event_frequency": "All",
+  "doctype_event": "",
+  "allow_guest": 0,
+  "module": "Custom",
+  "disabled": 0,
+  "script": "def jmit_inventory_monitoring_data():\n    frappe.response[\"message\"] = {\"status\":\"version_check\",\"ver\":3}\njmit_inventory_monitoring_data()",
+  "enable_rate_limit": 0,
+  "rate_limit_count": 5,
+  "rate_limit_seconds": 86400,
+  "doctype": "Server Script"
+}

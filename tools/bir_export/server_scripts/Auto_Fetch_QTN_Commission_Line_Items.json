@@ -1,0 +1,20 @@
+{
+  "name": "Auto Fetch QTN Commission Line Items",
+  "owner": "josemangiliman.xansux.kun@gmail.com",
+  "creation": "2026-08-09 18:26:01.006752",
+  "modified": "2026-08-09 18:26:01.006752",
+  "modified_by": "josemangiliman.xansux.kun@gmail.com",
+  "docstatus": 0,
+  "idx": 0,
+  "script_type": "DocType Event",
+  "reference_doctype": "Quotation",
+  "event_frequency": "All",
+  "doctype_event": "Before Save",
+  "allow_guest": 0,
+  "disabled": 0,
+  "script": "# Populate custom_technician_name from custom_technician on Quotation Save\nfor item in doc.get(\"items\", []):\n    if item.get(\"custom_technician\") and not item.get(\"custom_technician_name\"):\n        emp_name = frappe.db.get_value(\"Employee\", item.custom_technician, \"employee_name\")\n        if emp_name:\n            item.custom_technician_name = emp_name\n",
+  "enable_rate_limit": 0,
+  "rate_limit_count": 5,
+  "rate_limit_seconds": 86400,
+  "doctype": "Server Script"
+}

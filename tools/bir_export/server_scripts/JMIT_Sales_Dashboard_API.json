@@ -1,0 +1,20 @@
+{
+  "name": "JMIT Sales Dashboard API",
+  "owner": "josemangiliman.xansux.kun@gmail.com",
+  "creation": "2026-08-07 02:16:03.645194",
+  "modified": "2026-08-17 21:34:03.071824",
+  "modified_by": "josemangiliman.xansux.kun@gmail.com",
+  "docstatus": 0,
+  "idx": 0,
+  "script_type": "API",
+  "event_frequency": "All",
+  "doctype_event": "Before Insert",
+  "api_method": "jmit_sales_dashboard_data",
+  "allow_guest": 0,
+  "disabled": 0,
+  "script": "# Inspect Stock Ledger Entries and Stock Balance with bin locations\n\n# 1. Stock Balance from tabBin + Bin Location references from Purchase Receipt / Stock Entry\nbins_raw = frappe.db.sql('''\n    SELECT\n        b.item_code,\n        item.item_name,\n        b.warehouse,\n        b.actual_qty,\n        b.valuation_rate,\n        b.stock_value,\n        item.item_group\n    FROM `tabBin` b\n    INNER JOIN `tabItem` item ON item.name = b.item_code\n    WHERE b.actual_qty != 0\n    ORDER BY b.actual_qty DESC\n    LIMIT 50\n''', as_dict=True) or []\n\n# 2. Stock Ledger Entries\nsle_raw = frappe.db.sql('''\n    SELECT\n        sle.posting_date,\n        sle.posting_time,\n        sle.voucher_type,\n        sle.voucher_no,\n        sle.item_code,\n        item.item_name,\n        sle.warehouse,\n        sle.actual_qty,\n        sle.qty_after_transaction,\n        sle.stock_value,\n        sle.company\n    FROM `tabStock Ledger Entry` sle\n    INNER JOIN `tabItem` item ON item.name = sle.item_code\n    ORDER BY sle.posting_date DESC, sle.posting_time DESC, sle.name DESC\n    LIMIT 50\n''', as_dict=True) or []\n\n# 3. Bin locations from Purchase Receipts / Stock Entries\npri_bins = frappe.db.sql('''\n    SELECT\n        parent AS voucher_no,\n        item_code,\n        warehouse,\n        storage_bin,\n        shelf_location,\n        rack_location\n    FROM `tabPurchase Receipt Item`\n    WHERE storage_bin IS NOT NULL OR shelf_location IS NOT NULL OR rack_location IS NOT NULL\n    LIMIT 50\n''', as_dict=True) or []\n\nfrappe.response[\"type\"] = \"json\"\nfrappe.response[\"message\"] = {\n    \"bins_count\": len(bins_raw),\n    \"sample_bin\": bins_raw[:3],\n    \"sle_count\": len(sle_raw),\n    \"sample_sle\": sle_raw[:3],\n    \"pri_bins\": pri_bins[:3]\n}\n",
+  "enable_rate_limit": 0,
+  "rate_limit_count": 5,
+  "rate_limit_seconds": 86400,
+  "doctype": "Server Script"
+}

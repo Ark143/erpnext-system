@@ -1,0 +1,15 @@
+{
+  "name": "Email account won't work warning",
+  "owner": "Administrator",
+  "creation": "2026-05-22 21:03:47.009366",
+  "modified": "2025-10-03 16:34:50.298272",
+  "modified_by": "Administrator",
+  "docstatus": 0,
+  "idx": 0,
+  "dt": "Email Account",
+  "view": "Form",
+  "module": "Email Delivery Service",
+  "enabled": 1,
+  "script": "frappe.ui.form.on('Email Account', {\n\trefresh(frm) {\n// \t\tif (frm.doc.enable_outgoing) {\n\t\t\tsite_name = window.location.hostname;\n\t\t\tuninstall_link = `https://cloud.frappe.io/dashboard/sites/${site_name}/apps`;\n\t\t\teds_a_tag = `<a style='text-decoration: underline;' href='https://cloud.frappe.io/marketplace/apps/email_delivery_service'>Email Delivery Service</a>`;\n\t\t\t//make a head request to /api/method/ping and check if response has server header set as 'Frappe Cloud'\n\t\t\tis_frappe_cloud = fetch('/api/method/ping', { method: 'HEAD' }).then(\n\t\t\t\t(response) => {\n\t\t\t\t\tif (response.headers.get('server') === 'Frappe Cloud') {\n\t\t\t\t\t\treturn true;\n\t\t\t\t\t}\n\t\t\t\t\treturn false;\n\t\t\t\t},\n\t\t\t);\n\t\t\tuninstall_a_tag = `<a style='text-decoration: underline;' href='${uninstall_link}'>uninstall the app</a>`;\n\t\t\tif (!is_frappe_cloud) {\n\t\t\t\tuninstall_a_tag = 'uninstall the app';\n\t\t\t}\n\t\t\tfrm.dashboard.set_headline_alert(\n\t\t\t\t__(\n\t\t\t\t\t`You have ${eds_a_tag} app installed due to which emails won't be sent from this account. Please ${uninstall_a_tag} to use current Email Account for sending.`,\n\t\t\t\t),\n\t\t\t\t'yellow',\n\t\t\t);\n// \t\t}\n\t},\n});\n",
+  "doctype": "Client Script"
+}

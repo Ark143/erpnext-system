@@ -1,0 +1,21 @@
+{
+  "name": "bank_loan_app_validate",
+  "owner": "Administrator",
+  "creation": "2026-07-03 01:03:29.567303",
+  "modified": "2026-07-03 01:07:55.558715",
+  "modified_by": "Administrator",
+  "docstatus": 0,
+  "idx": 0,
+  "script_type": "DocType Event",
+  "reference_doctype": "Bank Loan App",
+  "event_frequency": "All",
+  "doctype_event": "Before Validate",
+  "allow_guest": 0,
+  "module": "Accounts",
+  "disabled": 1,
+  "script": "\nimport frappe\nfrom frappe.utils import flt\n\ndef validate(doc, method=None):\n    if flt(doc.loan_amount or 0) <= 0:\n        frappe.throw(\"Loan amount must be greater than 0.\")\n    if not doc.loan_term_months or int(doc.loan_term_months) < 1:\n        frappe.throw(\"Loan term must be at least 1 month.\")\n    if not doc.repayment_start_date:\n        frappe.throw(\"Repayment start date is required.\")\n    if doc.repayment_start_date < doc.disbursement_date:\n        frappe.throw(\"Repayment start date cannot be earlier than disbursement date.\")\n    missing=[]\n    if not doc.disbursement_account:\n        missing.append(\"Disbursement Account\")\n    if not doc.loan_account:\n        missing.append(\"Loan Account\")\n    if not doc.interest_income_account:\n        missing.append(\"Interest Income Account\")\n    if not doc.payment_account:\n        missing.append(\"Payment Account\")\n    if missing:\n        frappe.throw(\"Please set the following accounting fields before submitting: %s\" % \", \".join(missing))\n    if doc.applicant and not doc.applicant_name:\n        try:\n            linked = frappe.get_doc(doc.applicant_type, doc.applicant)\n            doc.applicant_name = getattr(linked, \"title\") or getattr(linked, \"customer_name\") or getattr(linked, \"bank\") or linked.name\n        except Exception:\n            doc.applicant_name = doc.applicant\n\nvalidate(doc)\n",
+  "enable_rate_limit": 0,
+  "rate_limit_count": 5,
+  "rate_limit_seconds": 86400,
+  "doctype": "Server Script"
+}

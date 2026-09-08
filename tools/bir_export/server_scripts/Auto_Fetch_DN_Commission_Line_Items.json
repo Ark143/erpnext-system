@@ -1,0 +1,20 @@
+{
+  "name": "Auto Fetch DN Commission Line Items",
+  "owner": "josemangiliman.xansux.kun@gmail.com",
+  "creation": "2026-08-09 18:26:02.331196",
+  "modified": "2026-08-09 18:26:02.331196",
+  "modified_by": "josemangiliman.xansux.kun@gmail.com",
+  "docstatus": 0,
+  "idx": 0,
+  "script_type": "DocType Event",
+  "reference_doctype": "Delivery Note",
+  "event_frequency": "All",
+  "doctype_event": "Before Save",
+  "allow_guest": 0,
+  "disabled": 0,
+  "script": "# Auto-fetch custom_sales_person, custom_technician & custom_technician_name on Delivery Note Save\nfor item in doc.get(\"items\", []):\n    if item.get(\"so_detail\"):\n        so_item = frappe.db.get_value(\"Sales Order Item\", item.so_detail, [\"custom_sales_person\", \"custom_technician\", \"custom_technician_name\"], as_dict=True)\n        if so_item:\n            if not item.get(\"custom_sales_person\") and so_item.get(\"custom_sales_person\"):\n                item.custom_sales_person = so_item.custom_sales_person\n            if not item.get(\"custom_technician\") and so_item.get(\"custom_technician\"):\n                item.custom_technician = so_item.custom_technician\n            if not item.get(\"custom_technician_name\") and so_item.get(\"custom_technician_name\"):\n                item.custom_technician_name = so_item.custom_technician_name\n\n    if item.get(\"custom_technician\") and not item.get(\"custom_technician_name\"):\n        emp_name = frappe.db.get_value(\"Employee\", item.custom_technician, \"employee_name\")\n        if emp_name:\n            item.custom_technician_name = emp_name\n",
+  "enable_rate_limit": 0,
+  "rate_limit_count": 5,
+  "rate_limit_seconds": 86400,
+  "doctype": "Server Script"
+}

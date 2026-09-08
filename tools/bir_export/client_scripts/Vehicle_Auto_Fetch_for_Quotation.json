@@ -1,0 +1,14 @@
+{
+  "name": "Vehicle Auto Fetch for Quotation",
+  "owner": "josemangiliman.xansux.kun@gmail.com",
+  "creation": "2026-08-10 08:08:35.517116",
+  "modified": "2026-08-10 08:08:35.517116",
+  "modified_by": "josemangiliman.xansux.kun@gmail.com",
+  "docstatus": 0,
+  "idx": 0,
+  "dt": "Quotation",
+  "view": "Form",
+  "enabled": 1,
+  "script": "frappe.ui.form.on('Quotation', {\n    customer: function(frm) {\n        if (frm.doc.customer) {\n            frappe.db.get_doc('Customer', frm.doc.customer).then(cust => {\n                frm.set_value('custom_plate_no', cust.custom_plate_no || '');\n                frm.set_value('custom_vin', cust.custom_vin || '');\n                frm.set_value('custom_mileage_type', cust.custom_mileage_type || 'km');\n                frm.set_value('custom_model', cust.custom_model || '');\n                frm.set_value('custom_engine_no', cust.custom_engine_no || '');\n                frm.set_value('custom_registration_type', cust.custom_registration_type || '');\n                frm.set_value('custom_transmission', cust.custom_transmission || '');\n                frm.set_value('custom_cylinders', cust.custom_cylinders || '');\n                frm.set_value('custom_year_model', cust.custom_year_model || '');\n                frm.set_value('custom_insurance_expiry', cust.custom_insurance_expiry || '');\n                frm.set_value('custom_color', cust.custom_color || '');\n            });\n        }\n    }\n});",
+  "doctype": "Client Script"
+}

@@ -1,5 +1,7 @@
 # BIR functional and print audit — 2026-09-09
 
+This is the pre-fix audit. See [deployed fixes and validation](BIR_FIX_VALIDATION_2026-09-09.md) for the subsequent repairs, transaction checks and remaining blockers.
+
 **Result: the BIR suite is not working end to end and is not ready for operational sign-off.**
 
 Target: `http://38.247.138.224:10017`. Tested as Administrator. Main populated

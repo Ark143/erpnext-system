@@ -3,7 +3,7 @@
 const birRead = (method,args) => new Promise((resolve,reject)=>frappe.call({method,args,callback:r=>resolve(r.message),error:reject}));
 async function birList(args) {
  let all=[];
- for(let start=0;;start+=500){const page=await birRead('frappe.client.get_list',{...args,limit_start:start,limit_page_length:500});
+ for(let start=0;;start+=500){const page=await birRead('frappe.client.get_list',{order_by:'name asc',...args,limit_start:start,limit_page_length:500});
  all=all.concat(page||[]);if(!page||page.length<500)return all;if(start>=99500)throw Error('Narrow the report date range.');}
 }
 function birCall(options) {

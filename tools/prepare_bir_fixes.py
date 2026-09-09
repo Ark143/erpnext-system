@@ -11,7 +11,7 @@ HELPERS = r"""
 const birRead = (method,args) => new Promise((resolve,reject)=>frappe.call({method,args,callback:r=>resolve(r.message),error:reject}));
 async function birList(args) {
  let all=[];
- for(let start=0;;start+=500){const page=await birRead('frappe.client.get_list',{...args,limit_start:start,limit_page_length:500});
+ for(let start=0;;start+=500){const page=await birRead('frappe.client.get_list',{order_by:'name asc',...args,limit_start:start,limit_page_length:500});
  all=all.concat(page||[]);if(!page||page.length<500)return all;if(start>=99500)throw Error('Narrow the report date range.');}
 }
 function birCall(options) {
@@ -73,6 +73,8 @@ formats = json.loads((BACKUP / "Print_Format.json").read_text())
 import re
 for record in formats:
     html = record["html"]
+    if record['doc_type'] == 'BIR Form 2307':
+        html = html.replace('/files/bir_2307_page1.png', '/files/bir_2307_restored_20260909.png')
     # Eliminate fabricated literals; retain values explicitly entered in the form.
     html = html.replace("'Davao City, Davao Del Sur'", "''").replace("'8000'", "''")
     html = html.replace("'orbyleofficial@gmail.com'", "''").replace("'09458269902'", "''")
@@ -80,12 +82,24 @@ for record in formats:
         html = "{% set bir_company = frappe.get_doc('Company', doc.company) %}\n" + html
         html = re.sub(r"{{\s*doc\.tin(?:\s+or\s+[^}]+)?\s*}}", "{{ bir_company.tax_id or '' }}", html)
         html = html.replace("{{ doc.company }}", "{{ bir_company.company_name or doc.company }}")
+        html += '''<style>
+        .bir-table { width:100%; table-layout:fixed; }
+        .bir-table th, .bir-table td { white-space:normal !important; overflow-wrap:anywhere; word-wrap:break-word; padding:3px 2px; }
+        .bir-table thead { display:table-header-group; }
+        .bir-table tr { page-break-inside:avoid; }
+        @media print { .bir-table { font-size:7.5px; } }
+        </style>'''
     if record["doc_type"] in ["BIR Cash Receipt Journal", "BIR Cash Disbursement Journal"]:
         # Cash vouchers are not necessarily invoices; do not mislabel references.
         html = html.replace("Invoice No.", "Source Voucher").replace("Invoice No", "Source Voucher").replace("INVOICE NO.", "SOURCE VOUCHER")
+        html = re.sub(r'>\s*Invoice\s*<', '>Source Voucher<', html, flags=re.I)
+        html = html.replace("{{ row.discount_type or 'NONE' }}", '—')
+        html = html.replace("For the month of {{ from_date_obj.strftime('%B') | upper }} {{ from_date_obj.strftime('%Y') }}", "Period: {{ doc.from_date }} to {{ doc.to_date }}")
         html = '<p style="font-size:9px">Cash/bank movements from posted ledger entries. Source references may be payments, invoices or journal entries. Tax/discount breakdowns are unclassified until approved mappings are configured.</p>' + html
         for field in ['vatable','input_vat','output_vat','zero','zero_rated','exempt','vat_exempt','ewt','w_tax','discount_amount']:
             html = re.sub(r"{{\s*frappe\.utils\.fmt_money\(row\."+field+r"\s+or\s+0([^}]*)\)\s*}}", "—", html)
+        for field in ['vatable','input_vat','output_vat','zero','zero_rated','exempt','vat_exempt','ewt','w_tax','discount_amount','discount']:
+            html = re.sub(r'{{\s*"\{:,.2f\}"\.format\((?:row|totals)\.'+field+r'(?:\s+or\s+0)?\)\s*}}', '—', html)
     record["html"] = html
 (OUT / "print_formats.json").write_text(json.dumps(formats, indent=2), encoding="utf-8")
 print("Prepared", len(scripts), "scripts and", len(formats), "formats")

@@ -17,9 +17,12 @@ async function read(method,args){
 const scripts=JSON.parse(fs.readFileSync(path.join(dir,'Client_Script.json')));
 const results=[];
 for(const script of scripts){
+ if(process.env.BIR_DOCTYPE && script.dt!==process.env.BIR_DOCTYPE)continue;
  const dt=script.dt,slug=dt.replaceAll(' ','_'),meta=JSON.parse(fs.readFileSync(path.join(dir,slug+'_meta.json')));
  const doc=JSON.parse(fs.readFileSync(path.join(dir,slug+'_record.json')));
  doc.company='ULTRA MRF';doc.from_date=dt==='BIR Form 2307'?'2026-07-01':'2026-01-01';doc.to_date='2026-09-09';
+ if(process.env.BIR_FROM_DATE)doc.from_date=process.env.BIR_FROM_DATE;
+ if(process.env.BIR_TO_DATE)doc.to_date=process.env.BIR_TO_DATE;
  if(dt==='BIR Form 2307'){
   const inv=await read('frappe.client.get_list',{doctype:'Sales Invoice',filters:{company:doc.company,docstatus:1},fields:['customer'],limit_page_length:1});
   doc.party_type='Customer';doc.party=inv[0]?.customer;

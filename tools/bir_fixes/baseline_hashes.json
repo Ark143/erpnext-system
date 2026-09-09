@@ -1,0 +1,24 @@
+{
+  "Client Script": {
+    "BIR Cash Receipt Journal-ClientScript": "4fea78e1c8983ada616e02c285596e5ef52542b9741429c803753ca6d2862944",
+    "BIR Form 2307-ClientScript": "e2bcf728c528ca32101fe9869a521ea25f8e4fbdc52061e379cac59f6665017a",
+    "BIR General Journal-ClientScript": "c6db18cffff512275be58741932a50f316d117a367323896d57dd07b047d0057",
+    "BIR Sales Journal-ClientScript": "afe27dcee428abcb704f21d3cbcccd8d4a8dcef925676c27a1e85bf0804fd179",
+    "BIR Withholding Summary-ClientScript": "da9d46f48f660f517a265b2a7471f6db26942d1a51a50f5eb76b27807e9278c3",
+    "BIR Cash Disbursement Journal-ClientScript": "7312ecce01d4b4ad49dff485d43c9c5229bc4f10daf2d82299e4da88be27bdd3",
+    "BIR General Ledger-ClientScript": "bc24f3153f727eede902701539eafea5e1d15db2d2f5b2f5d1964a2077292e86",
+    "BIR Purchases Book-ClientScript": "3863d8dc35ecafabe4409a33be835fd7fd2917981a4cce2de523b89e517e4945",
+    "BIR VAT Summary-ClientScript": "fc8481b3ec7850b0fe193fba512f1064db7f074cd4de7d1c989130ce9d9cdcd2"
+  },
+  "Print Format": {
+    "BIR Cash Disbursement Journal Print Format": "9c147c5cb2cd0332bf920264cafd641bce3a83f606ff573a580cb223bb1126ff",
+    "BIR Cash Receipt Journal Print Format": "f3ff921ffdaef2f36b05b535ce848b41bd6740376e2c761014a72e4666ac9d15",
+    "BIR Form 2307 Print Format": "5928973a604b1c30719d54bef499e4b38ed04b18ccbf29ece6e2e5c5b5925ef4",
+    "BIR Sales Journal Print Format": "a699084c2b9af2bf5b597f136bc429a7854fa7d0837de1a567c86e36dab0a49b",
+    "BIR General Journal Print Format": "b3f4211d96d5f2e4c767fa630854e329ee426e49119d10435718f698797b6697",
+    "BIR General Ledger Print Format": "80b2c06e09d197d2080dc268ff972ec9ed8c3af1a27d92eef457cbc53483bc5b",
+    "BIR Purchases Book Print Format": "1ecc8a7a78ce825f1ba0ca04629313d7f00f18fae8a1214527b85fcd410b2544",
+    "BIR VAT Summary Print Format": "de31a892e71addddbee43622b6ffaa64710251dd28983792281d732647bfb58d",
+    "BIR Withholding Summary Print Format": "12ccedd4d3a96fa1d34bef30bac360d15f008ecb97a11762d6f989bb3846b847"
+  }
+}

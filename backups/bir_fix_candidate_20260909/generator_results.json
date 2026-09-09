@@ -1,0 +1,1801 @@
+[
+  {
+    "doctype": "BIR Cash Receipt Journal",
+    "company": "ULTRA MRF",
+    "from_date": "2026-01-01",
+    "to_date": "2026-09-09",
+    "errors": [],
+    "messages": [
+      "46 posted cash/bank vouchers loaded. Tax and discount breakdowns are unclassified pending approved mappings; blank values must not be interpreted as zero.",
+      "0 posted cash/bank vouchers loaded. Tax and discount breakdowns are unclassified pending approved mappings; blank values must not be interpreted as zero."
+    ],
+    "calls": [
+      {
+        "method": "frappe.client.get_list",
+        "args": {
+          "doctype": "Account",
+          "filters": {
+            "company": "ULTRA MRF"
+          },
+          "fields": [
+            "name",
+            "account_name",
+            "account_type"
+          ],
+          "order_by": "name asc",
+          "limit_start": 0,
+          "limit_page_length": 500
+        },
+        "rows": 97
+      },
+      {
+        "method": "frappe.client.get_list",
+        "args": {
+          "doctype": "GL Entry",
+          "filters": {
+            "company": "ULTRA MRF",
+            "is_cancelled": 0,
+            "posting_date": [
+              "between",
+              [
+                "2026-01-01",
+                "2026-09-09"
+              ]
+            ]
+          },
+          "fields": [
+            "name",
+            "posting_date",
+            "voucher_type",
+            "voucher_no",
+            "account",
+            "debit",
+            "credit",
+            "party",
+            "party_type",
+            "remarks"
+          ],
+          "order_by": "name asc",
+          "limit_start": 0,
+          "limit_page_length": 500
+        },
+        "rows": 448
+      },
+      {
+        "method": "frappe.client.get_list",
+        "args": {
+          "doctype": "Account",
+          "filters": {
+            "company": "ULTRA MRF"
+          },
+          "fields": [
+            "name",
+            "account_name",
+            "account_type"
+          ],
+          "order_by": "name asc",
+          "limit_start": 0,
+          "limit_page_length": 500
+        },
+        "rows": 97
+      },
+      {
+        "method": "frappe.client.get_list",
+        "args": {
+          "doctype": "GL Entry",
+          "filters": {
+            "company": "ULTRA MRF",
+            "is_cancelled": 0,
+            "posting_date": [
+              "between",
+              [
+                "1900-01-01",
+                "1900-01-02"
+              ]
+            ]
+          },
+          "fields": [
+            "name",
+            "posting_date",
+            "voucher_type",
+            "voucher_no",
+            "account",
+            "debit",
+            "credit",
+            "party",
+            "party_type",
+            "remarks"
+          ],
+          "order_by": "name asc",
+          "limit_start": 0,
+          "limit_page_length": 500
+        },
+        "rows": 0
+      }
+    ],
+    "row_counts": {
+      "journal_entries": 46,
+      "account_summary": 5
+    },
+    "unknown_fields": {},
+    "empty_period_row_counts": {
+      "journal_entries": 0,
+      "account_summary": 0
+    }
+  },
+  {
+    "doctype": "BIR Form 2307",
+    "company": "ULTRA MRF",
+    "from_date": "2026-07-01",
+    "to_date": "2026-09-09",
+    "errors": [],
+    "messages": [
+      {
+        "message": "BIR Form 2307 data populated successfully!",
+        "indicator": "green"
+      },
+      {
+        "message": "No invoices found in this period.",
+        "indicator": "orange"
+      }
+    ],
+    "calls": [
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Company",
+          "name": "ULTRA MRF"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Customer",
+          "name": "BENNY DEL ROSARIO"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get_list",
+        "args": {
+          "doctype": "Sales Invoice",
+          "filters": {
+            "company": "ULTRA MRF",
+            "posting_date": [
+              "between",
+              [
+                "2026-07-01",
+                "2026-09-09"
+              ]
+            ],
+            "docstatus": 1,
+            "customer": "BENNY DEL ROSARIO"
+          },
+          "fields": [
+            "name",
+            "posting_date",
+            "net_total"
+          ],
+          "limit_page_length": 500,
+          "limit_start": 0
+        },
+        "rows": 2
+      },
+      {
+        "method": "frappe.client.get_list",
+        "args": {
+          "doctype": "GL Entry",
+          "filters": {
+            "voucher_no": [
+              "in",
+              [
+                "ACC-SINV-2026-00013",
+                "ACC-SINV-2026-00045"
+              ]
+            ]
+          },
+          "fields": [
+            "voucher_no",
+            "account",
+            "debit",
+            "credit",
+            "posting_date"
+          ],
+          "limit_page_length": 500,
+          "limit_start": 0
+        },
+        "rows": 4
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Company",
+          "name": "ULTRA MRF"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Customer",
+          "name": "BENNY DEL ROSARIO"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get_list",
+        "args": {
+          "doctype": "Sales Invoice",
+          "filters": {
+            "company": "ULTRA MRF",
+            "posting_date": [
+              "between",
+              [
+                "1900-01-01",
+                "1900-01-02"
+              ]
+            ],
+            "docstatus": 1,
+            "customer": "BENNY DEL ROSARIO"
+          },
+          "fields": [
+            "name",
+            "posting_date",
+            "net_total"
+          ],
+          "limit_page_length": 500,
+          "limit_start": 0
+        },
+        "rows": 0
+      }
+    ],
+    "row_counts": {
+      "withholding_details": 0
+    },
+    "unknown_fields": {},
+    "empty_period_row_counts": {
+      "withholding_details": 0
+    }
+  },
+  {
+    "doctype": "BIR General Journal",
+    "company": "ULTRA MRF",
+    "from_date": "2026-01-01",
+    "to_date": "2026-09-09",
+    "errors": [],
+    "messages": [
+      {
+        "message": "Journal generated successfully!",
+        "indicator": "green"
+      },
+      "No GL Entries found for this period."
+    ],
+    "calls": [
+      {
+        "method": "frappe.client.get_list",
+        "args": {
+          "doctype": "GL Entry",
+          "filters": {
+            "company": "ULTRA MRF",
+            "is_cancelled": 0,
+            "posting_date": [
+              "between",
+              [
+                "2026-01-01",
+                "2026-09-09"
+              ]
+            ]
+          },
+          "fields": [
+            "posting_date",
+            "account",
+            "voucher_type",
+            "voucher_no",
+            "debit",
+            "credit",
+            "remarks",
+            "party"
+          ],
+          "limit_page_length": 500,
+          "order_by": "posting_date asc, voucher_no asc, debit desc",
+          "limit_start": 0
+        },
+        "rows": 448
+      },
+      {
+        "method": "frappe.client.get_list",
+        "args": {
+          "doctype": "Purchase Invoice",
+          "filters": {
+            "name": [
+              "in",
+              [
+                "ACC-PINV-2026-00008",
+                "ACC-PINV-2026-00012",
+                "ACC-PINV-2026-00013",
+                "ACC-PINV-2026-00014",
+                "ACC-PINV-2026-00015",
+                "ACC-PINV-2026-00083",
+                "ACC-PINV-2026-00084",
+                "ACC-PINV-2026-00086"
+              ]
+            ]
+          },
+          "fields": [
+            "name",
+            "status"
+          ],
+          "limit_start": 0,
+          "limit_page_length": 500
+        },
+        "rows": 8
+      },
+      {
+        "method": "frappe.client.get_list",
+        "args": {
+          "doctype": "Sales Invoice",
+          "filters": {
+            "name": [
+              "in",
+              [
+                "ACC-SINV-2026-00013",
+                "ACC-SINV-2026-00024",
+                "ACC-SINV-2026-00028",
+                "ACC-SINV-2026-00045",
+                "ACC-SINV-2026-00056",
+                "ACC-SINV-2026-00082",
+                "ACC-SINV-2026-00083",
+                "ACC-SINV-2026-00084",
+                "ACC-SINV-2026-00085",
+                "ACC-SINV-2026-00086",
+                "ACC-SINV-2026-00087",
+                "ACC-SINV-2026-00088",
+                "ACC-SINV-2026-00089",
+                "ACC-SINV-2026-00140",
+                "ACC-SINV-2026-00141",
+                "ACC-SINV-2026-00142",
+                "ACC-SINV-2026-00143",
+                "ACC-SINV-2026-00144",
+                "ACC-SINV-2026-00145",
+                "ACC-SINV-2026-00146",
+                "ACC-SINV-2026-00147",
+                "ACC-SINV-2026-00148",
+                "ACC-SINV-2026-00149",
+                "ACC-SINV-2026-00150",
+                "ACC-SINV-2026-00151",
+                "ACC-SINV-2026-00152",
+                "ACC-SINV-2026-00153",
+                "ACC-SINV-2026-00154",
+                "ACC-SINV-2026-00155",
+                "ACC-SINV-2026-00156",
+                "ACC-SINV-2026-00157",
+                "ACC-SINV-2026-00158",
+                "ACC-SINV-2026-00159",
+                "ACC-SINV-2026-00160",
+                "ACC-SINV-2026-00161",
+                "ACC-SINV-2026-00162",
+                "ACC-SINV-2026-00163",
+                "ACC-SINV-2026-00167",
+                "ACC-SINV-2026-00168",
+                "ACC-SINV-2026-00169",
+                "ACC-SINV-2026-00170",
+                "ACC-SINV-2026-00171",
+                "ACC-SINV-2026-00173",
+                "ACC-SINV-2026-00174",
+                "ACC-SINV-2026-00175",
+                "ACC-SINV-2026-00176",
+                "ACC-SINV-2026-00177",
+                "ACC-SINV-2026-00312",
+                "ACC-SINV-2026-00313",
+                "ACC-SINV-2026-00314",
+                "ACC-SINV-2026-00315",
+                "ACC-SINV-2026-00316",
+                "ACC-SINV-2026-00317",
+                "ACC-SINV-2026-00318",
+                "ACC-SINV-2026-00319",
+                "ACC-SINV-2026-00320",
+                "ACC-SINV-2026-00321",
+                "ACC-SINV-2026-00322",
+                "ACC-SINV-2026-00324",
+                "ACC-SINV-2026-00325",
+                "ACC-SINV-2026-00326",
+                "ACC-SINV-2026-00327",
+                "ACC-SINV-2026-00328",
+                "ACC-SINV-2026-00329",
+                "ACC-SINV-2026-00330",
+                "ACC-SINV-2026-00331",
+                "ACC-SINV-2026-00332",
+                "ACC-SINV-2026-00333",
+                "ACC-SINV-2026-00334",
+                "ACC-SINV-2026-00335",
+                "ACC-SINV-2026-00336",
+                "ACC-SINV-2026-00337",
+                "ACC-SINV-2026-00338",
+                "ACC-SINV-2026-00339",
+                "ACC-SINV-2026-00340",
+                "ACC-SINV-2026-00341",
+                "ACC-SINV-2026-00342",
+                "ACC-SINV-2026-00344",
+                "ACC-SINV-2026-00348",
+                "ACC-SINV-2026-00350",
+                "ACC-SINV-2026-00351",
+                "ACC-SINV-2026-00353",
+                "ACC-SINV-2026-00354",
+                "ACC-SINV-2026-00355",
+                "ACC-SINV-2026-00356",
+                "ACC-SINV-2026-00357",
+                "ACC-SINV-2026-00358",
+                "ACC-SINV-2026-00359",
+                "ACC-SINV-2026-00360",
+                "ACC-SINV-2026-00361",
+                "ACC-SINV-2026-00362",
+                "ACC-SINV-2026-00363",
+                "ACC-SINV-2026-00364",
+                "ACC-SINV-2026-00365",
+                "ACC-SINV-2026-00366",
+                "ACC-SINV-2026-00367",
+                "ACC-SINV-2026-00368",
+                "ACC-SINV-2026-00369",
+                "ACC-SINV-2026-00370",
+                "ACC-SINV-2026-00371",
+                "ACC-SINV-2026-00372",
+                "ACC-SINV-2026-00373",
+                "ACC-SINV-2026-00374",
+                "ACC-SINV-2026-00375",
+                "ACC-SINV-2026-00376",
+                "ACC-SINV-2026-00377",
+                "ACC-SINV-2026-00378",
+                "ACC-SINV-2026-00379",
+                "ACC-SINV-2026-00380",
+                "ACC-SINV-2026-00381",
+                "ACC-SINV-2026-00382",
+                "ACC-SINV-2026-00383",
+                "ACC-SINV-2026-00384",
+                "ACC-SINV-2026-00385",
+                "ACC-SINV-2026-00386",
+                "ACC-SINV-2026-00387",
+                "ACC-SINV-2026-00388",
+                "ACC-SINV-2026-00389",
+                "ACC-SINV-2026-00390",
+                "ACC-SINV-2026-00391",
+                "ACC-SINV-2026-00392",
+                "ACC-SINV-2026-00393",
+                "ACC-SINV-2026-00394",
+                "ACC-SINV-2026-00395",
+                "ACC-SINV-2026-00396",
+                "ACC-SINV-2026-00397",
+                "ACC-SINV-2026-00398",
+                "ACC-SINV-2026-00399",
+                "ACC-SINV-2026-00400",
+                "ACC-SINV-2026-00401",
+                "ACC-SINV-2026-00402",
+                "ACC-SINV-2026-00403",
+                "ACC-SINV-2026-00404",
+                "ACC-SINV-2026-00405",
+                "ACC-SINV-2026-00406",
+                "ACC-SINV-2026-00407",
+                "ACC-SINV-2026-00408",
+                "ACC-SINV-2026-00409",
+                "ACC-SINV-2026-00410",
+                "ACC-SINV-2026-00411",
+                "ACC-SINV-2026-00412",
+                "ACC-SINV-2026-00323",
+                "ACC-SINV-2026-00343",
+                "ACC-SINV-2026-00345",
+                "ACC-SINV-2026-00346",
+                "ACC-SINV-2026-00347",
+                "ACC-SINV-2026-00349",
+                "ACC-SINV-2026-00413"
+              ]
+            ]
+          },
+          "fields": [
+            "name",
+            "status"
+          ],
+          "limit_start": 0,
+          "limit_page_length": 500
+        },
+        "rows": 148
+      },
+      {
+        "method": "frappe.client.get_list",
+        "args": {
+          "doctype": "Account",
+          "filters": {
+            "company": "ULTRA MRF"
+          },
+          "fields": [
+            "name",
+            "account_name",
+            "account_number"
+          ],
+          "limit_start": 0,
+          "limit_page_length": 500
+        },
+        "rows": 97
+      },
+      {
+        "method": "frappe.client.get_list",
+        "args": {
+          "doctype": "GL Entry",
+          "filters": {
+            "company": "ULTRA MRF",
+            "is_cancelled": 0,
+            "posting_date": [
+              "between",
+              [
+                "1900-01-01",
+                "1900-01-02"
+              ]
+            ]
+          },
+          "fields": [
+            "posting_date",
+            "account",
+            "voucher_type",
+            "voucher_no",
+            "debit",
+            "credit",
+            "remarks",
+            "party"
+          ],
+          "limit_page_length": 500,
+          "order_by": "posting_date asc, voucher_no asc, debit desc",
+          "limit_start": 0
+        },
+        "rows": 0
+      }
+    ],
+    "row_counts": {
+      "journal_entries": 633
+    },
+    "unknown_fields": {},
+    "empty_period_row_counts": {
+      "journal_entries": 0
+    }
+  },
+  {
+    "doctype": "BIR Sales Journal",
+    "company": "ULTRA MRF",
+    "from_date": "2026-01-01",
+    "to_date": "2026-09-09",
+    "errors": [],
+    "messages": [
+      {
+        "message": "Sales journal generated successfully!",
+        "indicator": "green"
+      },
+      "No Sales Invoices found for this period."
+    ],
+    "calls": [
+      {
+        "method": "frappe.client.get_list",
+        "args": {
+          "doctype": "Sales Invoice",
+          "filters": {
+            "company": "ULTRA MRF",
+            "posting_date": [
+              "between",
+              [
+                "2026-01-01",
+                "2026-09-09"
+              ]
+            ],
+            "docstatus": 1
+          },
+          "fields": [
+            "name",
+            "customer_name",
+            "posting_date",
+            "net_total",
+            "grand_total",
+            "status",
+            "total_taxes_and_charges",
+            "tax_id",
+            "address_display",
+            "remarks",
+            "update_stock"
+          ],
+          "limit_page_length": 500,
+          "order_by": "posting_date asc, name asc",
+          "limit_start": 0
+        },
+        "rows": 148
+      },
+      {
+        "method": "frappe.client.get_list",
+        "args": {
+          "doctype": "Payment Entry",
+          "filters": {
+            "company": "ULTRA MRF",
+            "docstatus": 1
+          },
+          "fields": [
+            "name",
+            "posting_date"
+          ],
+          "order_by": "posting_date asc, name asc",
+          "limit_start": 0,
+          "limit_page_length": 500
+        },
+        "rows": 20
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Payment Entry",
+          "name": "ACC-PAY-2026-00099"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Payment Entry",
+          "name": "ACC-PAY-2026-00100"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Payment Entry",
+          "name": "ACC-PAY-2026-00097"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Payment Entry",
+          "name": "ACC-PAY-2026-00101"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Payment Entry",
+          "name": "ACC-PAY-2026-00094"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Payment Entry",
+          "name": "ACC-PAY-2026-00093"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Payment Entry",
+          "name": "ACC-PAY-2026-00096"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Payment Entry",
+          "name": "ACC-PAY-2026-00098"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Payment Entry",
+          "name": "ACC-PAY-2026-00095"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Payment Entry",
+          "name": "ACC-PAY-2026-00013"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Payment Entry",
+          "name": "ACC-PAY-2026-00031"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Payment Entry",
+          "name": "ACC-PAY-2026-00032"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Payment Entry",
+          "name": "ACC-PAY-2026-00039"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Payment Entry",
+          "name": "ACC-PAY-2026-00056"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Payment Entry",
+          "name": "ACC-PAY-2026-00067"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Payment Entry",
+          "name": "ACC-PAY-2026-00102"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Payment Entry",
+          "name": "ACC-PAY-2026-00103"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Payment Entry",
+          "name": "ACC-PAY-2026-00104"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Payment Entry",
+          "name": "ACC-PAY-2026-00227"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Payment Entry",
+          "name": "ACC-PAY-2026-00228"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get_list",
+        "args": {
+          "doctype": "Sales Invoice",
+          "filters": {
+            "company": "ULTRA MRF",
+            "posting_date": [
+              "between",
+              [
+                "1900-01-01",
+                "1900-01-02"
+              ]
+            ],
+            "docstatus": 1
+          },
+          "fields": [
+            "name",
+            "customer_name",
+            "posting_date",
+            "net_total",
+            "grand_total",
+            "status",
+            "total_taxes_and_charges",
+            "tax_id",
+            "address_display",
+            "remarks",
+            "update_stock"
+          ],
+          "limit_page_length": 500,
+          "order_by": "posting_date asc, name asc",
+          "limit_start": 0
+        },
+        "rows": 0
+      }
+    ],
+    "row_counts": {
+      "sales_entries": 148,
+      "summary_entries": 4
+    },
+    "unknown_fields": {},
+    "empty_period_row_counts": {
+      "sales_entries": 0,
+      "summary_entries": 0
+    }
+  },
+  {
+    "doctype": "BIR Withholding Summary",
+    "company": "ULTRA MRF",
+    "from_date": "2026-01-01",
+    "to_date": "2026-09-09",
+    "errors": [],
+    "messages": [
+      {
+        "message": "Withholding Summary generated successfully!",
+        "indicator": "green"
+      },
+      "No Sales or Purchase Invoices found for this period."
+    ],
+    "calls": [
+      {
+        "method": "frappe.client.get_list",
+        "args": {
+          "doctype": "Sales Invoice",
+          "filters": {
+            "company": "ULTRA MRF",
+            "posting_date": [
+              "between",
+              [
+                "2026-01-01",
+                "2026-09-09"
+              ]
+            ],
+            "docstatus": 1
+          },
+          "fields": [
+            "name",
+            "posting_date",
+            "customer",
+            "customer_name",
+            "tax_id",
+            "net_total"
+          ],
+          "limit_page_length": 500,
+          "order_by": "posting_date asc, name asc",
+          "limit_start": 0
+        },
+        "rows": 148
+      },
+      {
+        "method": "frappe.client.get_list",
+        "args": {
+          "doctype": "Purchase Invoice",
+          "filters": {
+            "company": "ULTRA MRF",
+            "posting_date": [
+              "between",
+              [
+                "2026-01-01",
+                "2026-09-09"
+              ]
+            ],
+            "docstatus": 1
+          },
+          "fields": [
+            "name",
+            "posting_date",
+            "supplier",
+            "supplier_name",
+            "tax_id",
+            "net_total"
+          ],
+          "limit_page_length": 500,
+          "order_by": "posting_date asc, name asc",
+          "limit_start": 0
+        },
+        "rows": 8
+      },
+      {
+        "method": "frappe.client.get_list",
+        "args": {
+          "doctype": "GL Entry",
+          "filters": {
+            "voucher_no": [
+              "in",
+              [
+                "ACC-SINV-2026-00013",
+                "ACC-SINV-2026-00024",
+                "ACC-SINV-2026-00028",
+                "ACC-SINV-2026-00045",
+                "ACC-SINV-2026-00056",
+                "ACC-SINV-2026-00082",
+                "ACC-SINV-2026-00083",
+                "ACC-SINV-2026-00084",
+                "ACC-SINV-2026-00085",
+                "ACC-SINV-2026-00086",
+                "ACC-SINV-2026-00087",
+                "ACC-SINV-2026-00088",
+                "ACC-SINV-2026-00089",
+                "ACC-SINV-2026-00140",
+                "ACC-SINV-2026-00141",
+                "ACC-SINV-2026-00142",
+                "ACC-SINV-2026-00143",
+                "ACC-SINV-2026-00144",
+                "ACC-SINV-2026-00145",
+                "ACC-SINV-2026-00146",
+                "ACC-SINV-2026-00147",
+                "ACC-SINV-2026-00148",
+                "ACC-SINV-2026-00149",
+                "ACC-SINV-2026-00150",
+                "ACC-SINV-2026-00151",
+                "ACC-SINV-2026-00152",
+                "ACC-SINV-2026-00153",
+                "ACC-SINV-2026-00154",
+                "ACC-SINV-2026-00155",
+                "ACC-SINV-2026-00156",
+                "ACC-SINV-2026-00157",
+                "ACC-SINV-2026-00158",
+                "ACC-SINV-2026-00159",
+                "ACC-SINV-2026-00160",
+                "ACC-SINV-2026-00161",
+                "ACC-SINV-2026-00162",
+                "ACC-SINV-2026-00163",
+                "ACC-SINV-2026-00167",
+                "ACC-SINV-2026-00168",
+                "ACC-SINV-2026-00169",
+                "ACC-SINV-2026-00170",
+                "ACC-SINV-2026-00171",
+                "ACC-SINV-2026-00173",
+                "ACC-SINV-2026-00174",
+                "ACC-SINV-2026-00175",
+                "ACC-SINV-2026-00176",
+                "ACC-SINV-2026-00177",
+                "ACC-SINV-2026-00312",
+                "ACC-SINV-2026-00313",
+                "ACC-SINV-2026-00314",
+                "ACC-SINV-2026-00315",
+                "ACC-SINV-2026-00316",
+                "ACC-SINV-2026-00317",
+                "ACC-SINV-2026-00318",
+                "ACC-SINV-2026-00319",
+                "ACC-SINV-2026-00320",
+                "ACC-SINV-2026-00321",
+                "ACC-SINV-2026-00322",
+                "ACC-SINV-2026-00324",
+                "ACC-SINV-2026-00325",
+                "ACC-SINV-2026-00326",
+                "ACC-SINV-2026-00327",
+                "ACC-SINV-2026-00328",
+                "ACC-SINV-2026-00329",
+                "ACC-SINV-2026-00330",
+                "ACC-SINV-2026-00331",
+                "ACC-SINV-2026-00332",
+                "ACC-SINV-2026-00333",
+                "ACC-SINV-2026-00334",
+                "ACC-SINV-2026-00335",
+                "ACC-SINV-2026-00336",
+                "ACC-SINV-2026-00337",
+                "ACC-SINV-2026-00338",
+                "ACC-SINV-2026-00339",
+                "ACC-SINV-2026-00340",
+                "ACC-SINV-2026-00341",
+                "ACC-SINV-2026-00342",
+                "ACC-SINV-2026-00344",
+                "ACC-SINV-2026-00348",
+                "ACC-SINV-2026-00350",
+                "ACC-SINV-2026-00351",
+                "ACC-SINV-2026-00353",
+                "ACC-SINV-2026-00354",
+                "ACC-SINV-2026-00355",
+                "ACC-SINV-2026-00356",
+                "ACC-SINV-2026-00357",
+                "ACC-SINV-2026-00358",
+                "ACC-SINV-2026-00359",
+                "ACC-SINV-2026-00360",
+                "ACC-SINV-2026-00361",
+                "ACC-SINV-2026-00362",
+                "ACC-SINV-2026-00363",
+                "ACC-SINV-2026-00364",
+                "ACC-SINV-2026-00365",
+                "ACC-SINV-2026-00366",
+                "ACC-SINV-2026-00367",
+                "ACC-SINV-2026-00368",
+                "ACC-SINV-2026-00369",
+                "ACC-SINV-2026-00370",
+                "ACC-SINV-2026-00371",
+                "ACC-SINV-2026-00372",
+                "ACC-SINV-2026-00373",
+                "ACC-SINV-2026-00374",
+                "ACC-SINV-2026-00375",
+                "ACC-SINV-2026-00376",
+                "ACC-SINV-2026-00377",
+                "ACC-SINV-2026-00378",
+                "ACC-SINV-2026-00379",
+                "ACC-SINV-2026-00380",
+                "ACC-SINV-2026-00381",
+                "ACC-SINV-2026-00382",
+                "ACC-SINV-2026-00383",
+                "ACC-SINV-2026-00384",
+                "ACC-SINV-2026-00385",
+                "ACC-SINV-2026-00386",
+                "ACC-SINV-2026-00387",
+                "ACC-SINV-2026-00388",
+                "ACC-SINV-2026-00389",
+                "ACC-SINV-2026-00390",
+                "ACC-SINV-2026-00391",
+                "ACC-SINV-2026-00392",
+                "ACC-SINV-2026-00393",
+                "ACC-SINV-2026-00394",
+                "ACC-SINV-2026-00395",
+                "ACC-SINV-2026-00396",
+                "ACC-SINV-2026-00397",
+                "ACC-SINV-2026-00398",
+                "ACC-SINV-2026-00399",
+                "ACC-SINV-2026-00400",
+                "ACC-SINV-2026-00401",
+                "ACC-SINV-2026-00402",
+                "ACC-SINV-2026-00403",
+                "ACC-SINV-2026-00404",
+                "ACC-SINV-2026-00405",
+                "ACC-SINV-2026-00406",
+                "ACC-SINV-2026-00407",
+                "ACC-SINV-2026-00408",
+                "ACC-SINV-2026-00409",
+                "ACC-SINV-2026-00410",
+                "ACC-SINV-2026-00411",
+                "ACC-SINV-2026-00412",
+                "ACC-SINV-2026-00323",
+                "ACC-SINV-2026-00343",
+                "ACC-SINV-2026-00345",
+                "ACC-SINV-2026-00346",
+                "ACC-SINV-2026-00347",
+                "ACC-SINV-2026-00349",
+                "ACC-SINV-2026-00413",
+                "ACC-PINV-2026-00008",
+                "ACC-PINV-2026-00012",
+                "ACC-PINV-2026-00013",
+                "ACC-PINV-2026-00014",
+                "ACC-PINV-2026-00015",
+                "ACC-PINV-2026-00083",
+                "ACC-PINV-2026-00084",
+                "ACC-PINV-2026-00086"
+              ]
+            ]
+          },
+          "fields": [
+            "voucher_no",
+            "account",
+            "debit",
+            "credit"
+          ],
+          "limit_page_length": 500,
+          "limit_start": 0
+        },
+        "rows": 390
+      },
+      {
+        "method": "frappe.client.get_list",
+        "args": {
+          "doctype": "Sales Invoice",
+          "filters": {
+            "company": "ULTRA MRF",
+            "posting_date": [
+              "between",
+              [
+                "1900-01-01",
+                "1900-01-02"
+              ]
+            ],
+            "docstatus": 1
+          },
+          "fields": [
+            "name",
+            "posting_date",
+            "customer",
+            "customer_name",
+            "tax_id",
+            "net_total"
+          ],
+          "limit_page_length": 500,
+          "order_by": "posting_date asc, name asc",
+          "limit_start": 0
+        },
+        "rows": 0
+      },
+      {
+        "method": "frappe.client.get_list",
+        "args": {
+          "doctype": "Purchase Invoice",
+          "filters": {
+            "company": "ULTRA MRF",
+            "posting_date": [
+              "between",
+              [
+                "1900-01-01",
+                "1900-01-02"
+              ]
+            ],
+            "docstatus": 1
+          },
+          "fields": [
+            "name",
+            "posting_date",
+            "supplier",
+            "supplier_name",
+            "tax_id",
+            "net_total"
+          ],
+          "limit_page_length": 500,
+          "order_by": "posting_date asc, name asc",
+          "limit_start": 0
+        },
+        "rows": 0
+      }
+    ],
+    "row_counts": {
+      "withholding_entries": 0
+    },
+    "unknown_fields": {},
+    "empty_period_row_counts": {
+      "withholding_entries": 0
+    }
+  },
+  {
+    "doctype": "BIR Cash Disbursement Journal",
+    "company": "ULTRA MRF",
+    "from_date": "2026-01-01",
+    "to_date": "2026-09-09",
+    "errors": [],
+    "messages": [
+      "7 posted cash/bank vouchers loaded. Tax and discount breakdowns are unclassified pending approved mappings; blank values must not be interpreted as zero.",
+      "0 posted cash/bank vouchers loaded. Tax and discount breakdowns are unclassified pending approved mappings; blank values must not be interpreted as zero."
+    ],
+    "calls": [
+      {
+        "method": "frappe.client.get_list",
+        "args": {
+          "doctype": "Account",
+          "filters": {
+            "company": "ULTRA MRF"
+          },
+          "fields": [
+            "name",
+            "account_name",
+            "account_type"
+          ],
+          "order_by": "name asc",
+          "limit_start": 0,
+          "limit_page_length": 500
+        },
+        "rows": 97
+      },
+      {
+        "method": "frappe.client.get_list",
+        "args": {
+          "doctype": "GL Entry",
+          "filters": {
+            "company": "ULTRA MRF",
+            "is_cancelled": 0,
+            "posting_date": [
+              "between",
+              [
+                "2026-01-01",
+                "2026-09-09"
+              ]
+            ]
+          },
+          "fields": [
+            "name",
+            "posting_date",
+            "voucher_type",
+            "voucher_no",
+            "account",
+            "debit",
+            "credit",
+            "party",
+            "party_type",
+            "remarks"
+          ],
+          "order_by": "name asc",
+          "limit_start": 0,
+          "limit_page_length": 500
+        },
+        "rows": 448
+      },
+      {
+        "method": "frappe.client.get_list",
+        "args": {
+          "doctype": "Account",
+          "filters": {
+            "company": "ULTRA MRF"
+          },
+          "fields": [
+            "name",
+            "account_name",
+            "account_type"
+          ],
+          "order_by": "name asc",
+          "limit_start": 0,
+          "limit_page_length": 500
+        },
+        "rows": 97
+      },
+      {
+        "method": "frappe.client.get_list",
+        "args": {
+          "doctype": "GL Entry",
+          "filters": {
+            "company": "ULTRA MRF",
+            "is_cancelled": 0,
+            "posting_date": [
+              "between",
+              [
+                "1900-01-01",
+                "1900-01-02"
+              ]
+            ]
+          },
+          "fields": [
+            "name",
+            "posting_date",
+            "voucher_type",
+            "voucher_no",
+            "account",
+            "debit",
+            "credit",
+            "party",
+            "party_type",
+            "remarks"
+          ],
+          "order_by": "name asc",
+          "limit_start": 0,
+          "limit_page_length": 500
+        },
+        "rows": 0
+      }
+    ],
+    "row_counts": {
+      "journal_entries": 7,
+      "account_summary": 4
+    },
+    "unknown_fields": {},
+    "empty_period_row_counts": {
+      "journal_entries": 0,
+      "account_summary": 0
+    }
+  },
+  {
+    "doctype": "BIR General Ledger",
+    "company": "ULTRA MRF",
+    "from_date": "2026-01-01",
+    "to_date": "2026-09-09",
+    "errors": [],
+    "messages": [
+      {
+        "message": "Ledger generated successfully!",
+        "indicator": "green"
+      },
+      "No GL Entries found for this period."
+    ],
+    "calls": [
+      {
+        "method": "frappe.client.get_list",
+        "args": {
+          "doctype": "GL Entry",
+          "filters": {
+            "company": "ULTRA MRF",
+            "is_cancelled": 0,
+            "posting_date": [
+              "<",
+              "2026-01-01"
+            ]
+          },
+          "fields": [
+            "account",
+            "debit",
+            "credit"
+          ],
+          "limit_start": 0,
+          "limit_page_length": 500
+        },
+        "rows": 0
+      },
+      {
+        "method": "frappe.client.get_list",
+        "args": {
+          "doctype": "GL Entry",
+          "filters": {
+            "company": "ULTRA MRF",
+            "is_cancelled": 0,
+            "posting_date": [
+              "between",
+              [
+                "2026-01-01",
+                "2026-09-09"
+              ]
+            ]
+          },
+          "fields": [
+            "posting_date",
+            "account",
+            "voucher_type",
+            "voucher_no",
+            "debit",
+            "credit",
+            "remarks",
+            "party"
+          ],
+          "limit_page_length": 500,
+          "order_by": "account asc, posting_date asc, name asc",
+          "limit_start": 0
+        },
+        "rows": 448
+      },
+      {
+        "method": "frappe.client.get_list",
+        "args": {
+          "doctype": "GL Entry",
+          "filters": {
+            "company": "ULTRA MRF",
+            "is_cancelled": 0,
+            "posting_date": [
+              "<",
+              "1900-01-01"
+            ]
+          },
+          "fields": [
+            "account",
+            "debit",
+            "credit"
+          ],
+          "limit_start": 0,
+          "limit_page_length": 500
+        },
+        "rows": 0
+      },
+      {
+        "method": "frappe.client.get_list",
+        "args": {
+          "doctype": "GL Entry",
+          "filters": {
+            "company": "ULTRA MRF",
+            "is_cancelled": 0,
+            "posting_date": [
+              "between",
+              [
+                "1900-01-01",
+                "1900-01-02"
+              ]
+            ]
+          },
+          "fields": [
+            "posting_date",
+            "account",
+            "voucher_type",
+            "voucher_no",
+            "debit",
+            "credit",
+            "remarks",
+            "party"
+          ],
+          "limit_page_length": 500,
+          "order_by": "account asc, posting_date asc, name asc",
+          "limit_start": 0
+        },
+        "rows": 0
+      }
+    ],
+    "row_counts": {
+      "gl_entries": 457
+    },
+    "unknown_fields": {},
+    "empty_period_row_counts": {
+      "gl_entries": 0
+    }
+  },
+  {
+    "doctype": "BIR Purchases Book",
+    "company": "ULTRA MRF",
+    "from_date": "2026-01-01",
+    "to_date": "2026-09-09",
+    "errors": [],
+    "messages": [
+      {
+        "message": "Purchases book generated successfully!",
+        "indicator": "green"
+      },
+      "No Purchase Invoices found for this period."
+    ],
+    "calls": [
+      {
+        "method": "frappe.client.get_list",
+        "args": {
+          "doctype": "Purchase Invoice",
+          "filters": {
+            "company": "ULTRA MRF",
+            "posting_date": [
+              "between",
+              [
+                "2026-01-01",
+                "2026-09-09"
+              ]
+            ],
+            "docstatus": 1
+          },
+          "fields": [
+            "name",
+            "supplier_name",
+            "posting_date",
+            "bill_no",
+            "net_total",
+            "grand_total",
+            "status",
+            "total_taxes_and_charges",
+            "tax_id",
+            "address_display",
+            "remarks"
+          ],
+          "limit_page_length": 500,
+          "order_by": "posting_date asc, name asc",
+          "limit_start": 0
+        },
+        "rows": 8
+      },
+      {
+        "method": "frappe.client.get_list",
+        "args": {
+          "doctype": "Payment Entry",
+          "filters": {
+            "company": "ULTRA MRF",
+            "docstatus": 1
+          },
+          "fields": [
+            "name",
+            "posting_date"
+          ],
+          "order_by": "posting_date asc, name asc",
+          "limit_start": 0,
+          "limit_page_length": 500
+        },
+        "rows": 20
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Payment Entry",
+          "name": "ACC-PAY-2026-00099"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Payment Entry",
+          "name": "ACC-PAY-2026-00100"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Payment Entry",
+          "name": "ACC-PAY-2026-00097"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Payment Entry",
+          "name": "ACC-PAY-2026-00101"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Payment Entry",
+          "name": "ACC-PAY-2026-00094"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Payment Entry",
+          "name": "ACC-PAY-2026-00093"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Payment Entry",
+          "name": "ACC-PAY-2026-00096"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Payment Entry",
+          "name": "ACC-PAY-2026-00098"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Payment Entry",
+          "name": "ACC-PAY-2026-00095"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Payment Entry",
+          "name": "ACC-PAY-2026-00013"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Payment Entry",
+          "name": "ACC-PAY-2026-00031"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Payment Entry",
+          "name": "ACC-PAY-2026-00032"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Payment Entry",
+          "name": "ACC-PAY-2026-00039"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Payment Entry",
+          "name": "ACC-PAY-2026-00056"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Payment Entry",
+          "name": "ACC-PAY-2026-00067"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Payment Entry",
+          "name": "ACC-PAY-2026-00102"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Payment Entry",
+          "name": "ACC-PAY-2026-00103"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Payment Entry",
+          "name": "ACC-PAY-2026-00104"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Payment Entry",
+          "name": "ACC-PAY-2026-00227"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get",
+        "args": {
+          "doctype": "Payment Entry",
+          "name": "ACC-PAY-2026-00228"
+        },
+        "rows": 1
+      },
+      {
+        "method": "frappe.client.get_list",
+        "args": {
+          "doctype": "Purchase Invoice",
+          "filters": {
+            "company": "ULTRA MRF",
+            "posting_date": [
+              "between",
+              [
+                "1900-01-01",
+                "1900-01-02"
+              ]
+            ],
+            "docstatus": 1
+          },
+          "fields": [
+            "name",
+            "supplier_name",
+            "posting_date",
+            "bill_no",
+            "net_total",
+            "grand_total",
+            "status",
+            "total_taxes_and_charges",
+            "tax_id",
+            "address_display",
+            "remarks"
+          ],
+          "limit_page_length": 500,
+          "order_by": "posting_date asc, name asc",
+          "limit_start": 0
+        },
+        "rows": 0
+      }
+    ],
+    "row_counts": {
+      "purchase_entries": 8
+    },
+    "unknown_fields": {},
+    "empty_period_row_counts": {
+      "purchase_entries": 0
+    }
+  },
+  {
+    "doctype": "BIR VAT Summary",
+    "company": "ULTRA MRF",
+    "from_date": "2026-01-01",
+    "to_date": "2026-09-09",
+    "errors": [],
+    "messages": [
+      {
+        "message": "VAT Summary generated successfully!",
+        "indicator": "green"
+      },
+      {
+        "message": "VAT Summary generated successfully!",
+        "indicator": "green"
+      }
+    ],
+    "calls": [
+      {
+        "method": "frappe.client.get_list",
+        "args": {
+          "doctype": "Sales Invoice",
+          "filters": {
+            "company": "ULTRA MRF",
+            "posting_date": [
+              "between",
+              [
+                "2026-01-01",
+                "2026-09-09"
+              ]
+            ],
+            "docstatus": 1
+          },
+          "fields": [
+            "name",
+            "net_total",
+            "grand_total",
+            "total_taxes_and_charges"
+          ],
+          "limit_page_length": 500,
+          "limit_start": 0
+        },
+        "rows": 148
+      },
+      {
+        "method": "frappe.client.get_list",
+        "args": {
+          "doctype": "Purchase Invoice",
+          "filters": {
+            "company": "ULTRA MRF",
+            "posting_date": [
+              "between",
+              [
+                "2026-01-01",
+                "2026-09-09"
+              ]
+            ],
+            "docstatus": 1
+          },
+          "fields": [
+            "name",
+            "net_total",
+            "grand_total",
+            "total_taxes_and_charges"
+          ],
+          "limit_page_length": 500,
+          "limit_start": 0
+        },
+        "rows": 8
+      },
+      {
+        "method": "frappe.client.get_list",
+        "args": {
+          "doctype": "Sales Invoice",
+          "filters": {
+            "company": "ULTRA MRF",
+            "posting_date": [
+              "between",
+              [
+                "1900-01-01",
+                "1900-01-02"
+              ]
+            ],
+            "docstatus": 1
+          },
+          "fields": [
+            "name",
+            "net_total",
+            "grand_total",
+            "total_taxes_and_charges"
+          ],
+          "limit_page_length": 500,
+          "limit_start": 0
+        },
+        "rows": 0
+      },
+      {
+        "method": "frappe.client.get_list",
+        "args": {
+          "doctype": "Purchase Invoice",
+          "filters": {
+            "company": "ULTRA MRF",
+            "posting_date": [
+              "between",
+              [
+                "1900-01-01",
+                "1900-01-02"
+              ]
+            ],
+            "docstatus": 1
+          },
+          "fields": [
+            "name",
+            "net_total",
+            "grand_total",
+            "total_taxes_and_charges"
+          ],
+          "limit_page_length": 500,
+          "limit_start": 0
+        },
+        "rows": 0
+      }
+    ],
+    "row_counts": {
+      "vat_entries": 2,
+      "total_entries": 3
+    },
+    "unknown_fields": {},
+    "empty_period_row_counts": {
+      "vat_entries": 2,
+      "total_entries": 3
+    }
+  }
+]

@@ -1,0 +1,77 @@
+{
+  "name": "ho9amk1pne",
+  "owner": "Administrator",
+  "creation": "2026-09-08 10:50:28.105105",
+  "modified": "2026-09-08 10:50:28.105105",
+  "modified_by": "Administrator",
+  "docstatus": 0,
+  "idx": 0,
+  "company": "ULTRA MRF",
+  "from_date": "2026-01-01",
+  "to_date": "2026-09-09",
+  "rdo": "021B",
+  "line_of_business": "Automotive & Tire Services",
+  "zip": "8000",
+  "tin": "123-456-789-000",
+  "email": "orbyleofficial@gmail.com",
+  "mobile": "09458269902",
+  "telephone": "09458269902",
+  "doctype": "BIR VAT Summary",
+  "vat_entries": [
+    {
+      "doctype": "BIR VAT Summary Row",
+      "parent": "ho9amk1pne",
+      "parenttype": "BIR VAT Summary",
+      "parentfield": "vat_entries",
+      "idx": 1,
+      "category": "Output VAT",
+      "source": "Sales Book",
+      "documents": 148,
+      "taxable_amount": 0,
+      "vat_amount": 0,
+      "gross_amount": 1043628.5
+    },
+    {
+      "doctype": "BIR VAT Summary Row",
+      "parent": "ho9amk1pne",
+      "parenttype": "BIR VAT Summary",
+      "parentfield": "vat_entries",
+      "idx": 2,
+      "category": "Input VAT",
+      "source": "Purchases Book",
+      "documents": 8,
+      "taxable_amount": 0,
+      "vat_amount": 0,
+      "gross_amount": 56500
+    }
+  ],
+  "total_entries": [
+    {
+      "doctype": "BIR VAT Summary Total Row",
+      "parent": "ho9amk1pne",
+      "parenttype": "BIR VAT Summary",
+      "parentfield": "total_entries",
+      "idx": 1,
+      "summary": "Output VAT",
+      "value": 0
+    },
+    {
+      "doctype": "BIR VAT Summary Total Row",
+      "parent": "ho9amk1pne",
+      "parenttype": "BIR VAT Summary",
+      "parentfield": "total_entries",
+      "idx": 2,
+      "summary": "Input VAT",
+      "value": 0
+    },
+    {
+      "doctype": "BIR VAT Summary Total Row",
+      "parent": "ho9amk1pne",
+      "parenttype": "BIR VAT Summary",
+      "parentfield": "total_entries",
+      "idx": 3,
+      "summary": "Net VAT Payable",
+      "value": 0
+    }
+  ]
+}

@@ -1,0 +1,320 @@
+[
+  {
+    "tx_no": 1,
+    "invoice": "ACC-SINV-2026-00418",
+    "payment": "ACC-PAY-2026-00239",
+    "customer": "DEBBIE ALCESO",
+    "amount": 1800.0,
+    "services": [
+      "Periodic Maintenance Service (PMS) - Sedan"
+    ]
+  },
+  {
+    "tx_no": 2,
+    "invoice": "ACC-SINV-2026-00419",
+    "payment": "ACC-PAY-2026-00240",
+    "customer": "JAMELA VIA CECIL PAZCOGUIN",
+    "amount": 1600.0,
+    "services": [
+      "High-Speed Wheel Balancing & Tire Rotation",
+      "Battery Load Test, Alternator & Starter Check"
+    ]
+  },
+  {
+    "tx_no": 3,
+    "invoice": "ACC-SINV-2026-00420",
+    "payment": "ACC-PAY-2026-00241",
+    "customer": "JENNYLYN M. ANGELES",
+    "amount": 2400.0,
+    "services": [
+      "Automatic Transmission Fluid (ATF) Dialysis Flush"
+    ]
+  },
+  {
+    "tx_no": 4,
+    "invoice": "ACC-SINV-2026-00421",
+    "payment": "ACC-PAY-2026-00242",
+    "customer": "JAMELA VIA CECIL PAZCOGUIN",
+    "amount": 8600.0,
+    "services": [
+      "Periodic Maintenance Service (PMS) - SUV/4x4",
+      "Underchassis Suspension Bushing & Linkage Repair",
+      "Aircon Evaporator Cleaning & Freon Top-up"
+    ]
+  },
+  {
+    "tx_no": 5,
+    "invoice": "ACC-SINV-2026-00422",
+    "payment": "ACC-PAY-2026-00243",
+    "customer": "Ultra MRF Dau Corp",
+    "amount": 2600.0,
+    "services": [
+      "Periodic Maintenance Service (PMS) - SUV/4x4"
+    ]
+  },
+  {
+    "tx_no": 6,
+    "invoice": "ACC-SINV-2026-00423",
+    "payment": "ACC-PAY-2026-00244",
+    "customer": "DIANA KRIZZLE UMALI",
+    "amount": 4500.0,
+    "services": [
+      "Automan Pro Interior & Exterior Auto Detailing"
+    ]
+  },
+  {
+    "tx_no": 7,
+    "invoice": "ACC-SINV-2026-00424",
+    "payment": "ACC-PAY-2026-00245",
+    "customer": "CIARA CASTRO",
+    "amount": 4500.0,
+    "services": [
+      "Automan Pro Interior & Exterior Auto Detailing"
+    ]
+  },
+  {
+    "tx_no": 8,
+    "invoice": "ACC-SINV-2026-00425",
+    "payment": "ACC-PAY-2026-00246",
+    "customer": "WILSON NAVOA",
+    "amount": 5700.0,
+    "services": [
+      "Aircon Evaporator Cleaning & Freon Top-up",
+      "High-Speed Wheel Balancing & Tire Rotation",
+      "Fuel Injector Ultrasonic Cleaning & Flow Test"
+    ]
+  },
+  {
+    "tx_no": 9,
+    "invoice": "ACC-SINV-2026-00426",
+    "payment": "ACC-PAY-2026-00247",
+    "customer": "GUENDA CRUZ",
+    "amount": 3200.0,
+    "services": [
+      "Periodic Maintenance Service (PMS) - Sedan",
+      "Computerized 4-Wheel Alignment"
+    ]
+  },
+  {
+    "tx_no": 10,
+    "invoice": "ACC-SINV-2026-00427",
+    "payment": "ACC-PAY-2026-00248",
+    "customer": "REYNA CRISTOBAL",
+    "amount": 3850.0,
+    "services": [
+      "Full Engine Tune-up & Electronic Diagnostics",
+      "Brake System Inspection, Cleaning & Caliper Bleed"
+    ]
+  },
+  {
+    "tx_no": 11,
+    "invoice": "ACC-SINV-2026-00428",
+    "payment": "ACC-PAY-2026-00249",
+    "customer": "JAQUELINE DUE",
+    "amount": 2200.0,
+    "services": [
+      "Full Engine Tune-up & Electronic Diagnostics"
+    ]
+  },
+  {
+    "tx_no": 12,
+    "invoice": "ACC-SINV-2026-00429",
+    "payment": "ACC-PAY-2026-00250",
+    "customer": "MARK SAGUN",
+    "amount": 2800.0,
+    "services": [
+      "Aircon Evaporator Cleaning & Freon Top-up"
+    ]
+  },
+  {
+    "tx_no": 13,
+    "invoice": "ACC-SINV-2026-00430",
+    "payment": "ACC-PAY-2026-00251",
+    "customer": "FRANCIS RUANTO",
+    "amount": 5400.0,
+    "services": [
+      "Full Engine Tune-up & Electronic Diagnostics",
+      "Underchassis Suspension Bushing & Linkage Repair"
+    ]
+  },
+  {
+    "tx_no": 14,
+    "invoice": "ACC-SINV-2026-00431",
+    "payment": "ACC-PAY-2026-00252",
+    "customer": "ROSALIE MANABAT",
+    "amount": 650.0,
+    "services": [
+      "Battery Load Test, Alternator & Starter Check"
+    ]
+  },
+  {
+    "tx_no": 15,
+    "invoice": "ACC-SINV-2026-00432",
+    "payment": "ACC-PAY-2026-00253",
+    "customer": "LEYDO GAMIAO",
+    "amount": 6050.0,
+    "services": [
+      "Periodic Maintenance Service (PMS) - SUV/4x4",
+      "Aircon Evaporator Cleaning & Freon Top-up",
+      "Battery Load Test, Alternator & Starter Check"
+    ]
+  },
+  {
+    "tx_no": 16,
+    "invoice": "ACC-SINV-2026-00433",
+    "payment": "ACC-PAY-2026-00254",
+    "customer": "JOHN ERICK M. RENDON",
+    "amount": 5600.0,
+    "services": [
+      "Automatic Transmission Fluid (ATF) Dialysis Flush",
+      "Underchassis Suspension Bushing & Linkage Repair"
+    ]
+  },
+  {
+    "tx_no": 17,
+    "invoice": "ACC-SINV-2026-00434",
+    "payment": "ACC-PAY-2026-00255",
+    "customer": "JERICK LACONICO",
+    "amount": 5350.0,
+    "services": [
+      "High-Speed Wheel Balancing & Tire Rotation",
+      "Periodic Maintenance Service (PMS) - SUV/4x4",
+      "Periodic Maintenance Service (PMS) - Sedan"
+    ]
+  },
+  {
+    "tx_no": 18,
+    "invoice": "ACC-SINV-2026-00435",
+    "payment": "ACC-PAY-2026-00256",
+    "customer": "JOY HUSAYAN",
+    "amount": 1650.0,
+    "services": [
+      "Brake System Inspection, Cleaning & Caliper Bleed"
+    ]
+  },
+  {
+    "tx_no": 19,
+    "invoice": "ACC-SINV-2026-00436",
+    "payment": "ACC-PAY-2026-00257",
+    "customer": "HANDRIAN LOR",
+    "amount": 2600.0,
+    "services": [
+      "Periodic Maintenance Service (PMS) - SUV/4x4"
+    ]
+  },
+  {
+    "tx_no": 20,
+    "invoice": "ACC-SINV-2026-00437",
+    "payment": "ACC-PAY-2026-00258",
+    "customer": "RICHARD QUAJON",
+    "amount": 4350.0,
+    "services": [
+      "Fuel Injector Ultrasonic Cleaning & Flow Test",
+      "Automatic Transmission Fluid (ATF) Dialysis Flush"
+    ]
+  },
+  {
+    "tx_no": 21,
+    "invoice": "ACC-SINV-2026-00438",
+    "payment": "ACC-PAY-2026-00259",
+    "customer": "JERICK LACONICO",
+    "amount": 2200.0,
+    "services": [
+      "Full Engine Tune-up & Electronic Diagnostics"
+    ]
+  },
+  {
+    "tx_no": 22,
+    "invoice": "ACC-SINV-2026-00439",
+    "payment": "ACC-PAY-2026-00260",
+    "customer": "RYAN QUIRIMIT",
+    "amount": 2400.0,
+    "services": [
+      "Automatic Transmission Fluid (ATF) Dialysis Flush"
+    ]
+  },
+  {
+    "tx_no": 23,
+    "invoice": "ACC-SINV-2026-00440",
+    "payment": "ACC-PAY-2026-00261",
+    "customer": "DIANNE MUSNI",
+    "amount": 3200.0,
+    "services": [
+      "Underchassis Suspension Bushing & Linkage Repair"
+    ]
+  },
+  {
+    "tx_no": 24,
+    "invoice": "ACC-SINV-2026-00441",
+    "payment": "ACC-PAY-2026-00262",
+    "customer": "DEBBIE ALCESO",
+    "amount": 4500.0,
+    "services": [
+      "Automan Pro Interior & Exterior Auto Detailing"
+    ]
+  },
+  {
+    "tx_no": 25,
+    "invoice": "ACC-SINV-2026-00442",
+    "payment": "ACC-PAY-2026-00263",
+    "customer": "ANDREW ATHLIG",
+    "amount": 1400.0,
+    "services": [
+      "Computerized 4-Wheel Alignment"
+    ]
+  },
+  {
+    "tx_no": 26,
+    "invoice": "ACC-SINV-2026-00443",
+    "payment": "ACC-PAY-2026-00264",
+    "customer": "EUGENE FERNANDEZ",
+    "amount": 4050.0,
+    "services": [
+      "Brake System Inspection, Cleaning & Caliper Bleed",
+      "Automatic Transmission Fluid (ATF) Dialysis Flush"
+    ]
+  },
+  {
+    "tx_no": 27,
+    "invoice": "ACC-SINV-2026-00444",
+    "payment": "ACC-PAY-2026-00265",
+    "customer": "ALBERT DELA CRUZ .",
+    "amount": 5550.0,
+    "services": [
+      "High-Speed Wheel Balancing & Tire Rotation",
+      "Automatic Transmission Fluid (ATF) Dialysis Flush",
+      "Full Engine Tune-up & Electronic Diagnostics"
+    ]
+  },
+  {
+    "tx_no": 28,
+    "invoice": "ACC-SINV-2026-00445",
+    "payment": "ACC-PAY-2026-00266",
+    "customer": "EMARY GRACE QUIRONA",
+    "amount": 950.0,
+    "services": [
+      "High-Speed Wheel Balancing & Tire Rotation"
+    ]
+  },
+  {
+    "tx_no": 29,
+    "invoice": "ACC-SINV-2026-00446",
+    "payment": "ACC-PAY-2026-00267",
+    "customer": "Ultra MRF Dau Corp",
+    "amount": 4450.0,
+    "services": [
+      "Aircon Evaporator Cleaning & Freon Top-up",
+      "Brake System Inspection, Cleaning & Caliper Bleed"
+    ]
+  },
+  {
+    "tx_no": 30,
+    "invoice": "ACC-SINV-2026-00447",
+    "payment": "ACC-PAY-2026-00268",
+    "customer": "NELSON L. CASTILLO",
+    "amount": 3200.0,
+    "services": [
+      "Underchassis Suspension Bushing & Linkage Repair"
+    ]
+  }
+]

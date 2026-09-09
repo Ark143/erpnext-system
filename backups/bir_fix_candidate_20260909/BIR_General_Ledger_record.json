@@ -1,0 +1,20 @@
+{
+  "name": "hngn7louc2",
+  "owner": "Administrator",
+  "creation": "2026-09-08 10:50:25.623113",
+  "modified": "2026-09-08 10:50:25.623113",
+  "modified_by": "Administrator",
+  "docstatus": 0,
+  "idx": 0,
+  "company": "Ultra MRF Mexico Warehouse",
+  "from_date": "2026-01-01",
+  "to_date": "2026-12-31",
+  "rdo": "132",
+  "line_of_business": "Services",
+  "zip": "8000",
+  "email": "orbyleofficial@gmail.com",
+  "mobile": "09458269902",
+  "telephone": "09458269902",
+  "doctype": "BIR General Ledger",
+  "gl_entries": []
+}

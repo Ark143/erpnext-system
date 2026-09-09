@@ -1,0 +1,1953 @@
+
+frappe.provide('frappe.ui.form');
+
+if (!$('#sap-rel-map-styles').length) {
+  $('head').append(`<style id="sap-rel-map-styles">/* ── VM Header Pill Next to Profile in ERPNext Desk ── */
+.vm-header-pill {
+  background: #16c784 !important;
+  color: #04201a !important;
+  font-weight: 800 !important;
+  border-radius: 9px !important;
+  padding: 4px 10px !important;
+  height: 30px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  box-shadow: 0 2px 5px rgba(22, 199, 132, 0.35) !important;
+  border: 1px solid rgba(4, 32, 26, 0.1) !important;
+  transition: all 0.15s ease !important;
+  cursor: pointer !important;
+  margin-right: 4px !important;
+}
+
+.vm-header-pill:hover, .vm-header-pill:focus {
+  background: #0fa76d !important;
+  color: #ffffff !important;
+  text-decoration: none !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 8px rgba(16, 185, 129, 0.4) !important;
+}
+
+.vm-dropdown-menu {
+  border-radius: 14px !important;
+  border: 1px solid #e2e8f0 !important;
+  padding: 8px !important;
+  min-width: 270px !important;
+  animation: vmFadeIn 0.18s ease-out !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.12), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+  margin-top: 6px !important;
+}
+
+.vm-dropdown-menu .dropdown-item {
+  border-radius: 8px !important;
+  padding: 8px 12px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  transition: all 0.12s ease !important;
+}
+
+.vm-dropdown-menu .dropdown-item:hover {
+  background: #f0fdf4 !important;
+  color: #0fa76d !important;
+  transform: translateX(3px) !important;
+}
+
+@keyframes vmFadeIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════ */
+/* SAP BUSINESS ONE RELATIONSHIP MAP STYLING                                */
+/* ══════════════════════════════════════════════════════════════════════════ */
+
+.sap-map-dialog-xl {
+  max-width: 95vw !important;
+  width: 95vw !important;
+  margin: 1.5rem auto !important;
+}
+
+.sap-map-dialog-body {
+  height: 82vh !important;
+  max-height: 82vh !important;
+  overflow: hidden !important;
+}
+
+.modal-dialog .form-layout,
+.modal-dialog .form-page,
+.modal-dialog .form-section,
+.modal-dialog .form-column,
+.modal-dialog [data-fieldname="sap_map_area"] {
+  height: 100% !important;
+  min-height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.sap-map-container {
+  display: flex;
+  flex-direction: column;
+  height: 100% !important;
+  min-height: 75vh !important;
+  width: 100%;
+  background: #f8fafc;
+  position: relative;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  flex: 1;
+}
+
+/* Header & Toolbars */
+.sap-map-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 18px;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  z-index: 20;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.sap-map-title-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sap-b1-badge {
+  display: inline-flex;
+  align-items: center;
+  background: linear-gradient(135deg, #0284c7, #0369a1);
+  color: #ffffff;
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-weight: 800;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 4px rgba(2, 132, 199, 0.3);
+}
+
+.sap-b1-logo {
+  background: #ffffff;
+  color: #0369a1;
+  padding: 1px 4px;
+  border-radius: 3px;
+  margin-right: 5px;
+  font-size: 10px;
+}
+
+.sap-map-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.sap-search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.sap-search-box input {
+  padding-left: 24px;
+  width: 220px;
+  border-radius: 6px 0 0 6px;
+  border-right: none;
+}
+
+.sap-search-icon {
+  position: absolute;
+  left: 8px;
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.sap-search-btn {
+  border-radius: 0 6px 6px 0;
+  font-weight: 600;
+}
+
+/* Metrics Ribbon */
+.sap-map-metrics {
+  display: flex;
+  align-items: center;
+  padding: 8px 20px;
+  background: #f1f5f9;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 12px;
+  gap: 20px;
+  z-index: 15;
+}
+
+.sap-metric-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sap-metric-lbl {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.sap-metric-val {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.sap-status-pill {
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.sap-status-paid {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #86efac;
+}
+
+.sap-status-open {
+  background: #fef3c7;
+  color: #b45309;
+  border: 1px solid #fde68a;
+}
+
+/* Workspace & Canvas */
+.sap-map-workspace {
+  display: block !important;
+  position: relative !important;
+  overflow: hidden !important;
+  flex: 1 1 auto !important;
+  height: calc(100% - 90px) !important;
+  width: 100% !important;
+  min-height: 0 !important;
+}
+
+.sap-view-pane {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  box-sizing: border-box !important;
+}
+
+#sapAccountingView,
+#sapItemsView {
+  overflow-y: scroll !important;
+  overflow-x: hidden !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  padding: 20px 24px 80px 24px !important;
+  background: #f8fafc !important;
+  scroll-behavior: smooth;
+  scrollbar-width: auto;
+  scrollbar-color: #0284c7 #e2e8f0;
+}
+
+#sapAccountingView::-webkit-scrollbar,
+#sapItemsView::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+#sapAccountingView::-webkit-scrollbar-track,
+#sapItemsView::-webkit-scrollbar-track {
+  background: #e2e8f0;
+  border-radius: 6px;
+}
+
+#sapAccountingView::-webkit-scrollbar-thumb,
+#sapItemsView::-webkit-scrollbar-thumb {
+  background: #0284c7;
+  border-radius: 6px;
+  border: 3px solid #e2e8f0;
+}
+
+#sapAccountingView::-webkit-scrollbar-thumb:hover,
+#sapItemsView::-webkit-scrollbar-thumb:hover {
+  background: #0369a1;
+}
+
+.sap-accounting-container,
+.sap-items-container {
+  margin-bottom: 80px !important;
+  padding-bottom: 50px !important;
+}
+
+.sap-map-viewport {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  cursor: grab;
+  background-color: #f8fafc;
+  background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.sap-map-viewport.grabbing {
+  cursor: grabbing;
+}
+
+.sap-map-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  min-width: 1600px;
+  min-height: 900px;
+  transform-origin: 0 0;
+  transition: transform 0.05s ease-out;
+}
+
+.sap-map-svg-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.sap-map-nodes-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+}
+
+/* Column Header */
+.sap-col-header {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  background: #e2e8f0;
+  color: #334155;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 1px solid #cbd5e1;
+}
+
+/* SAP Node Cards */
+.sap-node-card {
+  position: absolute;
+  background: #ffffff;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+.sap-node-card:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 12px 20px -3px rgba(0, 0, 0, 0.12), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  border-color: #cbd5e1;
+  z-index: 15;
+}
+
+/* Active / Focal Document Node (Iconic SAP Gold Glow) */
+.sap-node-current {
+  border: 2px solid #f59e0b !important;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.25), 0 10px 15px -3px rgba(245, 158, 11, 0.2) !important;
+  background: #fffbeb !important;
+}
+
+.sap-active-indicator {
+  position: absolute;
+  top: -10px;
+  right: 12px;
+  background: #d97706;
+  color: #ffffff;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 1px 7px;
+  border-radius: 10px;
+  letter-spacing: 0.5px;
+}
+
+.sap-node-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.sap-node-dt-badge {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.sap-node-status {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.sap-node-id {
+  font-size: 14px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 8px;
+  word-break: break-all;
+}
+
+.sap-node-info-grid {
+  font-size: 11px;
+  color: #475569;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-bottom: 8px;
+  background: #f8fafc;
+  padding: 6px 8px;
+  border-radius: 6px;
+}
+
+.sap-node-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sap-node-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 6px;
+  border-top: 1px dashed #e2e8f0;
+}
+
+.sap-amt-val {
+  font-size: 13px;
+  font-weight: 800;
+  color: #0369a1;
+}
+
+/* Side Inspector Drawer */
+.sap-map-drawer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 380px;
+  height: 100%;
+  background: #ffffff;
+  border-left: 1px solid #cbd5e1;
+  box-shadow: -5px 0 25px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 25;
+}
+
+.sap-map-drawer.open {
+  transform: translateX(0);
+}
+
+.sap-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.sap-drawer-title {
+  font-weight: 700;
+  font-size: 14px;
+  color: #0f172a;
+}
+
+.sap-drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.sap-drawer-sec {
+  margin-bottom: 16px;
+}
+
+.sap-drawer-sec-title {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #64748b;
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+}
+
+.sap-drawer-footer {
+  padding: 12px 18px;
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+}
+
+/* Action Button on Forms */
+.btn-sap-relationship-map {
+  background: linear-gradient(135deg, #0284c7, #0369a1) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  border: 1px solid #0284c7 !important;
+  border-radius: 6px !important;
+  transition: all 0.15s ease !important;
+}
+
+.btn-sap-relationship-map:hover {
+  background: #0369a1 !important;
+  box-shadow: 0 3px 6px rgba(2, 132, 199, 0.3) !important;
+  color: #ffffff !important;
+}
+
+/* Items & Accounting Tables Styling */
+.sap-items-container table th,
+.sap-items-container table td,
+.sap-accounting-container table th,
+.sap-accounting-container table td {
+  vertical-align: middle !important;
+}
+
+.sap-items-container td.text-right,
+.sap-items-container th.text-right,
+.sap-accounting-container td.text-right,
+.sap-accounting-container th.text-right,
+.sap-nowrap {
+  white-space: nowrap !important;
+  word-break: keep-all !important;
+}
+
+/* Print Header (Screen: Hidden; Print: Visible) */
+.sap-print-header {
+  display: none;
+}
+
+/* Print Stylesheet for Relationship Map */
+@media print {
+  @page {
+    size: landscape;
+    margin: 10mm 8mm;
+  }
+
+  /* Hide Desk & Browser Chrome */
+  .navbar,
+  .page-head,
+  header,
+  footer,
+  .sidebar,
+  .layout-side-section,
+  .sap-map-header,
+  .sap-map-controls,
+  .sap-search-box,
+  .sap-zoom-tools,
+  .sap-mode-toggle,
+  .sap-map-drawer,
+  .modal-header,
+  .modal-backdrop,
+  .btn,
+  button,
+  .close {
+    display: none !important;
+  }
+
+  /* Show Audit Print Header */
+  .sap-print-header {
+    display: flex !important;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+    border-bottom: 2px solid #0f172a;
+    background: #ffffff !important;
+    width: 100% !important;
+    box-sizing: border-box;
+  }
+
+  .sap-print-header-left {
+    flex: 1;
+  }
+
+  .sap-print-company {
+    font-size: 18px !important;
+    font-weight: 800 !important;
+    margin: 0 0 3px 0 !important;
+    color: #0f172a !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .sap-print-address {
+    font-size: 11px !important;
+    color: #475569 !important;
+    line-height: 1.3;
+    max-width: 600px;
+  }
+
+  .sap-print-doc-meta {
+    font-size: 12px !important;
+    color: #0369a1 !important;
+    margin-top: 4px;
+  }
+
+  .sap-print-header-right {
+    text-align: right;
+    font-size: 11px !important;
+  }
+
+  .sap-print-audit-box {
+    background: #f8fafc !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 6px;
+    padding: 6px 12px;
+    display: inline-block;
+    text-align: left;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .sap-print-audit-box div {
+    margin-bottom: 2px;
+    white-space: nowrap !important;
+  }
+
+  /* Container and Layout resets */
+  body, html, .modal, .modal-dialog, .modal-content, .modal-body, .sap-map-container, .sap-map-workspace {
+    overflow: visible !important;
+    height: auto !important;
+    min-height: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    position: static !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: #ffffff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .sap-view-pane {
+    overflow: visible !important;
+    height: auto !important;
+    width: 100% !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+  }
+
+  .sap-items-container, .sap-accounting-container {
+    max-width: 100% !important;
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Enforce NO WRAP on all value and numeric cells during print */
+  .sap-map-container table td,
+  .sap-map-container table th,
+  .sap-amt-val,
+  .sap-metric-val,
+  .sap-node-id,
+  .sap-node-info-row,
+  .sap-node-dt-badge,
+  .badge {
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+  }
+
+  /* Tables in Print */
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+
+  table th, table td {
+    padding: 4px 6px !important;
+    font-size: 10px !important;
+    border: 1px solid #cbd5e1 !important;
+  }
+
+  table thead th {
+    background-color: #f1f5f9 !important;
+    color: #0f172a !important;
+    font-weight: 700 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .card {
+    border: 1px solid #cbd5e1 !important;
+    box-shadow: none !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+    margin-bottom: 12px !important;
+  }
+
+  .card-header {
+    background-color: #f8fafc !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    padding: 6px 10px !important;
+  }
+}
+
+</style>`);
+}
+
+/**
+ * Unified VMS & P2P Relationship Map Engine
+ * (c) Autometrik / ULTRA MRF
+ *
+ * Provides full visual document flow, items/services breakdown, accounting posting graph,
+ * zoom/pan interactive canvas, and document inspector drawer for both Order-to-Cash (O2C)
+ * and Procure-to-Pay (P2P) transactional workflows.
+ */
+
+(function () {
+  window.SAPRelationshipMap = window.SAPRelationshipMap || {};
+
+  const DOCTYPE_COLORS = {
+    // Master Entities
+    "Customer": { bg: "#f1f5f9", border: "#64748b", text: "#0f172a", icon: "fa fa-user", tag: "Customer Profile" },
+    "Customer Vehicle": { bg: "#e0f2fe", border: "#0284c7", text: "#0369a1", icon: "fa fa-car", tag: "Customer Vehicle" },
+    "Supplier": { bg: "#f8fafc", border: "#475569", text: "#0f172a", icon: "fa fa-truck", tag: "Supplier Profile" },
+
+    // P2P Workflow
+    "Material Request": { bg: "#fef3c7", border: "#f59e0b", text: "#b45309", icon: "fa fa-clipboard-list", tag: "Material Request" },
+    "Supplier Quotation": { bg: "#fdf4ff", border: "#c026d3", text: "#a21caf", icon: "fa fa-file-invoice", tag: "Supplier Quotation" },
+    "Purchase Order": { bg: "#e0e7ff", border: "#6366f1", text: "#4338ca", icon: "fa fa-shopping-cart", tag: "Purchase Order" },
+    "Purchase Receipt": { bg: "#ccfbf1", border: "#0d9488", text: "#0f766e", icon: "fa fa-boxes", tag: "Purchase Receipt (GRN)" },
+    "Purchase Invoice": { bg: "#fee2e2", border: "#ef4444", text: "#b91c1c", icon: "fa fa-file-invoice-dollar", tag: "Purchase Invoice (Bill)" },
+
+    // VMS & O2C Workflow
+    "Vehicle Estimate": { bg: "#f3e8ff", border: "#9333ea", text: "#7e22ce", icon: "fa fa-calculator", tag: "Estimate / Quote" },
+    "Quotation": { bg: "#f3e8ff", border: "#9333ea", text: "#7e22ce", icon: "fa fa-calculator", tag: "Sales Quotation" },
+    "Vehicle Inspection": { bg: "#e0e7ff", border: "#4f46e5", text: "#3730a3", icon: "fa fa-check-circle", tag: "Multi-Point Inspection" },
+    "Vehicle Job Order": { bg: "#fef3c7", border: "#d97706", text: "#b45309", icon: "fa fa-wrench", tag: "Vehicle Job Order" },
+    "Sales Order": { bg: "#eff6ff", border: "#3b82f6", text: "#1d4ed8", icon: "fa fa-file-signature", tag: "Sales Order" },
+    "Delivery Note": { bg: "#ecfeff", border: "#06b6d4", text: "#0e7490", icon: "fa fa-truck-loading", tag: "Delivery Note" },
+    "Vehicle POS Invoice": { bg: "#ccfbf1", border: "#0d9488", text: "#0f766e", icon: "fa fa-receipt", tag: "Vehicle POS Invoice" },
+    "POS Invoice": { bg: "#dcfce7", border: "#16a34a", text: "#15803d", icon: "fa fa-cash-register", tag: "POS Invoice" },
+    "Sales Invoice": { bg: "#d1fae5", border: "#059669", text: "#047857", icon: "fa fa-file-invoice-dollar", tag: "Sales Invoice" },
+    
+    // Financial & Inventory
+    "Payment Entry": { bg: "#ecfdf5", border: "#10b981", text: "#065f46", icon: "fa fa-money-check-alt", tag: "Payment Entry" },
+    "Journal Entry": { bg: "#f8fafc", border: "#64748b", text: "#334155", icon: "fa fa-book-open", tag: "Journal Entry" },
+    "GL Entry": { bg: "#f8fafc", border: "#475569", text: "#334155", icon: "fa fa-book", tag: "General Ledger" },
+    "Stock Entry": { bg: "#cffafe", border: "#0891b2", text: "#0e7490", icon: "fa fa-exchange-alt", tag: "Stock Movement" }
+  };
+
+  const STATUS_COLORS = {
+    "Draft": { bg: "#e2e8f0", text: "#475569" },
+    "Open": { bg: "#fef3c7", text: "#d97706" },
+    "In Progress": { bg: "#dbeafe", text: "#1d4ed8" },
+    "Pending Parts": { bg: "#fee2e2", text: "#b91c1c" },
+    "Approved": { bg: "#dcfce7", text: "#15803d" },
+    "Completed": { bg: "#d1fae5", text: "#047857" },
+    "Invoiced": { bg: "#ccfbf1", text: "#0f766e" },
+    "Released": { bg: "#d1fae5", text: "#065f46" },
+    "Paid": { bg: "#dcfce7", text: "#166534" },
+    "Submitted": { bg: "#e0e7ff", text: "#4338ca" },
+    "Posted": { bg: "#f1f5f9", text: "#334155" },
+    "Cancelled": { bg: "#ffe4e6", text: "#be123c" },
+    "To Receive and Bill": { bg: "#fef3c7", text: "#d97706" },
+    "To Bill": { bg: "#dbeafe", text: "#1d4ed8" },
+    "To Receive": { bg: "#e0e7ff", text: "#4338ca" },
+    "Ordered": { bg: "#dcfce7", text: "#15803d" },
+    "Unpaid": { bg: "#fee2e2", text: "#b91c1c" },
+    "Overdue": { bg: "#ffe4e6", text: "#be123c" },
+    "Partly Paid": { bg: "#fef3c7", text: "#d97706" }
+  };
+
+  class SAPMapViewer {
+    constructor(opts) {
+      this.doctype = opts.doctype || "Vehicle Job Order";
+      this.docname = opts.docname || "";
+      this.vehicle = opts.vehicle || "";
+      this.customer = opts.customer || "";
+      this.supplier = opts.supplier || "";
+      this.container = opts.container || null;
+      this.isModal = !!opts.isModal;
+      this.dialog = opts.dialog || null;
+      this.zoom = 1;
+      this.panX = 40;
+      this.panY = 40;
+      this.isDragging = false;
+      this.startX = 0;
+      this.startY = 0;
+      this.currentMode = "flow"; // "flow" | "items" | "accounting"
+      this.itemFilter = "all";
+      this.itemSearchTerm = "";
+      this.data = null;
+      this.selectedNode = null;
+      this.init();
+    }
+
+    init() {
+      this.renderSkeleton();
+      this.fetchData();
+    }
+
+    renderSkeleton() {
+      const html = `
+        <div class="sap-map-container ${this.isModal ? 'sap-map-modal-mode' : ''}">
+          <!-- Print-Only Audit Header -->
+          <div class="sap-print-header" id="sapPrintHeader">
+            <div class="sap-print-header-left">
+              <h3 class="sap-print-company" id="sapPrintCompany">ULTRA MRF</h3>
+              <div class="sap-print-address text-muted" id="sapPrintAddress"></div>
+              <div class="sap-print-doc-meta mt-1">
+                <strong>VMS / P2P Relationship Map & Audit Trace:</strong>
+                <span id="sapPrintDocTitle"></span>
+              </div>
+            </div>
+            <div class="sap-print-header-right">
+              <div class="sap-print-audit-box">
+                <div><strong>Printed By:</strong> <span id="sapPrintUser"></span></div>
+                <div><strong>Date Generated:</strong> <span id="sapPrintDate"></span></div>
+                <div><strong>Flow Status:</strong> <span id="sapPrintStatus"></span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Top Toolbar -->
+          <div class="sap-map-header">
+            <div class="sap-map-title-bar">
+              <div class="sap-b1-badge">
+                <span class="sap-b1-logo">VMS & P2P</span>
+                <span class="sap-b1-sub">RELATIONSHIP MAP</span>
+              </div>
+              <div class="sap-map-doc-title" id="sapMapDocTitle">
+                <span class="text-muted">Loading Relationship Map for</span> <strong>${this.doctype}: ${this.docname || this.vehicle || this.supplier}</strong>
+              </div>
+            </div>
+
+            <div class="sap-map-controls">
+              <!-- Mode Selector -->
+              <div class="btn-group sap-mode-toggle" role="group">
+                <button type="button" class="btn btn-primary btn-xs active" data-mode="flow">
+                  <i class="fa fa-sitemap mr-1"></i> <span>Document Flow</span>
+                </button>
+                <button type="button" class="btn btn-default btn-xs" data-mode="items">
+                  <i class="fa fa-list-alt mr-1"></i> <span>Related Items / Lines</span>
+                </button>
+                <button type="button" class="btn btn-default btn-xs" data-mode="accounting">
+                  <i class="fa fa-balance-scale mr-1"></i> <span>Accounting Flow</span>
+                </button>
+              </div>
+
+              <!-- Search / Switch Document -->
+              <div class="sap-search-box">
+                <i class="fa fa-search sap-search-icon"></i>
+                <input type="text" class="form-control input-xs" id="sapSearchDoc" placeholder="Search PO / MR / PR / PINV / JO / Plate / ID..." />
+                <button class="btn btn-default btn-xs sap-search-btn" id="sapSearchBtn">Go</button>
+              </div>
+
+              <!-- Zoom & Action Tools -->
+              <div class="btn-group sap-zoom-tools">
+                <button class="btn btn-default btn-xs" id="sapZoomIn" title="Zoom In (+)"><i class="fa fa-search-plus"></i></button>
+                <button class="btn btn-default btn-xs" id="sapZoomOut" title="Zoom Out (-)"><i class="fa fa-search-minus"></i></button>
+                <button class="btn btn-default btn-xs" id="sapZoomFit" title="Fit to Screen"><i class="fa fa-expand"></i></button>
+                <button class="btn btn-default btn-xs" id="sapZoomReset" title="Reset View"><i class="fa fa-crosshairs"></i></button>
+                <button class="btn btn-default btn-xs" id="sapPrint" title="Print Relationship Map"><i class="fa fa-print"></i></button>
+                <button class="btn btn-primary btn-xs" id="sapRefresh" title="Refresh Graph"><i class="fa fa-sync"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Summary Financial Metric Ribbon -->
+          <div class="sap-map-metrics" id="sapMapMetrics">
+            <div class="sap-metric-item" id="sapMetricPartyBox">
+              <span class="sap-metric-lbl" id="sapMetricPartyLbl">Party / Customer:</span>
+              <span class="sap-metric-val font-weight-bold" id="sapMetricParty">-</span>
+            </div>
+            <div class="sap-metric-item" id="sapMetricVehicleBox">
+              <span class="sap-metric-lbl">Vehicle Plate:</span>
+              <span class="sap-metric-val font-weight-bold" id="sapMetricPlate">-</span>
+            </div>
+            <div class="sap-metric-item">
+              <span class="sap-metric-lbl">Total Value:</span>
+              <span class="sap-metric-val text-primary" id="sapMetricVal">₱ 0.00</span>
+            </div>
+            <div class="sap-metric-item">
+              <span class="sap-metric-lbl">Total Paid / Disbursed:</span>
+              <span class="sap-metric-val text-success" id="sapMetricPaid">₱ 0.00</span>
+            </div>
+            <div class="sap-metric-item">
+              <span class="sap-metric-lbl">Outstanding Balance:</span>
+              <span class="sap-metric-val text-danger" id="sapMetricOutst">₱ 0.00</span>
+            </div>
+            <div class="sap-metric-item ml-auto">
+              <span class="sap-metric-lbl">Settlement Status:</span>
+              <span class="sap-status-pill" id="sapMetricStatus">In Progress</span>
+            </div>
+          </div>
+
+          <!-- Main Interactive Viewport & Drawer -->
+          <div class="sap-map-workspace" style="position: relative; flex: 1 1 auto; overflow: hidden; width: 100%; height: calc(100% - 95px); min-height: 0;">
+            <!-- 1. Document Flow Interactive Canvas View -->
+            <div class="sap-view-pane" id="sapFlowView" style="display: flex; position: absolute; top: 0; left: 0; right: 0; bottom: 0; overflow: hidden; width: 100%; height: 100%;">
+              <div class="sap-map-viewport" id="sapViewport" style="width: 100%; height: 100%;">
+                <div class="sap-map-canvas" id="sapCanvas">
+                  <!-- SVG Layer for Bezier Connectors -->
+                  <svg class="sap-map-svg-layer" id="sapSvgLayer" width="3500" height="2500">
+                    <defs>
+                      <marker id="sapArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                        <path d="M 0 1 L 10 5 L 0 9 z" fill="#6366f1" />
+                      </marker>
+                      <marker id="sapArrowGreen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                        <path d="M 0 1 L 10 5 L 0 9 z" fill="#16a34a" />
+                      </marker>
+                      <marker id="sapArrowGold" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                        <path d="M 0 1 L 10 5 L 0 9 z" fill="#d97706" />
+                      </marker>
+                      <marker id="sapArrowPurple" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                        <path d="M 0 1 L 10 5 L 0 9 z" fill="#9333ea" />
+                      </marker>
+                    </defs>
+                    <g id="sapSvgEdges"></g>
+                  </svg>
+
+                  <!-- HTML Nodes Layer -->
+                  <div class="sap-map-nodes-layer" id="sapNodesLayer"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 2. Related Items Scrollable Table View -->
+            <div class="sap-view-pane" id="sapItemsView" style="display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; overflow-y: scroll; overflow-x: hidden; width: 100%; height: 100%; padding: 20px 24px 80px 24px; background: #f8fafc; box-sizing: border-box;"></div>
+
+            <!-- 3. Accounting Flow Scrollable Ledger View -->
+            <div class="sap-view-pane" id="sapAccountingView" style="display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; overflow-y: scroll; overflow-x: hidden; width: 100%; height: 100%; padding: 20px 24px 80px 24px; background: #f8fafc; box-sizing: border-box;"></div>
+
+            <!-- Right Inspector Drawer -->
+            <div class="sap-map-drawer" id="sapDrawer">
+              <div class="sap-drawer-header">
+                <div class="sap-drawer-title" id="sapDrawerTitle">Document Details</div>
+                <button type="button" class="close" id="sapDrawerClose">&times;</button>
+              </div>
+              <div class="sap-drawer-body" id="sapDrawerBody">
+                <p class="text-muted">Click any document card to inspect items, financial postings, and full history.</p>
+              </div>
+              <div class="sap-drawer-footer" id="sapDrawerFooter" style="display:none;">
+                <button class="btn btn-primary btn-sm btn-block" id="sapOpenDocBtn">
+                  <i class="fa fa-external-link-alt mr-1"></i> Open Full Document Form
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      if (this.container) {
+        $(this.container).html(html);
+      }
+
+      this.bindEvents();
+    }
+
+    bindEvents() {
+      const $c = $(this.container || document);
+
+      // Mode switch
+      $c.find('.sap-mode-toggle button').on('click', (e) => {
+        $c.find('.sap-mode-toggle button').removeClass('active btn-primary').addClass('btn-default');
+        const $btn = $(e.currentTarget);
+        $btn.addClass('active btn-primary').removeClass('btn-default');
+        this.currentMode = $btn.data('mode');
+        this.renderGraph();
+      });
+
+      // Zoom In / Out / Reset / Fit
+      $c.find('#sapZoomIn').on('click', () => this.adjustZoom(0.15));
+      $c.find('#sapZoomOut').on('click', () => this.adjustZoom(-0.15));
+      $c.find('#sapZoomReset').on('click', () => {
+        this.zoom = 1;
+        this.panX = 40;
+        this.panY = 40;
+        this.applyTransform();
+      });
+      $c.find('#sapZoomFit').on('click', () => this.fitToScreen());
+      $c.find('#sapRefresh').on('click', () => this.fetchData());
+
+      // Print Map
+      $c.find('#sapPrint').on('click', () => window.print());
+
+      // Search Box
+      $c.find('#sapSearchBtn').on('click', () => this.handleSearch());
+      $c.find('#sapSearchDoc').on('keypress', (e) => {
+        if (e.which === 13) this.handleSearch();
+      });
+
+      // Close drawer
+      $c.find('#sapDrawerClose').on('click', () => {
+        $c.find('#sapDrawer').removeClass('open');
+      });
+
+      // Pan Drag Events
+      const viewport = $c.find('#sapViewport')[0];
+      if (viewport) {
+        $(viewport).on('mousedown', (e) => {
+          if ($(e.target).closest('.sap-node-card, .sap-map-drawer, button, input').length) return;
+          this.isDragging = true;
+          this.startX = e.clientX - this.panX;
+          this.startY = e.clientY - this.panY;
+          $(viewport).addClass('grabbing');
+        });
+
+        $(document).on('mousemove', (e) => {
+          if (!this.isDragging) return;
+          this.panX = e.clientX - this.startX;
+          this.panY = e.clientY - this.startY;
+          this.applyTransform();
+        });
+
+        $(document).on('mouseup', () => {
+          if (this.isDragging) {
+            this.isDragging = false;
+            $(viewport).removeClass('grabbing');
+          }
+        });
+
+        viewport.addEventListener('wheel', (e) => {
+          if (this.currentMode !== "flow") return;
+          e.preventDefault();
+          const delta = e.deltaY < 0 ? 0.08 : -0.08;
+          this.adjustZoom(delta);
+        }, { passive: false });
+      }
+    }
+
+    adjustZoom(delta) {
+      this.zoom = Math.max(0.3, Math.min(2.2, this.zoom + delta));
+      this.applyTransform();
+    }
+
+    applyTransform() {
+      const $canvas = $(this.container || document).find('#sapCanvas');
+      $canvas.css({
+        transform: `translate(${this.panX}px, ${this.panY}px) scale(${this.zoom})`,
+        transformOrigin: '0 0'
+      });
+    }
+
+    handleSearch() {
+      const q = $(this.container || document).find('#sapSearchDoc').val().trim();
+      if (!q) return;
+
+      const upper = q.toUpperCase();
+      if (upper.startsWith('PUR-ORD') || upper.startsWith('PO-')) {
+        this.doctype = 'Purchase Order';
+        this.docname = upper;
+      } else if (upper.startsWith('MAT-MR') || upper.startsWith('MR-')) {
+        this.doctype = 'Material Request';
+        this.docname = upper;
+      } else if (upper.startsWith('MAT-PRE') || upper.startsWith('PR-') || upper.startsWith('PUR-REC')) {
+        this.doctype = 'Purchase Receipt';
+        this.docname = upper;
+      } else if (upper.startsWith('ACC-PINV') || upper.startsWith('PINV-')) {
+        this.doctype = 'Purchase Invoice';
+        this.docname = upper;
+      } else if (upper.startsWith('JO-')) {
+        this.doctype = 'Vehicle Job Order';
+        this.docname = upper;
+      } else if (upper.startsWith('EST-')) {
+        this.doctype = 'Vehicle Estimate';
+        this.docname = upper;
+      } else if (upper.startsWith('INSP-')) {
+        this.doctype = 'Vehicle Inspection';
+        this.docname = upper;
+      } else if (upper.startsWith('VMSPOS-')) {
+        this.doctype = 'Vehicle POS Invoice';
+        this.docname = upper;
+      } else if (upper.startsWith('ACC-SINV') || upper.startsWith('SINV-')) {
+        this.doctype = 'Sales Invoice';
+        this.docname = upper;
+      } else if (upper.startsWith('ACC-PAY') || upper.startsWith('PAY-')) {
+        this.doctype = 'Payment Entry';
+        this.docname = upper;
+      } else if (upper.startsWith('MAT-STE') || upper.startsWith('STE-')) {
+        this.doctype = 'Stock Entry';
+        this.docname = upper;
+      } else if (upper.startsWith('SAL-ORD') || upper.startsWith('SO-')) {
+        this.doctype = 'Sales Order';
+        this.docname = upper;
+      } else {
+        this.doctype = 'Customer Vehicle';
+        this.docname = q;
+        this.vehicle = q;
+      }
+
+      this.fetchData();
+    }
+
+    fetchData() {
+      const $c = $(this.container || document);
+      $c.find('#sapNodesLayer').html(`
+        <div class="sap-loading-spinner text-center p-5" style="width: 100%; min-width: 600px;">
+          <i class="fa fa-spinner fa-spin fa-2x text-primary"></i>
+          <p class="mt-2 text-muted">Building relationship graph for ${this.doctype}: ${this.docname || this.vehicle || this.supplier}...</p>
+        </div>
+      `);
+      $c.find('#sapSvgEdges').empty();
+
+      const params = {
+        doctype: this.doctype,
+        docname: this.docname,
+        vehicle: this.vehicle,
+        customer: this.customer,
+        supplier: this.supplier
+      };
+
+      frappe.call({
+        method: "vm_relationship_map",
+        args: params,
+        callback: (r) => {
+          if (r.message && r.message.nodes && r.message.nodes.length > 0) {
+            this.data = r.message;
+            this.renderSummary();
+            this.renderGraph();
+          } else {
+            $c.find('#sapNodesLayer').html(`
+              <div class="alert alert-warning m-4">
+                <strong>No relationships found</strong> for ${this.doctype}: ${this.docname || this.vehicle || this.supplier}.
+              </div>
+            `);
+          }
+        },
+        error: () => {
+          $c.find('#sapNodesLayer').html(`
+            <div class="alert alert-danger m-4">
+              <strong>Error loading Relationship Map.</strong> Please check backend connection.
+            </div>
+          `);
+        }
+      });
+    }
+
+    renderSummary() {
+      const sum = this.data.summary || {};
+      const $c = $(this.container || document);
+
+      $c.find('#sapMapDocTitle').html(`
+        <span class="badge badge-info mr-2">${sum.focal_doctype || this.doctype}</span>
+        <strong>${sum.focal_docname || this.docname || sum.vehicle_plate || sum.supplier_name || 'Overview'}</strong>
+      `);
+
+      if (sum.is_p2p || sum.supplier_name) {
+        $c.find('#sapMetricPartyLbl').text('Supplier:');
+        $c.find('#sapMetricParty').text(sum.supplier_name || 'N/A');
+        if (!sum.vehicle_plate) {
+          $c.find('#sapMetricVehicleBox').hide();
+        } else {
+          $c.find('#sapMetricVehicleBox').show();
+          $c.find('#sapMetricPlate').text(sum.vehicle_plate);
+        }
+      } else {
+        $c.find('#sapMetricPartyLbl').text('Customer:');
+        $c.find('#sapMetricParty').text(sum.customer_name || 'N/A');
+        $c.find('#sapMetricVehicleBox').show();
+        $c.find('#sapMetricPlate').text(sum.vehicle_plate || 'N/A');
+      }
+
+      $c.find('#sapMetricVal').text(format_currency(sum.total_transaction_value || 0, 'PHP'));
+      $c.find('#sapMetricPaid').text(format_currency(sum.total_paid_value || 0, 'PHP'));
+      $c.find('#sapMetricOutst').text(format_currency(sum.total_outstanding_value || 0, 'PHP'));
+
+      const $status = $c.find('#sapMetricStatus');
+      const statusText = sum.status_flow_complete ? 'Completed & Settled' : 'Open / In Progress';
+      if (sum.status_flow_complete) {
+        $status.text(statusText).removeClass('sap-status-open').addClass('sap-status-paid');
+      } else {
+        $status.text(statusText).removeClass('sap-status-paid').addClass('sap-status-open');
+      }
+
+      // Populate Print Audit Header
+      const userName = (frappe.session && (frappe.session.user_fullname || frappe.session.user)) || 'Authorized User';
+      const nowFormatted = frappe.datetime && frappe.datetime.now_datetime ? frappe.datetime.str_to_user(frappe.datetime.now_datetime()) : new Date().toLocaleString();
+      const compName = sum.company || 'ULTRA MRF';
+      const compAddr = sum.company_address || '';
+
+      $c.find('#sapPrintCompany').text(compName);
+      if (compAddr) {
+        $c.find('#sapPrintAddress').text(compAddr).show();
+      } else {
+        $c.find('#sapPrintAddress').hide();
+      }
+      $c.find('#sapPrintDocTitle').text(`${sum.focal_doctype || this.doctype}: ${sum.focal_docname || this.docname || sum.vehicle_plate || sum.supplier_name || 'Workflow'}`);
+      $c.find('#sapPrintUser').text(userName);
+      $c.find('#sapPrintDate').text(nowFormatted);
+      $c.find('#sapPrintStatus').text(statusText);
+    }
+
+    renderGraph() {
+      if (!this.data) return;
+      const $c = $(this.container || document);
+
+      if (this.currentMode === "items") {
+        $c.find('#sapFlowView').css('display', 'none');
+        $c.find('#sapAccountingView').css('display', 'none');
+        $c.find('#sapItemsView').css('display', 'block');
+        this.renderItemsMatrix();
+        return;
+      }
+
+      if (this.currentMode === "accounting") {
+        $c.find('#sapFlowView').css('display', 'none');
+        $c.find('#sapItemsView').css('display', 'none');
+        $c.find('#sapAccountingView').css('display', 'block');
+        this.renderAccountingFlow();
+        return;
+      }
+
+      // Default: Document Flow Canvas View
+      $c.find('#sapItemsView').css('display', 'none');
+      $c.find('#sapAccountingView').css('display', 'none');
+      $c.find('#sapFlowView').css('display', 'flex');
+
+      const $nodesLayer = $c.find('#sapNodesLayer');
+      const $svgEdges = $c.find('#sapSvgEdges');
+
+      $nodesLayer.empty();
+      $svgEdges.empty();
+
+      const nodes = this.data.nodes || [];
+      const edges = this.data.edges || [];
+
+      // Group nodes by 5 Sequential Columns:
+      // Column 0: Master Entities & Requisitions (Customer, Supplier, Vehicle, Material Request)
+      // Column 1: Estimates & Orders (Vehicle Estimate, Inspection, Purchase Order, Sales Order, Quotation)
+      // Column 2: Goods & Work Execution (Vehicle Job Order, Purchase Receipt, Delivery Note, Stock Entry)
+      // Column 3: Billing & Invoicing (Purchase Invoice, Sales Invoice, POS Invoice)
+      // Column 4: Payments & Settlements (Payment Entry, Journal Entry, GL Entry)
+      const columns = { 0: [], 1: [], 2: [], 3: [], 4: [] };
+      const levelTitles = {
+        0: "Master & Requisitions",
+        1: "Orders & Quotes",
+        2: "Goods & Execution",
+        3: "Billing & Invoicing",
+        4: "Payments & Ledger"
+      };
+
+      nodes.forEach((n) => {
+        let lvl = n.level;
+        if (lvl === undefined || lvl === null) {
+          if (["Customer", "Customer Vehicle", "Supplier", "Material Request"].includes(n.doctype)) lvl = 0;
+          else if (["Purchase Order", "Sales Order", "Vehicle Estimate", "Vehicle Inspection", "Quotation", "Supplier Quotation"].includes(n.doctype)) lvl = 1;
+          else if (["Purchase Receipt", "Vehicle Job Order", "Delivery Note", "Stock Entry"].includes(n.doctype)) lvl = 2;
+          else if (["Purchase Invoice", "Sales Invoice", "Vehicle POS Invoice", "POS Invoice"].includes(n.doctype)) lvl = 3;
+          else if (["Payment Entry", "Journal Entry", "GL Entry"].includes(n.doctype)) lvl = 4;
+          else lvl = 2;
+        }
+        if (!columns[lvl]) columns[lvl] = [];
+        columns[lvl].push(n);
+      });
+
+      const cardWidth = 265;
+      const colGap = 120;
+      const rowGap = 35;
+      const cardHeight = 165;
+      const startX = 60;
+      const startY = 80;
+
+      const nodeCoords = {};
+      let colIndex = 0;
+
+      for (let lvl = 0; lvl <= 4; lvl++) {
+        const colNodes = columns[lvl] || [];
+        if (colNodes.length === 0) continue;
+
+        const colX = startX + (colIndex * (cardWidth + colGap));
+
+        // Column Header Ribbon
+        const colHeaderHtml = `
+          <div class="sap-col-header" style="left: ${colX}px; top: ${startY - 45}px; width: ${cardWidth}px;">
+            <span>${levelTitles[lvl] || 'Phase ' + lvl}</span>
+            <span class="badge badge-light">${colNodes.length}</span>
+          </div>
+        `;
+        $nodesLayer.append(colHeaderHtml);
+
+        colNodes.forEach((node, rIndex) => {
+          const colY = startY + (rIndex * (cardHeight + rowGap));
+          nodeCoords[node.id] = {
+            x: colX,
+            y: colY,
+            cx: colX + (cardWidth / 2),
+            cy: colY + (cardHeight / 2),
+            left: colX,
+            right: colX + cardWidth,
+            top: colY,
+            bottom: colY + cardHeight,
+            node: node
+          };
+
+          const cardHtml = this.createNodeCardHtml(node, colX, colY, cardWidth, cardHeight);
+          $nodesLayer.append(cardHtml);
+        });
+
+        colIndex++;
+      }
+
+      // Draw SVG Bezier Connecting Lines
+      setTimeout(() => {
+        edges.forEach((edge) => {
+          const fromCoord = nodeCoords[edge.from];
+          const toCoord = nodeCoords[edge.to];
+          if (!fromCoord || !toCoord) return;
+
+          const p1 = { x: fromCoord.right, y: fromCoord.cy };
+          const p2 = { x: toCoord.left, y: toCoord.cy };
+
+          let startPt = p1;
+          let endPt = p2;
+          if (fromCoord.x > toCoord.x) {
+            startPt = { x: fromCoord.left, y: fromCoord.cy };
+            endPt = { x: toCoord.right, y: toCoord.cy };
+          }
+
+          const dx = Math.abs(endPt.x - startPt.x) / 2;
+          const cp1x = startPt.x + (fromCoord.x <= toCoord.x ? dx : -dx);
+          const cp1y = startPt.y;
+          const cp2x = endPt.x - (fromCoord.x <= toCoord.x ? dx : -dx);
+          const cp2y = endPt.y;
+
+          const pathD = `M ${startPt.x} ${startPt.y} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${endPt.x} ${endPt.y}`;
+          const midX = (startPt.x + endPt.x) / 2;
+          const midY = (startPt.y + endPt.y) / 2;
+
+          let strokeColor = "#6366f1";
+          let markerUrl = "url(#sapArrow)";
+          if (edge.type === "accounting" || edge.label?.includes("Payment")) {
+            strokeColor = "#16a34a";
+            markerUrl = "url(#sapArrowGreen)";
+          } else if (edge.label && (edge.label.includes("Converted") || edge.label.includes("Procured"))) {
+            strokeColor = "#d97706";
+            markerUrl = "url(#sapArrowGold)";
+          } else if (edge.type === "reference") {
+            strokeColor = "#9333ea";
+            markerUrl = "url(#sapArrowPurple)";
+          }
+
+          const labelWidth = Math.max(90, (edge.label || '').length * 7.5);
+
+          const edgeSvg = `
+            <g class="sap-edge-group">
+              <path d="${pathD}" fill="none" stroke="${strokeColor}" stroke-width="2.5" stroke-dasharray="${edge.type === 'reference' ? '5,5' : 'none'}" marker-end="${markerUrl}" />
+              <rect x="${midX - (labelWidth / 2)}" y="${midY - 11}" width="${labelWidth}" height="22" rx="11" fill="#ffffff" stroke="${strokeColor}" stroke-width="1.2" />
+              <text x="${midX}" y="${midY + 4}" text-anchor="middle" font-size="10" font-weight="700" fill="#334155">${edge.label}</text>
+            </g>
+          `;
+          $svgEdges.append(edgeSvg);
+        });
+      }, 50);
+
+      // Bind node interactions
+      $nodesLayer.find('.sap-node-card').on('click', (e) => {
+        const nodeId = $(e.currentTarget).data('node-id');
+        const node = nodes.find(n => n.id === nodeId);
+        if (node) this.selectNode(node);
+      });
+
+      $nodesLayer.find('.sap-node-card').on('dblclick', (e) => {
+        const dt = $(e.currentTarget).data('doctype');
+        const nm = $(e.currentTarget).data('name');
+        if (dt && nm && dt !== "GL Entry") {
+          if (this.dialog) this.dialog.hide();
+          frappe.set_route('Form', dt, nm);
+        }
+      });
+    }
+
+    createNodeCardHtml(node, x, y, width, height) {
+      const dtConfig = DOCTYPE_COLORS[node.doctype] || { bg: "#f8fafc", border: "#64748b", text: "#334155", icon: "fa fa-file", tag: node.doctype };
+      const stConfig = STATUS_COLORS[node.status] || { bg: "#e2e8f0", text: "#475569" };
+      const isCurrent = node.is_current;
+
+      return `
+        <div class="sap-node-card ${isCurrent ? 'sap-node-current' : ''}" data-node-id="${node.id}" data-doctype="${node.doctype}" data-name="${node.name}" style="left: ${x}px; top: ${y}px; width: ${width}px; min-height: ${height}px; border-left: 5px solid ${dtConfig.border};">
+          ${isCurrent ? '<div class="sap-active-indicator"><i class="fa fa-dot-circle mr-1"></i> ACTIVE DOCUMENT</div>' : ''}
+          
+          <div class="sap-node-head">
+            <div class="sap-node-dt-badge" style="color: ${dtConfig.text};">
+              <i class="${dtConfig.icon} mr-1"></i>
+              <span>${dtConfig.tag || node.doctype}</span>
+            </div>
+            <span class="sap-node-status" style="background: ${stConfig.bg}; color: ${stConfig.text};">
+              ${node.status}
+            </span>
+          </div>
+
+          <div class="sap-node-id" title="${node.name}">
+            ${node.name}
+          </div>
+
+          <div class="sap-node-info-grid">
+            ${node.supplier ? `
+              <div class="sap-node-info-row">
+                <span class="text-muted"><i class="fa fa-truck mr-1"></i> Supp:</span>
+                <span class="text-truncate" style="max-width: 145px;" title="${node.supplier}">${node.supplier}</span>
+              </div>
+            ` : ''}
+            ${node.customer && !node.supplier ? `
+              <div class="sap-node-info-row">
+                <span class="text-muted"><i class="fa fa-user mr-1"></i> Cust:</span>
+                <span class="text-truncate" style="max-width: 145px;" title="${node.customer}">${node.customer}</span>
+              </div>
+            ` : ''}
+            ${node.vehicle ? `
+              <div class="sap-node-info-row">
+                <span class="text-muted"><i class="fa fa-car mr-1"></i> Plate:</span>
+                <span class="font-weight-bold">${node.vehicle}</span>
+              </div>
+            ` : ''}
+            ${node.posting_date ? `
+              <div class="sap-node-info-row">
+                <span class="text-muted"><i class="fa fa-calendar-alt mr-1"></i> Date:</span>
+                <span>${node.posting_date}</span>
+              </div>
+            ` : ''}
+          </div>
+
+          <div class="sap-node-footer">
+            <div class="sap-node-amt">
+              ${node.grand_total > 0 ? `
+                <span class="sap-amt-val">${format_currency(node.grand_total, node.currency || 'PHP')}</span>
+              ` : (node.items_count > 0 ? `<span>${node.items_count} Line Items</span>` : `<span class="text-muted">Master Info</span>`)}
+            </div>
+            <div class="sap-node-actions">
+              <button class="btn btn-default btn-xs sap-quick-view-btn" title="Inspect Document">
+                <i class="fa fa-eye"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    renderItemsMatrix() {
+      const $c = $(this.container || document);
+      const $itemsView = $c.find('#sapItemsView');
+      const items = this.data.items || [];
+      const sum = this.data.summary || {};
+
+      const totalLaborVal = sum.dedup_services_total !== undefined ? sum.dedup_services_total : 0;
+      const totalPartsVal = sum.dedup_parts_total !== undefined ? sum.dedup_parts_total : 0;
+      const uniquePartsCount = sum.unique_parts_count !== undefined ? sum.unique_parts_count : 0;
+      const uniqueLaborCount = sum.unique_services_count !== undefined ? sum.unique_services_count : 0;
+      
+      const billedItems = items.filter(it => it.doc_type === 'Sales Invoice' || it.doc_type === 'POS Invoice' || it.doc_type === 'Purchase Invoice');
+      const totalBilledVal = billedItems.length > 0 
+        ? billedItems.reduce((a, b) => a + (b.amount || 0), 0)
+        : (sum.total_transaction_value || 0);
+
+      // Filtering logic
+      let filtered = items;
+      if (this.itemFilter === "labor") {
+        filtered = items.filter(it => (it.category === 'service' || (it.type || '').toLowerCase().includes('labor') || (it.type || '').toLowerCase().includes('service')));
+      } else if (this.itemFilter === "parts") {
+        filtered = items.filter(it => (it.category === 'part' || (it.type || '').toLowerCase().includes('part') || (it.type || '').toLowerCase().includes('material') || (it.type || '').toLowerCase().includes('purchased')));
+      } else if (this.itemFilter === "billed") {
+        filtered = items.filter(it => (it.type || '').toLowerCase().includes('billed') || it.doc_type === 'Sales Invoice' || it.doc_type === 'Purchase Invoice' || it.doc_type === 'POS Invoice');
+      }
+
+      if (this.itemSearchTerm) {
+        const term = this.itemSearchTerm.toLowerCase();
+        filtered = filtered.filter(it => 
+          (it.item_code || '').toLowerCase().includes(term) ||
+          (it.description || '').toLowerCase().includes(term) ||
+          (it.doc_name || '').toLowerCase().includes(term)
+        );
+      }
+
+      let rowsHtml = '';
+      filtered.forEach((it, idx) => {
+        const typeClass = (it.type || '').includes('Labor') || (it.type || '').includes('Service') 
+          ? 'badge-warning' 
+          : ((it.type || '').includes('Billed') || (it.type || '').includes('Purchased') ? 'badge-success' : 'badge-primary');
+
+        rowsHtml += `
+          <tr>
+            <td class="text-muted"><small>${idx + 1}</small></td>
+            <td>
+              <span class="badge badge-info">${it.doc_type}</span><br>
+              <a href="javascript:void(0)" class="sap-doc-link font-weight-bold" data-dt="${it.doc_type}" data-dn="${it.doc_name}">${it.doc_name}</a>
+            </td>
+            <td><span class="badge ${typeClass}">${it.type}</span></td>
+            <td>
+              <strong class="text-dark">${it.item_code}</strong>
+              ${it.description && it.description !== it.item_code ? `<br><small class="text-muted">${it.description}</small>` : ''}
+            </td>
+            <td class="text-right font-weight-bold" style="white-space: nowrap !important;">${it.qty} ${it.uom || ''}</td>
+            <td class="text-right" style="white-space: nowrap !important; min-width: 110px;">${format_currency(it.rate, 'PHP')}</td>
+            <td class="text-right font-weight-bold text-primary" style="white-space: nowrap !important; min-width: 120px;">${format_currency(it.amount, 'PHP')}</td>
+            <td style="white-space: nowrap;"><small class="text-muted">${it.account || 'Expense / Income / Cost Center'}</small></td>
+          </tr>
+        `;
+      });
+
+      if (!rowsHtml) {
+        rowsHtml = `<tr><td colspan="8" class="text-center text-muted p-4">No line items matching the current filter.</td></tr>`;
+      }
+
+      const totalUniqueItems = (uniquePartsCount + uniqueLaborCount) || items.length;
+
+      $itemsView.html(`
+        <div class="sap-items-container" style="max-width: 1100px; margin: 0 auto; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); border: 1px solid #e2e8f0; padding: 24px;">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h4 class="font-weight-bold m-0 text-dark"><i class="fa fa-list-alt text-primary mr-2"></i> Consolidated Related Items, Materials & Services Matrix</h4>
+              <p class="text-muted mb-0 font-size-sm">Full lifecycle trace of all materials, stock items, parts, services, and line items in this workflow.</p>
+            </div>
+            <div class="sap-items-filter-bar btn-group">
+              <button class="btn btn-xs ${this.itemFilter === 'all' ? 'btn-primary' : 'btn-default'} sap-item-filter-btn" data-filter="all">All (${items.length})</button>
+              <button class="btn btn-xs ${this.itemFilter === 'parts' ? 'btn-primary' : 'btn-default'} sap-item-filter-btn" data-filter="parts"><i class="fa fa-boxes mr-1"></i> Materials & Items (${uniquePartsCount || items.length})</button>
+              <button class="btn btn-xs ${this.itemFilter === 'labor' ? 'btn-primary' : 'btn-default'} sap-item-filter-btn" data-filter="labor"><i class="fa fa-wrench mr-1"></i> Services / Labor (${uniqueLaborCount})</button>
+              <button class="btn btn-xs ${this.itemFilter === 'billed' ? 'btn-primary' : 'btn-default'} sap-item-filter-btn" data-filter="billed"><i class="fa fa-check-circle mr-1"></i> Invoiced Lines</button>
+            </div>
+          </div>
+
+          <!-- KPI Cards Ribbon -->
+          <div class="row mb-3">
+            <div class="col-md-3">
+              <div class="p-2 border rounded bg-light text-center">
+                <small class="text-muted text-uppercase font-weight-bold">Materials & Parts Value</small>
+                <div class="font-weight-bold text-primary font-size-lg" style="white-space: nowrap;">${format_currency(totalPartsVal || sum.total_transaction_value || 0, 'PHP')}</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="p-2 border rounded bg-light text-center">
+                <small class="text-muted text-uppercase font-weight-bold">Services & Labor Value</small>
+                <div class="font-weight-bold text-warning font-size-lg" style="white-space: nowrap;">${format_currency(totalLaborVal, 'PHP')}</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="p-2 border rounded bg-light text-center">
+                <small class="text-muted text-uppercase font-weight-bold">Total Flow Value</small>
+                <div class="font-weight-bold text-success font-size-lg" style="white-space: nowrap;">${format_currency(totalBilledVal, 'PHP')}</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="p-2 border rounded bg-light text-center">
+                <small class="text-muted text-uppercase font-weight-bold">Distinct Workflow Items</small>
+                <div class="font-weight-bold text-dark font-size-lg" style="white-space: nowrap;">${totalUniqueItems} Items (${items.length} Lines)</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-responsive rounded border">
+            <table class="table table-hover table-striped mb-0">
+              <thead class="thead-light">
+                <tr>
+                  <th style="width: 40px; white-space: nowrap;">#</th>
+                  <th style="white-space: nowrap; min-width: 140px;">Source Document</th>
+                  <th style="white-space: nowrap; min-width: 140px;">Category</th>
+                  <th style="min-width: 180px;">Item / Material Code & Name</th>
+                  <th class="text-right" style="white-space: nowrap; min-width: 90px;">Qty / Hours</th>
+                  <th class="text-right" style="white-space: nowrap; min-width: 110px;">Rate</th>
+                  <th class="text-right" style="white-space: nowrap; min-width: 120px;">Total Amount</th>
+                  <th style="white-space: nowrap; min-width: 160px;">Accounting / Cost Account</th>
+                </tr>
+              </thead>
+              <tbody>${rowsHtml}</tbody>
+            </table>
+          </div>
+        </div>
+      `);
+
+      // Bind filter buttons
+      $itemsView.find('.sap-item-filter-btn').on('click', (e) => {
+        this.itemFilter = $(e.currentTarget).data('filter');
+        this.renderItemsMatrix();
+      });
+
+      $itemsView.find('.sap-doc-link').on('click', (e) => {
+        const dt = $(e.currentTarget).data('dt');
+        const dn = $(e.currentTarget).data('dn');
+        if (dt && dn) {
+          if (this.dialog) this.dialog.hide();
+          frappe.set_route('Form', dt, dn);
+        }
+      });
+    }
+
+    renderAccountingFlow() {
+      const $c = $(this.container || document);
+      const $acctView = $c.find('#sapAccountingView');
+      const acct = this.data.accounting || {};
+      const sum = this.data.summary || {};
+      const vouchersGlMap = acct.vouchers_gl_map || {};
+      const pleList = acct.payment_ledger || [];
+
+      let voucherCardsHtml = '';
+      const voucherKeys = Object.keys(vouchersGlMap);
+
+      if (voucherKeys.length === 0) {
+        voucherCardsHtml = `
+          <div class="alert alert-info text-center p-4">
+            <i class="fa fa-info-circle fa-2x mb-2"></i>
+            <h5>No Accounting or GL Postings Found</h5>
+            <p class="mb-0 text-muted">This transaction is currently in draft or has not yet posted financial journal entries to the General Ledger.</p>
+          </div>
+        `;
+      } else {
+        voucherKeys.forEach(vKey => {
+          const [vType, vNo] = vKey.split('::');
+          const entries = vouchersGlMap[vKey] || [];
+          const postDate = entries[0]?.posting_date || '';
+
+          let glRows = '';
+          entries.forEach(gl => {
+            glRows += `
+              <tr>
+                <td style="white-space: nowrap !important;"><strong>${gl.account}</strong></td>
+                <td style="white-space: nowrap !important;"><small class="text-muted">${gl.cost_center || '-'}</small></td>
+                <td class="text-right font-weight-bold ${gl.debit > 0 ? 'text-primary' : 'text-muted'}" style="white-space: nowrap !important; min-width: 120px;">${gl.debit > 0 ? format_currency(gl.debit, 'PHP') : '-'}</td>
+                <td class="text-right font-weight-bold ${gl.credit > 0 ? 'text-success' : 'text-muted'}" style="white-space: nowrap !important; min-width: 120px;">${gl.credit > 0 ? format_currency(gl.credit, 'PHP') : '-'}</td>
+                <td><small class="text-muted">${gl.remarks || ''}</small></td>
+              </tr>
+            `;
+          });
+
+          voucherCardsHtml += `
+            <div class="card mb-4 shadow-sm border" style="border-radius: 10px; overflow: hidden;">
+              <div class="card-header bg-light d-flex justify-content-between align-items-center py-2 px-3 border-bottom">
+                <div style="white-space: nowrap !important;">
+                  <span class="badge ${['Sales Invoice', 'POS Invoice'].includes(vType) ? 'badge-primary' : (['Purchase Invoice'].includes(vType) ? 'badge-warning' : 'badge-success')} mr-2 font-size-sm">${vType}</span>
+                  <a href="javascript:void(0)" class="sap-doc-link font-weight-bold text-dark" data-dt="${vType}" data-dn="${vNo}">${vNo}</a>
+                </div>
+                <div style="white-space: nowrap !important;">
+                  <span class="text-muted"><i class="fa fa-calendar-alt mr-1"></i> Posting Date: <strong>${postDate || '-'}</strong></span>
+                </div>
+              </div>
+              <div class="table-responsive mb-0">
+                <table class="table table-sm table-hover mb-0">
+                  <thead class="thead-light">
+                    <tr>
+                      <th style="width: 35%; white-space: nowrap !important;">Ledger Account</th>
+                      <th style="width: 15%; white-space: nowrap !important;">Cost Center</th>
+                      <th class="text-right" style="width: 15%; white-space: nowrap !important; min-width: 120px;">Debit (Dr)</th>
+                      <th class="text-right" style="width: 15%; white-space: nowrap !important; min-width: 120px;">Credit (Cr)</th>
+                      <th style="width: 20%; white-space: nowrap !important;">Remarks</th>
+                    </tr>
+                  </thead>
+                  <tbody>${glRows}</tbody>
+                </table>
+              </div>
+            </div>
+          `;
+        });
+      }
+
+      // Reconciliation / PLE Table
+      let pleRowsHtml = '';
+      pleList.forEach(p => {
+        pleRowsHtml += `
+          <tr>
+            <td style="white-space: nowrap !important;"><span class="badge badge-info mr-1">${p.voucher_type}</span> <strong>${p.voucher_no}</strong></td>
+            <td style="white-space: nowrap !important;"><span class="badge badge-secondary mr-1">${p.against_voucher_type || '-'}</span> ${p.against_voucher_no || '-'}</td>
+            <td style="white-space: nowrap !important;">${p.account}</td>
+            <td style="white-space: nowrap !important;">${p.party || '-'}</td>
+            <td class="text-right font-weight-bold ${p.amount < 0 ? 'text-success' : 'text-primary'}" style="white-space: nowrap !important; min-width: 120px;">${format_currency(p.amount, 'PHP')}</td>
+          </tr>
+        `;
+      });
+
+      const totalRevenueVal = acct.total_revenue || sum.total_transaction_value || 0;
+      const totalCollectedVal = acct.total_collected || sum.total_paid_value || 0;
+      const outstandingVal = sum.total_outstanding_value !== undefined ? sum.total_outstanding_value : 0;
+
+      $acctView.html(`
+        <div class="sap-accounting-container" style="max-width: 1000px; margin: 0 auto; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); border: 1px solid #e2e8f0; padding: 24px;">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h4 class="font-weight-bold m-0 text-dark"><i class="fa fa-balance-scale text-success mr-2"></i> Accounting & General Ledger Postings</h4>
+              <p class="text-muted mb-0 font-size-sm">Double-entry accounting journal entries, debit/credit ledger breakdown, and reconciliation flow.</p>
+            </div>
+            <div style="white-space: nowrap !important;">
+              <span class="badge ${acct.is_balanced ? 'badge-success' : 'badge-danger'} p-2 font-size-sm" title="Gross GL Turnover: Dr ${format_currency(acct.total_debit || 0, 'PHP')} | Cr ${format_currency(acct.total_credit || 0, 'PHP')}">
+                <i class="fa ${acct.is_balanced ? 'fa-check-circle' : 'fa-exclamation-triangle'} mr-1"></i>
+                ${acct.is_balanced ? 'Double-Entry Balanced' : 'Ledger Imbalance Detected'}
+              </span>
+            </div>
+          </div>
+
+          <!-- KPI Summary Ribbon -->
+          <div class="row mb-4">
+            <div class="col-md-4">
+              <div class="p-3 border rounded bg-light text-center">
+                <small class="text-muted text-uppercase font-weight-bold">${sum.is_p2p ? 'Total Invoiced Purchases' : 'Total Invoiced / GL Revenue'}</small>
+                <div class="font-weight-bold text-primary font-size-lg" style="white-space: nowrap !important;">${format_currency(totalRevenueVal, 'PHP')}</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="p-3 border rounded bg-light text-center">
+                <small class="text-muted text-uppercase font-weight-bold">${sum.is_p2p ? 'Total Disbursements (Cash/Bank)' : 'Total Collections (Cash/Bank)'}</small>
+                <div class="font-weight-bold text-success font-size-lg" style="white-space: nowrap !important;">${format_currency(totalCollectedVal, 'PHP')}</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="p-3 border rounded bg-light text-center">
+                <small class="text-muted text-uppercase font-weight-bold">${sum.is_p2p ? 'Net Payable Balance' : 'Net Receivable Balance'}</small>
+                <div class="font-weight-bold ${outstandingVal === 0 ? 'text-success' : 'text-danger'} font-size-lg" style="white-space: nowrap !important;">
+                  ${format_currency(outstandingVal, 'PHP')}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Voucher Journal Breakdown Cards -->
+          <h5 class="font-weight-bold text-dark mb-3"><i class="fa fa-book-open text-primary mr-1"></i> Journal Vouchers & GL Impact</h5>
+          ${voucherCardsHtml}
+
+          <!-- Payment Ledger Reconciliation Trace -->
+          ${pleRowsHtml ? `
+            <div class="mt-4 pt-3 border-top">
+              <h5 class="font-weight-bold text-dark mb-3"><i class="fa fa-handshake text-info mr-1"></i> Payment Ledger Entry (PLE) Settlement Trace</h5>
+              <div class="table-responsive rounded border">
+                <table class="table table-sm table-hover mb-0">
+                  <thead class="thead-light">
+                    <tr>
+                      <th style="white-space: nowrap !important;">Voucher</th>
+                      <th style="white-space: nowrap !important;">Against Voucher</th>
+                      <th style="white-space: nowrap !important;">Account</th>
+                      <th style="white-space: nowrap !important;">Party</th>
+                      <th class="text-right" style="white-space: nowrap !important; min-width: 120px;">Allocated Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>${pleRowsHtml}</tbody>
+                </table>
+              </div>
+            </div>
+          ` : ''}
+        </div>
+      `);
+
+      $acctView.find('.sap-doc-link').on('click', (e) => {
+        const dt = $(e.currentTarget).data('dt');
+        const dn = $(e.currentTarget).data('dn');
+        if (dt && dn) {
+          if (this.dialog) this.dialog.hide();
+          frappe.set_route('Form', dt, dn);
+        }
+      });
+    }
+
+    selectNode(node) {
+      this.selectedNode = node;
+      const $c = $(this.container || document);
+      const $drawer = $c.find('#sapDrawer');
+
+      $drawer.addClass('open');
+      $c.find('#sapDrawerTitle').html(`
+        <span class="badge badge-primary mr-1">${node.doctype}</span>
+        <strong>${node.name}</strong>
+      `);
+
+      let itemsHtml = '';
+      if (node.items && node.items.length > 0) {
+        itemsHtml = `
+          <div class="sap-drawer-sec">
+            <div class="sap-drawer-sec-title">Line Items & Materials (${node.items.length})</div>
+            <div class="table-responsive">
+              <table class="table table-sm table-bordered">
+                <thead class="thead-light">
+                  <tr>
+                    <th>Item</th>
+                    <th class="text-right">Qty</th>
+                    <th class="text-right">Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${node.items.map(it => `
+                    <tr>
+                      <td><small><strong>${it.item_code}</strong><br>${it.description || ''}</small></td>
+                      <td class="text-right"><small>${it.qty} ${it.uom || ''}</small></td>
+                      <td class="text-right font-weight-bold"><small>${format_currency(it.amount, 'PHP')}</small></td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      }
+
+      const bodyHtml = `
+        <div class="sap-drawer-sec">
+          <div class="sap-drawer-sec-title">Document Information</div>
+          <table class="table table-sm table-borderless">
+            <tr><td class="text-muted" style="width: 40%;">Status:</td><td><span class="badge badge-info">${node.status}</span></td></tr>
+            <tr><td class="text-muted">Posting Date:</td><td>${node.posting_date || 'N/A'}</td></tr>
+            ${node.supplier ? `<tr><td class="text-muted">Supplier:</td><td><strong>${node.supplier}</strong></td></tr>` : ''}
+            ${node.customer ? `<tr><td class="text-muted">Customer:</td><td><strong>${node.customer}</strong></td></tr>` : ''}
+            ${node.vehicle ? `<tr><td class="text-muted">Vehicle Plate:</td><td><strong>${node.vehicle}</strong></td></tr>` : ''}
+            <tr><td class="text-muted">Company:</td><td>${node.company || 'ULTRA MRF'}</td></tr>
+            ${node.grand_total > 0 ? `<tr><td class="text-muted">Grand Total:</td><td class="font-weight-bold text-primary">${format_currency(node.grand_total, node.currency || 'PHP')}</td></tr>` : ''}
+            ${node.paid_amount > 0 ? `<tr><td class="text-muted">Paid Amount:</td><td class="font-weight-bold text-success">${format_currency(node.paid_amount, node.currency || 'PHP')}</td></tr>` : ''}
+            ${node.outstanding_amount > 0 ? `<tr><td class="text-muted">Balance Due:</td><td class="font-weight-bold text-danger">${format_currency(node.outstanding_amount, node.currency || 'PHP')}</td></tr>` : ''}
+          </table>
+        </div>
+
+        ${itemsHtml}
+
+        ${node.remarks ? `
+          <div class="sap-drawer-sec">
+            <div class="sap-drawer-sec-title">Remarks / Notes</div>
+            <p class="small text-muted p-2 bg-light rounded">${node.remarks}</p>
+          </div>
+        ` : ''}
+      `;
+
+      $c.find('#sapDrawerBody').html(bodyHtml);
+      $c.find('#sapDrawerFooter').show();
+
+      $c.find('#sapOpenDocBtn').off('click').on('click', () => {
+        if (this.dialog) this.dialog.hide();
+        frappe.set_route('Form', node.doctype, node.name);
+      });
+    }
+
+    fitToScreen() {
+      const $viewport = $(this.container || document).find('#sapViewport');
+      const vWidth = $viewport.width();
+      const vHeight = $viewport.height();
+
+      this.zoom = Math.min(vWidth / 1300, vHeight / 800, 1.2);
+      this.panX = 30;
+      this.panY = 30;
+      this.applyTransform();
+    }
+  }
+
+  window.SAPRelationshipMap.Viewer = SAPMapViewer;
+
+  window.SAPRelationshipMap.openModal = function (doctype, docname, vehicle, customer, supplier) {
+    const d = new frappe.ui.Dialog({
+      title: `<span class="badge badge-info mr-1">VMS & P2P</span> Relationship Map & Document Flow`,
+      size: 'extra-large',
+      fields: [
+        {
+          fieldtype: 'HTML',
+          fieldname: 'sap_map_area'
+        }
+      ]
+    });
+
+    d.show();
+    d.$wrapper.find('.modal-dialog').css({
+      'max-width': '96vw',
+      'width': '96vw',
+      'height': '92vh',
+      'margin': '2vh auto'
+    });
+    d.$wrapper.find('.modal-content').css({
+      'height': '92vh',
+      'display': 'flex',
+      'flex-direction': 'column'
+    });
+    d.$wrapper.find('.modal-body').css({
+      'padding': '0',
+      'flex': '1',
+      'overflow': 'hidden',
+      'position': 'relative',
+      'display': 'flex',
+      'flex-direction': 'column'
+    });
+    d.$wrapper.find('.modal-body .form-layout, .modal-body .form-page, .modal-body .form-section, .modal-body .form-column, .modal-body [data-fieldname="sap_map_area"]').css({
+      'height': '100%',
+      'min-height': '100%',
+      'display': 'flex',
+      'flex-direction': 'column',
+      'flex': '1',
+      'padding': '0',
+      'margin': '0'
+    });
+
+    const container = d.fields_dict.sap_map_area.$wrapper[0];
+    $(container).css({
+      'height': '100%',
+      'min-height': '100%',
+      'display': 'flex',
+      'flex-direction': 'column',
+      'flex': '1'
+    });
+
+    new SAPMapViewer({
+      doctype: doctype,
+      docname: docname,
+      vehicle: vehicle,
+      customer: customer,
+      supplier: supplier,
+      container: container,
+      isModal: true,
+      dialog: d
+    });
+  };
+
+  // Attach button to all supported DocTypes (P2P + O2C + VMS)
+  const targetDocTypes = [
+    // P2P DocTypes
+    'Material Request',
+    'Purchase Order',
+    'Purchase Receipt',
+    'Purchase Invoice',
+    'Supplier',
+    'Supplier Quotation',
+
+    // VMS & O2C DocTypes
+    'Vehicle Job Order',
+    'Vehicle Estimate',
+    'Vehicle Inspection',
+    'Vehicle POS Invoice',
+    'Customer Vehicle',
+    'Sales Invoice',
+    'POS Invoice',
+    'Sales Order',
+    'Delivery Note',
+    'Quotation',
+    'Customer',
+
+    // Financial & Stock
+    'Payment Entry',
+    'Stock Entry'
+  ];
+
+  targetDocTypes.forEach(dt => {
+    frappe.ui.form.on(dt, {
+      refresh: function (frm) {
+        if (!frm.is_new()) {
+          frm.add_custom_button(__('🗺️ VMS / P2P Relationship Map'), function () {
+            let veh = frm.doc.plate_no || frm.doc.vehicle || frm.doc.custom_vehicle_plate || '';
+            let cust = frm.doc.customer_name || frm.doc.customer || (frm.doc.party_type === 'Customer' ? frm.doc.party : '') || '';
+            let supp = frm.doc.supplier_name || frm.doc.supplier || (frm.doc.party_type === 'Supplier' ? frm.doc.party : '') || '';
+            window.SAPRelationshipMap.openModal(frm.doctype, frm.doc.name, veh, cust, supp);
+          }, __('View'));
+        }
+      }
+    });
+  });
+
+})();
+

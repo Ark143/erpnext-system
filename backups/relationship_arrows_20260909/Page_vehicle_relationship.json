@@ -1,0 +1,19 @@
+{
+  "name": "vehicle_relationship",
+  "owner": "Administrator",
+  "creation": "2026-09-04 07:08:11.199275",
+  "modified": "2026-09-04 07:08:11.199275",
+  "modified_by": "Administrator",
+  "docstatus": 0,
+  "idx": 0,
+  "system_page": 0,
+  "page_name": "vehicle_relationship",
+  "title": "SAP Relationship Map",
+  "module": "Vehicle Management",
+  "standard": "Yes",
+  "doctype": "Page",
+  "roles": [],
+  "script": null,
+  "style": null,
+  "content": null
+}

@@ -4,8 +4,109 @@
 import frappe
 from frappe.utils import flt, nowdate, add_months, getdate
 
+EXECUTIVE_ROLES = {
+	"Administrator",
+	"System Manager",
+	"CEO",
+	"Director",
+	"Executive",
+	"Operation",
+	"Operations",
+	"Operations Manager",
+	"Finance",
+	"Finance Manager",
+	"Financial Officer",
+	"Accounting",
+	"Accounts Manager",
+	"Accounts User",
+	"Auditor",
+}
 
-@frappe.whitelist(allow_guest=True)
+
+@frappe.whitelist()
+def get_user_analytics_permissions(user=None):
+	"""
+	Returns user permissions for Vehicle Management Analytics:
+	- can_view_all: bool (True if Admin, System Manager, CEO, Operations, Finance, Accounting)
+	- allowed_companies: list of company names the user is permitted to view
+	- default_company: primary company for the user
+	"""
+	if not user:
+		user = frappe.session.user
+
+	all_companies = [c.name for c in frappe.get_all("Company", filters={"is_group": 0}, order_by="name asc")]
+	all_companies = [c for c in all_companies if c != "My Company"]
+
+	# Administrator always has full access
+	if user == "Administrator":
+		return {
+			"can_view_all": True,
+			"allowed_companies": all_companies,
+			"default_company": "All Companies",
+		}
+
+	user_roles = set(frappe.get_roles(user))
+
+	# Check if user has any executive / leadership role
+	is_executive = bool(user_roles.intersection(EXECUTIVE_ROLES))
+
+	if is_executive:
+		return {
+			"can_view_all": True,
+			"allowed_companies": all_companies,
+			"default_company": "All Companies",
+		}
+
+	# For non-executive users: Determine allowed companies based on Employee record, User Permissions, and User Defaults
+	allowed_companies = set()
+
+	# 1. From Employee details (employee user company tag)
+	emp_companies = frappe.get_all(
+		"Employee",
+		filters={"user_id": user, "status": "Active"},
+		pluck="company",
+	)
+	for comp in emp_companies:
+		if comp:
+			allowed_companies.add(comp)
+
+	# Fallback if employee is not marked Active
+	if not allowed_companies:
+		emp_companies = frappe.get_all(
+			"Employee",
+			filters={"user_id": user},
+			pluck="company",
+		)
+		for comp in emp_companies:
+			if comp:
+				allowed_companies.add(comp)
+
+	# 2. From User Permission DocType
+	user_perms = frappe.get_all(
+		"User Permission",
+		filters={"user": user, "allow": "Company"},
+		pluck="for_value",
+	)
+	for comp in user_perms:
+		if comp:
+			allowed_companies.add(comp)
+
+	# 3. From User Default Company
+	user_default = frappe.defaults.get_user_default("Company", user)
+	if user_default and user_default in all_companies:
+		allowed_companies.add(user_default)
+
+	allowed_list = sorted(list(allowed_companies))
+	default_company = allowed_list[0] if allowed_list else (all_companies[0] if all_companies else "")
+
+	return {
+		"can_view_all": False,
+		"allowed_companies": allowed_list,
+		"default_company": default_company,
+	}
+
+
+@frappe.whitelist()
 def get_vehicle_management_analytics(company=None, timespan="Last 30 Days", from_date=None, to_date=None):
 	"""
 	Returns consolidated analytics for Vehicle Management:
@@ -14,11 +115,44 @@ def get_vehicle_management_analytics(company=None, timespan="Last 30 Days", from
 	3. Top Selling Tires & Mags / Wheels
 	4. Job Order & Revenue performance by Company / Branch
 	5. Summary KPIs
+	Enforces role and employee-based branch scoping.
 	"""
+	user_perm = get_user_analytics_permissions()
+	can_view_all = user_perm["can_view_all"]
+	allowed_companies = user_perm["allowed_companies"]
+
 	# Filters
 	filters = {"docstatus": ["!=", 2]}
-	if company and company != "All Companies":
-		filters["company"] = company
+
+	if not can_view_all:
+		if not allowed_companies:
+			# User has no company assigned
+			return {
+				"summary": {
+					"total_revenue": 0.0,
+					"total_labor": 0.0,
+					"total_parts": 0.0,
+					"total_jos": 0,
+					"avg_ticket": 0.0,
+					"unique_vehicles": 0,
+				},
+				"top_services": [],
+				"top_parts": [],
+				"top_tires_mags": [],
+				"company_performance": [],
+				"user_perm": user_perm,
+			}
+
+		if company and company in allowed_companies:
+			filters["company"] = company
+		else:
+			if len(allowed_companies) == 1:
+				filters["company"] = allowed_companies[0]
+			else:
+				filters["company"] = ["in", allowed_companies]
+	else:
+		if company and company != "All Companies":
+			filters["company"] = company
 
 	if from_date and to_date:
 		filters["job_order_date"] = ["between", [from_date, to_date]]
@@ -83,7 +217,7 @@ def get_vehicle_management_analytics(company=None, timespan="Last 30 Days", from
 	# 2. Parts, Tires & Mags Breakdown
 	part_map = {}
 	tires_mags_map = {}
-	
+
 	if jo_names:
 		parts = frappe.get_all(
 			"Job Order Part Item",
@@ -94,7 +228,7 @@ def get_vehicle_management_analytics(company=None, timespan="Last 30 Days", from
 			name_key = p.item_name or p.item_code or "Generic Part"
 			amount = flt(p.amount)
 			qty = flt(p.qty) or 1.0
-			
+
 			# General Parts
 			if name_key not in part_map:
 				part_map[name_key] = {
@@ -134,7 +268,9 @@ def get_vehicle_management_analytics(company=None, timespan="Last 30 Days", from
 	# 3. Company / Branch Performance
 	company_map = {}
 	all_companies = [c.name for c in frappe.get_all("Company", filters={"is_group": 0})]
-	for comp in all_companies:
+	target_companies = all_companies if can_view_all else allowed_companies
+
+	for comp in target_companies:
 		if comp not in ["My Company"]:
 			company_map[comp] = {
 				"company": comp,
@@ -147,6 +283,8 @@ def get_vehicle_management_analytics(company=None, timespan="Last 30 Days", from
 
 	for jo in job_orders:
 		c = jo.company or "ULTRA MRF"
+		if not can_view_all and c not in allowed_companies:
+			continue
 		if c not in company_map:
 			company_map[c] = {
 				"company": c,
@@ -164,9 +302,9 @@ def get_vehicle_management_analytics(company=None, timespan="Last 30 Days", from
 			company_map[c]["completed_jos"] += 1
 
 	company_performance = sorted(
-		[v for v in company_map.values() if v["total_jos"] > 0 or v["total_revenue"] > 0],
+		[v for v in company_map.values() if v["total_jos"] > 0 or v["total_revenue"] > 0 or not can_view_all],
 		key=lambda x: x["total_revenue"],
-		reverse=True
+		reverse=True,
 	)
 
 	return {
@@ -182,4 +320,5 @@ def get_vehicle_management_analytics(company=None, timespan="Last 30 Days", from
 		"top_parts": top_parts[:10],
 		"top_tires_mags": top_tires_mags[:10],
 		"company_performance": company_performance,
+		"user_perm": user_perm,
 	}

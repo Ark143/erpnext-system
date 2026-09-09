@@ -1,0 +1,18 @@
+<div id="inventory-map-app" class="im-app">
+  <header class="im-header">
+    <div><div class="im-eyebrow">STOCK / TRACEABILITY</div><h1>Inventory Relationship Map</h1>
+    <p>Follow an item from receipt to warehouse to issue. Every connection comes from a stock ledger entry.</p></div>
+    <a class="im-button" href="/app/stock">Back to Stock</a>
+  </header>
+  <form id="im-filters" class="im-filters">
+    <label class="im-item-filter">Item<input id="im-item" list="im-items" placeholder="Search item code or name" autocomplete="off"><datalist id="im-items"></datalist></label>
+    <label>Company<select id="im-company"><option value="">All permitted companies</option></select></label>
+    <label>Warehouse<input id="im-warehouse" list="im-warehouses" placeholder="All permitted warehouses" autocomplete="off"><datalist id="im-warehouses"></datalist></label>
+    <label hidden>Bin location<input id="im-bin" list="im-bins" placeholder="All bin locations" autocomplete="off"><datalist id="im-bins"></datalist></label>
+    <label>From date<input id="im-from" type="date"></label>
+    <label>To date<input id="im-to" type="date"></label>
+    <button class="im-button im-primary" type="submit">Update map</button>
+  </form>
+  <div id="im-status" role="status" aria-live="polite"></div>
+  <div id="im-results"></div>
+</div>

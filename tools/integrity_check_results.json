@@ -1,0 +1,197 @@
+{
+  "timestamp": "2026-09-10T17:10:05.033058",
+  "target": "http://38.247.138.224:10017",
+  "tests_run": 31,
+  "passed": 31,
+  "failed": 0,
+  "warnings": 0,
+  "details": [
+    {
+      "category": "Auth",
+      "name": "Administrator Session Login",
+      "status": "PASS",
+      "detail": "Status: 200"
+    },
+    {
+      "category": "Master Data",
+      "name": "Active Companies Check",
+      "status": "PASS",
+      "detail": "Found 13 companies: Ultra MRF San Fernando, Ultra MRF Telebastagan, Ultra MRF Telebastagan 2, Wheel Core..."
+    },
+    {
+      "category": "Master Data",
+      "name": "Item Master Records",
+      "status": "PASS",
+      "detail": "Fetched 10 sample items"
+    },
+    {
+      "category": "Master Data",
+      "name": "Customer Vehicle Registry",
+      "status": "PASS",
+      "detail": "Sample vehicle: NEJ2048"
+    },
+    {
+      "category": "Master Data",
+      "name": "Warehouse Bin Locations",
+      "status": "PASS",
+      "detail": "Found 10 bin location records"
+    },
+    {
+      "category": "Notifications",
+      "name": "Item Open Count (SRV-ELEC-CHECK)",
+      "status": "PASS",
+      "detail": "Status: 200"
+    },
+    {
+      "category": "Notifications",
+      "name": "Item Open Count (PMS)",
+      "status": "PASS",
+      "detail": "Status: 200"
+    },
+    {
+      "category": "Notifications",
+      "name": "Item Open Count (PMS-OIL)",
+      "status": "PASS",
+      "detail": "Status: 200"
+    },
+    {
+      "category": "Notifications",
+      "name": "Item Open Count (TE37-18X8.5-BRONZE)",
+      "status": "PASS",
+      "detail": "Status: 200"
+    },
+    {
+      "category": "Notifications",
+      "name": "Item Open Count (ACC-SRV-001)",
+      "status": "PASS",
+      "detail": "Status: 200"
+    },
+    {
+      "category": "VMS Analytics",
+      "name": "Admin Analytics Permissions",
+      "status": "PASS",
+      "detail": "Can view all: True, Allowed: 11"
+    },
+    {
+      "category": "VMS Analytics",
+      "name": "Analytics Dashboard Data",
+      "status": "PASS",
+      "detail": "Revenue: PHP 2,215,480.00 | JOs: 481"
+    },
+    {
+      "category": "Goal API",
+      "name": "Automan Goal Sales Graph",
+      "status": "PASS",
+      "detail": "Status: 200"
+    },
+    {
+      "category": "Reports",
+      "name": "Report: Sales Order Trends",
+      "status": "PASS",
+      "detail": "Status: 200 | Rows: 1"
+    },
+    {
+      "category": "Reports",
+      "name": "Report: General Ledger",
+      "status": "PASS",
+      "detail": "Status: 200 | Rows: 251"
+    },
+    {
+      "category": "Reports",
+      "name": "Report: Accounts Receivable",
+      "status": "PASS",
+      "detail": "Status: 200 | Rows: 0"
+    },
+    {
+      "category": "Reports",
+      "name": "Report: Accounts Payable",
+      "status": "PASS",
+      "detail": "Status: 200 | Rows: 10"
+    },
+    {
+      "category": "Reports",
+      "name": "Report: Stock Balance",
+      "status": "PASS",
+      "detail": "Status: 200 | Rows: 0"
+    },
+    {
+      "category": "Reports",
+      "name": "Report: Stock Ledger",
+      "status": "PASS",
+      "detail": "Status: 200 | Rows: 10"
+    },
+    {
+      "category": "Reports",
+      "name": "Report: Profit and Loss Statement",
+      "status": "PASS",
+      "detail": "Status: 200 | Rows: 6"
+    },
+    {
+      "category": "Reports",
+      "name": "Report: Balance Sheet",
+      "status": "PASS",
+      "detail": "Status: 200 | Rows: 18"
+    },
+    {
+      "category": "BIR Suite",
+      "name": "DocType: BIR Sales Journal",
+      "status": "PASS",
+      "detail": "Status: 200 | Count: 4"
+    },
+    {
+      "category": "BIR Suite",
+      "name": "DocType: BIR Purchases Book",
+      "status": "PASS",
+      "detail": "Status: 200 | Count: 2"
+    },
+    {
+      "category": "BIR Suite",
+      "name": "DocType: BIR Cash Receipt Journal",
+      "status": "PASS",
+      "detail": "Status: 200 | Count: 4"
+    },
+    {
+      "category": "BIR Suite",
+      "name": "DocType: BIR Cash Disbursement Journal",
+      "status": "PASS",
+      "detail": "Status: 200 | Count: 3"
+    },
+    {
+      "category": "BIR Suite",
+      "name": "DocType: BIR General Journal",
+      "status": "PASS",
+      "detail": "Status: 200 | Count: 1"
+    },
+    {
+      "category": "BIR Suite",
+      "name": "DocType: BIR General Ledger",
+      "status": "PASS",
+      "detail": "Status: 200 | Count: 2"
+    },
+    {
+      "category": "BIR Suite",
+      "name": "DocType: BIR Form 2307",
+      "status": "PASS",
+      "detail": "Status: 200 | Count: 1"
+    },
+    {
+      "category": "BIR Suite",
+      "name": "DocType: BIR VAT Summary",
+      "status": "PASS",
+      "detail": "Status: 200 | Count: 1"
+    },
+    {
+      "category": "BIR Suite",
+      "name": "DocType: BIR Withholding Summary",
+      "status": "PASS",
+      "detail": "Status: 200 | Count: 1"
+    },
+    {
+      "category": "System Health",
+      "name": "Error Log Audit",
+      "status": "PASS",
+      "detail": "Found 15 recent error entries"
+    }
+  ],
+  "issues": []
+}

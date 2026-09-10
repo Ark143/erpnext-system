@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ERPNext & VMS Multi-Branch Implementation Plan</title>
+  <style>
+    :root {
+      --bg: #0F172A;
+      --card-bg: #1E293B;
+      --border: #334155;
+      --text: #F8FAFC;
+      --text-muted: #94A3B8;
+      --primary: #0EA5E9;
+      --accent-green: #10B981;
+      --accent-purple: #8B5CF6;
+      --accent-orange: #F59E0B;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 30px 20px; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .header { text-align: center; margin-bottom: 40px; padding: 20px; background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); }
+    .tag { display: inline-block; padding: 4px 12px; background: rgba(14, 165, 233, 0.2); color: var(--primary); border-radius: 20px; font-weight: 700; font-size: 12px; letter-spacing: 0.5px; margin-bottom: 12px; }
+    h1 { font-size: 28px; font-weight: 800; margin-bottom: 8px; color: #fff; }
+    .subtitle { color: var(--text-muted); font-size: 15px; }
+    .slide-grid { display: flex; flex-direction: column; gap: 35px; }
+    .slide-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    .slide-header { padding: 16px 24px; background: #162032; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .slide-num { font-weight: 800; color: var(--primary); font-size: 14px; }
+    .slide-title { font-size: 18px; font-weight: 700; color: #fff; }
+    .slide-body { padding: 24px; display: grid; grid-template-columns: 1.3fr 1fr; gap: 24px; align-items: start; }
+    .slide-body.full { grid-template-columns: 1fr; }
+    .slide-img { width: 100%; border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+    .feature-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .feature-list li { background: rgba(255,255,255,0.02); padding: 12px 16px; border-radius: 8px; border-left: 3px solid var(--primary); font-size: 13px; line-height: 1.5; }
+    .feature-list li strong { color: #fff; display: block; font-size: 14px; margin-bottom: 2px; }
+    .badge { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; }
+    .badge-green { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); }
+    .badge-purple { background: rgba(139, 92, 246, 0.2); color: var(--accent-purple); }
+    .badge-orange { background: rgba(245, 158, 11, 0.2); color: var(--accent-orange); }
+    .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+    .stat-box { background: #131c2e; padding: 18px; border-radius: 10px; border: 1px solid var(--border); }
+    .stat-box h3 { font-size: 15px; margin-bottom: 6px; color: var(--primary); }
+    .stat-box p { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+    .btn-download { display: inline-flex; align-items: center; gap: 8px; background: var(--primary); color: #fff; text-decoration: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; font-size: 14px; margin-top: 15px; }
+    @media (max-width: 900px) { .slide-body { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="tag">EXECUTIVE PRESENTATION VIEWER</div>
+      <h1>ERPNext & VMS Multi-Branch Implementation Plan</h1>
+      <p class="subtitle">Scope of Work: 7 Service Branches & 3 Central Warehouses | Prototype Pilot: Automan Car Care Center</p>
+      <a href="/ERPNEXT_VMS_IMPLEMENTATION_PLAN_DECK.pptx" class="btn-download" download>📥 Download PowerPoint Presentation (.pptx)</a>
+    </div>
+
+    <div class="slide-grid">
+      <!-- Slide 2: Strategic Value -->
+      <div class="slide-card">
+        <div class="slide-header">
+          <div class="slide-title">Slide 2: Strategic Objectives & Enterprise Value</div>
+          <div class="slide-num">SLIDE 02 / 12</div>
+        </div>
+        <div class="slide-body full">
+          <div class="grid-4">
+            <div class="stat-box" style="border-top: 3px solid var(--primary);">
+              <h3>Unified Operations</h3>
+              <p>Consolidates 7 service branches and 3 central warehouses under a single PostgreSQL/Frappe core.</p>
+            </div>
+            <div class="stat-box" style="border-top: 3px solid var(--accent-green);">
+              <h3>₱47M Stock Control</h3>
+              <p>Real-time bin-level tracking, automated intercompany supply chain, and mobile barcode put-away & picking.</p>
+            </div>
+            <div class="stat-box" style="border-top: 3px solid var(--accent-purple);">
+              <h3>100% BIR CAS Compliance</h3>
+              <p>Built-in Philippine tax suite: Form 2307, Sales Journal, Purchases Book, CRJ, CDJ, and General Ledger.</p>
+            </div>
+            <div class="stat-box" style="border-top: 3px solid var(--accent-orange);">
+              <h3>Branch Access Scoping</h3>
+              <p>Branch staff are restricted to their company while Executives have multi-company consolidated visibility.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 5: Workspace -->
+      <div class="slide-card">
+        <div class="slide-header">
+          <div class="slide-title">Slide 5: Live Vehicle Management Operations Center</div>
+          <div class="slide-num">SLIDE 05 / 12</div>
+        </div>
+        <div class="slide-body">
+          <img class="slide-img" src="/brain/4db2397b-47f0-4812-9686-b5bc6b56db76/main_desk_workspace_1789022214779.png" alt="Main Desk Workspace" />
+          <ul class="feature-list">
+            <li>
+              <strong>38,654 Registered Vehicles</strong>
+              Complete vehicle master registry tracking VIN, plate, engine, chassis, and make/model details.
+            </li>
+            <li>
+              <strong>₱2.22M+ Lifetime Revenue & 481+ JOs</strong>
+              Live tracking of completed service job orders and counter transactions.
+            </li>
+            <li>
+              <strong>₱46.99M Total Stock Valuation</strong>
+              Consolidated inventory valuation across 11 warehouse and branch entities.
+            </li>
+            <li>
+              <strong>Vehicle History Card</strong>
+              Every repair, part replaced, and inspection logged under the vehicle plate number.
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Slide 6: Analytics -->
+      <div class="slide-card">
+        <div class="slide-header">
+          <div class="slide-title">Slide 6: Live Vehicle Management Analytics & Branch Scoping</div>
+          <div class="slide-num">SLIDE 06 / 12</div>
+        </div>
+        <div class="slide-body">
+          <img class="slide-img" src="/brain/4db2397b-47f0-4812-9686-b5bc6b56db76/vehicle_analytics_dashboard_1789022233875.png" alt="Vehicle Analytics Dashboard" />
+          <ul class="feature-list">
+            <li>
+              <strong>Strict Role-Based Branch Isolation</strong>
+              Branch employees (e.g. Automan) only view their branch data; Executives view consolidated totals.
+            </li>
+            <li>
+              <strong>Labor vs. Parts Split</strong>
+              Visualizes labor sales (₱104.7k) vs. tire/parts retail (₱2.11M).
+            </li>
+            <li>
+              <strong>Top Selling Services & Tires</strong>
+              Automated ranking of top services (PMS, Alignment, Brakes) and top tire sizes (185/65R14, 205/55R16).
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Slide 7: POS -->
+      <div class="slide-card">
+        <div class="slide-header">
+          <div class="slide-title">Slide 7: High-Speed Vehicle POS Terminal</div>
+          <div class="slide-num">SLIDE 07 / 12</div>
+        </div>
+        <div class="slide-body">
+          <img class="slide-img" src="/brain/4db2397b-47f0-4812-9686-b5bc6b56db76/vehicle_pos_terminal_1789022268489.png" alt="Vehicle POS Terminal" />
+          <ul class="feature-list">
+            <li>
+              <strong>Vehicle Plate Lookup & Tagging</strong>
+              Link counter sales directly to customer vehicle records for service history.
+            </li>
+            <li>
+              <strong>Quick Cash & Digital Payments</strong>
+              Supports Cash (+100, +500, +1000 buttons), GCash, Maya, Cards, and BDO bank transfer.
+            </li>
+            <li>
+              <strong>Thermal Receipt Printing</strong>
+              Instant printing of 80mm/58mm receipts with official BIR transaction numbering.
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Slide 8: Automan Invoice -->
+      <div class="slide-card">
+        <div class="slide-header">
+          <div class="slide-title">Slide 8: Automan Prototype Live Invoice (ACC-SINV-2026-00447)</div>
+          <div class="slide-num">SLIDE 08 / 12</div>
+        </div>
+        <div class="slide-body">
+          <img class="slide-img" src="/brain/4db2397b-47f0-4812-9686-b5bc6b56db76/automan_sales_invoice_1789022325763.png" alt="Automan Sales Invoice" />
+          <ul class="feature-list">
+            <li>
+              <strong>30 Real Service Transactions</strong>
+              Completed and submitted 30 real automotive service invoices totaling ₱107,300.00.
+            </li>
+            <li>
+              <strong>Official Automan Series</strong>
+              Official numbering format (ACC-SINV-2026-00418 to 00447) with customer, vehicle plate, and labor tagging.
+            </li>
+            <li>
+              <strong>Automated Ledger Posting</strong>
+              Instant accounting reconciliation and inventory deduction on Automan local warehouse stock.
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Slide 9: BIR Invoicing -->
+      <div class="slide-card">
+        <div class="slide-header">
+          <div class="slide-title">Slide 9: BIR CAS Philippine Tax & Accounting Suite</div>
+          <div class="slide-num">SLIDE 09 / 12</div>
+        </div>
+        <div class="slide-body">
+          <img class="slide-img" src="/brain/4db2397b-47f0-4812-9686-b5bc6b56db76/invoicing_workspace_1789022289433.png" alt="BIR Invoicing Workspace" />
+          <ul class="feature-list">
+            <li>
+              <strong>Complete Philippine Tax Suite</strong>
+              BIR Form 2307, Sales Journal, Purchases Book, Cash Receipts Journal (CRJ), and Cash Disbursements Journal (CDJ).
+            </li>
+            <li>
+              <strong>Audit-Proof Financial Ledgers</strong>
+              Automated VAT 2550 computation and standardized General Ledger with official TIN headers.
+            </li>
+            <li>
+              <strong>Real-Time Financial Reporting</strong>
+              Live Profit & Loss, Accounts Receivable, and Payables tracking across all entities.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

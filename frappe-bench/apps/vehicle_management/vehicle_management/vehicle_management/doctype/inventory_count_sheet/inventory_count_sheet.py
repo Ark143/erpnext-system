@@ -94,14 +94,11 @@ def get_warehouse_items(warehouse, bin_filter=None):
 	bins = frappe.get_all(
 		"Bin",
 		filters=filters,
-		fields=["item_code", "actual_qty", "bin_location"],
+		fields=["item_code", "actual_qty"],
 	)
 
 	results = []
 	for b in bins:
-		# If bin_filter is set, only include items in that bin
-		if bin_filter and (not b.get("bin_location") or b["bin_location"] != bin_filter):
-			continue
 		item = frappe.db.get_value(
 			"Item",
 			b["item_code"],

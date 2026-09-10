@@ -7,25 +7,25 @@ frappe.ui.form.on("Inventory Count Sheet", {
 
 	setup(frm) {
 		// Colour-code the count_status indicator column in the child grid
-		frm.fields_dict["items"].grid.get_field("count_status").df.formatter =
-			function (value) {
-				const colours = {
-					"Matched":  "green",
-					"Over":     "blue",
-					"Short":    "red",
-					"Pending":  "orange",
-					"New Item": "purple",
+		if (frm.fields_dict["items"] && frm.fields_dict["items"].grid) {
+			frm.fields_dict["items"].grid.get_field("count_status").df.formatter =
+				function (value) {
+					const colours = {
+						"Matched":  "green",
+						"Over":     "blue",
+						"Short":    "red",
+						"Pending":  "orange",
+						"New Item": "purple",
+					};
+					const c = colours[value] || "gray";
+					return `<span class="indicator-pill ${c}">${value || "—"}</span>`;
 				};
-				const c = colours[value] || "gray";
-				return `<span class="indicator-pill ${c}">${value || "—"}</span>`;
-			};
+		}
 	},
 
 	onload(frm) {
-		// Inject the custom toolbar buttons once the form is ready
 		_add_custom_buttons(frm);
 
-		// Lock physical_qty and remarks after submit
 		if (frm.doc.docstatus === 1) {
 			frm.set_df_property("items", "read_only", 1);
 		}
@@ -36,7 +36,6 @@ frappe.ui.form.on("Inventory Count Sheet", {
 		_render_kpi_banner(frm);
 		_apply_row_colours(frm);
 
-		// Add scan-bar above the items table
 		if (frm.doc.docstatus === 0) {
 			_inject_scan_bar(frm);
 		}
@@ -45,31 +44,17 @@ frappe.ui.form.on("Inventory Count Sheet", {
 	// ─── FIELD TRIGGERS ────────────────────────────────────────────────────────
 
 	warehouse(frm) {
-		if (frm.doc.warehouse && frm.doc.items && frm.doc.items.length === 0) {
-			// Auto-generate count lines when warehouse is first selected (no items yet)
-			_load_warehouse_items(frm);
+		if (frm.doc.warehouse && (!frm.doc.items || frm.doc.items.length === 0)) {
+			// Offer to load items from selected warehouse
+			_load_warehouse_items(frm, [frm.doc.warehouse]);
 		}
 	},
 
 	count_type(frm) {
-		// When switching to Cycle Count, auto-load items from bin_filter
-		if (frm.doc.count_type === "Cycle Count (Spot Check)" && frm.doc.bin_filter && frm.doc.items && frm.doc.items.length === 0) {
-			_load_bin_items(frm);
+		if (frm.doc.count_type === "Cycle Count (Spot Check)" && frm.doc.bin_filter && (!frm.doc.items || frm.doc.items.length === 0)) {
+			_show_get_items_dialog(frm);
 		}
 	},
-
-	bin_filter(frm) {
-		// When bin_filter is set and no items loaded yet, offer to load
-		if (frm.doc.bin_filter && !frm.doc.warehouse && frm.doc.items && frm.doc.items.length === 0) {
-			frappe.show_alert({
-				message: __("Set a Warehouse to auto-generate count lines from bin {0}", [frm.doc.bin_filter]),
-				indicator: "blue"
-			});
-		}
-	},
-
-	// ─── CHILD TABLE TRIGGERS ──────────────────────────────────────────────────
-
 });
 
 frappe.ui.form.on("Inventory Count Sheet Item", {
@@ -83,12 +68,13 @@ frappe.ui.form.on("Inventory Count Sheet Item", {
 
 	item_code(frm, cdt, cdn) {
 		const row = locals[cdt][cdn];
-		if (!row.item_code || !frm.doc.warehouse) return;
+		const wh = row.warehouse || frm.doc.warehouse;
+		if (!row.item_code || !wh) return;
 
 		// Fetch live system qty from Bin table
 		frappe.call({
 			method: "vehicle_management.vehicle_management.doctype.inventory_count_sheet.inventory_count_sheet.get_stock_qty",
-			args: { item_code: row.item_code, warehouse: frm.doc.warehouse },
+			args: { item_code: row.item_code, warehouse: wh },
 			callback(r) {
 				if (r.message !== undefined) {
 					frappe.model.set_value(cdt, cdn, "system_qty", r.message);
@@ -131,43 +117,13 @@ function _recalculate_row(frm, cdt, cdn) {
 }
 
 function _add_custom_buttons(frm) {
-	// Remove stale buttons first to avoid duplicates on refresh
-	frm.remove_custom_button(__("Generate Count Lines"));
-	frm.remove_custom_button(__("Load Bin Items"));
-	frm.remove_custom_button(__("Clear All Counts"));
-	frm.remove_custom_button(__("Export to CSV"));
-	frm.remove_custom_button(__("Print Count Sheet"));
+	frm.clear_custom_buttons();
 
 	if (frm.doc.docstatus === 0) {
-		// Primary action: one-click auto-generate (no confirmation)
-		frm.add_custom_button(__("Generate Count Lines"), () => {
-			if (!frm.doc.warehouse) {
-				frappe.msgprint(__("Please select a Warehouse first."));
-				return;
-			}
-			// Determine which loader to use
-			if (frm.doc.count_type === "Cycle Count (Spot Check)" && frm.doc.bin_filter) {
-				_load_bin_items(frm);
-			} else {
-				_load_warehouse_items(frm);
-			}
-		}, __("Actions"));
-
-		// Load from specific bin (requires bin_filter)
-		frm.add_custom_button(__("Load Bin Items"), () => {
-			if (!frm.doc.warehouse) {
-				frappe.msgprint(__("Please select a Warehouse first."));
-				return;
-			}
-			if (!frm.doc.bin_filter) {
-				frappe.show_alert({
-					message: __("Select a Bin / Location Filter to load items from a specific bin."),
-					indicator: "orange"
-				});
-				return;
-			}
-			_load_bin_items(frm);
-		}, __("Actions"));
+		// Prominent Primary button directly on the form header
+		frm.add_custom_button(__("Get Items from Warehouse"), () => {
+			_show_get_items_dialog(frm);
+		}).addClass("btn-primary");
 
 		frm.add_custom_button(__("Clear All Counts"), () => {
 			frappe.confirm(__("This will clear all physical count entries. Are you sure?"), () => {
@@ -189,112 +145,168 @@ function _add_custom_buttons(frm) {
 	), __("Actions"));
 }
 
-function _load_warehouse_items(frm) {
-	frappe.show_progress(__("Loading items…"), 0, 100);
-
-	frappe.call({
-		method: "vehicle_management.vehicle_management.doctype.inventory_count_sheet.inventory_count_sheet.get_warehouse_items",
-		args: {
-			warehouse:  frm.doc.warehouse,
-			bin_filter: frm.doc.bin_filter || null,
-		},
-		callback(r) {
-			frappe.hide_progress();
-			if (!r.message || !r.message.length) {
-				frappe.msgprint(__("No stock found in warehouse <b>{0}</b>.", [frm.doc.warehouse]));
-				return;
+function _show_get_items_dialog(frm) {
+	const default_company = frm.doc.company || frappe.defaults.get_default("Company") || "ULTRA MRF";
+	
+	const d = new frappe.ui.Dialog({
+		title: __("Get Items from Warehouse(s)"),
+		fields: [
+			{
+				label: __("Company"),
+				fieldname: "company",
+				fieldtype: "Link",
+				options: "Company",
+				default: default_company,
+				reqd: 1,
+				onchange: function() {
+					_reload_warehouse_options(d);
+				}
+			},
+			{
+				fieldtype: "Section Break",
+				label: __("Warehouse Selection")
+			},
+			{
+				label: __("Select All Warehouses in Company"),
+				fieldname: "select_all_warehouses",
+				fieldtype: "Check",
+				default: 0,
+				onchange: function() {
+					const all = d.get_value("select_all_warehouses");
+					d.set_df_property("warehouse", "hidden", all);
+					d.set_df_property("multi_warehouses", "hidden", all);
+				}
+			},
+			{
+				label: __("Primary / Group Warehouse"),
+				fieldname: "warehouse",
+				fieldtype: "Link",
+				options: "Warehouse",
+				default: frm.doc.warehouse,
+				description: __("Select a specific warehouse or a Parent Group Warehouse (e.g. All Warehouses - UM) to include all child stores."),
+				get_query: function() {
+					return {
+						filters: {
+							company: d.get_value("company") || default_company
+						}
+					};
+				}
+			},
+			{
+				fieldtype: "Section Break",
+				label: __("Filters")
+			},
+			{
+				label: __("Item Group"),
+				fieldname: "item_group",
+				fieldtype: "Link",
+				options: "Item Group"
+			},
+			{
+				label: __("Bin / Location Filter"),
+				fieldname: "bin_filter",
+				fieldtype: "Data",
+				default: frm.doc.bin_filter
+			},
+			{
+				label: __("Ignore Zero Stock (Only Count In-Stock Items)"),
+				fieldname: "ignore_empty_stock",
+				fieldtype: "Check",
+				default: 1
 			}
-
-			const existing = (frm.doc.items || []).length;
-			const proceed = () => {
-				frm.clear_table("items");
-				r.message.forEach(item => {
-					const row = frm.add_child("items");
-					Object.assign(row, item);
-					row.physical_qty = null;
-					row.variance_qty = 0;
-					row.count_status = "Pending";
-				});
-				frm.refresh_field("items");
-				_apply_row_colours(frm);
-				_render_kpi_banner(frm);
-				frappe.show_alert({
-					message: __("{0} items loaded from {1}.", [r.message.length, frm.doc.warehouse]),
-					indicator: "green",
-				});
-			};
-
-			if (existing > 0) {
-				frappe.confirm(
-					__("This will replace the existing {0} lines. Continue?", [existing]),
-					proceed
-				);
-			} else {
-				proceed();
-			}
-		},
+		],
+		primary_action_label: __("Fetch Stock Items"),
+		primary_action: function(values) {
+			d.hide();
+			_fetch_items_from_server(frm, values);
+		}
 	});
+
+	d.show();
 }
 
-function _load_bin_items(frm) {
-	// Load only items that match the specified bin_filter from the warehouse
-	frappe.show_progress(__("Loading items from bin…"), 0, 100);
+function _reload_warehouse_options(dialog) {
+	// Utility hook when company changes
+}
+
+function _fetch_items_from_server(frm, values) {
+	frappe.show_progress(__("Fetching items…"), 20, 100);
 
 	frappe.call({
 		method: "vehicle_management.vehicle_management.doctype.inventory_count_sheet.inventory_count_sheet.get_warehouse_items",
 		args: {
-			warehouse:  frm.doc.warehouse,
-			bin_filter: frm.doc.bin_filter,
+			company: values.company,
+			warehouse: values.warehouse || null,
+			select_all: values.select_all_warehouses ? 1 : 0,
+			item_group: values.item_group || null,
+			bin_filter: values.bin_filter || null,
+			ignore_empty_stock: values.ignore_empty_stock ? 1 : 0,
 		},
 		callback(r) {
 			frappe.hide_progress();
-			if (!r.message || !r.message.length) {
-				frappe.msgprint(__("No stock found in bin <b>{0}</b> at warehouse <b>{1}</b>.",
-					[frm.doc.bin_filter, frm.doc.warehouse]));
+			const items = r.message || [];
+			if (!items.length) {
+				frappe.msgprint(__("No stock items found for the selected warehouse criteria."));
 				return;
 			}
 
 			const existing = (frm.doc.items || []).length;
-			const proceed = () => {
+			const applyItems = () => {
 				frm.clear_table("items");
-				r.message.forEach(item => {
+				items.forEach(item => {
 					const row = frm.add_child("items");
 					row.item_code    = item.item_code;
 					row.item_name    = item.item_name;
+					row.warehouse    = item.warehouse;
 					row.uom          = item.uom;
 					row.item_group   = item.item_group;
-					row.bin_location = frm.doc.bin_filter;
+					row.bin_location = item.bin_location || "";
 					row.system_qty   = item.system_qty;
 					row.physical_qty = null;
 					row.variance_qty = 0;
 					row.count_status = "Pending";
 				});
+
+				if (values.warehouse) {
+					frm.set_value("warehouse", values.warehouse);
+				}
+				if (values.company) {
+					frm.set_value("company", values.company);
+				}
+
 				frm.refresh_field("items");
 				_apply_row_colours(frm);
 				_render_kpi_banner(frm);
 				frappe.show_alert({
-					message: __("{0} items loaded from bin <b>{1}</b>.",
-						[r.message.length, frm.doc.bin_filter]),
-					indicator: "green",
+					message: __("Loaded {0} items into count sheet.", [items.length]),
+					indicator: "green"
 				});
 			};
 
 			if (existing > 0) {
 				frappe.confirm(
-					__("This will replace the existing {0} lines. Continue?", [existing]),
-					proceed
+					__("This will replace the existing {0} count lines. Continue?", [existing]),
+					applyItems
 				);
 			} else {
-				proceed();
+				applyItems();
 			}
-		},
+		}
+	});
+}
+
+function _load_warehouse_items(frm, warehouses) {
+	_fetch_items_from_server(frm, {
+		company: frm.doc.company || "ULTRA MRF",
+		warehouse: warehouses && warehouses.length ? warehouses[0] : frm.doc.warehouse,
+		select_all_warehouses: 0,
+		ignore_empty_stock: 1
 	});
 }
 
 // ─── KPI BANNER ───────────────────────────────────────────────────────────────
 
 function _render_kpi_banner(frm) {
-	// Remove previous banner
 	frm.layout.wrapper.find(".ic-kpi-banner").remove();
 
 	const stats = _compute_stats(frm);
@@ -315,12 +327,9 @@ function _render_kpi_banner(frm) {
 		</div>
 	`);
 
-	// Insert after the form header / status indicator area
-	const insertAfter = frm.layout.wrapper.find(".form-page > .frappe-card").first();
-	if (insertAfter.length) {
-		banner.insertAfter(insertAfter);
-	} else {
-		frm.layout.wrapper.find(".layout-main-section").prepend(banner);
+	const insertTarget = frm.layout.wrapper.find(".form-page > .frappe-card, .layout-main-section").first();
+	if (insertTarget.length) {
+		banner.prependTo(insertTarget);
 	}
 }
 
@@ -342,7 +351,6 @@ function _kpi_card(label, value, colour) {
 }
 
 function _update_kpi_banner(frm) {
-	// Quick update without full re-render (for row-level changes)
 	_render_kpi_banner(frm);
 }
 
@@ -360,7 +368,6 @@ function _compute_stats(frm) {
 // ─── ROW COLOURS ──────────────────────────────────────────────────────────────
 
 function _apply_row_colours(frm) {
-	// Use a short timeout to ensure the grid DOM is rendered
 	setTimeout(() => {
 		const grid = frm.fields_dict["items"] && frm.fields_dict["items"].grid;
 		if (!grid) return;
@@ -369,7 +376,6 @@ function _apply_row_colours(frm) {
 			const $row = grid.wrapper.find(`.grid-row[data-idx="${idx + 1}"]`);
 			if (!$row.length) return;
 
-			// Reset
 			$row.css("background-color", "");
 
 			const colours = {
@@ -389,7 +395,6 @@ function _apply_row_colours(frm) {
 // ─── SCAN BAR ─────────────────────────────────────────────────────────────────
 
 function _inject_scan_bar(frm) {
-	// Only inject once
 	if (frm.layout.wrapper.find(".ic-scan-bar").length) return;
 
 	const bar = $(`
@@ -424,13 +429,11 @@ function _inject_scan_bar(frm) {
 		</div>
 	`);
 
-	// Insert just above the items field
 	const itemsField = frm.fields_dict["items"] && frm.fields_dict["items"].wrapper;
 	if (itemsField) {
 		bar.insertBefore($(itemsField));
 	}
 
-	// Wire up events
 	bar.find("#ic-scan-add").on("click", () => _process_scan(frm));
 	bar.find("#ic-scan-clear").on("click", () => {
 		bar.find("#ic-scan-input").val("").focus();
@@ -438,7 +441,6 @@ function _inject_scan_bar(frm) {
 	bar.find("#ic-scan-input").on("keydown", e => {
 		if (e.key === "Enter") { e.preventDefault(); _process_scan(frm); }
 	});
-	bar.find("#ic-scan-input").trigger("focus");
 }
 
 function _process_scan(frm) {
@@ -451,12 +453,8 @@ function _process_scan(frm) {
 		frappe.show_alert({ message: __("Please enter or scan an Item Code."), indicator: "orange" });
 		return;
 	}
-	if (!frm.doc.warehouse) {
-		frappe.show_alert({ message: __("Please select a Warehouse first."), indicator: "orange" });
-		return;
-	}
 
-	// Find matching row by item_code or barcode
+	// Find matching row
 	const existing = (frm.doc.items || []).find(
 		r => (r.item_code || "").toUpperCase() === code ||
 			(r.barcode   || "").toUpperCase() === code
@@ -471,7 +469,6 @@ function _process_scan(frm) {
 			indicator: "green",
 		});
 	} else {
-		// Try to resolve via Item master (includes barcode for scan matching)
 		frappe.db.get_value("Item", code, ["item_name", "stock_uom", "item_group", "barcode"])
 			.then(r => {
 				const item = r.message;
@@ -479,6 +476,7 @@ function _process_scan(frm) {
 
 				row.item_code    = code;
 				row.item_name    = item ? item.item_name : "(Unknown — verify item)";
+				row.warehouse    = frm.doc.warehouse || "";
 				row.uom          = item ? item.stock_uom : "PCS";
 				row.item_group   = item ? item.item_group : "";
 				row.bin_location = frm.doc.bin_filter || "";
@@ -509,10 +507,11 @@ function _export_csv(frm) {
 		["Branch", frm.doc.company || "", "Date", frm.doc.count_date || ""],
 		["Warehouse", frm.doc.warehouse || "", "Type", frm.doc.count_type || ""],
 		[],
-		["#", "Item Code", "Item Name", "Bin", "UOM",
+		["#", "Warehouse", "Item Code", "Item Name", "Bin", "UOM",
 		 "System Qty", "Physical Count", "Variance", "Status", "Remarks"],
 		...items.map((r, i) => [
 			i + 1,
+			r.warehouse || "",
 			r.item_code,
 			`"${(r.item_name || "").replace(/"/g, '""')}"`,
 			r.bin_location || "",

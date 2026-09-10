@@ -38,7 +38,7 @@ session.headers.update({"Content-Type": "application/json"})
 def login():
     r = session.post(f"{BASE}/api/method/login", json=LOGIN)
     r.raise_for_status()
-    print(f"✓ Logged in as {args.user}")
+    print(f"[OK] Logged in as {args.user}")
 
 
 def api_post(method, **kwargs):
@@ -48,14 +48,14 @@ def api_post(method, **kwargs):
     except Exception:
         data = {}
     if r.status_code not in (200, 201):
-        print(f"  ✗ {method} → {r.status_code}: {r.text[:200]}")
+        print(f"  [FAIL] {method} -> {r.status_code}: {r.text[:200]}")
         return None
     return data.get("message") or data
 
 
 def upsert_doctype(doctype_name, doctype_def):
     """Create or update a DocType via Frappe API."""
-    print(f"  → Installing DocType: {doctype_name}")
+    print(f"  -> Installing DocType: {doctype_name}")
     existing = session.get(
         f"{BASE}/api/resource/DocType/{doctype_name.replace(' ', '%20')}"
     )
@@ -73,25 +73,25 @@ def upsert_doctype(doctype_name, doctype_def):
         )
 
     if r.status_code in (200, 201):
-        print(f"    ✓ {doctype_name} installed.")
+        print(f"    [OK] {doctype_name} installed.")
     else:
-        print(f"    ✗ Failed ({r.status_code}): {r.text[:300]}")
+        print(f"    [FAIL] ({r.status_code}): {r.text[:300]}")
 
 
 def run_migrate():
-    print("  → Running bench migrate (reload doctypes)…")
+    print("  -> Running bench migrate (reload doctypes)...")
     result = api_post("frappe.reload_doctype", doctype="Inventory Count Sheet")
     result2 = api_post("frappe.reload_doctype", doctype="Inventory Count Sheet Item")
-    print("    ✓ Migrate complete.")
+    print("    [OK] Migrate complete.")
 
 
 def add_workspace_shortcut():
     """Add 'Inventory Count Sheet' shortcut to the Vehicle Management workspace."""
-    print("  → Adding workspace shortcut…")
+    print("  -> Adding workspace shortcut...")
     ws_name = "Vehicle Management"
     r = session.get(f"{BASE}/api/resource/Workspace/{ws_name.replace(' ', '%20')}")
     if r.status_code != 200:
-        print(f"    ✗ Workspace '{ws_name}' not found — skipping shortcut.")
+        print(f"    [FAIL] Workspace '{ws_name}' not found - skipping shortcut.")
         return
 
     ws = r.json().get("data", {})
@@ -99,7 +99,7 @@ def add_workspace_shortcut():
 
     # Avoid duplicate
     if any(s.get("label") == "Inventory Count Sheet" for s in shortcuts):
-        print("    ✓ Shortcut already exists.")
+        print("    [OK] Shortcut already exists.")
         return
 
     shortcuts.append({
@@ -117,9 +117,9 @@ def add_workspace_shortcut():
         json=ws,
     )
     if put.status_code in (200, 201):
-        print("    ✓ Workspace shortcut added.")
+        print("    [OK] Workspace shortcut added.")
     else:
-        print(f"    ✗ Could not update workspace ({put.status_code}): {put.text[:200]}")
+        print(f"    [FAIL] Could not update workspace ({put.status_code}): {put.text[:200]}")
 
 
 # ── DOCTYPE DEFINITIONS ─────────────────────────────────────────────
@@ -209,18 +209,17 @@ def main():
 
     login()
     print()
-    print("── Installing DocTypes ─────────────────────────────────────")
+    print("-- Installing DocTypes -------------------------------------")
     upsert_doctype("Inventory Count Sheet Item", CHILD_DT)
     upsert_doctype("Inventory Count Sheet",      PARENT_DT)
 
     print()
-    print("── Post-install ────────────────────────────────────────────")
+    print("-- Post-install --------------------------------------------")
     run_migrate()
     add_workspace_shortcut()
 
-    print()
-    print("✓ Installation complete.")
-    print("  Open ERPNext → Vehicle Management → Inventory Count Sheet")
+    print("[OK] Installation complete.")
+    print("  Open ERPNext -> Vehicle Management -> Inventory Count Sheet")
     print()
 
 

@@ -73,6 +73,12 @@ pos_json = os.path.join("frappe-bench", "apps", "vehicle_management", "vehicle_m
 if os.path.exists(pos_json):
     shutil.copy(pos_json, os.path.join(build_dir, "pos_export.json"))
 
+# Copy Consolidated Financials & Accounting Console
+cf_src = os.path.join("frappe-bench", "apps", "vehicle_management", "vehicle_management", "www", "consolidated_financials.html")
+if os.path.exists(cf_src):
+    shutil.copy(cf_src, os.path.join(build_dir, "consolidated_financials.html"))
+    shutil.copy(cf_src, os.path.join(build_dir, "consolidated-financials.html"))
+
 # 4. Copy Logo Assets
 assets_dir = os.path.join(build_dir, "files")
 os.makedirs(assets_dir, exist_ok=True)

@@ -1,4 +1,6 @@
-<!DOCTYPE html>
+import os
+
+html_code = """<!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
@@ -2519,3 +2521,16 @@
   </script>
 </body>
 </html>
+"""
+
+# Write to frappe-bench/apps/vehicle_management/vehicle_management/www/consolidated_financials.html
+dest1 = r"c:\Users\josem\erpnext-system\frappe-bench\apps\vehicle_management\vehicle_management\www\consolidated_financials.html"
+with open(dest1, "w", encoding="utf-8") as f:
+    f.write(html_code)
+print("Saved to", dest1)
+
+# Write to vps_migration/consolidated_financials.html
+dest2 = r"c:\Users\josem\erpnext-system\vps_migration\consolidated_financials.html"
+with open(dest2, "w", encoding="utf-8") as f:
+    f.write(html_code)
+print("Saved to", dest2)

@@ -1,0 +1,6 @@
+Date,Deposit,Withdrawal,Description,Reference Number,Bank Account,Currency
+2026-09-01,15000.00,,Customer Direct Deposit Ref 001,DEP-2026-001,Automan Operating Account - BDO Unibank, Inc.,PHP
+2026-09-03,,4500.00,Supplier Payment Auto-Debit,WDR-2026-002,Automan Operating Account - BDO Unibank, Inc.,PHP
+2026-09-05,22000.00,,Check Clearing Collection,DEP-2026-003,Automan Operating Account - BDO Unibank, Inc.,PHP
+2026-09-08,,1500.00,Monthly Bank Maintenance Fee,WDR-2026-004,Automan Operating Account - BDO Unibank, Inc.,PHP
+2026-09-10,35000.00,,Corporate Fleet Service Payment,DEP-2026-005,Automan Operating Account - BDO Unibank, Inc.,PHP

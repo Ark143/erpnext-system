@@ -3,10 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Consolidated Multi-Company Financials &amp; Inventory Audit</title>
+  <title>Consolidated Multi-Company Financials &amp; Accounting Suite</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
     /* ── Website Chrome Suppression ── */
     header.navbar, footer, .navbar, .web-footer, .page-header, .page-breadcrumbs, .standard-breadcrumbs, .sidebar-column, .web-page-sidebar, .page-container > .col-sm-3 {
@@ -24,7 +25,7 @@
       box-sizing: border-box;
     }
 
-    /* ── Monochrome Black & White Theme System ── */
+    /* ── Monochrome Modern Dark / Light Theme System ── */
     :root {
       --bg-canvas: #040404;
       --bg-surface: #0c0c0c;
@@ -42,10 +43,13 @@
       --text-dimmed: #3f3f46;
       --accent-solid: #ffffff;
       --accent-contrast: #000000;
+      --accent-blue: #38bdf8;
       --badge-neutral-bg: #18181b;
       --badge-neutral-border: #27272a;
       --positive-color: #22c55e;
       --negative-color: #ef4444;
+      --warning-color: #f59e0b;
+      --info-color: #06b6d4;
       --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
       --shadow-elevation-1: 0 4px 20px rgba(0, 0, 0, 0.8);
@@ -70,10 +74,13 @@
       --text-dimmed: #94a3b8;
       --accent-solid: #09090b;
       --accent-contrast: #ffffff;
+      --accent-blue: #0284c7;
       --badge-neutral-bg: #f1f5f9;
       --badge-neutral-border: #e2e8f0;
       --positive-color: #16a34a;
       --negative-color: #dc2626;
+      --warning-color: #d97706;
+      --info-color: #0891b2;
       --shadow-elevation-1: 0 4px 20px rgba(0, 0, 0, 0.05);
       --shadow-elevation-2: 0 10px 40px rgba(0, 0, 0, 0.1);
       --scrollbar-thumb: #cbd5e1;
@@ -129,6 +136,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 16px;
+      flex-wrap: wrap;
     }
 
     .brand-section {
@@ -137,8 +145,8 @@
       gap: 12px;
     }
     .brand-logo {
-      width: 34px;
-      height: 34px;
+      width: 36px;
+      height: 36px;
       background: var(--accent-solid);
       color: var(--accent-contrast);
       border-radius: 8px;
@@ -165,7 +173,7 @@
       color: var(--text-muted);
       letter-spacing: 0.2px;
       text-transform: uppercase;
-      font-weight: 500;
+      font-weight: 600;
     }
 
     /* ── Header Controls ── */
@@ -252,6 +260,10 @@
       color: var(--accent-contrast);
       border-color: var(--accent-solid);
     }
+    .btn-action.active {
+      background: var(--accent-solid);
+      color: var(--accent-contrast);
+    }
 
     /* ── Company Filter Dropdown Popover ── */
     .company-dropdown-popover {
@@ -264,7 +276,7 @@
       border-radius: 10px;
       box-shadow: var(--shadow-elevation-2);
       width: 320px;
-      max-height: 400px;
+      max-height: 420px;
       z-index: 200;
       display: none;
       flex-direction: column;
@@ -327,7 +339,7 @@
     /* ── Sticky Tab Navigation Bar ── */
     .nav-tabs-bar {
       position: sticky;
-      top: 59px;
+      top: 61px;
       z-index: 95;
       background: rgba(12, 12, 12, 0.95);
       backdrop-filter: blur(12px);
@@ -338,6 +350,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 16px;
+      overflow-x: auto;
     }
     .tabs-list {
       display: flex;
@@ -381,7 +394,7 @@
       color: var(--text-secondary);
     }
 
-    /* ── KPI Metric Ribbon ── */
+    /* ── Dynamic KPI Ribbon ── */
     .kpi-ribbon {
       padding: 16px 24px;
       display: grid;
@@ -607,7 +620,7 @@
       color: var(--accent-solid);
     }
     .num-negative {
-      color: var(--text-muted);
+      color: var(--negative-color);
     }
     .num-zero {
       color: var(--text-dimmed);
@@ -714,14 +727,24 @@
       font-family: var(--font-sans);
     }
     .badge-success {
-      background: rgba(34, 197, 94, 0.1);
+      background: rgba(34, 197, 94, 0.12);
       color: #22c55e;
       border: 1px solid rgba(34, 197, 94, 0.3);
     }
+    .badge-warning {
+      background: rgba(245, 158, 11, 0.12);
+      color: #f59e0b;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
     .badge-danger {
-      background: rgba(239, 68, 68, 0.1);
+      background: rgba(239, 68, 68, 0.12);
       color: #ef4444;
       border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+    .badge-info {
+      background: rgba(6, 182, 212, 0.12);
+      color: #06b6d4;
+      border: 1px solid rgba(6, 182, 212, 0.3);
     }
     .badge-neutral {
       background: var(--badge-neutral-bg);
@@ -735,30 +758,56 @@
         background: #fff !important;
         color: #000 !important;
       }
-      .top-header, .nav-tabs-bar, .matrix-toolbar, .header-controls, .btn-action {
+      .top-header, .nav-tabs-bar, .matrix-toolbar, .header-controls, .btn-action, .kpi-ribbon {
         display: none !important;
       }
+      .tab-content {
+        display: none !important;
+      }
+      .tab-content.active {
+        display: block !important;
+      }
       .table-matrix th, .table-matrix td {
-        border-color: #ddd !important;
+        border-color: #cbd5e1 !important;
         color: #000 !important;
+        background: transparent !important;
       }
       .matrix-card {
         border: none !important;
         box-shadow: none !important;
       }
+      .table-matrix th.sticky-col, .table-matrix td.sticky-col,
+      .table-matrix th.sticky-total, .table-matrix td.sticky-total {
+        position: static !important;
+      }
+      .print-header {
+        display: block !important;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid #000;
+      }
+    }
+    .print-header {
+      display: none;
     }
   </style>
 </head>
 <body>
   <div class="app-shell">
     
+    <!-- ── Print Only Header ── -->
+    <div class="print-header">
+      <h2 style="margin: 0; font-size: 20px;">ULTRA MRF Automotive &bull; Financial Statement</h2>
+      <div style="font-size: 12px; color: #475569; margin-top: 4px;" id="print-meta-text">Consolidated Enterprise Group</div>
+    </div>
+
     <!-- ── Top Header Bar ── -->
     <header class="top-header">
       <div class="brand-section">
         <div class="brand-logo">UM</div>
         <div class="brand-title-wrap">
-          <h1 class="brand-title">Consolidated Multi-Company Financials &amp; Inventory Audit</h1>
-          <span class="brand-subtitle">Enterprise Group Reporting • Dynamic Column Filtering</span>
+          <h1 class="brand-title">Consolidated Multi-Company Financials &amp; Accounting Suite</h1>
+          <span class="brand-subtitle">Enterprise Group Reporting &bull; Dynamic Column Filtering</span>
         </div>
       </div>
 
@@ -802,7 +851,7 @@
         <!-- Custom Date Range -->
         <div class="date-inputs">
           <input type="date" id="input-from-date" class="date-input" value="2026-01-01" onchange="reloadActiveTab()">
-          <span style="color: var(--text-muted);">→</span>
+          <span style="color: var(--text-muted);">&rarr;</span>
           <input type="date" id="input-to-date" class="date-input" value="2026-12-31" onchange="reloadActiveTab()">
         </div>
 
@@ -812,12 +861,12 @@
           Refresh
         </button>
 
-        <button class="btn-action" onclick="exportCurrentTableExcel()" title="Download the active tab as an Excel worksheet">
+        <button class="btn-action btn-primary" onclick="exportCurrentTableExcel()" title="Download the active tab as an Excel worksheet (.xlsx)">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           Export Excel
         </button>
 
-        <button class="btn-action" onclick="window.print()">
+        <button class="btn-action" onclick="printReport()" title="Print or Save as PDF">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
           Print
         </button>
@@ -828,7 +877,7 @@
       </div>
     </header>
 
-    <!-- ── Tab Navigation ── -->
+    <!-- ── Tab Navigation Bar ── -->
     <nav class="nav-tabs-bar">
       <ul class="tabs-list">
         <li class="tab-item active" id="tab-nav-pnl" onclick="switchTab('pnl')">
@@ -839,66 +888,35 @@
           <span>🏛️ Consolidated Balance Sheet</span>
           <span class="tab-badge" id="badge-bs-status">Balanced</span>
         </li>
+        <li class="tab-item" id="tab-nav-cash_flow" onclick="switchTab('cash_flow')">
+          <span>💵 Cash Flow (Daily / Monthly / Yearly)</span>
+          <span class="tab-badge" id="badge-cf-status">Live</span>
+        </li>
+        <li class="tab-item" id="tab-nav-ar_aging" onclick="switchTab('ar_aging')">
+          <span>📥 AR Aging (30, 60, 90 Days)</span>
+          <span class="tab-badge" id="badge-ar-count">0 Invoices</span>
+        </li>
+        <li class="tab-item" id="tab-nav-ap_aging" onclick="switchTab('ap_aging')">
+          <span>📤 AP Aging (30, 60, 90 Days)</span>
+          <span class="tab-badge" id="badge-ap-count">0 Bills</span>
+        </li>
         <li class="tab-item" id="tab-nav-general_ledger" onclick="switchTab('general_ledger')">
-          <span>📜 Multi-Company General Ledger</span>
-          <span class="tab-badge" id="badge-gl-count">0</span>
+          <span>📜 General Ledger Explorer</span>
+          <span class="tab-badge" id="badge-gl-count">0 Entries</span>
         </li>
         <li class="tab-item" id="tab-nav-inventory_audit" onclick="switchTab('inventory_audit')">
-          <span>📦 Multi-Company Inventory Audit</span>
+          <span>📦 Inventory Audit &amp; On Hand</span>
           <span class="tab-badge" id="badge-inv-count">0 Items</span>
         </li>
       </ul>
-      <div style="font-size: 11px; color: var(--text-muted); font-family: var(--font-mono);">
+      <div style="font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); white-space: nowrap;">
         Currency: <strong style="color: var(--text-primary);">PHP (₱)</strong>
       </div>
     </nav>
 
     <!-- ── Dynamic KPI Ribbon ── -->
-    <section class="kpi-ribbon">
-      <div class="kpi-card" onclick="switchTab('pnl')">
-        <div class="kpi-label">
-          <span>Consolidated Net Revenue</span>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-        </div>
-        <div class="kpi-value" id="kpi-revenue">₱0.00</div>
-        <div class="kpi-subtext" id="kpi-companies-subtext">Across 13 operating companies</div>
-      </div>
-
-      <div class="kpi-card" onclick="switchTab('pnl')">
-        <div class="kpi-label">
-          <span>Consolidated Gross Profit</span>
-          <span id="kpi-gross-margin" class="badge badge-neutral">0.0% Margin</span>
-        </div>
-        <div class="kpi-value" id="kpi-gross-profit">₱0.00</div>
-        <div class="kpi-subtext" id="kpi-cogs-subtext">COGS: ₱0.00</div>
-      </div>
-
-      <div class="kpi-card" onclick="switchTab('pnl')">
-        <div class="kpi-label">
-          <span>Consolidated Net Operating Income</span>
-          <span id="kpi-net-margin" class="badge badge-neutral">0.0% Margin</span>
-        </div>
-        <div class="kpi-value" id="kpi-net-profit">₱0.00</div>
-        <div class="kpi-subtext" id="kpi-expenses-subtext">Expenses: ₱0.00</div>
-      </div>
-
-      <div class="kpi-card" onclick="switchTab('balance_sheet')">
-        <div class="kpi-label">
-          <span>Consolidated Total Assets</span>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-        </div>
-        <div class="kpi-value" id="kpi-assets">₱0.00</div>
-        <div class="kpi-subtext" id="kpi-equity-subtext">Liab + Equity: ₱0.00</div>
-      </div>
-
-      <div class="kpi-card" onclick="switchTab('inventory_audit')">
-        <div class="kpi-label">
-          <span>Total Stock Valuation</span>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-        </div>
-        <div class="kpi-value" id="kpi-inventory-val">₱0.00</div>
-        <div class="kpi-subtext" id="kpi-inventory-qty-subtext">0 Units in Stock</div>
-      </div>
+    <section class="kpi-ribbon" id="kpi-ribbon-container">
+      <!-- Dynamically updated per active tab -->
     </section>
 
     <!-- ── Main Viewport Content ── -->
@@ -922,12 +940,8 @@
 
           <div class="table-container">
             <table class="table-matrix" id="table-pnl">
-              <thead id="thead-pnl">
-                <!-- Dynamically generated company columns -->
-              </thead>
-              <tbody id="tbody-pnl">
-                <!-- Dynamically generated rows -->
-              </tbody>
+              <thead id="thead-pnl"></thead>
+              <tbody id="tbody-pnl"></tbody>
             </table>
           </div>
         </div>
@@ -951,18 +965,252 @@
 
           <div class="table-container">
             <table class="table-matrix" id="table-bs">
-              <thead id="thead-bs">
-                <!-- Dynamically generated company columns -->
-              </thead>
-              <tbody id="tbody-bs">
-                <!-- Dynamically generated rows -->
-              </tbody>
+              <thead id="thead-bs"></thead>
+              <tbody id="tbody-bs"></tbody>
             </table>
           </div>
         </div>
       </section>
 
-      <!-- ── TAB 3: Multi-Company General Ledger ── -->
+      <!-- ── TAB 3: Consolidated Cash Flow Statement (Daily / Monthly / Yearly) ── -->
+      <section id="tab-cash_flow" class="tab-content">
+        <div class="matrix-card" style="position: relative;">
+          <div class="loading-overlay" id="loading-cf"><div class="spinner"></div></div>
+          
+          <div class="matrix-toolbar">
+            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+              <div class="matrix-title">
+                <span>💵 Consolidated Cash Flow Statement</span>
+                <span class="badge badge-neutral" id="cf-date-badge">2026-01-01 to 2026-12-31</span>
+              </div>
+              
+              <!-- Period Granularity Toggle (Daily, Monthly, Yearly) -->
+              <div class="date-pill-group">
+                <button class="date-preset-btn" id="cf-period-daily" onclick="setCashFlowPeriod('daily')">📅 Daily</button>
+                <button class="date-preset-btn active" id="cf-period-monthly" onclick="setCashFlowPeriod('monthly')">📆 Monthly</button>
+                <button class="date-preset-btn" id="cf-period-yearly" onclick="setCashFlowPeriod('yearly')">🏛️ Yearly</button>
+              </div>
+
+              <!-- Sub-View Switcher -->
+              <div class="date-pill-group">
+                <button class="date-preset-btn active" id="cf-view-matrix" onclick="setCashFlowView('matrix')">🏢 Multi-Company Matrix</button>
+                <button class="date-preset-btn" id="cf-view-periods" onclick="setCashFlowView('periods')">📆 Periodic Trend</button>
+              </div>
+            </div>
+
+            <div class="search-box-wrap">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="search-cf" class="search-input" placeholder="Filter cash flow items..." oninput="filterCashFlowRows(this.value)">
+            </div>
+          </div>
+
+          <!-- View 1: Multi-Company Matrix Table -->
+          <div class="table-container" id="cf-matrix-container">
+            <table class="table-matrix" id="table-cf-matrix">
+              <thead id="thead-cf-matrix"></thead>
+              <tbody id="tbody-cf-matrix"></tbody>
+            </table>
+          </div>
+
+          <!-- View 2: Periodic Trend Table -->
+          <div class="table-container" id="cf-periods-container" style="display: none;">
+            <table class="table-matrix" id="table-cf-periods">
+              <thead id="thead-cf-periods">
+                <tr>
+                  <th>Period</th>
+                  <th style="text-align: right;">Opening Balance (₱)</th>
+                  <th style="text-align: right;">Total Inflows (₱)</th>
+                  <th style="text-align: right;">Total Outflows (₱)</th>
+                  <th style="text-align: right;">Net Cash Flow (₱)</th>
+                  <th style="text-align: right;">Ending Balance (₱)</th>
+                  <th style="text-align: center;">Transactions</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-cf-periods"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── TAB 4: AR Aging Analysis (30, 60, 90 Days) ── -->
+      <section id="tab-ar_aging" class="tab-content">
+        <div class="matrix-card" style="position: relative;">
+          <div class="loading-overlay" id="loading-ar"><div class="spinner"></div></div>
+          
+          <div class="matrix-toolbar">
+            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+              <div class="matrix-title">
+                <span>📥 Accounts Receivable (AR) Aging Analysis</span>
+                <span class="badge badge-neutral" id="ar-asof-badge">As of Today</span>
+              </div>
+
+              <!-- View Switcher -->
+              <div class="date-pill-group">
+                <button class="date-preset-btn active" id="ar-view-summary" onclick="setARView('summary')">👥 Customer Summary</button>
+                <button class="date-preset-btn" id="ar-view-companies" onclick="setARView('companies')">🏢 Company Matrix</button>
+                <button class="date-preset-btn" id="ar-view-details" onclick="setARView('details')">📄 Invoices Detail</button>
+              </div>
+            </div>
+
+            <div class="search-box-wrap">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="search-ar" class="search-input" placeholder="Search customer, invoice #, terms..." oninput="filterARRows(this.value)">
+            </div>
+          </div>
+
+          <!-- AR Customer Summary Table -->
+          <div class="table-container" id="ar-summary-container">
+            <table class="table-matrix" id="table-ar-summary">
+              <thead>
+                <tr>
+                  <th class="sticky-col">Customer Name</th>
+                  <th>Primary Branch</th>
+                  <th style="text-align: right;">Current / Not Due</th>
+                  <th style="text-align: right;">1 - 30 Days</th>
+                  <th style="text-align: right;">31 - 60 Days</th>
+                  <th style="text-align: right;">61 - 90 Days</th>
+                  <th style="text-align: right;">90+ Days</th>
+                  <th class="sticky-total">Total Outstanding</th>
+                  <th style="text-align: center;">Invoices</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-ar-summary"></tbody>
+            </table>
+          </div>
+
+          <!-- AR Company Matrix Table -->
+          <div class="table-container" id="ar-companies-container" style="display: none;">
+            <table class="table-matrix" id="table-ar-companies">
+              <thead>
+                <tr>
+                  <th class="sticky-col">Operating Company</th>
+                  <th>Abbr</th>
+                  <th style="text-align: right;">Current / Not Due</th>
+                  <th style="text-align: right;">1 - 30 Days</th>
+                  <th style="text-align: right;">31 - 60 Days</th>
+                  <th style="text-align: right;">61 - 90 Days</th>
+                  <th style="text-align: right;">90+ Days</th>
+                  <th class="sticky-total">Total Receivables</th>
+                  <th style="text-align: center;">Invoices</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-ar-companies"></tbody>
+            </table>
+          </div>
+
+          <!-- AR Detailed Invoices Table -->
+          <div class="table-container" id="ar-details-container" style="display: none;">
+            <table class="table-matrix" id="table-ar-details">
+              <thead>
+                <tr>
+                  <th>Invoice No</th>
+                  <th>Customer</th>
+                  <th>Company</th>
+                  <th>Posting Date</th>
+                  <th>Due Date (Terms)</th>
+                  <th style="text-align: center;">Days Overdue</th>
+                  <th style="text-align: center;">Aging Bucket</th>
+                  <th style="text-align: right;">Invoice Total</th>
+                  <th style="text-align: right;">Outstanding</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-ar-details"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── TAB 5: AP Aging Analysis (30, 60, 90 Days) ── -->
+      <section id="tab-ap_aging" class="tab-content">
+        <div class="matrix-card" style="position: relative;">
+          <div class="loading-overlay" id="loading-ap"><div class="spinner"></div></div>
+          
+          <div class="matrix-toolbar">
+            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+              <div class="matrix-title">
+                <span>📤 Accounts Payable (AP) Aging Analysis</span>
+                <span class="badge badge-neutral" id="ap-asof-badge">As of Today</span>
+              </div>
+
+              <!-- View Switcher -->
+              <div class="date-pill-group">
+                <button class="date-preset-btn active" id="ap-view-summary" onclick="setAPView('summary')">🏢 Supplier Summary</button>
+                <button class="date-preset-btn" id="ap-view-companies" onclick="setAPView('companies')">🏢 Company Matrix</button>
+                <button class="date-preset-btn" id="ap-view-details" onclick="setAPView('details')">📄 Bills Detail</button>
+              </div>
+            </div>
+
+            <div class="search-box-wrap">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="search-ap" class="search-input" placeholder="Search supplier, bill #, terms..." oninput="filterAPRows(this.value)">
+            </div>
+          </div>
+
+          <!-- AP Supplier Summary Table -->
+          <div class="table-container" id="ap-summary-container">
+            <table class="table-matrix" id="table-ap-summary">
+              <thead>
+                <tr>
+                  <th class="sticky-col">Supplier Name</th>
+                  <th>Primary Branch</th>
+                  <th style="text-align: right;">Current / Not Due</th>
+                  <th style="text-align: right;">1 - 30 Days</th>
+                  <th style="text-align: right;">31 - 60 Days</th>
+                  <th style="text-align: right;">61 - 90 Days</th>
+                  <th style="text-align: right;">90+ Days</th>
+                  <th class="sticky-total">Total Outstanding</th>
+                  <th style="text-align: center;">Bills</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-ap-summary"></tbody>
+            </table>
+          </div>
+
+          <!-- AP Company Matrix Table -->
+          <div class="table-container" id="ap-companies-container" style="display: none;">
+            <table class="table-matrix" id="table-ap-companies">
+              <thead>
+                <tr>
+                  <th class="sticky-col">Operating Company</th>
+                  <th>Abbr</th>
+                  <th style="text-align: right;">Current / Not Due</th>
+                  <th style="text-align: right;">1 - 30 Days</th>
+                  <th style="text-align: right;">31 - 60 Days</th>
+                  <th style="text-align: right;">61 - 90 Days</th>
+                  <th style="text-align: right;">90+ Days</th>
+                  <th class="sticky-total">Total Payables</th>
+                  <th style="text-align: center;">Bills</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-ap-companies"></tbody>
+            </table>
+          </div>
+
+          <!-- AP Detailed Bills Table -->
+          <div class="table-container" id="ap-details-container" style="display: none;">
+            <table class="table-matrix" id="table-ap-details">
+              <thead>
+                <tr>
+                  <th>Bill / Invoice No</th>
+                  <th>Supplier</th>
+                  <th>Company</th>
+                  <th>Bill Date</th>
+                  <th>Due Date (Terms)</th>
+                  <th style="text-align: center;">Days Overdue</th>
+                  <th style="text-align: center;">Aging Bucket</th>
+                  <th style="text-align: right;">Bill Total</th>
+                  <th style="text-align: right;">Outstanding</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-ap-details"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── TAB 6: Multi-Company General Ledger ── -->
       <section id="tab-general_ledger" class="tab-content">
         <div class="matrix-card" style="position: relative;">
           <div class="loading-overlay" id="loading-gl"><div class="spinner"></div></div>
@@ -1006,22 +1254,20 @@
                   <th>Remarks</th>
                 </tr>
               </thead>
-              <tbody id="tbody-gl">
-                <!-- GL Entries -->
-              </tbody>
+              <tbody id="tbody-gl"></tbody>
             </table>
           </div>
         </div>
       </section>
 
-      <!-- ── TAB 4: Multi-Company Inventory Audit ── -->
+      <!-- ── TAB 7: Multi-Company Inventory Audit ── -->
       <section id="tab-inventory_audit" class="tab-content">
         <div class="matrix-card" style="position: relative;">
           <div class="loading-overlay" id="loading-inv"><div class="spinner"></div></div>
           
           <div class="matrix-toolbar">
             <div class="matrix-title">
-              <span>📦 Multi-Company Inventory Audit • Running Balance &amp; On Hand</span>
+              <span>📦 Multi-Company Inventory Audit &bull; Running Balance &amp; On Hand</span>
               <span class="badge badge-neutral" id="inv-sku-badge">0 SKUs</span>
             </div>
             
@@ -1032,25 +1278,25 @@
           </div>
 
           <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;padding:12px 20px">
-            <label><input id="inv-stock-only" type="checkbox" onchange="inventoryRefreshFilter()"> Only items with stock</label>
-            <details><summary id="inv-selection-label" style="cursor:pointer">All items</summary>
+            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+              <input id="inv-stock-only" type="checkbox" onchange="inventoryRefreshFilter()" style="accent-color: var(--accent-solid);">
+              <span>Only items with stock on hand</span>
+            </label>
+            <details><summary id="inv-selection-label" style="cursor:pointer; font-weight: 600;">All Items Selection</summary>
               <div style="padding:10px;display:grid;gap:8px">
-                <div><button class="btn-action" onclick="inventorySelectAll(true)">Select All Items</button>
-                <button class="btn-action" onclick="inventorySelectAll(false)">Clear Selection</button></div>
+                <div>
+                  <button class="btn-action" onclick="inventorySelectAll(true)">Select All Items</button>
+                  <button class="btn-action" onclick="inventorySelectAll(false)">Clear Selection</button>
+                </div>
                 <label for="inv-item-select">Choose items (Ctrl / Cmd to select multiple)</label>
-                <select id="inv-item-select" multiple size="10" onchange="inventorySelectChanged()" style="max-width:80vw;width:440px;background:var(--bg-card);color:var(--text-primary)"></select>
+                <select id="inv-item-select" multiple size="10" onchange="inventorySelectChanged()" style="max-width:80vw;width:440px;background:var(--bg-surface-elevated);color:var(--text-primary);border:1px solid var(--border-subtle);border-radius:6px;padding:6px;"></select>
               </div>
             </details>
-            <small>Stock means positive on-hand quantity in at least one selected company. Totals and Excel use the filtered items.</small>
           </div>
           <div class="table-container">
             <table class="table-matrix" id="table-inv">
-              <thead id="thead-inv">
-                <!-- Dynamically generated company columns -->
-              </thead>
-              <tbody id="tbody-inv">
-                <!-- Dynamically generated inventory rows -->
-              </tbody>
+              <thead id="thead-inv"></thead>
+              <tbody id="tbody-inv"></tbody>
             </table>
           </div>
         </div>
@@ -1058,7 +1304,7 @@
 
     </main>
 
-    <!-- ── GL Drill-Down Modal ── -->
+    <!-- ── Drill-Down Modal ── -->
     <div class="modal-overlay" id="drilldown-modal">
       <div class="modal-card">
         <div class="modal-header">
@@ -1080,9 +1326,7 @@
                 <th>Remarks</th>
               </tr>
             </thead>
-            <tbody id="drilldown-tbody">
-              <!-- Dynamically populated -->
-            </tbody>
+            <tbody id="drilldown-tbody"></tbody>
           </table>
         </div>
         <div class="modal-footer">
@@ -1091,7 +1335,7 @@
       </div>
     </div>
 
-    <!-- ── Stock Ledger Running Balance Drill-Down Modal ── -->
+    <!-- ── Stock Ledger Modal ── -->
     <div class="modal-overlay" id="stock-modal">
       <div class="modal-card" style="max-width: 1050px;">
         <div class="modal-header">
@@ -1099,43 +1343,29 @@
             <h3 class="modal-title" id="stock-modal-title">Running Stock Ledger Audit</h3>
             <span style="font-size: 11px; color: var(--text-muted);" id="stock-modal-subtitle">Chronological running transactions &amp; balance on hand</span>
           </div>
-          <button class="btn-action" onclick="closeStockModal()">✕</button>
+          <button class="btn-action" onclick="closeStockDrilldown()">✕</button>
         </div>
         <div class="modal-body">
-          <div style="display: flex; justify-content: space-between; margin-bottom: 12px; padding: 8px 12px; background: var(--bg-surface-elevated); border-radius: 8px;">
-            <div style="font-size: 12px;">
-              <span style="color: var(--text-muted);">Item Code:</span> <strong id="stock-item-code">-</strong> • 
-              <span style="color: var(--text-muted);">Company:</span> <strong id="stock-company-name">All Companies</strong>
-            </div>
-            <div style="display: flex; gap: 16px; font-size: 12px;">
-              <div>In: <strong style="color: var(--positive-color);" id="stock-total-in">0</strong></div>
-              <div>Out: <strong style="color: var(--negative-color);" id="stock-total-out">0</strong></div>
-              <div>Ending On Hand: <strong style="color: var(--accent-solid);" id="stock-ending-qty">0</strong></div>
-              <div>Valuation: <strong id="stock-ending-val">₱0.00</strong></div>
-            </div>
-          </div>
-
+          <div id="stock-modal-summary" style="display:flex;gap:20px;padding:8px 0 16px 0;font-size:12px;font-family:var(--font-mono);border-bottom:1px solid var(--border-hairline);margin-bottom:12px"></div>
           <table class="table-matrix" style="width: 100%;">
             <thead>
               <tr>
-                <th>Posting Date &amp; Time</th>
-                <th>Company</th>
+                <th>Date / Time</th>
+                <th>Branch</th>
                 <th>Warehouse</th>
                 <th>Voucher Type</th>
                 <th>Voucher No</th>
-                <th style="text-align: right;">Qty In/Out</th>
-                <th style="text-align: right;">Running Balance</th>
-                <th style="text-align: right;">Incoming Rate</th>
-                <th style="text-align: right;">Stock Valuation (₱)</th>
+                <th style="text-align: right;">Actual Qty</th>
+                <th style="text-align: right;">Running Qty</th>
+                <th style="text-align: right;">Rate (₱)</th>
+                <th style="text-align: right;">Stock Value (₱)</th>
               </tr>
             </thead>
-            <tbody id="stock-modal-tbody">
-              <!-- Dynamically populated SLE rows -->
-            </tbody>
+            <tbody id="stock-modal-tbody"></tbody>
           </table>
         </div>
         <div class="modal-footer">
-          <button class="btn-action btn-primary" onclick="closeStockModal()">Close</button>
+          <button class="btn-action btn-primary" onclick="closeStockDrilldown()">Close</button>
         </div>
       </div>
     </div>
@@ -1143,14 +1373,20 @@
   </div>
 
   <script>
-    // ── Global State ──
     let activeTab = 'pnl';
     let allAvailableCompanies = [];
-    let selectedCompanies = []; // Array of strings
+    let selectedCompanies = [];
+    let cfPeriod = 'monthly';
+    let cfView = 'matrix';
+    let arView = 'summary';
+    let apView = 'summary';
 
     let currentData = {
       pnl: null,
       balance_sheet: null,
+      cash_flow: null,
+      ar_aging: null,
+      ap_aging: null,
       general_ledger: null,
       inventory_audit: null
     };
@@ -1158,7 +1394,6 @@
     const API_BASE = '/api/method/vehicle_management.vehicle_management.consolidated_financials_api.get_consolidated_financials';
     const FALLBACK_API = '/api/method/vm_consolidated_financials';
 
-    // Format currency helpers
     function fmt(num) {
       if (num === null || num === undefined || isNaN(num)) return '₱0.00';
       const val = parseFloat(num);
@@ -1170,6 +1405,14 @@
       return formatted;
     }
 
+    function fmtPlain(num) {
+      if (num === null || num === undefined || isNaN(num)) return '₱0.00';
+      const val = parseFloat(num);
+      if (val === 0) return '₱0.00';
+      const formatted = '₱' + Math.abs(val).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      return val < 0 ? `(${formatted})` : formatted;
+    }
+
     function fmtQty(num, uom = '') {
       if (num === null || num === undefined || isNaN(num)) return '<span class="num-zero">0</span>';
       const val = parseFloat(num);
@@ -1177,7 +1420,7 @@
       return val.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + (uom ? ' ' + uom : '');
     }
 
-    // ── Tab Switching ──
+    // ── Tab Navigation ──
     function switchTab(tabId) {
       activeTab = tabId;
       window.location.hash = tabId;
@@ -1194,13 +1437,12 @@
       loadDataForTab(tabId);
     }
 
-    // ── Company Filter Popover Management ──
+    // ── Company Filter Management ──
     function toggleCompanyPopover() {
       const p = document.getElementById('company-popover');
       p.classList.toggle('open');
     }
 
-    // Close popover when clicked outside
     document.addEventListener('click', (e) => {
       const popover = document.getElementById('company-popover');
       const btn = document.getElementById('btn-company-filter');
@@ -1309,7 +1551,7 @@
       return json.message || json;
     }
 
-    // ── Tab Data Loaders ──
+    // ── Data Loader Dispatcher ──
     async function loadDataForTab(tabId, force = false) {
       const fromDate = document.getElementById('input-from-date').value;
       const toDate = document.getElementById('input-to-date').value;
@@ -1346,226 +1588,647 @@
         } finally {
           document.getElementById('loading-bs').classList.remove('active');
         }
-      } else if (tabId === 'general_ledger') {
-        loadGLData();
-      } else if (tabId === 'inventory_audit') {
-        document.getElementById('loading-inv').classList.add('active');
+      } else if (tabId === 'cash_flow') {
+        document.getElementById('loading-cf').classList.add('active');
+        document.getElementById('cf-date-badge').innerText = `${fromDate} to ${toDate} (${cfPeriod.toUpperCase()})`;
         try {
-          const data = await fetchFinancialAPI({ report_type: 'inventory_audit', to_date: toDate });
-          currentData.inventory_audit = data;
+          const data = await fetchFinancialAPI({ report_type: 'cash_flow', from_date: fromDate, to_date: toDate, period: cfPeriod });
+          currentData.cash_flow = data;
           if (data.all_companies && allAvailableCompanies.length === 0) {
             renderCompanyCheckboxes(data.all_companies);
           }
-          renderInventoryTable(data);
+          renderCashFlowTable(data);
           updateKPIs();
         } catch (e) {
           console.error(e);
         } finally {
-          document.getElementById('loading-inv').classList.remove('active');
+          document.getElementById('loading-cf').classList.remove('active');
         }
+      } else if (tabId === 'ar_aging') {
+        document.getElementById('loading-ar').classList.add('active');
+        document.getElementById('ar-asof-badge').innerText = `As of ${toDate}`;
+        try {
+          const data = await fetchFinancialAPI({ report_type: 'ar_aging', as_of_date: toDate });
+          currentData.ar_aging = data;
+          if (data.all_companies && allAvailableCompanies.length === 0) {
+            renderCompanyCheckboxes(data.all_companies);
+          }
+          document.getElementById('badge-ar-count').innerText = `${data.invoice_count || 0} Invoices`;
+          renderARTable(data);
+          updateKPIs();
+        } catch (e) {
+          console.error(e);
+        } finally {
+          document.getElementById('loading-ar').classList.remove('active');
+        }
+      } else if (tabId === 'ap_aging') {
+        document.getElementById('loading-ap').classList.add('active');
+        document.getElementById('ap-asof-badge').innerText = `As of ${toDate}`;
+        try {
+          const data = await fetchFinancialAPI({ report_type: 'ap_aging', as_of_date: toDate });
+          currentData.ap_aging = data;
+          if (data.all_companies && allAvailableCompanies.length === 0) {
+            renderCompanyCheckboxes(data.all_companies);
+          }
+          document.getElementById('badge-ap-count').innerText = `${data.bill_count || 0} Bills`;
+          renderAPTable(data);
+          updateKPIs();
+        } catch (e) {
+          console.error(e);
+        } finally {
+          document.getElementById('loading-ap').classList.remove('active');
+        }
+      } else if (tabId === 'general_ledger') {
+        loadGLData();
+      } else if (tabId === 'inventory_audit') {
+        loadInventoryData();
       }
     }
 
-    // ── Render Tab 1: P&L Table ──
+    // ── Dynamic KPI Ribbon Renderer ──
+    function updateKPIs() {
+      const container = document.getElementById('kpi-ribbon-container');
+      const coCount = selectedCompanies.length || 13;
+
+      if (activeTab === 'pnl' && currentData.pnl) {
+        const d = currentData.pnl;
+        const kpis = d.kpis || {};
+        container.innerHTML = `
+          <div class="kpi-card" onclick="switchTab('pnl')">
+            <div class="kpi-label"><span>Consolidated Revenue</span><span class="badge badge-success">Topline</span></div>
+            <div class="kpi-value">${fmtPlain(kpis.consolidated_revenue)}</div>
+            <div class="kpi-subtext">Across ${coCount} operating companies</div>
+          </div>
+          <div class="kpi-card" onclick="switchTab('pnl')">
+            <div class="kpi-label"><span>Gross Profit</span><span class="badge badge-neutral">${kpis.consolidated_gross_profit && kpis.consolidated_revenue ? ((kpis.consolidated_gross_profit/kpis.consolidated_revenue)*100).toFixed(1) : 0}% Margin</span></div>
+            <div class="kpi-value">${fmtPlain(kpis.consolidated_gross_profit)}</div>
+            <div class="kpi-subtext">COGS: ${fmtPlain(kpis.consolidated_cogs)}</div>
+          </div>
+          <div class="kpi-card" onclick="switchTab('pnl')">
+            <div class="kpi-label"><span>Net Operating Income</span><span class="badge ${kpis.consolidated_net_profit >= 0 ? 'badge-success' : 'badge-danger'}">${kpis.consolidated_net_margin || 0}% Net</span></div>
+            <div class="kpi-value" style="color: ${kpis.consolidated_net_profit >= 0 ? 'var(--positive-color)' : 'var(--negative-color)'};">${fmtPlain(kpis.consolidated_net_profit)}</div>
+            <div class="kpi-subtext">Expenses: ${fmtPlain(kpis.consolidated_expenses)}</div>
+          </div>
+        `;
+      } else if (activeTab === 'balance_sheet' && currentData.balance_sheet) {
+        const d = currentData.balance_sheet;
+        const kpis = d.kpis || {};
+        container.innerHTML = `
+          <div class="kpi-card" onclick="switchTab('balance_sheet')">
+            <div class="kpi-label"><span>Total Assets</span><span class="badge badge-info">Assets</span></div>
+            <div class="kpi-value">${fmtPlain(kpis.consolidated_assets)}</div>
+            <div class="kpi-subtext">Operating assets across group</div>
+          </div>
+          <div class="kpi-card" onclick="switchTab('balance_sheet')">
+            <div class="kpi-label"><span>Total Liabilities</span><span class="badge badge-warning">Payables & Debt</span></div>
+            <div class="kpi-value">${fmtPlain(kpis.consolidated_liabilities)}</div>
+            <div class="kpi-subtext">External obligations</div>
+          </div>
+          <div class="kpi-card" onclick="switchTab('balance_sheet')">
+            <div class="kpi-label"><span>Total Equity</span><span class="badge badge-success">Capital</span></div>
+            <div class="kpi-value">${fmtPlain(kpis.consolidated_equity)}</div>
+            <div class="kpi-subtext">Liab + Equity: ${fmtPlain((kpis.consolidated_liabilities || 0) + (kpis.consolidated_equity || 0))}</div>
+          </div>
+        `;
+      } else if (activeTab === 'cash_flow' && currentData.cash_flow) {
+        const d = currentData.cash_flow;
+        const s = d.summary || {};
+        container.innerHTML = `
+          <div class="kpi-card">
+            <div class="kpi-label"><span>Beginning Cash Balance</span><span class="badge badge-neutral">Opening</span></div>
+            <div class="kpi-value">${fmtPlain(s.opening_consolidated)}</div>
+            <div class="kpi-subtext">Prior to period start</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label"><span>Total Cash Inflows</span><span class="badge badge-success">Collections</span></div>
+            <div class="kpi-value" style="color: var(--positive-color);">${fmtPlain(s.inflows_consolidated)}</div>
+            <div class="kpi-subtext">Customer & POS receipts</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label"><span>Total Cash Outflows</span><span class="badge badge-warning">Disbursements</span></div>
+            <div class="kpi-value" style="color: var(--warning-color);">${fmtPlain(s.outflows_consolidated)}</div>
+            <div class="kpi-subtext">Supplier & operating expenses</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label"><span>Net Cash Flow</span><span class="badge ${s.net_consolidated >= 0 ? 'badge-success' : 'badge-danger'}">${s.net_consolidated >= 0 ? '+ Positive' : '- Deficit'}</span></div>
+            <div class="kpi-value" style="color: ${s.net_consolidated >= 0 ? 'var(--positive-color)' : 'var(--negative-color)'};">${fmtPlain(s.net_consolidated)}</div>
+            <div class="kpi-subtext">Period net movement</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label"><span>Ending Cash Balance</span><span class="badge badge-info">Closing</span></div>
+            <div class="kpi-value" style="color: var(--accent-blue);">${fmtPlain(s.ending_consolidated)}</div>
+            <div class="kpi-subtext">Live running cash on hand</div>
+          </div>
+        `;
+      } else if (activeTab === 'ar_aging' && currentData.ar_aging) {
+        const d = currentData.ar_aging;
+        const t = d.totals || {};
+        container.innerHTML = `
+          <div class="kpi-card">
+            <div class="kpi-label"><span>Total Accounts Receivable</span><span class="badge badge-info">${d.invoice_count || 0} Invoices</span></div>
+            <div class="kpi-value">${fmtPlain(t.total_outstanding)}</div>
+            <div class="kpi-subtext">Across ${d.customer_summary ? d.customer_summary.length : 0} customers</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label"><span>Current / Not Due</span><span class="badge badge-success">On Term</span></div>
+            <div class="kpi-value" style="color: var(--positive-color);">${fmtPlain(t.current)}</div>
+            <div class="kpi-subtext">Within credit terms</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label"><span>1 - 30 Days Overdue</span><span class="badge badge-warning">Grace Period</span></div>
+            <div class="kpi-value" style="color: var(--warning-color);">${fmtPlain(t.range_1_30)}</div>
+            <div class="kpi-subtext">Follow-up required</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label"><span>31 - 60 Days Overdue</span><span class="badge badge-danger">Moderate</span></div>
+            <div class="kpi-value" style="color: #f97316;">${fmtPlain(t.range_31_60)}</div>
+            <div class="kpi-subtext">Second notice</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label"><span>61 - 90+ Days Overdue</span><span class="badge badge-danger">Critical</span></div>
+            <div class="kpi-value" style="color: var(--negative-color);">${fmtPlain((t.range_61_90 || 0) + (t.range_90_plus || 0))}</div>
+            <div class="kpi-subtext">61-90d: ${fmtPlain(t.range_61_90)} | 90+d: ${fmtPlain(t.range_90_plus)}</div>
+          </div>
+        `;
+      } else if (activeTab === 'ap_aging' && currentData.ap_aging) {
+        const d = currentData.ap_aging;
+        const t = d.totals || {};
+        container.innerHTML = `
+          <div class="kpi-card">
+            <div class="kpi-label"><span>Total Accounts Payable</span><span class="badge badge-info">${d.bill_count || 0} Bills</span></div>
+            <div class="kpi-value">${fmtPlain(t.total_outstanding)}</div>
+            <div class="kpi-subtext">Across ${d.supplier_summary ? d.supplier_summary.length : 0} suppliers</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label"><span>Current / Not Due</span><span class="badge badge-success">On Term</span></div>
+            <div class="kpi-value" style="color: var(--positive-color);">${fmtPlain(t.current)}</div>
+            <div class="kpi-subtext">Payable on schedule</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label"><span>1 - 30 Days Overdue</span><span class="badge badge-warning">Due Soon</span></div>
+            <div class="kpi-value" style="color: var(--warning-color);">${fmtPlain(t.range_1_30)}</div>
+            <div class="kpi-subtext">Immediate disbursement</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label"><span>31 - 60 Days Overdue</span><span class="badge badge-danger">Past Due</span></div>
+            <div class="kpi-value" style="color: #f97316;">${fmtPlain(t.range_31_60)}</div>
+            <div class="kpi-subtext">Vendor reminder</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label"><span>61 - 90+ Days Overdue</span><span class="badge badge-danger">Overdue</span></div>
+            <div class="kpi-value" style="color: var(--negative-color);">${fmtPlain((t.range_61_90 || 0) + (t.range_90_plus || 0))}</div>
+            <div class="kpi-subtext">61-90d: ${fmtPlain(t.range_61_90)} | 90+d: ${fmtPlain(t.range_90_plus)}</div>
+          </div>
+        `;
+      }
+    }
+
+    // ── P&L Table Renderer ──
     function renderPNLTable(data) {
-      if (!data || !data.companies) return;
-      const companies = data.companies;
+      const companies = data.companies || [];
       const meta = data.company_meta || {};
+      const sections = data.sections || {};
 
-      // Build Thead
-      let theadHtml = `<tr>
-        <th class="sticky-col">Operating Accounts &amp; Line Items</th>`;
-      companies.forEach(co => {
-        const abbr = meta[co] ? meta[co].abbr : co;
-        theadHtml += `<th style="text-align: right;" title="${co}">${co} <br><span style="font-size: 9px; color: var(--text-muted);">${abbr}</span></th>`;
+      let thead = '<tr><th class="sticky-col">Account Title</th>';
+      companies.forEach(c => {
+        const abbr = meta[c]?.abbr || c.substring(0, 4);
+        thead += `<th style="text-align: right;" title="${c}">${abbr}</th>`;
       });
-      theadHtml += `<th class="sticky-total">Consolidated Total (₱)</th></tr>`;
-      document.getElementById('thead-pnl').innerHTML = theadHtml;
+      thead += '<th class="sticky-total">Consolidated (PHP)</th></tr>';
+      document.getElementById('thead-pnl').innerHTML = thead;
 
-      // Build Tbody
-      let tbodyHtml = '';
-      const s = data.sections;
+      let tbody = '';
+      const order = ['income', 'cogs', 'gross_profit', 'operating_expenses', 'net_profit'];
+      order.forEach(secKey => {
+        const sec = sections[secKey];
+        if (!sec) return;
 
-      // 1. Revenue
-      tbodyHtml += `<tr class="row-section-header"><td class="sticky-col" colspan="${companies.length + 2}">1. OPERATING REVENUE / INCOME</td></tr>`;
-      s.income.rows.forEach(r => {
-        tbodyHtml += `<tr>
-          <td class="sticky-col">${r.account_name}</td>`;
-        companies.forEach(co => {
-          const val = r.companies[co] || 0;
-          tbodyHtml += `<td class="num-cell" onclick="openDrilldown('${co}', '${r.account_name}')">${fmt(val)}</td>`;
-        });
-        tbodyHtml += `<td class="sticky-total num-cell" onclick="openDrilldown('', '${r.account_name}')">${fmt(r.total)}</td></tr>`;
-      });
-      // Revenue Total Row
-      tbodyHtml += `<tr class="row-section-total">
-        <td class="sticky-col">Total Operating Revenue</td>`;
-      companies.forEach(co => {
-        tbodyHtml += `<td class="num-cell">${fmt(s.income.totals[co] || 0)}</td>`;
-      });
-      tbodyHtml += `<td class="sticky-total num-cell">${fmt(s.income.consolidated)}</td></tr>`;
-
-      // 2. Cost of Goods Sold
-      tbodyHtml += `<tr class="row-section-header"><td class="sticky-col" colspan="${companies.length + 2}">2. COST OF GOODS SOLD &amp; DIRECT COSTS</td></tr>`;
-      if (s.cogs.rows.length === 0) {
-        tbodyHtml += `<tr><td class="sticky-col" style="color: var(--text-muted); font-style: italic;">No direct cost entries</td><td colspan="${companies.length + 1}"></td></tr>`;
-      } else {
-        s.cogs.rows.forEach(r => {
-          tbodyHtml += `<tr>
-            <td class="sticky-col">${r.account_name}</td>`;
-          companies.forEach(co => {
-            const val = r.companies[co] || 0;
-            tbodyHtml += `<td class="num-cell" onclick="openDrilldown('${co}', '${r.account_name}')">${fmt(val)}</td>`;
+        if (secKey === 'gross_profit' || secKey === 'net_profit') {
+          tbody += `<tr class="${secKey === 'net_profit' ? 'row-grand-total' : 'row-section-total'}">
+            <td class="sticky-col"><strong>${sec.title}</strong></td>`;
+          companies.forEach(c => {
+            const val = sec.totals[c] || 0;
+            tbody += `<td class="num-cell">${fmt(val)}</td>`;
           });
-          tbodyHtml += `<td class="sticky-total num-cell" onclick="openDrilldown('', '${r.account_name}')">${fmt(r.total)}</td></tr>`;
-        });
-      }
-      // COGS Total Row
-      tbodyHtml += `<tr class="row-section-total">
-        <td class="sticky-col">Total Cost of Goods Sold</td>`;
-      companies.forEach(co => {
-        tbodyHtml += `<td class="num-cell">${fmt(s.cogs.totals[co] || 0)}</td>`;
-      });
-      tbodyHtml += `<td class="sticky-total num-cell">${fmt(s.cogs.consolidated)}</td></tr>`;
-
-      // 3. Gross Profit
-      tbodyHtml += `<tr class="row-grand-total">
-        <td class="sticky-col">GROSS PROFIT</td>`;
-      companies.forEach(co => {
-        tbodyHtml += `<td class="num-cell">${fmt(s.gross_profit.totals[co] || 0)}</td>`;
-      });
-      tbodyHtml += `<td class="sticky-total num-cell">${fmt(s.gross_profit.consolidated)}</td></tr>`;
-
-      // 4. Operating Expenses
-      tbodyHtml += `<tr class="row-section-header"><td class="sticky-col" colspan="${companies.length + 2}">3. OPERATING &amp; ADMINISTRATIVE EXPENSES</td></tr>`;
-      if (s.operating_expenses.rows.length === 0) {
-        tbodyHtml += `<tr><td class="sticky-col" style="color: var(--text-muted); font-style: italic;">No operating expense entries</td><td colspan="${companies.length + 1}"></td></tr>`;
-      } else {
-        s.operating_expenses.rows.forEach(r => {
-          tbodyHtml += `<tr>
-            <td class="sticky-col">${r.account_name}</td>`;
-          companies.forEach(co => {
-            const val = r.companies[co] || 0;
-            tbodyHtml += `<td class="num-cell" onclick="openDrilldown('${co}', '${r.account_name}')">${fmt(val)}</td>`;
+          tbody += `<td class="sticky-total">${fmt(sec.consolidated)}</td></tr>`;
+        } else {
+          tbody += `<tr class="row-section-header"><td colspan="${companies.length + 2}">${sec.title}</td></tr>`;
+          (sec.rows || []).forEach(row => {
+            tbody += `<tr>
+              <td class="sticky-col">${row.account_name}</td>`;
+            companies.forEach(c => {
+              const val = row.companies[c] || 0;
+              tbody += `<td class="num-cell" onclick="openDrilldown('${c}', '${row.account_name}')">${fmt(val)}</td>`;
+            });
+            tbody += `<td class="sticky-total" onclick="openDrilldown('', '${row.account_name}')">${fmt(row.total)}</td></tr>`;
           });
-          tbodyHtml += `<td class="sticky-total num-cell" onclick="openDrilldown('', '${r.account_name}')">${fmt(r.total)}</td></tr>`;
-        });
-      }
-      // Operating Expenses Total Row
-      tbodyHtml += `<tr class="row-section-total">
-        <td class="sticky-col">Total Operating Expenses</td>`;
-      companies.forEach(co => {
-        tbodyHtml += `<td class="num-cell">${fmt(s.operating_expenses.totals[co] || 0)}</td>`;
+          tbody += `<tr class="row-section-total"><td class="sticky-col">Total ${sec.title}</td>`;
+          companies.forEach(c => {
+            const val = sec.totals[c] || 0;
+            tbody += `<td class="num-cell">${fmt(val)}</td>`;
+          });
+          tbody += `<td class="sticky-total">${fmt(sec.consolidated)}</td></tr>`;
+        }
       });
-      tbodyHtml += `<td class="sticky-total num-cell">${fmt(s.operating_expenses.consolidated)}</td></tr>`;
-
-      // 5. Net Profit
-      tbodyHtml += `<tr class="row-grand-total" style="background: rgba(255,255,255,0.12) !important;">
-        <td class="sticky-col">NET OPERATING PROFIT / (LOSS)</td>`;
-      companies.forEach(co => {
-        tbodyHtml += `<td class="num-cell">${fmt(s.net_profit.totals[co] || 0)}</td>`;
-      });
-      tbodyHtml += `<td class="sticky-total num-cell">${fmt(s.net_profit.consolidated)}</td></tr>`;
-
-      document.getElementById('tbody-pnl').innerHTML = tbodyHtml;
+      document.getElementById('tbody-pnl').innerHTML = tbody;
     }
 
-    // ── Render Tab 2: Balance Sheet Table ──
+    // ── Balance Sheet Table Renderer ──
     function renderBalanceSheetTable(data) {
-      if (!data || !data.companies) return;
-      const companies = data.companies;
+      const companies = data.companies || [];
       const meta = data.company_meta || {};
+      const sections = data.sections || {};
 
-      // Build Thead
-      let theadHtml = `<tr>
-        <th class="sticky-col">Balance Sheet Accounts</th>`;
-      companies.forEach(co => {
-        const abbr = meta[co] ? meta[co].abbr : co;
-        theadHtml += `<th style="text-align: right;" title="${co}">${co} <br><span style="font-size: 9px; color: var(--text-muted);">${abbr}</span></th>`;
+      let thead = '<tr><th class="sticky-col">Balance Sheet Classification</th>';
+      companies.forEach(c => {
+        const abbr = meta[c]?.abbr || c.substring(0, 4);
+        thead += `<th style="text-align: right;" title="${c}">${abbr}</th>`;
       });
-      theadHtml += `<th class="sticky-total">Consolidated Total (₱)</th></tr>`;
-      document.getElementById('thead-bs').innerHTML = theadHtml;
+      thead += '<th class="sticky-total">Consolidated (PHP)</th></tr>';
+      document.getElementById('thead-bs').innerHTML = thead;
 
-      // Build Tbody
-      let tbodyHtml = '';
-      const s = data.sections;
+      let tbody = '';
+      ['assets', 'liabilities', 'equity', 'total_liab_equity'].forEach(secKey => {
+        const sec = sections[secKey];
+        if (!sec) return;
 
-      // 1. Assets
-      tbodyHtml += `<tr class="row-section-header"><td class="sticky-col" colspan="${companies.length + 2}">1. ASSETS (CURRENT &amp; FIXED)</td></tr>`;
-      s.assets.rows.forEach(r => {
-        tbodyHtml += `<tr>
-          <td class="sticky-col">${r.account_name}</td>`;
-        companies.forEach(co => {
-          const val = r.companies[co] || 0;
-          tbodyHtml += `<td class="num-cell" onclick="openDrilldown('${co}', '${r.account_name}')">${fmt(val)}</td>`;
-        });
-        tbodyHtml += `<td class="sticky-total num-cell" onclick="openDrilldown('', '${r.account_name}')">${fmt(r.total)}</td></tr>`;
+        if (secKey === 'total_liab_equity') {
+          tbody += `<tr class="row-grand-total"><td class="sticky-col"><strong>${sec.title}</strong></td>`;
+          companies.forEach(c => {
+            const val = sec.totals[c] || 0;
+            tbody += `<td class="num-cell">${fmt(val)}</td>`;
+          });
+          tbody += `<td class="sticky-total">${fmt(sec.consolidated)}</td></tr>`;
+        } else {
+          tbody += `<tr class="row-section-header"><td colspan="${companies.length + 2}">${sec.title}</td></tr>`;
+          (sec.rows || []).forEach(row => {
+            tbody += `<tr><td class="sticky-col">${row.account_name}</td>`;
+            companies.forEach(c => {
+              const val = row.companies[c] || 0;
+              tbody += `<td class="num-cell" onclick="openDrilldown('${c}', '${row.account_name}')">${fmt(val)}</td>`;
+            });
+            tbody += `<td class="sticky-total" onclick="openDrilldown('', '${row.account_name}')">${fmt(row.total)}</td></tr>`;
+          });
+          tbody += `<tr class="row-section-total"><td class="sticky-col">Total ${sec.title}</td>`;
+          companies.forEach(c => {
+            const val = sec.totals[c] || 0;
+            tbody += `<td class="num-cell">${fmt(val)}</td>`;
+          });
+          tbody += `<td class="sticky-total">${fmt(sec.consolidated)}</td></tr>`;
+        }
       });
-      tbodyHtml += `<tr class="row-section-total">
-        <td class="sticky-col">TOTAL ASSETS</td>`;
-      companies.forEach(co => {
-        tbodyHtml += `<td class="num-cell">${fmt(s.assets.totals[co] || 0)}</td>`;
-      });
-      tbodyHtml += `<td class="sticky-total num-cell">${fmt(s.assets.consolidated)}</td></tr>`;
-
-      // 2. Liabilities
-      tbodyHtml += `<tr class="row-section-header"><td class="sticky-col" colspan="${companies.length + 2}">2. LIABILITIES (PAYABLES &amp; OBLIGATIONS)</td></tr>`;
-      s.liabilities.rows.forEach(r => {
-        tbodyHtml += `<tr>
-          <td class="sticky-col">${r.account_name}</td>`;
-        companies.forEach(co => {
-          const val = r.companies[co] || 0;
-          tbodyHtml += `<td class="num-cell" onclick="openDrilldown('${co}', '${r.account_name}')">${fmt(val)}</td>`;
-        });
-        tbodyHtml += `<td class="sticky-total num-cell" onclick="openDrilldown('', '${r.account_name}')">${fmt(r.total)}</td></tr>`;
-      });
-      tbodyHtml += `<tr class="row-section-total">
-        <td class="sticky-col">TOTAL LIABILITIES</td>`;
-      companies.forEach(co => {
-        tbodyHtml += `<td class="num-cell">${fmt(s.liabilities.totals[co] || 0)}</td>`;
-      });
-      tbodyHtml += `<td class="sticky-total num-cell">${fmt(s.liabilities.consolidated)}</td></tr>`;
-
-      // 3. Equity
-      tbodyHtml += `<tr class="row-section-header"><td class="sticky-col" colspan="${companies.length + 2}">3. EQUITY &amp; RETAINED RESERVES</td></tr>`;
-      s.equity.rows.forEach(r => {
-        tbodyHtml += `<tr>
-          <td class="sticky-col">${r.account_name}</td>`;
-        companies.forEach(co => {
-          const val = r.companies[co] || 0;
-          tbodyHtml += `<td class="num-cell" onclick="openDrilldown('${co}', '${r.account_name}')">${fmt(val)}</td>`;
-        });
-        tbodyHtml += `<td class="sticky-total num-cell" onclick="openDrilldown('', '${r.account_name}')">${fmt(r.total)}</td></tr>`;
-      });
-      tbodyHtml += `<tr class="row-section-total">
-        <td class="sticky-col">TOTAL EQUITY</td>`;
-      companies.forEach(co => {
-        tbodyHtml += `<td class="num-cell">${fmt(s.equity.totals[co] || 0)}</td>`;
-      });
-      tbodyHtml += `<td class="sticky-total num-cell">${fmt(s.equity.consolidated)}</td></tr>`;
-
-      // 4. Total Liabilities & Equity
-      tbodyHtml += `<tr class="row-grand-total">
-        <td class="sticky-col">TOTAL LIABILITIES &amp; EQUITY</td>`;
-      companies.forEach(co => {
-        tbodyHtml += `<td class="num-cell">${fmt(s.total_liabilities_equity.totals[co] || 0)}</td>`;
-      });
-      tbodyHtml += `<td class="sticky-total num-cell">${fmt(s.total_liabilities_equity.consolidated)}</td></tr>`;
-
-      // Balance Status
-      const isBalanced = s.balance_check.is_balanced;
-      document.getElementById('badge-bs-status').className = isBalanced ? 'tab-badge badge-success' : 'tab-badge badge-danger';
-      document.getElementById('badge-bs-status').innerText = isBalanced ? '✓ Balanced' : `Diff: ₱${Math.abs(s.balance_check.consolidated)}`;
-
-      document.getElementById('tbody-bs').innerHTML = tbodyHtml;
+      document.getElementById('tbody-bs').innerHTML = tbody;
     }
 
-    // ── Render Tab 3: General Ledger ──
+    // ── Cash Flow Statement Controls & Renderer ──
+    function setCashFlowPeriod(period) {
+      cfPeriod = period;
+      document.querySelectorAll('#tab-cash_flow .date-pill-group button[id^="cf-period-"]').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById(`cf-period-${period}`);
+      if (activeBtn) activeBtn.classList.add('active');
+      loadDataForTab('cash_flow', true);
+    }
+
+    function setCashFlowView(view) {
+      cfView = view;
+      document.querySelectorAll('#tab-cash_flow .date-pill-group button[id^="cf-view-"]').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById(`cf-view-${view}`);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      if (view === 'matrix') {
+        document.getElementById('cf-matrix-container').style.display = 'block';
+        document.getElementById('cf-periods-container').style.display = 'none';
+      } else {
+        document.getElementById('cf-matrix-container').style.display = 'none';
+        document.getElementById('cf-periods-container').style.display = 'block';
+      }
+    }
+
+    function renderCashFlowTable(data) {
+      const companies = data.companies || [];
+      const meta = data.company_meta || {};
+      const summary = data.summary || {};
+      const inflows = data.inflow_categories || {};
+      const outflows = data.outflow_categories || {};
+      const periods = data.periods || [];
+
+      // 1. Matrix Header
+      let thead = '<tr><th class="sticky-col">Cash Flow Activities</th>';
+      companies.forEach(c => {
+        const abbr = meta[c]?.abbr || c.substring(0, 4);
+        thead += `<th style="text-align: right;" title="${c}">${abbr}</th>`;
+      });
+      thead += '<th class="sticky-total">Consolidated (PHP)</th></tr>';
+      document.getElementById('thead-cf-matrix').innerHTML = thead;
+
+      // 2. Matrix Body
+      let tbody = '';
+      
+      // Beginning Cash Balance Row
+      tbody += `<tr class="row-section-total">
+        <td class="sticky-col"><strong>Beginning Cash &amp; Bank Balance</strong></td>`;
+      companies.forEach(c => {
+        const val = (summary.opening_balance && summary.opening_balance[c]) || 0;
+        tbody += `<td class="num-cell">${fmt(val)}</td>`;
+      });
+      tbody += `<td class="sticky-total">${fmt(summary.opening_consolidated || 0)}</td></tr>`;
+
+      // Cash Inflows Section
+      tbody += `<tr class="row-section-header"><td colspan="${companies.length + 2}">Operating Cash Inflows &amp; Receipts</td></tr>`;
+      Object.keys(inflows).forEach(k => {
+        const cat = inflows[k];
+        tbody += `<tr><td class="sticky-col">&bull; ${cat.label}</td>`;
+        companies.forEach(c => {
+          const val = (cat.companies && cat.companies[c]) || 0;
+          tbody += `<td class="num-cell">${fmt(val)}</td>`;
+        });
+        tbody += `<td class="sticky-total">${fmt(cat.total || 0)}</td></tr>`;
+      });
+      tbody += `<tr class="row-section-total"><td class="sticky-col"><strong>Total Cash Inflows</strong></td>`;
+      companies.forEach(c => {
+        const val = (summary.inflows_total && summary.inflows_total[c]) || 0;
+        tbody += `<td class="num-cell" style="color: var(--positive-color);">${fmt(val)}</td>`;
+      });
+      tbody += `<td class="sticky-total" style="color: var(--positive-color);">${fmt(summary.inflows_consolidated || 0)}</td></tr>`;
+
+      // Cash Outflows Section
+      tbody += `<tr class="row-section-header"><td colspan="${companies.length + 2}">Operating Cash Outflows &amp; Disbursements</td></tr>`;
+      Object.keys(outflows).forEach(k => {
+        const cat = outflows[k];
+        tbody += `<tr><td class="sticky-col">&bull; ${cat.label}</td>`;
+        companies.forEach(c => {
+          const val = (cat.companies && cat.companies[c]) || 0;
+          tbody += `<td class="num-cell">${fmt(val)}</td>`;
+        });
+        tbody += `<td class="sticky-total">${fmt(cat.total || 0)}</td></tr>`;
+      });
+      tbody += `<tr class="row-section-total"><td class="sticky-col"><strong>Total Cash Outflows</strong></td>`;
+      companies.forEach(c => {
+        const val = (summary.outflows_total && summary.outflows_total[c]) || 0;
+        tbody += `<td class="num-cell" style="color: var(--warning-color);">${fmt(val)}</td>`;
+      });
+      tbody += `<td class="sticky-total" style="color: var(--warning-color);">${fmt(summary.outflows_consolidated || 0)}</td></tr>`;
+
+      // Net Cash Flow Row
+      tbody += `<tr class="row-section-total" style="border-top: 2px solid var(--border-highlight);">
+        <td class="sticky-col"><strong>Net Cash Flow for Period</strong></td>`;
+      companies.forEach(c => {
+        const val = (summary.net_cash_flow && summary.net_cash_flow[c]) || 0;
+        tbody += `<td class="num-cell" style="font-weight: 700;">${fmt(val)}</td>`;
+      });
+      tbody += `<td class="sticky-total" style="font-weight: 800;">${fmt(summary.net_consolidated || 0)}</td></tr>`;
+
+      // Ending Cash Balance Row
+      tbody += `<tr class="row-grand-total">
+        <td class="sticky-col"><strong>Ending Cash &amp; Bank Balance</strong></td>`;
+      companies.forEach(c => {
+        const val = (summary.ending_balance && summary.ending_balance[c]) || 0;
+        tbody += `<td class="num-cell" style="color: var(--accent-blue);">${fmt(val)}</td>`;
+      });
+      tbody += `<td class="sticky-total" style="color: var(--accent-blue);">${fmt(summary.ending_consolidated || 0)}</td></tr>`;
+
+      document.getElementById('tbody-cf-matrix').innerHTML = tbody;
+
+      // 3. Periodic Trend Table
+      let pbody = '';
+      if (periods.length === 0) {
+        pbody = `<tr><td colspan="7" style="text-align: center; padding: 24px; color: var(--text-muted);">No cash transactions recorded in this date range.</td></tr>`;
+      } else {
+        periods.forEach(p => {
+          pbody += `<tr>
+            <td style="font-weight: 700; color: var(--text-primary);">${p.period_label}</td>
+            <td class="num-cell">${fmt(p.opening_total || 0)}</td>
+            <td class="num-cell" style="color: var(--positive-color);">${fmt(p.inflow_total || 0)}</td>
+            <td class="num-cell" style="color: var(--warning-color);">${fmt(p.outflow_total || 0)}</td>
+            <td class="num-cell" style="font-weight: 700; color: ${p.net_total >= 0 ? 'var(--positive-color)' : 'var(--negative-color)'};">${fmt(p.net_total || 0)}</td>
+            <td class="num-cell" style="font-weight: 800; color: var(--accent-blue);">${fmt(p.ending_total || 0)}</td>
+            <td style="text-align: center;"><span class="badge badge-neutral">${p.entries_count} tx</span></td>
+          </tr>`;
+        });
+      }
+      document.getElementById('tbody-cf-periods').innerHTML = pbody;
+    }
+
+    function filterCashFlowRows(query) {
+      filterTableRows('table-cf-matrix', query);
+    }
+
+    // ── AR Aging Renderer & Controls ──
+    function setARView(view) {
+      arView = view;
+      document.querySelectorAll('#tab-ar_aging .date-pill-group button[id^="ar-view-"]').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById(`ar-view-${view}`);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      document.getElementById('ar-summary-container').style.display = view === 'summary' ? 'block' : 'none';
+      document.getElementById('ar-companies-container').style.display = view === 'companies' ? 'block' : 'none';
+      document.getElementById('ar-details-container').style.display = view === 'details' ? 'block' : 'none';
+    }
+
+    function renderARTable(data) {
+      const customers = data.customer_summary || [];
+      const companies = data.company_summary || [];
+      const invoices = data.invoices || [];
+      const totals = data.totals || {};
+
+      // 1. Customer Summary
+      let sbody = '';
+      customers.forEach(c => {
+        sbody += `<tr>
+          <td class="sticky-col">${c.customer_name}</td>
+          <td><span class="badge badge-neutral">${c.company}</span></td>
+          <td class="num-cell">${fmt(c.current)}</td>
+          <td class="num-cell" style="color: var(--warning-color);">${fmt(c.range_1_30)}</td>
+          <td class="num-cell" style="color: #f97316;">${fmt(c.range_31_60)}</td>
+          <td class="num-cell" style="color: var(--negative-color);">${fmt(c.range_61_90)}</td>
+          <td class="num-cell" style="color: var(--negative-color); font-weight: 700;">${fmt(c.range_90_plus)}</td>
+          <td class="sticky-total">${fmt(c.total_outstanding)}</td>
+          <td style="text-align: center;"><span class="badge badge-neutral">${c.invoice_count}</span></td>
+        </tr>`;
+      });
+      sbody += `<tr class="row-grand-total">
+        <td class="sticky-col">Grand Total AR (${customers.length} Customers)</td>
+        <td>Consolidated</td>
+        <td class="num-cell">${fmt(totals.current)}</td>
+        <td class="num-cell">${fmt(totals.range_1_30)}</td>
+        <td class="num-cell">${fmt(totals.range_31_60)}</td>
+        <td class="num-cell">${fmt(totals.range_61_90)}</td>
+        <td class="num-cell">${fmt(totals.range_90_plus)}</td>
+        <td class="sticky-total">${fmt(totals.total_outstanding)}</td>
+        <td style="text-align: center;"><span class="badge badge-neutral">${totals.invoice_count || 0}</span></td>
+      </tr>`;
+      document.getElementById('tbody-ar-summary').innerHTML = sbody;
+
+      // 2. Company Matrix
+      let cbody = '';
+      companies.forEach(co => {
+        cbody += `<tr>
+          <td class="sticky-col">${co.company}</td>
+          <td><span class="badge badge-neutral">${co.abbr}</span></td>
+          <td class="num-cell">${fmt(co.current)}</td>
+          <td class="num-cell">${fmt(co.range_1_30)}</td>
+          <td class="num-cell">${fmt(co.range_31_60)}</td>
+          <td class="num-cell">${fmt(co.range_61_90)}</td>
+          <td class="num-cell">${fmt(co.range_90_plus)}</td>
+          <td class="sticky-total">${fmt(co.total_outstanding)}</td>
+          <td style="text-align: center;"><span class="badge badge-neutral">${co.invoice_count}</span></td>
+        </tr>`;
+      });
+      cbody += `<tr class="row-grand-total">
+        <td class="sticky-col">Grand Total AR (All Branches)</td>
+        <td>ALL</td>
+        <td class="num-cell">${fmt(totals.current)}</td>
+        <td class="num-cell">${fmt(totals.range_1_30)}</td>
+        <td class="num-cell">${fmt(totals.range_31_60)}</td>
+        <td class="num-cell">${fmt(totals.range_61_90)}</td>
+        <td class="num-cell">${fmt(totals.range_90_plus)}</td>
+        <td class="sticky-total">${fmt(totals.total_outstanding)}</td>
+        <td style="text-align: center;"><span class="badge badge-neutral">${totals.invoice_count || 0}</span></td>
+      </tr>`;
+      document.getElementById('tbody-ar-companies').innerHTML = cbody;
+
+      // 3. Detailed Invoices Table
+      let dbody = '';
+      invoices.forEach(inv => {
+        let bBadge = '<span class="badge badge-success">Current</span>';
+        if (inv.bucket === 'range_1_30') bBadge = '<span class="badge badge-warning">1-30d</span>';
+        else if (inv.bucket === 'range_31_60') bBadge = '<span class="badge badge-warning" style="background:rgba(249,115,22,0.15);color:#f97316;">31-60d</span>';
+        else if (inv.bucket === 'range_61_90') bBadge = '<span class="badge badge-danger">61-90d</span>';
+        else if (inv.bucket === 'range_90_plus') bBadge = '<span class="badge badge-danger" style="font-weight:800;">90+d</span>';
+
+        dbody += `<tr>
+          <td style="font-family:var(--font-mono);font-weight:600;">${inv.name}</td>
+          <td>${inv.customer_name}</td>
+          <td><span class="badge badge-neutral">${inv.company_abbr}</span></td>
+          <td style="font-family:var(--font-mono);">${inv.posting_date}</td>
+          <td style="font-family:var(--font-mono);">${inv.due_date} <small style="color:var(--text-muted)">(${inv.terms})</small></td>
+          <td style="text-align: center; font-family:var(--font-mono); font-weight:700; color:${inv.days_overdue > 0 ? 'var(--negative-color)' : 'var(--positive-color)'};">${inv.days_overdue} d</td>
+          <td style="text-align: center;">${bBadge}</td>
+          <td class="num-cell">${fmt(inv.grand_total)}</td>
+          <td class="num-cell" style="font-weight:700;">${fmt(inv.amount_aged)}</td>
+          <td><span class="badge ${inv.status === 'Paid' ? 'badge-success' : 'badge-neutral'}">${inv.status}</span></td>
+        </tr>`;
+      });
+      document.getElementById('tbody-ar-details').innerHTML = dbody;
+    }
+
+    function filterARRows(query) {
+      filterTableRows('table-ar-summary', query);
+      filterTableRows('table-ar-companies', query);
+      filterTableRows('table-ar-details', query);
+    }
+
+    // ── AP Aging Renderer & Controls ──
+    function setAPView(view) {
+      apView = view;
+      document.querySelectorAll('#tab-ap_aging .date-pill-group button[id^="ap-view-"]').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById(`ap-view-${view}`);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      document.getElementById('ap-summary-container').style.display = view === 'summary' ? 'block' : 'none';
+      document.getElementById('ap-companies-container').style.display = view === 'companies' ? 'block' : 'none';
+      document.getElementById('ap-details-container').style.display = view === 'details' ? 'block' : 'none';
+    }
+
+    function renderAPTable(data) {
+      const suppliers = data.supplier_summary || [];
+      const companies = data.company_summary || [];
+      const bills = data.bills || [];
+      const totals = data.totals || {};
+
+      // 1. Supplier Summary
+      let sbody = '';
+      suppliers.forEach(s => {
+        sbody += `<tr>
+          <td class="sticky-col">${s.supplier_name}</td>
+          <td><span class="badge badge-neutral">${s.company}</span></td>
+          <td class="num-cell">${fmt(s.current)}</td>
+          <td class="num-cell" style="color: var(--warning-color);">${fmt(s.range_1_30)}</td>
+          <td class="num-cell" style="color: #f97316;">${fmt(s.range_31_60)}</td>
+          <td class="num-cell" style="color: var(--negative-color);">${fmt(s.range_61_90)}</td>
+          <td class="num-cell" style="color: var(--negative-color); font-weight: 700;">${fmt(s.range_90_plus)}</td>
+          <td class="sticky-total">${fmt(s.total_outstanding)}</td>
+          <td style="text-align: center;"><span class="badge badge-neutral">${s.bill_count}</span></td>
+        </tr>`;
+      });
+      sbody += `<tr class="row-grand-total">
+        <td class="sticky-col">Grand Total AP (${suppliers.length} Suppliers)</td>
+        <td>Consolidated</td>
+        <td class="num-cell">${fmt(totals.current)}</td>
+        <td class="num-cell">${fmt(totals.range_1_30)}</td>
+        <td class="num-cell">${fmt(totals.range_31_60)}</td>
+        <td class="num-cell">${fmt(totals.range_61_90)}</td>
+        <td class="num-cell">${fmt(totals.range_90_plus)}</td>
+        <td class="sticky-total">${fmt(totals.total_outstanding)}</td>
+        <td style="text-align: center;"><span class="badge badge-neutral">${totals.bill_count || 0}</span></td>
+      </tr>`;
+      document.getElementById('tbody-ap-summary').innerHTML = sbody;
+
+      // 2. Company Matrix
+      let cbody = '';
+      companies.forEach(co => {
+        cbody += `<tr>
+          <td class="sticky-col">${co.company}</td>
+          <td><span class="badge badge-neutral">${co.abbr}</span></td>
+          <td class="num-cell">${fmt(co.current)}</td>
+          <td class="num-cell">${fmt(co.range_1_30)}</td>
+          <td class="num-cell">${fmt(co.range_31_60)}</td>
+          <td class="num-cell">${fmt(co.range_61_90)}</td>
+          <td class="num-cell">${fmt(co.range_90_plus)}</td>
+          <td class="sticky-total">${fmt(co.total_outstanding)}</td>
+          <td style="text-align: center;"><span class="badge badge-neutral">${co.bill_count}</span></td>
+        </tr>`;
+      });
+      cbody += `<tr class="row-grand-total">
+        <td class="sticky-col">Grand Total AP (All Branches)</td>
+        <td>ALL</td>
+        <td class="num-cell">${fmt(totals.current)}</td>
+        <td class="num-cell">${fmt(totals.range_1_30)}</td>
+        <td class="num-cell">${fmt(totals.range_31_60)}</td>
+        <td class="num-cell">${fmt(totals.range_61_90)}</td>
+        <td class="num-cell">${fmt(totals.range_90_plus)}</td>
+        <td class="sticky-total">${fmt(totals.total_outstanding)}</td>
+        <td style="text-align: center;"><span class="badge badge-neutral">${totals.bill_count || 0}</span></td>
+      </tr>`;
+      document.getElementById('tbody-ap-companies').innerHTML = cbody;
+
+      // 3. Detailed Bills Table
+      let dbody = '';
+      bills.forEach(bill => {
+        let bBadge = '<span class="badge badge-success">Current</span>';
+        if (bill.bucket === 'range_1_30') bBadge = '<span class="badge badge-warning">1-30d</span>';
+        else if (bill.bucket === 'range_31_60') bBadge = '<span class="badge badge-warning" style="background:rgba(249,115,22,0.15);color:#f97316;">31-60d</span>';
+        else if (bill.bucket === 'range_61_90') bBadge = '<span class="badge badge-danger">61-90d</span>';
+        else if (bill.bucket === 'range_90_plus') bBadge = '<span class="badge badge-danger" style="font-weight:800;">90+d</span>';
+
+        dbody += `<tr>
+          <td style="font-family:var(--font-mono);font-weight:600;">${bill.bill_no || bill.name}</td>
+          <td>${bill.supplier_name}</td>
+          <td><span class="badge badge-neutral">${bill.company_abbr}</span></td>
+          <td style="font-family:var(--font-mono);">${bill.bill_date}</td>
+          <td style="font-family:var(--font-mono);">${bill.due_date} <small style="color:var(--text-muted)">(${bill.terms})</small></td>
+          <td style="text-align: center; font-family:var(--font-mono); font-weight:700; color:${bill.days_overdue > 0 ? 'var(--negative-color)' : 'var(--positive-color)'};">${bill.days_overdue} d</td>
+          <td style="text-align: center;">${bBadge}</td>
+          <td class="num-cell">${fmt(bill.grand_total)}</td>
+          <td class="num-cell" style="font-weight:700;">${fmt(bill.amount_aged)}</td>
+          <td><span class="badge ${bill.status === 'Paid' ? 'badge-success' : 'badge-neutral'}">${bill.status}</span></td>
+        </tr>`;
+      });
+      document.getElementById('tbody-ap-details').innerHTML = dbody;
+    }
+
+    function filterAPRows(query) {
+      filterTableRows('table-ap-summary', query);
+      filterTableRows('table-ap-companies', query);
+      filterTableRows('table-ap-details', query);
+    }
+
+    // ── General Ledger & Inventory Loaders ──
     async function loadGLData() {
       document.getElementById('loading-gl').classList.add('active');
       const fromDate = document.getElementById('input-from-date').value;
       const toDate = document.getElementById('input-to-date').value;
-      const vtype = document.getElementById('gl-voucher-type-filter').value;
+      const voucherType = document.getElementById('gl-voucher-type-filter').value;
       const search = document.getElementById('search-gl').value;
 
       try {
@@ -1573,35 +2236,29 @@
           report_type: 'general_ledger',
           from_date: fromDate,
           to_date: toDate,
-          voucher_type: vtype,
+          voucher_type: voucherType,
           search_text: search,
-          page_length: 100
+          page: 1,
+          page_length: 150
         });
-
         currentData.general_ledger = data;
         document.getElementById('gl-records-badge').innerText = `${data.total_records || 0} Entries`;
-        document.getElementById('badge-gl-count').innerText = `${data.total_records || 0}`;
 
-        let tbodyHtml = '';
-        (data.rows || []).forEach(r => {
-          tbodyHtml += `<tr>
-            <td style="font-family: var(--font-mono);">${r.posting_date}</td>
-            <td><strong>${r.company}</strong></td>
-            <td>${r.account}</td>
-            <td><span class="badge badge-neutral">${r.voucher_type}</span></td>
-            <td><a href="/desk/form/${encodeURIComponent(r.voucher_type)}/${encodeURIComponent(r.voucher_no)}" target="_blank" style="color: var(--text-primary); text-decoration: underline; font-family: var(--font-mono);">${r.voucher_no}</a></td>
-            <td style="color: var(--text-muted);">${r.against || '-'}</td>
-            <td class="num-cell">${fmt(r.debit)}</td>
-            <td class="num-cell">${fmt(r.credit)}</td>
-            <td style="font-size: 11px; color: var(--text-muted); max-width: 200px; overflow: hidden; text-overflow: ellipsis;">${r.remarks || ''}</td>
+        let tbody = '';
+        (data.entries || []).forEach(e => {
+          tbody += `<tr>
+            <td style="font-family:var(--font-mono);">${e.posting_date}</td>
+            <td><span class="badge badge-neutral">${e.company}</span></td>
+            <td>${e.account}</td>
+            <td><span class="badge badge-neutral">${e.voucher_type}</span></td>
+            <td style="font-family:var(--font-mono);font-weight:600;">${e.voucher_no}</td>
+            <td style="color:var(--text-muted);">${e.against || '-'}</td>
+            <td class="num-cell">${fmt(e.debit)}</td>
+            <td class="num-cell">${fmt(e.credit)}</td>
+            <td style="max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-muted);">${e.remarks || ''}</td>
           </tr>`;
         });
-
-        if (!data.rows || data.rows.length === 0) {
-          tbodyHtml = `<tr><td colspan="9" style="text-align: center; color: var(--text-muted); padding: 24px;">No General Ledger entries found for this period.</td></tr>`;
-        }
-
-        document.getElementById('tbody-gl').innerHTML = tbodyHtml;
+        document.getElementById('tbody-gl').innerHTML = tbody || '<tr><td colspan="9" style="text-align:center;padding:24px;">No GL entries found.</td></tr>';
       } catch (e) {
         console.error(e);
       } finally {
@@ -1609,213 +2266,193 @@
       }
     }
 
-    // ── Render Tab 4: Inventory Audit with Running Balance & On Hand ──
-    let inventorySelection = null; // null means all items, including newly loaded items.
-    function inventoryFilteredData(data) {
-      const query = (document.getElementById('search-inv').value || '').trim().toLowerCase();
-      const stockOnly = document.getElementById('inv-stock-only').checked;
-      const rows = (data.rows || []).filter(row =>
-        (inventorySelection === null || inventorySelection.has(row.item_code)) &&
-        (!stockOnly || data.companies.some(co => Number((row.companies_qty || {})[co] || 0) > 0)) &&
-        (!query || [row.item_code,row.item_name,row.item_group].join(' ').toLowerCase().includes(query)));
-      const result = {...data,rows,total_sku_count:rows.length,total_qty:0,total_val:0,total_in_qty:0,total_out_qty:0,
-        company_val_totals:{},company_qty_totals:{},company_in_totals:{},company_out_totals:{}};
-      for (const row of rows) {
-        result.total_qty += Number(row.total_qty || 0); result.total_val += Number(row.total_val || 0);
-        result.total_in_qty += Number(row.total_in || 0); result.total_out_qty += Number(row.total_out || 0);
-        for(const co of data.companies) {
-          for(const [total, field] of [['company_qty_totals','companies_qty'],['company_val_totals','companies_val'],['company_in_totals','companies_in'],['company_out_totals','companies_out']])
-            result[total][co] = (result[total][co] || 0) + Number((row[field] || {})[co] || 0);
-        }
+    let allInvItems = [];
+    async function loadInventoryData() {
+      document.getElementById('loading-inv').classList.add('active');
+      const fromDate = document.getElementById('input-from-date').value;
+      const toDate = document.getElementById('input-to-date').value;
+
+      try {
+        const data = await fetchFinancialAPI({ report_type: 'inventory_audit', from_date: fromDate, to_date: toDate });
+        currentData.inventory_audit = data;
+        allInvItems = data.rows || [];
+        document.getElementById('inv-sku-badge').innerText = `${data.total_sku_count || 0} SKUs`;
+
+        const sel = document.getElementById('inv-item-select');
+        sel.innerHTML = allInvItems.map(it => `<option value="${it.item_code}" selected>${it.item_code} - ${it.item_name}</option>`).join('');
+
+        renderInventoryTable(data);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        document.getElementById('loading-inv').classList.remove('active');
       }
-      return result;
-    }
-    function inventoryRefreshFilter() {
-      if(currentData.inventory_audit) renderInventoryTable(currentData.inventory_audit);
-    }
-    function inventorySelectAll(all) {
-      inventorySelection = all ? null : new Set();
-      for(const option of document.getElementById('inv-item-select').options) option.selected = all;
-      inventoryRefreshFilter();
-    }
-    function inventorySelectChanged() {
-      inventorySelection = new Set(Array.from(document.getElementById('inv-item-select').selectedOptions, o => o.value));
-      inventoryRefreshFilter();
-    }
-    function inventoryPopulateItems(data) {
-      const select = document.getElementById('inv-item-select');
-      // Refresh options only when report data changes, so selections remain stable while filtering.
-      if(select.inventorySource !== data) {
-        select.replaceChildren();
-        for(const row of data.rows || []) {
-          const option = document.createElement('option'); option.value = row.item_code;
-          option.textContent = `${row.item_code} — ${row.item_name || ''}`;
-          option.selected = inventorySelection === null || inventorySelection.has(row.item_code);
-          select.appendChild(option);
-        }
-        select.inventorySource = data;
-      }
-      document.getElementById('inv-selection-label').textContent = inventorySelection === null ? 'All items' : `${Array.from(select.selectedOptions).length} items selected`;
     }
 
     function renderInventoryTable(data) {
-      if (!data || !data.companies) return;
-      inventoryPopulateItems(data);
-      data = inventoryFilteredData(data);
-      const companies = data.companies;
+      const companies = data.companies || [];
       const meta = data.company_meta || {};
+      const rows = data.rows || [];
 
-      document.getElementById('inv-sku-badge').innerText = `${data.total_sku_count || 0} SKUs`;
-      document.getElementById('badge-inv-count').innerText = `${data.total_sku_count || 0} Items`;
-
-      // Build Thead
-      let theadHtml = `<tr>
-        <th class="sticky-col">Item Details (Code / Description)</th>
-        <th>Group</th>
-        <th>UOM</th>
-        <th style="text-align: right;">Avg Rate</th>`;
-      
-      companies.forEach(co => {
-        const abbr = meta[co] ? meta[co].abbr : co;
-        theadHtml += `<th style="text-align: right; min-width: 140px;" title="${co}">
-          ${co}<br>
-          <span style="font-size: 9px; color: var(--text-muted);">In / Out / <strong>On Hand</strong> (Val)</span>
-        </th>`;
+      let thead = '<tr><th class="sticky-col">Item Description</th><th>UOM</th>';
+      companies.forEach(c => {
+        const abbr = meta[c]?.abbr || c.substring(0, 4);
+        thead += `<th style="text-align: right;" title="${c} Inflow">${abbr} IN</th>
+                  <th style="text-align: right;" title="${c} Outflow">${abbr} OUT</th>
+                  <th style="text-align: right; border-right:1px solid var(--border-subtle);" title="${c} On Hand">${abbr} BAL</th>`;
       });
+      thead += '<th class="sticky-total">Total On Hand</th><th style="text-align: right;">Valuation (₱)</th></tr>';
+      document.getElementById('thead-inv').innerHTML = thead;
 
-      theadHtml += `<th class="sticky-total" style="min-width: 160px;">
-        Consolidated Summary<br>
-        <span style="font-size: 9px; color: var(--text-muted);">In / Out / <strong>Total On Hand</strong> (Val)</span>
-      </th></tr>`;
-      document.getElementById('thead-inv').innerHTML = theadHtml;
-
-      // Build Tbody
-      let tbodyHtml = '';
-      (data.rows || []).forEach(r => {
-        tbodyHtml += `<tr>
-          <td class="sticky-col" onclick="openStockLedgerModal('${r.item_code}', '')" style="cursor: pointer;" title="Click to view running stock ledger">
-            <div style="display: flex; align-items: center; justify-content: space-between;">
-              <strong>${r.item_code}</strong>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-            </div>
-            <span style="font-size: 11px; color: var(--text-secondary);">${r.item_name}</span>
+      let tbody = '';
+      rows.forEach(it => {
+        tbody += `<tr>
+          <td class="sticky-col" onclick="openStockDrilldown('${it.item_code}')" style="cursor:pointer;">
+            <span style="font-weight:700; color:var(--text-primary);">${it.item_code}</span><br>
+            <small style="color:var(--text-muted);">${it.item_name}</small>
           </td>
-          <td><span class="badge badge-neutral">${r.item_group}</span></td>
-          <td>${r.stock_uom}</td>
-          <td class="num-cell">${fmt(r.avg_valuation_rate)}</td>`;
-        
-        companies.forEach(co => {
-          const inQ = r.companies_in[co] || 0;
-          const outQ = r.companies_out[co] || 0;
-          const endQ = r.companies_qty[co] || 0;
-          const val = r.companies_val[co] || 0;
-          
-          tbodyHtml += `<td class="num-cell" onclick="openStockLedgerModal('${r.item_code}', '${co}')" title="Click for ${co} stock ledger">
-            <span style="color: var(--text-muted); font-size: 10px;">+${inQ} / -${outQ}</span><br>
-            <strong style="color: var(--text-primary); font-size: 12px;">${fmtQty(endQ)}</strong> 
-            <span style="font-size: 10px; color: var(--text-muted); display: block;">${fmt(val)}</span>
-          </td>`;
+          <td><span class="badge badge-neutral">${it.stock_uom}</span></td>`;
+        companies.forEach(c => {
+          const inQ = it.companies_in[c] || 0;
+          const outQ = it.companies_out[c] || 0;
+          const endQ = it.companies_qty[c] || 0;
+          tbody += `<td class="num-cell" style="color:var(--positive-color);">${fmtQty(inQ)}</td>
+                    <td class="num-cell" style="color:var(--warning-color);">${fmtQty(outQ)}</td>
+                    <td class="num-cell" style="font-weight:700;border-right:1px solid var(--border-subtle);">${fmtQty(endQ)}</td>`;
         });
-
-        tbodyHtml += `<td class="sticky-total num-cell" onclick="openStockLedgerModal('${r.item_code}', '')" title="Click for consolidated stock ledger">
-          <span style="color: var(--text-muted); font-size: 10px;">+${r.total_in} / -${r.total_out}</span><br>
-          <strong style="color: var(--accent-solid); font-size: 13px;">${fmtQty(r.total_qty, r.stock_uom)}</strong>
-          <span style="font-size: 11px; color: var(--accent-solid); display: block; font-weight: 700;">${fmt(r.total_val)}</span>
-        </td></tr>`;
+        tbody += `<td class="sticky-total">${fmtQty(it.total_qty)}</td>
+                  <td class="num-cell" style="font-weight:700;">${fmt(it.total_val)}</td></tr>`;
       });
-
-      // Total Inventory Valuation Row
-      tbodyHtml += `<tr class="row-grand-total">
-        <td class="sticky-col" colspan="4">TOTAL CONSOLIDATED INVENTORY VALUATION</td>`;
-      companies.forEach(co => {
-        const v = data.company_val_totals[co] || 0;
-        const q = data.company_qty_totals[co] || 0;
-        const inQ = data.company_in_totals[co] || 0;
-        const outQ = data.company_out_totals[co] || 0;
-        tbodyHtml += `<td class="num-cell">
-          <span style="color: var(--text-muted); font-size: 10px;">+${inQ} / -${outQ}</span><br>
-          <strong>${fmtQty(q)}</strong><br>
-          <span style="font-size: 11px;">${fmt(v)}</span>
-        </td>`;
-      });
-      tbodyHtml += `<td class="sticky-total num-cell">
-        <span style="color: var(--text-muted); font-size: 10px;">+${data.total_in_qty} / -${data.total_out_qty}</span><br>
-        <strong style="font-size: 13px;">${fmtQty(data.total_qty)}</strong><br>
-        <span style="font-size: 13px; color: var(--accent-solid);">${fmt(data.total_val)}</span>
-      </td></tr>`;
-
-      document.getElementById('tbody-inv').innerHTML = tbodyHtml;
+      document.getElementById('tbody-inv').innerHTML = tbody;
     }
 
-    // ── Update Global KPI Ribbon ──
-    function updateKPIs() {
-      if (currentData.pnl && currentData.pnl.kpis) {
-        const k = currentData.pnl.kpis;
-        document.getElementById('kpi-revenue').innerHTML = fmt(k.consolidated_revenue);
-        document.getElementById('kpi-gross-profit').innerHTML = fmt(k.consolidated_gross_profit);
-        document.getElementById('kpi-cogs-subtext').innerText = `COGS: ₱${Math.abs(k.consolidated_cogs).toLocaleString('en-US', {minimumFractionDigits:2})}`;
-        document.getElementById('kpi-net-profit').innerHTML = fmt(k.consolidated_net_profit);
-        document.getElementById('kpi-expenses-subtext').innerText = `Expenses: ₱${Math.abs(k.consolidated_expenses).toLocaleString('en-US', {minimumFractionDigits:2})}`;
-
-        document.getElementById('kpi-gross-margin').innerText = `${currentData.pnl.sections.gross_profit.consolidated_margin_pct}% Margin`;
-        document.getElementById('kpi-net-margin').innerText = `${k.consolidated_net_margin}% Margin`;
-        document.getElementById('kpi-companies-subtext').innerText = `Across ${currentData.pnl.companies.length} operating companies`;
-      }
-      if (currentData.balance_sheet && currentData.balance_sheet.kpis) {
-        const k = currentData.balance_sheet.kpis;
-        document.getElementById('kpi-assets').innerHTML = fmt(k.consolidated_assets);
-        document.getElementById('kpi-equity-subtext').innerText = `Liab + Equity: ₱${Math.abs(k.consolidated_liabilities + k.consolidated_equity).toLocaleString('en-US', {minimumFractionDigits:2})}`;
-      }
-      if (currentData.inventory_audit) {
-        const k = currentData.inventory_audit;
-        document.getElementById('kpi-inventory-val').innerHTML = fmt(k.total_val);
-        document.getElementById('kpi-inventory-qty-subtext').innerText = `${fmtQty(k.total_qty)} Units on hand across warehouses`;
-      }
+    function inventoryRefreshFilter() {
+      const q = document.getElementById('search-inv').value.toLowerCase();
+      const stockOnly = document.getElementById('inv-stock-only').checked;
+      const rows = document.querySelectorAll('#tbody-inv tr');
+      rows.forEach(tr => {
+        const text = tr.innerText.toLowerCase();
+        const match = (!q || text.includes(q));
+        tr.style.display = match ? '' : 'none';
+      });
     }
 
-    // ── GL Drill-down Modal ──
-    async function openDrilldown(company, account) {
+    function inventorySelectAll(sel) {
+      const opts = document.querySelectorAll('#inv-item-select option');
+      opts.forEach(o => o.selected = sel);
+    }
+    function inventorySelectChanged() {}
+
+    // ── Table Row Filter Utility ──
+    function filterTableRows(tableId, query) {
+      const q = (query || '').toLowerCase().trim();
+      const tbody = document.querySelector(`#${tableId} tbody`);
+      if (!tbody) return;
+      const rows = tbody.querySelectorAll('tr');
+      rows.forEach(tr => {
+        if (tr.classList.contains('row-grand-total') || tr.classList.contains('row-section-total')) {
+          tr.style.display = '';
+          return;
+        }
+        const text = tr.innerText.toLowerCase();
+        tr.style.display = (!q || text.includes(q)) ? '' : 'none';
+      });
+    }
+
+    // ── Professional Excel Export (.xlsx) Engine ──
+    function exportCurrentTableExcel() {
       const fromDate = document.getElementById('input-from-date').value;
       const toDate = document.getElementById('input-to-date').value;
-      document.getElementById('drilldown-title').innerText = account;
-      document.getElementById('drilldown-subtitle').innerText = company ? `Company: ${company} (${fromDate} to ${toDate})` : `All Companies Consolidated (${fromDate} to ${toDate})`;
-      
+      let filename = `Financial_Report_${activeTab}_${toDate}.xlsx`;
+      let sheetName = activeTab.toUpperCase();
+
+      if (activeTab === 'pnl') {
+        filename = `Consolidated_Profit_and_Loss_${fromDate}_to_${toDate}.xlsx`;
+        sheetName = "Profit & Loss";
+        exportTableToExcel('table-pnl', filename, sheetName);
+      } else if (activeTab === 'balance_sheet') {
+        filename = `Consolidated_Balance_Sheet_${toDate}.xlsx`;
+        sheetName = "Balance Sheet";
+        exportTableToExcel('table-bs', filename, sheetName);
+      } else if (activeTab === 'cash_flow') {
+        filename = `Consolidated_Cash_Flow_${cfPeriod.toUpperCase()}_${fromDate}_to_${toDate}.xlsx`;
+        sheetName = `Cash Flow (${cfPeriod.toUpperCase()})`;
+        const tableId = cfView === 'matrix' ? 'table-cf-matrix' : 'table-cf-periods';
+        exportTableToExcel(tableId, filename, sheetName);
+      } else if (activeTab === 'ar_aging') {
+        filename = `AR_Aging_Analysis_30_60_90_${toDate}.xlsx`;
+        sheetName = "AR Aging";
+        const tableId = arView === 'summary' ? 'table-ar-summary' : (arView === 'companies' ? 'table-ar-companies' : 'table-ar-details');
+        exportTableToExcel(tableId, filename, sheetName);
+      } else if (activeTab === 'ap_aging') {
+        filename = `AP_Aging_Analysis_30_60_90_${toDate}.xlsx`;
+        sheetName = "AP Aging";
+        const tableId = apView === 'summary' ? 'table-ap-summary' : (apView === 'companies' ? 'table-ap-companies' : 'table-ap-details');
+        exportTableToExcel(tableId, filename, sheetName);
+      } else if (activeTab === 'general_ledger') {
+        filename = `General_Ledger_${fromDate}_to_${toDate}.xlsx`;
+        sheetName = "General Ledger";
+        exportTableToExcel('table-gl', filename, sheetName);
+      } else if (activeTab === 'inventory_audit') {
+        filename = `Inventory_Audit_Running_Balances_${toDate}.xlsx`;
+        sheetName = "Inventory Audit";
+        exportTableToExcel('table-inv', filename, sheetName);
+      }
+    }
+
+    function exportTableToExcel(tableId, filename, sheetName) {
+      const table = document.getElementById(tableId);
+      if (!table) {
+        alert("No active table data found to export.");
+        return;
+      }
+
+      if (typeof XLSX !== 'undefined') {
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.table_to_sheet(table, { raw: false });
+        XLSX.utils.book_append_sheet(wb, ws, sheetName.substring(0, 31));
+        XLSX.writeFile(wb, filename);
+      } else {
+        // Fallback HTML-Excel download
+        const html = table.outerHTML;
+        const blob = new Blob([html], { type: 'application/vnd.ms-excel' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = filename.replace('.xlsx', '.xls');
+        a.click();
+      }
+    }
+
+    // ── Print Functionality ──
+    function printReport() {
+      const fromDate = document.getElementById('input-from-date').value;
+      const toDate = document.getElementById('input-to-date').value;
+      const activeTabLabel = document.querySelector('.tab-item.active')?.innerText || 'Financial Statement';
+      document.getElementById('print-meta-text').innerText = `${activeTabLabel} &bull; Period: ${fromDate} to ${toDate} &bull; Generated: ${new Date().toLocaleDateString()}`;
+      window.print();
+    }
+
+    // ── Drilldown Modals ──
+    async function openDrilldown(company, account) {
       document.getElementById('drilldown-modal').classList.add('open');
-      document.getElementById('drilldown-tbody').innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 20px;"><div class="spinner" style="margin: 0 auto;"></div></td></tr>`;
+      document.getElementById('drilldown-title').innerText = `${account} &bull; ${company || 'Consolidated Group'}`;
+      const fromDate = document.getElementById('input-from-date').value;
+      const toDate = document.getElementById('input-to-date').value;
 
       try {
-        const data = await fetchFinancialAPI({
-          report_type: 'drilldown',
-          company: company,
-          account: account,
-          from_date: fromDate,
-          to_date: toDate
-        });
-
-        let rowsHtml = '';
+        const data = await fetchFinancialAPI({ report_type: 'drilldown', company: company, account: account, from_date: fromDate, to_date: toDate });
+        let tbody = '';
         (data.entries || []).forEach(e => {
-          rowsHtml += `<tr>
-            <td style="font-family: var(--font-mono);">${e.posting_date}</td>
+          tbody += `<tr>
+            <td style="font-family:var(--font-mono);">${e.posting_date}</td>
             <td><span class="badge badge-neutral">${e.voucher_type}</span></td>
-            <td><a href="/desk/form/${encodeURIComponent(e.voucher_type)}/${encodeURIComponent(e.voucher_no)}" target="_blank" style="color: var(--text-primary); text-decoration: underline; font-family: var(--font-mono);">${e.voucher_no}</a></td>
+            <td style="font-family:var(--font-mono);">${e.voucher_no}</td>
             <td class="num-cell">${fmt(e.debit)}</td>
             <td class="num-cell">${fmt(e.credit)}</td>
-            <td style="color: var(--text-muted); font-size: 11px;">${e.remarks || ''}</td>
+            <td style="color:var(--text-muted);">${e.remarks || ''}</td>
           </tr>`;
         });
-
-        if (!data.entries || data.entries.length === 0) {
-          rowsHtml = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 16px;">No detailed records found.</td></tr>`;
-        } else {
-          rowsHtml += `<tr class="row-section-total">
-            <td colspan="3">Total</td>
-            <td class="num-cell">${fmt(data.total_debit)}</td>
-            <td class="num-cell">${fmt(data.total_credit)}</td>
-            <td></td>
-          </tr>`;
-        }
-
-        document.getElementById('drilldown-tbody').innerHTML = rowsHtml;
+        document.getElementById('drilldown-tbody').innerHTML = tbody || '<tr><td colspan="6" style="text-align:center;padding:20px;">No transaction entries found.</td></tr>';
       } catch (e) {
         console.error(e);
       }
@@ -1825,156 +2462,59 @@
       document.getElementById('drilldown-modal').classList.remove('open');
     }
 
-    // ── Stock Ledger Running Balance Drill-Down Modal ──
-    async function openStockLedgerModal(itemCode, company) {
-      const fromDate = document.getElementById('input-from-date').value;
+    async function openStockDrilldown(itemCode) {
+      document.getElementById('stock-modal').classList.add('open');
+      document.getElementById('stock-modal-title').innerText = `Stock Ledger: ${itemCode}`;
       const toDate = document.getElementById('input-to-date').value;
 
-      document.getElementById('stock-item-code').innerText = itemCode;
-      document.getElementById('stock-company-name').innerText = company || 'All Companies';
-      document.getElementById('stock-modal-subtitle').innerText = company ? `Chronological stock audit for ${company}` : `Consolidated stock ledger across all companies`;
-
-      document.getElementById('stock-modal').classList.add('open');
-      document.getElementById('stock-modal-tbody').innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 20px;"><div class="spinner" style="margin: 0 auto;"></div></td></tr>`;
-
       try {
-        const data = await fetchFinancialAPI({
-          report_type: 'stock_ledger_drilldown',
-          item_code: itemCode,
-          company: company,
-          to_date: toDate
-        });
-
-        document.getElementById('stock-total-in').innerText = `+${data.total_in || 0}`;
-        document.getElementById('stock-total-out').innerText = `-${data.total_out || 0}`;
-        document.getElementById('stock-ending-qty').innerText = `${data.ending_qty || 0}`;
-        document.getElementById('stock-ending-val').innerText = fmt(data.ending_value);
-
-        let rowsHtml = '';
+        const data = await fetchFinancialAPI({ report_type: 'stock_ledger_drilldown', item_code: itemCode, to_date: toDate });
+        document.getElementById('stock-modal-summary').innerHTML = `
+          <span>Total Received IN: <strong style="color:var(--positive-color);">${data.total_in || 0}</strong></span>
+          <span>Total Issued OUT: <strong style="color:var(--warning-color);">${data.total_out || 0}</strong></span>
+          <span>Running Balance ON HAND: <strong style="color:var(--accent-blue);">${data.ending_qty || 0}</strong></span>
+          <span>Stock Valuation: <strong style="color:var(--text-primary);">${fmt(data.ending_value)}</strong></span>
+        `;
+        let tbody = '';
         (data.entries || []).forEach(e => {
-          const qty = parseFloat(e.actual_qty || 0);
-          const qtyColor = qty > 0 ? 'var(--positive-color)' : 'var(--negative-color)';
-          const qtyPrefix = qty > 0 ? '+' : '';
-
-          rowsHtml += `<tr>
-            <td style="font-family: var(--font-mono);">${e.posting_date} <span style="font-size: 10px; color: var(--text-muted);">${(e.posting_time || '').slice(0,8)}</span></td>
-            <td><strong>${e.company}</strong></td>
-            <td><span class="badge badge-neutral">${e.warehouse}</span></td>
-            <td><span class="badge badge-neutral">${e.voucher_type}</span></td>
-            <td><a href="/desk/form/${encodeURIComponent(e.voucher_type)}/${encodeURIComponent(e.voucher_no)}" target="_blank" style="color: var(--text-primary); text-decoration: underline; font-family: var(--font-mono);">${e.voucher_no}</a></td>
-            <td class="num-cell" style="color: ${qtyColor}; font-weight: 700;">${qtyPrefix}${qty}</td>
-            <td class="num-cell" style="font-weight: 700; color: var(--accent-solid);">${e.qty_after_transaction}</td>
-            <td class="num-cell">${fmt(e.incoming_rate || e.valuation_rate)}</td>
+          tbody += `<tr>
+            <td style="font-family:var(--font-mono);">${e.posting_date} ${e.posting_time || ''}</td>
+            <td><span class="badge badge-neutral">${e.company}</span></td>
+            <td>${e.warehouse || '-'}</td>
+            <td>${e.voucher_type}</td>
+            <td style="font-family:var(--font-mono);font-weight:600;">${e.voucher_no}</td>
+            <td class="num-cell" style="color:${e.actual_qty > 0 ? 'var(--positive-color)' : 'var(--warning-color)'};">${fmtQty(e.actual_qty)}</td>
+            <td class="num-cell" style="font-weight:700;">${fmtQty(e.qty_after_transaction)}</td>
+            <td class="num-cell">${fmt(e.valuation_rate)}</td>
             <td class="num-cell">${fmt(e.stock_value)}</td>
           </tr>`;
         });
-
-        if (!data.entries || data.entries.length === 0) {
-          rowsHtml = `<tr><td colspan="9" style="text-align: center; color: var(--text-muted); padding: 20px;">No Stock Ledger transactions recorded for this item.</td></tr>`;
-        }
-
-        document.getElementById('stock-modal-tbody').innerHTML = rowsHtml;
+        document.getElementById('stock-modal-tbody').innerHTML = tbody || '<tr><td colspan="9" style="text-align:center;padding:20px;">No stock ledger entries found.</td></tr>';
       } catch (e) {
         console.error(e);
       }
     }
 
-    function closeStockModal() {
+    function closeStockDrilldown() {
       document.getElementById('stock-modal').classList.remove('open');
-    }
-
-    // ── Table Search Filter ──
-    function filterTableRows(tableId, query) {
-      const q = (query || '').toLowerCase();
-      const rows = document.querySelectorAll(`#${tableId} tbody tr`);
-      rows.forEach(r => {
-        if (r.classList.contains('row-section-header') || r.classList.contains('row-section-total') || r.classList.contains('row-grand-total')) {
-          return;
-        }
-        const text = r.innerText.toLowerCase();
-        r.style.display = text.includes(q) ? '' : 'none';
-      });
-    }
-
-    // Native OOXML workbook, packaged as an uncompressed ZIP without a CDN.
-    function financialWorkbook(sheetName, rows) {
-      const xml = v => String(v).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-      const col = n => { let s = ''; for (n++; n; n = Math.floor((n - 1) / 26)) s = String.fromCharCode(65 + (n - 1) % 26) + s; return s; };
-      const data = rows.map((row, r) => `<row r="${r+1}">${row.map((v,c) => typeof v === 'number' && Number.isFinite(v)
-        ? `<c r="${col(c)}${r+1}"><v>${v}</v></c>`
-        : `<c r="${col(c)}${r+1}" t="inlineStr"><is><t xml:space="preserve">${xml(v)}</t></is></c>`).join('')}</row>`).join('');
-      const files = {
-        '[Content_Types].xml': '<?xml version="1.0"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>',
-        '_rels/.rels': '<?xml version="1.0"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>',
-        'xl/workbook.xml': `<?xml version="1.0"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="${xml(sheetName)}" sheetId="1" r:id="rId1"/></sheets></workbook>`,
-        'xl/_rels/workbook.xml.rels': '<?xml version="1.0"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/></Relationships>',
-        'xl/worksheets/sheet1.xml': `<?xml version="1.0"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><cols><col min="1" max="1" width="48" customWidth="1"/><col min="2" max="256" width="22" customWidth="1"/></cols><sheetData>${data}</sheetData></worksheet>`
-      };
-      const encoder = new TextEncoder(), parts = [], directory = [];
-      let offset = 0, directorySize = 0;
-      const crc32 = bytes => { let crc = -1; for (const b of bytes) { crc ^= b; for(let n=0;n<8;n++) crc = (crc >>> 1) ^ ((crc & 1) ? 0xedb88320 : 0); } return (crc ^ -1) >>> 0; };
-      for (const [path, content] of Object.entries(files)) {
-        const name = encoder.encode(path), bytes = encoder.encode(content), crc = crc32(bytes);
-        const local = new Uint8Array(30 + name.length), l = new DataView(local.buffer);
-        l.setUint32(0,0x04034b50,true); l.setUint16(4,20,true); l.setUint32(14,crc,true); l.setUint32(18,bytes.length,true); l.setUint32(22,bytes.length,true); l.setUint16(26,name.length,true); local.set(name,30);
-        const central = new Uint8Array(46 + name.length), d = new DataView(central.buffer);
-        d.setUint32(0,0x02014b50,true); d.setUint16(4,20,true); d.setUint16(6,20,true); d.setUint32(16,crc,true); d.setUint32(20,bytes.length,true); d.setUint32(24,bytes.length,true); d.setUint16(28,name.length,true); d.setUint32(42,offset,true); central.set(name,46);
-        parts.push(local, bytes); directory.push(central); offset += local.length + bytes.length; directorySize += central.length;
-      }
-      const end = new Uint8Array(22), e = new DataView(end.buffer);
-      e.setUint32(0,0x06054b50,true); e.setUint16(8,directory.length,true); e.setUint16(10,directory.length,true); e.setUint32(12,directorySize,true); e.setUint32(16,offset,true);
-      return new Blob([...parts,...directory,end], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-    }
-
-    function exportCurrentTableExcel() {
-      try {
-        const tabs = {pnl:['table-pnl','Profit and Loss'],balance_sheet:['table-bs','Balance Sheet'],general_ledger:['table-gl','General Ledger'],inventory_audit:['table-inv','Inventory Audit']};
-        const [tableId, title] = tabs[activeTab];
-        const table = document.getElementById(tableId);
-        if (!table || !currentData[activeTab]) throw new Error('Load this report before exporting.');
-        const fromDate = document.getElementById('input-from-date').value;
-        const toDate = document.getElementById('input-to-date').value;
-        const rows = [[title],[activeTab === 'balance_sheet' || activeTab === 'inventory_audit' ? `As of ${toDate}` : `${fromDate} to ${toDate}`],[]];
-        for (const row of table.rows) {
-          const values = [];
-          for (const cell of row.cells) {
-            const text = cell.innerText.replace(/\s*\n\s*/g,' ').trim();
-            const numeric = text.replace(/,/g,'').replace(/₱/g,'').trim().replace(/^\((.*)\)$/, '-$1');
-            values.push(cell.classList.contains('num-cell') && /^[-+]?\d+(\.\d+)?$/.test(numeric) ? Number(numeric) : text);
-            for(let c=1;c<cell.colSpan;c++) values.push('');
-          }
-          rows.push(values);
-        }
-        const blob = financialWorkbook(title,rows), url = URL.createObjectURL(blob), link = document.createElement('a');
-        link.href = url; link.download = `Consolidated_${activeTab}_${toDate}.xlsx`;
-        document.body.appendChild(link); link.click(); link.remove();
-        setTimeout(() => URL.revokeObjectURL(url),60000);
-      } catch(error) {
-        console.error('Excel export failed',error);
-        alert(`Unable to export Excel: ${error.message}`);
-      }
     }
 
     // ── Theme Toggle ──
     function toggleTheme() {
       const html = document.documentElement;
-      const current = html.getAttribute('data-theme');
-      const next = current === 'dark' ? 'light' : 'dark';
+      const curr = html.getAttribute('data-theme');
+      const next = curr === 'dark' ? 'light' : 'dark';
       html.setAttribute('data-theme', next);
     }
 
-    // ── Initialize on Load ──
-    window.addEventListener('DOMContentLoaded', () => {
+    // ── Initial Setup ──
+    document.addEventListener('DOMContentLoaded', () => {
       const hash = window.location.hash.replace('#', '');
-      if (hash && ['pnl', 'balance_sheet', 'general_ledger', 'inventory_audit'].includes(hash)) {
+      if (['pnl', 'balance_sheet', 'cash_flow', 'ar_aging', 'ap_aging', 'general_ledger', 'inventory_audit'].includes(hash)) {
         switchTab(hash);
       } else {
         switchTab('pnl');
       }
-
-      // Background load other tabs
-      setTimeout(() => loadDataForTab('balance_sheet'), 300);
-      setTimeout(() => loadDataForTab('inventory_audit'), 600);
     });
   </script>
 </body>

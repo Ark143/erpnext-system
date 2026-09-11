@@ -52,6 +52,17 @@ def get_consolidated_financials(
         return get_consolidated_pnl(companies, company_meta, all_companies, from_date, to_date)
     elif report_type == "balance_sheet":
         return get_consolidated_balance_sheet(companies, company_meta, all_companies, to_date)
+    elif report_type == "cash_flow":
+        period_type = frappe.form_dict.get("period") or "monthly"
+        return get_consolidated_cash_flow(companies, company_meta, all_companies, from_date, to_date, period_type)
+    elif report_type == "ar_aging":
+        as_of_date = frappe.form_dict.get("as_of_date") or to_date or nowdate()
+        customer = frappe.form_dict.get("customer")
+        return get_ar_aging_report(companies, company_meta, all_companies, as_of_date, customer)
+    elif report_type == "ap_aging":
+        as_of_date = frappe.form_dict.get("as_of_date") or to_date or nowdate()
+        supplier = frappe.form_dict.get("supplier")
+        return get_ap_aging_report(companies, company_meta, all_companies, as_of_date, supplier)
     elif report_type == "general_ledger":
         return get_multi_company_gl(companies, from_date, to_date, voucher_type, search_text, page, page_length)
     elif report_type == "inventory_audit":
@@ -632,4 +643,534 @@ def get_stock_ledger_drilldown(item_code, company, from_date, to_date):
         "total_out": sum(abs(flt(e.actual_qty)) for e in entries if flt(e.actual_qty) < 0),
         "ending_qty": entries[-1].get("qty_after_transaction") if entries else 0.0,
         "ending_value": entries[-1].get("stock_value") if entries else 0.0
+    }
+
+
+def get_consolidated_cash_flow(companies, company_meta, all_companies, from_date, to_date, period_type="monthly"):
+    placeholders = ", ".join(["%s"] * len(companies))
+    
+    # 1. Opening cash balance as of from_date for each company
+    opening_sql = f"""
+        SELECT 
+            gle.company,
+            SUM(gle.debit - gle.credit) as opening_balance
+        FROM `tabGL Entry` gle
+        JOIN `tabAccount` acc ON acc.name = gle.account
+        WHERE gle.posting_date < %s
+          AND gle.is_cancelled = 0
+          AND (acc.account_type IN ('Cash', 'Bank') OR (acc.root_type = 'Asset' AND (acc.account_name LIKE '%%Cash%%' OR acc.account_name LIKE '%%Bank%%')))
+          AND gle.company IN ({placeholders})
+        GROUP BY gle.company
+    """
+    opening_rows = frappe.db.sql(opening_sql, [from_date] + companies, as_dict=True)
+    opening_by_company = {c: 0.0 for c in companies}
+    for r in opening_rows:
+        opening_by_company[r.company] = flt(r.opening_balance)
+    total_opening_consolidated = sum(opening_by_company.values())
+
+    # 2. Query all cash transactions in the period
+    trx_sql = f"""
+        SELECT 
+            gle.name,
+            gle.company,
+            gle.posting_date,
+            gle.voucher_type,
+            gle.voucher_no,
+            gle.against,
+            gle.account,
+            acc.account_name,
+            gle.debit,
+            gle.credit,
+            gle.remarks
+        FROM `tabGL Entry` gle
+        JOIN `tabAccount` acc ON acc.name = gle.account
+        WHERE gle.posting_date BETWEEN %s AND %s
+          AND gle.is_cancelled = 0
+          AND (acc.account_type IN ('Cash', 'Bank') OR (acc.root_type = 'Asset' AND (acc.account_name LIKE '%%Cash%%' OR acc.account_name LIKE '%%Bank%%')))
+          AND gle.company IN ({placeholders})
+        ORDER BY gle.posting_date ASC, gle.creation ASC
+    """
+    entries = frappe.db.sql(trx_sql, [from_date, to_date] + companies, as_dict=True)
+
+    # Categories definitions
+    inflow_cats = {
+        "customer_collections": {"label": "Customer Receipts & POS Collections", "companies": {c: 0.0 for c in companies}, "total": 0.0},
+        "operating_revenue": {"label": "Direct Sales & Service Income", "companies": {c: 0.0 for c in companies}, "total": 0.0},
+        "other_inflows": {"label": "Other Inflows & Capital Deposits", "companies": {c: 0.0 for c in companies}, "total": 0.0},
+    }
+    outflow_cats = {
+        "supplier_payments": {"label": "Vendor & Supplier Disbursements", "companies": {c: 0.0 for c in companies}, "total": 0.0},
+        "operating_expenses": {"label": "Operating & Administrative Expenses", "companies": {c: 0.0 for c in companies}, "total": 0.0},
+        "stock_assets": {"label": "Inventory & Capital Expenditures", "companies": {c: 0.0 for c in companies}, "total": 0.0},
+        "other_outflows": {"label": "Other Cash Outflows & Transfers", "companies": {c: 0.0 for c in companies}, "total": 0.0},
+    }
+
+    # Grouping by period
+    periods_map = {}
+
+    for e in entries:
+        p_date = getdate(e.posting_date)
+        co = e.company
+        debit = flt(e.debit)
+        credit = flt(e.credit)
+        against = (e.against or "").lower()
+        v_type = e.voucher_type or ""
+
+        month_names = ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+        month_abbrs = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+        m_str = str(p_date.month) if p_date.month >= 10 else "0" + str(p_date.month)
+        d_str = str(p_date.day) if p_date.day >= 10 else "0" + str(p_date.day)
+
+        if period_type == "daily":
+            pkey = f"{p_date.year}-{m_str}-{d_str}"
+            plabel = f"{month_abbrs[p_date.month]} {d_str}, {p_date.year}"
+        elif period_type == "yearly":
+            pkey = str(p_date.year)
+            plabel = f"FY {p_date.year}"
+        else:
+            pkey = f"{p_date.year}-{m_str}"
+            plabel = f"{month_names[p_date.month]} {p_date.year}"
+
+        if pkey not in periods_map:
+            periods_map[pkey] = {
+                "period_key": pkey,
+                "period_label": plabel,
+                "inflows": {c: 0.0 for c in companies},
+                "outflows": {c: 0.0 for c in companies},
+                "inflow_total": 0.0,
+                "outflow_total": 0.0,
+                "net": {c: 0.0 for c in companies},
+                "net_total": 0.0,
+                "inflow_breakdown": {k: {c: 0.0 for c in companies} for k in inflow_cats},
+                "outflow_breakdown": {k: {c: 0.0 for c in companies} for k in outflow_cats},
+                "entries_count": 0
+            }
+        
+        p_obj = periods_map[pkey]
+        p_obj["entries_count"] += 1
+
+        if debit > 0:
+            if v_type in ("Sales Invoice", "POS Invoice") or "debtor" in against or "customer" in against:
+                cat_key = "customer_collections"
+            elif "income" in against or "sales" in against or "revenue" in against or "service" in against:
+                cat_key = "operating_revenue"
+            else:
+                cat_key = "other_inflows"
+
+            inflow_cats[cat_key]["companies"][co] += debit
+            inflow_cats[cat_key]["total"] += debit
+
+            p_obj["inflows"][co] += debit
+            p_obj["inflow_total"] += debit
+            p_obj["inflow_breakdown"][cat_key][co] += debit
+            p_obj["net"][co] += debit
+            p_obj["net_total"] += debit
+
+        if credit > 0:
+            if v_type in ("Purchase Invoice",) or "creditor" in against or "supplier" in against or "vendor" in against:
+                cat_key = "supplier_payments"
+            elif "expense" in against or "salary" in against or "payroll" in against or "rent" in against or "utility" in against:
+                cat_key = "operating_expenses"
+            elif "asset" in against or "stock" in against or "inventory" in against:
+                cat_key = "stock_assets"
+            else:
+                cat_key = "other_outflows"
+
+            outflow_cats[cat_key]["companies"][co] += credit
+            outflow_cats[cat_key]["total"] += credit
+
+            p_obj["outflows"][co] += credit
+            p_obj["outflow_total"] += credit
+            p_obj["outflow_breakdown"][cat_key][co] += credit
+            p_obj["net"][co] -= credit
+            p_obj["net_total"] -= credit
+
+    sorted_pkeys = sorted(periods_map.keys())
+    periods_list = []
+    
+    running_company_bal = {c: opening_by_company[c] for c in companies}
+    running_total_bal = total_opening_consolidated
+
+    for pk in sorted_pkeys:
+        p = periods_map[pk]
+        p_open_co = {c: running_company_bal[c] for c in companies}
+        p_open_tot = running_total_bal
+
+        for c in companies:
+            running_company_bal[c] += p["net"][c]
+        running_total_bal += p["net_total"]
+
+        p_end_co = {c: running_company_bal[c] for c in companies}
+        p_end_tot = running_total_bal
+
+        p["opening_balance"] = p_open_co
+        p["opening_total"] = p_open_tot
+        p["ending_balance"] = p_end_co
+        p["ending_total"] = p_end_tot
+        periods_list.append(p)
+
+    total_inflows_by_company = {c: sum(inflow_cats[k]["companies"][c] for k in inflow_cats) for c in companies}
+    total_inflows_consolidated = sum(inflow_cats[k]["total"] for k in inflow_cats)
+
+    total_outflows_by_company = {c: sum(outflow_cats[k]["companies"][c] for k in outflow_cats) for c in companies}
+    total_outflows_consolidated = sum(outflow_cats[k]["total"] for k in outflow_cats)
+
+    net_cash_by_company = {c: total_inflows_by_company[c] - total_outflows_by_company[c] for c in companies}
+    net_cash_consolidated = total_inflows_consolidated - total_outflows_consolidated
+
+    ending_by_company = {c: opening_by_company[c] + net_cash_by_company[c] for c in companies}
+    total_ending_consolidated = total_opening_consolidated + net_cash_consolidated
+
+    return {
+        "report": "Consolidated Cash Flow Statement",
+        "period_type": period_type,
+        "from_date": from_date,
+        "to_date": to_date,
+        "companies": companies,
+        "all_companies": all_companies,
+        "company_meta": company_meta,
+        "summary": {
+            "opening_balance": opening_by_company,
+            "opening_consolidated": total_opening_consolidated,
+            "inflows_total": total_inflows_by_company,
+            "inflows_consolidated": total_inflows_consolidated,
+            "outflows_total": total_outflows_by_company,
+            "outflows_consolidated": total_outflows_consolidated,
+            "net_cash_flow": net_cash_by_company,
+            "net_consolidated": net_cash_consolidated,
+            "ending_balance": ending_by_company,
+            "ending_consolidated": total_ending_consolidated
+        },
+        "inflow_categories": inflow_cats,
+        "outflow_categories": outflow_cats,
+        "periods": periods_list,
+        "entries_count": len(entries)
+    }
+
+
+def get_ar_aging_report(companies, company_meta, all_companies, as_of_date=None, customer=None):
+    if not as_of_date:
+        as_of_date = nowdate()
+    as_of = getdate(as_of_date)
+
+    placeholders = ", ".join(["%s"] * len(companies))
+    params = list(companies)
+    extra_cond = ""
+    if customer:
+        extra_cond += " AND (si.customer = %s OR si.customer_name LIKE %s)"
+        params.extend([customer, f"%{customer}%"])
+
+    query = f"""
+        SELECT 
+            si.name,
+            si.company,
+            si.customer,
+            si.customer_name,
+            si.posting_date,
+            si.due_date,
+            si.grand_total,
+            si.outstanding_amount,
+            si.currency,
+            si.payment_terms_template,
+            si.tc_name,
+            si.terms,
+            si.status
+        FROM `tabSales Invoice` si
+        WHERE si.docstatus = 1
+          AND si.company IN ({placeholders})
+          {extra_cond}
+        ORDER BY si.customer_name ASC, si.posting_date ASC
+    """
+    invoices = frappe.db.sql(query, params, as_dict=True)
+
+    customer_map = {}
+    company_map = {c: {
+        "company": c,
+        "abbr": company_meta.get(c, {}).get("abbr", c[:4]),
+        "currency": company_meta.get(c, {}).get("currency", "PHP"),
+        "current": 0.0,
+        "range_1_30": 0.0,
+        "range_31_60": 0.0,
+        "range_61_90": 0.0,
+        "range_90_plus": 0.0,
+        "total_outstanding": 0.0,
+        "total_invoiced": 0.0,
+        "invoice_count": 0
+    } for c in companies}
+
+    bucket_totals = {
+        "current": 0.0,
+        "range_1_30": 0.0,
+        "range_31_60": 0.0,
+        "range_61_90": 0.0,
+        "range_90_plus": 0.0,
+        "total_outstanding": 0.0,
+        "total_invoiced": 0.0,
+        "invoice_count": 0
+    }
+
+    processed_invoices = []
+
+    for inv in invoices:
+        cust_id = inv.customer or "Unknown"
+        cust_name = inv.customer_name or cust_id
+        co = inv.company
+        post_date = getdate(inv.posting_date)
+        due_date = getdate(inv.due_date or inv.posting_date)
+        
+        grand_total = flt(inv.grand_total)
+        outstanding = flt(inv.outstanding_amount)
+        amount_to_age = outstanding if outstanding > 0 else grand_total
+
+        days_overdue = (as_of - due_date).days
+        bucket = "current"
+        if days_overdue > 90:
+            bucket = "range_90_plus"
+        elif days_overdue >= 61:
+            bucket = "range_61_90"
+        elif days_overdue >= 31:
+            bucket = "range_31_60"
+        elif days_overdue >= 1:
+            bucket = "range_1_30"
+        else:
+            bucket = "current"
+
+        inv_item = {
+            "name": inv.name,
+            "company": co,
+            "company_abbr": company_meta.get(co, {}).get("abbr", co[:4]),
+            "customer": cust_id,
+            "customer_name": cust_name,
+            "posting_date": str(post_date),
+            "due_date": str(due_date),
+            "terms": inv.payment_terms_template or inv.tc_name or "Standard Terms",
+            "days_overdue": max(0, days_overdue),
+            "is_overdue": days_overdue > 0,
+            "bucket": bucket,
+            "grand_total": grand_total,
+            "outstanding_amount": outstanding,
+            "amount_aged": amount_to_age,
+            "status": inv.status
+        }
+        processed_invoices.append(inv_item)
+
+        if cust_id not in customer_map:
+            customer_map[cust_id] = {
+                "customer": cust_id,
+                "customer_name": cust_name,
+                "company": co,
+                "current": 0.0,
+                "range_1_30": 0.0,
+                "range_31_60": 0.0,
+                "range_61_90": 0.0,
+                "range_90_plus": 0.0,
+                "total_outstanding": 0.0,
+                "total_invoiced": 0.0,
+                "invoice_count": 0,
+                "companies": {c: 0.0 for c in companies}
+            }
+        c_entry = customer_map[cust_id]
+        c_entry[bucket] += amount_to_age
+        c_entry["total_outstanding"] += amount_to_age
+        c_entry["total_invoiced"] += grand_total
+        c_entry["invoice_count"] += 1
+        c_entry["companies"][co] += amount_to_age
+
+        if co in company_map:
+            co_entry = company_map[co]
+            co_entry[bucket] += amount_to_age
+            co_entry["total_outstanding"] += amount_to_age
+            co_entry["total_invoiced"] += grand_total
+            co_entry["invoice_count"] += 1
+
+        bucket_totals[bucket] += amount_to_age
+        bucket_totals["total_outstanding"] += amount_to_age
+        bucket_totals["total_invoiced"] += grand_total
+        bucket_totals["invoice_count"] += 1
+
+    return {
+        "report": "Accounts Receivable (AR) Aging Analysis",
+        "as_of_date": str(as_of),
+        "companies": companies,
+        "all_companies": all_companies,
+        "company_meta": company_meta,
+        "buckets": ["current", "range_1_30", "range_31_60", "range_61_90", "range_90_plus"],
+        "bucket_labels": {
+            "current": "Current / Not Due",
+            "range_1_30": "1 - 30 Days",
+            "range_31_60": "31 - 60 Days",
+            "range_61_90": "61 - 90 Days",
+            "range_90_plus": "90+ Days"
+        },
+        "totals": bucket_totals,
+        "company_summary": list(company_map.values()),
+        "customer_summary": list(customer_map.values()),
+        "invoices": processed_invoices,
+        "invoice_count": len(processed_invoices)
+    }
+
+
+def get_ap_aging_report(companies, company_meta, all_companies, as_of_date=None, supplier=None):
+    if not as_of_date:
+        as_of_date = nowdate()
+    as_of = getdate(as_of_date)
+
+    placeholders = ", ".join(["%s"] * len(companies))
+    params = list(companies)
+    extra_cond = ""
+    if supplier:
+        extra_cond += " AND (pi.supplier = %s OR pi.supplier_name LIKE %s)"
+        params.extend([supplier, f"%{supplier}%"])
+
+    query = f"""
+        SELECT 
+            pi.name,
+            pi.company,
+            pi.supplier,
+            pi.supplier_name,
+            pi.bill_no,
+            pi.bill_date,
+            pi.posting_date,
+            pi.due_date,
+            pi.grand_total,
+            pi.outstanding_amount,
+            pi.currency,
+            pi.payment_terms_template,
+            pi.tc_name,
+            pi.terms,
+            pi.status
+        FROM `tabPurchase Invoice` pi
+        WHERE pi.docstatus = 1
+          AND pi.company IN ({placeholders})
+          {extra_cond}
+        ORDER BY pi.supplier_name ASC, pi.posting_date ASC
+    """
+    bills = frappe.db.sql(query, params, as_dict=True)
+
+    supplier_map = {}
+    company_map = {c: {
+        "company": c,
+        "abbr": company_meta.get(c, {}).get("abbr", c[:4]),
+        "currency": company_meta.get(c, {}).get("currency", "PHP"),
+        "current": 0.0,
+        "range_1_30": 0.0,
+        "range_31_60": 0.0,
+        "range_61_90": 0.0,
+        "range_90_plus": 0.0,
+        "total_outstanding": 0.0,
+        "total_billed": 0.0,
+        "bill_count": 0
+    } for c in companies}
+
+    bucket_totals = {
+        "current": 0.0,
+        "range_1_30": 0.0,
+        "range_31_60": 0.0,
+        "range_61_90": 0.0,
+        "range_90_plus": 0.0,
+        "total_outstanding": 0.0,
+        "total_billed": 0.0,
+        "bill_count": 0
+    }
+
+    processed_bills = []
+
+    for bill in bills:
+        supp_id = bill.supplier or "Unknown"
+        supp_name = bill.supplier_name or supp_id
+        co = bill.company
+        post_date = getdate(bill.posting_date)
+        due_date = getdate(bill.due_date or bill.posting_date)
+        
+        grand_total = flt(bill.grand_total)
+        outstanding = flt(bill.outstanding_amount)
+        amount_to_age = outstanding if outstanding > 0 else grand_total
+
+        days_overdue = (as_of - due_date).days
+        bucket = "current"
+        if days_overdue > 90:
+            bucket = "range_90_plus"
+        elif days_overdue >= 61:
+            bucket = "range_61_90"
+        elif days_overdue >= 31:
+            bucket = "range_31_60"
+        elif days_overdue >= 1:
+            bucket = "range_1_30"
+        else:
+            bucket = "current"
+
+        bill_item = {
+            "name": bill.name,
+            "company": co,
+            "company_abbr": company_meta.get(co, {}).get("abbr", co[:4]),
+            "supplier": supp_id,
+            "supplier_name": supp_name,
+            "bill_no": bill.bill_no or bill.name,
+            "bill_date": str(bill.bill_date or post_date),
+            "posting_date": str(post_date),
+            "due_date": str(due_date),
+            "terms": bill.payment_terms_template or bill.tc_name or "Standard Terms",
+            "days_overdue": max(0, days_overdue),
+            "is_overdue": days_overdue > 0,
+            "bucket": bucket,
+            "grand_total": grand_total,
+            "outstanding_amount": outstanding,
+            "amount_aged": amount_to_age,
+            "status": bill.status
+        }
+        processed_bills.append(bill_item)
+
+        if supp_id not in supplier_map:
+            supplier_map[supp_id] = {
+                "supplier": supp_id,
+                "supplier_name": supp_name,
+                "company": co,
+                "current": 0.0,
+                "range_1_30": 0.0,
+                "range_31_60": 0.0,
+                "range_61_90": 0.0,
+                "range_90_plus": 0.0,
+                "total_outstanding": 0.0,
+                "total_billed": 0.0,
+                "bill_count": 0,
+                "companies": {c: 0.0 for c in companies}
+            }
+        s_entry = supplier_map[supp_id]
+        s_entry[bucket] += amount_to_age
+        s_entry["total_outstanding"] += amount_to_age
+        s_entry["total_billed"] += grand_total
+        s_entry["bill_count"] += 1
+        s_entry["companies"][co] += amount_to_age
+
+        if co in company_map:
+            co_entry = company_map[co]
+            co_entry[bucket] += amount_to_age
+            co_entry["total_outstanding"] += amount_to_age
+            co_entry["total_billed"] += grand_total
+            co_entry["bill_count"] += 1
+
+        bucket_totals[bucket] += amount_to_age
+        bucket_totals["total_outstanding"] += amount_to_age
+        bucket_totals["total_billed"] += grand_total
+        bucket_totals["bill_count"] += 1
+
+    return {
+        "report": "Accounts Payable (AP) Aging Analysis",
+        "as_of_date": str(as_of),
+        "companies": companies,
+        "all_companies": all_companies,
+        "company_meta": company_meta,
+        "buckets": ["current", "range_1_30", "range_31_60", "range_61_90", "range_90_plus"],
+        "bucket_labels": {
+            "current": "Current / Not Due",
+            "range_1_30": "1 - 30 Days",
+            "range_31_60": "31 - 60 Days",
+            "range_61_90": "61 - 90 Days",
+            "range_90_plus": "90+ Days"
+        },
+        "totals": bucket_totals,
+        "company_summary": list(company_map.values()),
+        "supplier_summary": list(supplier_map.values()),
+        "bills": processed_bills,
+        "bill_count": len(processed_bills)
     }

@@ -1,4 +1,10 @@
-<!DOCTYPE html>
+# Build and Deploy Enhanced Consolidated Financials UI with Exploded Horizontal Cash Flow and Zero-Overlap Layout
+
+import os, requests, json
+
+BASE_URL = 'http://38.247.138.224:10017'
+
+HTML_TEMPLATE = r'''<!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
@@ -2759,3 +2765,53 @@
   </script>
 </body>
 </html>
+'''
+
+def main():
+    s = requests.Session()
+    r = s.post(f"{BASE_URL}/api/method/login", data={"usr": "Administrator", "pwd": "admin"})
+    if r.status_code != 200:
+        print("Login failed:", r.status_code)
+        return
+
+    print("Logged in successfully to VPS!")
+
+    # 1. Update Frappe Web Page doc on VPS
+    web_page_payload = {
+        "doctype": "Web Page",
+        "name": "consolidated-multi-company-financials-inventory-audit",
+        "title": "Consolidated Multi-Company Financials, Cash Flow & Inventory Audit Suite",
+        "route": "consolidated-financials",
+        "published": 1,
+        "full_width": 1,
+        "show_sidebar": 0,
+        "show_title": 0,
+        "content_type": "HTML",
+        "dynamic_template": 0,
+        "main_section_html": HTML_TEMPLATE,
+        "main_section": HTML_TEMPLATE
+    }
+
+    res = s.put(f"{BASE_URL}/api/resource/Web%20Page/consolidated-multi-company-financials-inventory-audit", json=web_page_payload)
+    print("Updated Web Page on VPS:", res.status_code)
+
+    # 2. Write to local repo files
+    paths_to_write = [
+        r"c:\Users\josem\erpnext-system\vps_migration\consolidated_financials.html",
+        r"c:\Users\josem\erpnext-system\frappe-bench\apps\vehicle_management\vehicle_management\www\consolidated_financials.html",
+        r"c:\Users\josem\erpnext-system\public\consolidated_financials.html",
+        r"c:\Users\josem\erpnext-system\gh_pages_build\consolidated_financials.html",
+        r"c:\Users\josem\erpnext-system\gh_pages_build\consolidated-financials.html"
+    ]
+
+    for p in paths_to_write:
+        try:
+            os.makedirs(os.path.dirname(p), exist_ok=True)
+            with open(p, "w", encoding="utf-8") as f:
+                f.write(HTML_TEMPLATE)
+            print(f"Written: {p}")
+        except Exception as e:
+            print(f"Failed to write {p}: {e}")
+
+if __name__ == '__main__':
+    main()

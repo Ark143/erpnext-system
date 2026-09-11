@@ -203,6 +203,7 @@
       border-radius: 6px;
       cursor: pointer;
       transition: all 0.15s ease;
+      white-space: nowrap;
     }
     .date-preset-btn:hover {
       color: var(--text-primary);
@@ -250,6 +251,7 @@
       background: var(--bg-surface-elevated);
       color: var(--text-primary);
       position: relative;
+      white-space: nowrap;
     }
     .btn-action:hover {
       background: var(--bg-surface-hover);
@@ -398,7 +400,7 @@
     .kpi-ribbon {
       padding: 16px 24px;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 12px;
       background: var(--bg-canvas);
     }
@@ -406,12 +408,14 @@
       background: var(--bg-surface);
       border: 1px solid var(--border-hairline);
       border-radius: 10px;
-      padding: 14px 16px;
+      padding: 14px 18px;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 6px;
       cursor: pointer;
       transition: all 0.15s ease;
+      min-width: 200px;
+      overflow: hidden;
     }
     .kpi-card:hover {
       border-color: var(--border-strong);
@@ -427,13 +431,17 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      white-space: nowrap;
     }
     .kpi-value {
       font-family: var(--font-mono);
-      font-size: 18px;
+      font-size: 19px;
       font-weight: 700;
       color: var(--text-primary);
       letter-spacing: -0.5px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .kpi-subtext {
       font-size: 11px;
@@ -441,6 +449,9 @@
       display: flex;
       align-items: center;
       gap: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     /* ── Content Viewport ── */
@@ -460,7 +471,7 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* ── Tables & Multi-Column Matrix ── */
+    /* ── Tables & Multi-Column Matrix (Anti-Overlap Engine) ── */
     .matrix-card {
       background: var(--bg-surface);
       border: 1px solid var(--border-hairline);
@@ -513,10 +524,12 @@
       width: 100%;
       overflow-x: auto;
       max-height: calc(100vh - 280px);
+      position: relative;
     }
     .table-matrix {
       width: 100%;
-      border-collapse: collapse;
+      border-collapse: separate;
+      border-spacing: 0;
       font-size: 12px;
       text-align: left;
     }
@@ -538,37 +551,40 @@
       border-bottom: 2px solid var(--border-subtle);
     }
     
-    /* Sticky First Column */
+    /* ── Sticky First Column with High Z-Index & Clean Border ── */
     .table-matrix th.sticky-col,
     .table-matrix td.sticky-col {
       position: sticky;
       left: 0;
-      z-index: 5;
-      background: var(--bg-surface);
+      z-index: 25;
+      background: var(--bg-surface) !important;
       font-weight: 600;
       color: var(--text-primary);
-      border-right: 1px solid var(--border-subtle);
+      border-right: 2px solid var(--border-subtle);
       min-width: 260px;
       max-width: 320px;
+      box-shadow: 2px 0 6px rgba(0, 0, 0, 0.4);
     }
     .table-matrix thead th.sticky-col {
-      z-index: 15;
-      background: var(--bg-surface-elevated);
+      z-index: 35;
+      background: var(--bg-surface-elevated) !important;
     }
 
-    /* Sticky Total Column */
+    /* ── Sticky Total Column on Right ── */
     .table-matrix th.sticky-total,
     .table-matrix td.sticky-total {
       position: sticky;
       right: 0;
-      z-index: 5;
-      background: var(--bg-surface-elevated);
+      z-index: 25;
+      background: var(--bg-surface-elevated) !important;
       font-weight: 700;
       border-left: 2px solid var(--border-subtle);
       text-align: right;
+      min-width: 160px;
+      box-shadow: -2px 0 6px rgba(0, 0, 0, 0.4);
     }
     .table-matrix thead th.sticky-total {
-      z-index: 15;
+      z-index: 35;
     }
 
     /* Row Hover & Alternating */
@@ -593,7 +609,7 @@
       border-bottom: 1px solid var(--border-subtle);
     }
     .row-section-total td {
-      background: rgba(255, 255, 255, 0.03) !important;
+      background: rgba(255, 255, 255, 0.04) !important;
       font-weight: 700;
       border-top: 1px solid var(--border-strong);
       border-bottom: 1px solid var(--border-strong);
@@ -608,12 +624,15 @@
       color: var(--text-primary);
     }
 
-    /* Number & Accounting Formatting */
+    /* Number & Accounting Formatting (Anti-Overlap) */
     .num-cell {
       font-family: var(--font-mono);
       text-align: right;
       font-variant-numeric: tabular-nums;
       cursor: pointer;
+      min-width: 130px;
+      white-space: nowrap;
+      padding: 10px 14px;
     }
     .num-cell:hover {
       text-decoration: underline;
@@ -624,6 +643,33 @@
     }
     .num-zero {
       color: var(--text-dimmed);
+    }
+
+    /* ── Exploded Horizontal Cash Flow Header Buttons & Styles ── */
+    .cf-explode-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      background: var(--bg-surface-hover);
+      border: 1px solid var(--border-strong);
+      color: var(--text-primary);
+      cursor: pointer;
+      margin-left: 6px;
+      transition: all 0.15s ease;
+    }
+    .cf-explode-badge:hover {
+      background: var(--accent-solid);
+      color: var(--accent-contrast);
+      border-color: var(--accent-solid);
+    }
+    .cf-explode-badge.active {
+      background: var(--accent-blue);
+      color: #000;
+      border-color: var(--accent-blue);
     }
 
     /* ── Drill-down Modal ── */
@@ -725,6 +771,7 @@
       font-size: 11px;
       font-weight: 600;
       font-family: var(--font-sans);
+      white-space: nowrap;
     }
     .badge-success {
       background: rgba(34, 197, 94, 0.12);
@@ -748,97 +795,53 @@
     }
     .badge-neutral {
       background: var(--badge-neutral-bg);
-      color: var(--text-secondary);
       border: 1px solid var(--badge-neutral-border);
+      color: var(--text-secondary);
     }
 
-    /* ── Print Styles ── */
+    /* ── Print Stylesheet ── */
     @media print {
       body {
         background: #fff !important;
         color: #000 !important;
       }
-      .top-header, .nav-tabs-bar, .matrix-toolbar, .header-controls, .btn-action, .kpi-ribbon {
+      .top-header, .nav-tabs-bar, .matrix-toolbar, .date-pill-group, .btn-action, .company-dropdown-popover, .kpi-ribbon {
         display: none !important;
       }
       .tab-content {
-        display: none !important;
-      }
-      .tab-content.active {
         display: block !important;
-      }
-      .table-matrix th, .table-matrix td {
-        border-color: #cbd5e1 !important;
-        color: #000 !important;
-        background: transparent !important;
       }
       .matrix-card {
         border: none !important;
         box-shadow: none !important;
       }
-      .table-matrix th.sticky-col, .table-matrix td.sticky-col,
-      .table-matrix th.sticky-total, .table-matrix td.sticky-total {
-        position: static !important;
+      .table-container {
+        max-height: none !important;
+        overflow: visible !important;
       }
-      .print-header {
-        display: block !important;
-        margin-bottom: 16px;
-        padding-bottom: 12px;
-        border-bottom: 2px solid #000;
+      .table-matrix th, .table-matrix td {
+        border: 1px solid #ccc !important;
+        color: #000 !important;
+        background: #fff !important;
       }
-    }
-    .print-header {
-      display: none;
     }
   </style>
 </head>
 <body>
+
   <div class="app-shell">
     
-    <!-- ── Print Only Header ── -->
-    <div class="print-header">
-      <h2 style="margin: 0; font-size: 20px;">ULTRA MRF Automotive &bull; Financial Statement</h2>
-      <div style="font-size: 12px; color: #475569; margin-top: 4px;" id="print-meta-text">Consolidated Enterprise Group</div>
-    </div>
-
-    <!-- ── Top Header Bar ── -->
+    <!-- ── 1. Top Header Bar ── -->
     <header class="top-header">
       <div class="brand-section">
-        <div class="brand-logo">UM</div>
+        <div class="brand-logo">CF</div>
         <div class="brand-title-wrap">
-          <h1 class="brand-title">Consolidated Multi-Company Financials &amp; Accounting Suite</h1>
-          <span class="brand-subtitle">Enterprise Group Reporting &bull; Dynamic Column Filtering</span>
+          <h1 class="brand-title">Financial Statements &amp; Cash Flow Suite</h1>
+          <span class="brand-subtitle">Multi-Company Consolidated Accounting</span>
         </div>
       </div>
 
       <div class="header-controls">
-        <!-- Company Filter Popover Trigger -->
-        <div style="position: relative;">
-          <button class="btn-action" id="btn-company-filter" onclick="toggleCompanyPopover()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-            <span id="company-filter-label">🏢 Companies (13)</span>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-
-          <!-- Company Filter Popover Dropdown -->
-          <div class="company-dropdown-popover" id="company-popover">
-            <div class="popover-header">
-              <span>Filter Company Columns</span>
-              <div style="display: flex; gap: 6px;">
-                <button class="date-preset-btn" style="padding: 2px 6px; font-size: 10px;" onclick="selectAllCompanies(true)">Select All</button>
-                <button class="date-preset-btn" style="padding: 2px 6px; font-size: 10px;" onclick="selectAllCompanies(false)">Clear</button>
-              </div>
-            </div>
-            <div class="popover-list" id="company-checkboxes-container">
-              <!-- Dynamically populated company checkboxes -->
-            </div>
-            <div class="popover-footer">
-              <span style="font-size: 11px; color: var(--text-muted);" id="popover-selected-count">13 selected</span>
-              <button class="btn-action btn-primary" style="padding: 4px 10px; font-size: 11px;" onclick="applyCompanyFilter()">Apply Filter</button>
-            </div>
-          </div>
-        </div>
-
         <!-- Date Presets -->
         <div class="date-pill-group">
           <button class="date-preset-btn" onclick="setPreset('today')">Today</button>
@@ -848,93 +851,368 @@
           <button class="date-preset-btn" onclick="setPreset('all')">All Time</button>
         </div>
 
-        <!-- Custom Date Range -->
+        <!-- Date Range Inputs -->
         <div class="date-inputs">
           <input type="date" id="input-from-date" class="date-input" value="2026-01-01" onchange="reloadActiveTab()">
-          <span style="color: var(--text-muted);">&rarr;</span>
+          <span style="color: var(--text-muted);">to</span>
           <input type="date" id="input-to-date" class="date-input" value="2026-12-31" onchange="reloadActiveTab()">
         </div>
 
-        <!-- Action Buttons -->
-        <button class="btn-action" onclick="reloadActiveTab()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
-          Refresh
-        </button>
+        <!-- Multi-Company Filter Button & Popover -->
+        <div style="position: relative;">
+          <button class="btn-action" id="btn-company-filter" onclick="toggleCompanyPopover()">
+            <span id="company-filter-label">🏢 Companies (All)</span>
+            <span style="font-size: 9px;">▾</span>
+          </button>
 
-        <button class="btn-action btn-primary" onclick="exportCurrentTableExcel()" title="Download the active tab as an Excel worksheet (.xlsx)">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Export Excel
-        </button>
+          <div class="company-dropdown-popover" id="company-popover">
+            <div class="popover-header">
+              <span>Filter Operating Companies</span>
+              <span class="badge badge-neutral" id="popover-selected-count">13 selected</span>
+            </div>
+            <div class="popover-list" id="company-checkboxes-container">
+              <!-- Rendered dynamically -->
+            </div>
+            <div class="popover-footer">
+              <div style="display: flex; gap: 6px;">
+                <button class="btn-action" style="padding: 4px 8px; font-size: 11px;" onclick="selectAllCompanies(true)">Select All</button>
+                <button class="btn-action" style="padding: 4px 8px; font-size: 11px;" onclick="selectAllCompanies(false)">Clear</button>
+              </div>
+              <button class="btn-action btn-primary" style="padding: 4px 12px; font-size: 11px;" onclick="applyCompanyFilter()">Apply</button>
+            </div>
+          </div>
+        </div>
 
-        <button class="btn-action" onclick="printReport()" title="Print or Save as PDF">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-          Print
+        <!-- Export & Print Actions -->
+        <button class="btn-action" onclick="exportActiveTabToExcel()" title="Export active report to Microsoft Excel (.xlsx)">
+          <span>📥 Excel</span>
         </button>
-
-        <button class="btn-action" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
-          <svg id="theme-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        <button class="btn-action" onclick="window.print()" title="Print / Save PDF">
+          <span>🖨️ Print</span>
         </button>
       </div>
     </header>
 
-    <!-- ── Tab Navigation Bar ── -->
+    <!-- ── 2. Tab Navigation Bar ── -->
     <nav class="nav-tabs-bar">
       <ul class="tabs-list">
-        <li class="tab-item active" id="tab-nav-pnl" onclick="switchTab('pnl')">
-          <span>📊 Consolidated Profit &amp; Loss</span>
-          <span class="tab-badge" id="badge-pnl-status">Live</span>
-        </li>
-        <li class="tab-item" id="tab-nav-balance_sheet" onclick="switchTab('balance_sheet')">
-          <span>🏛️ Consolidated Balance Sheet</span>
-          <span class="tab-badge" id="badge-bs-status">Balanced</span>
-        </li>
-        <li class="tab-item" id="tab-nav-cash_flow" onclick="switchTab('cash_flow')">
-          <span>💵 Cash Flow (Daily / Monthly / Yearly)</span>
-          <span class="tab-badge" id="badge-cf-status">Live</span>
+        <li class="tab-item active" id="tab-nav-cash_flow" onclick="switchTab('cash_flow')">
+          <span>💵 Cash Flow Statement</span>
+          <span class="tab-badge" id="badge-cf-tag">Daily/Monthly/Yearly</span>
         </li>
         <li class="tab-item" id="tab-nav-ar_aging" onclick="switchTab('ar_aging')">
-          <span>📥 AR Aging (30, 60, 90 Days)</span>
-          <span class="tab-badge" id="badge-ar-count">0 Invoices</span>
+          <span>📥 AR Aging Analysis</span>
+          <span class="tab-badge" id="badge-ar-count">30-60-90d</span>
         </li>
         <li class="tab-item" id="tab-nav-ap_aging" onclick="switchTab('ap_aging')">
-          <span>📤 AP Aging (30, 60, 90 Days)</span>
-          <span class="tab-badge" id="badge-ap-count">0 Bills</span>
+          <span>📤 AP Aging Analysis</span>
+          <span class="tab-badge" id="badge-ap-count">30-60-90d</span>
+        </li>
+        <li class="tab-item" id="tab-nav-pnl" onclick="switchTab('pnl')">
+          <span>📈 Profit &amp; Loss</span>
+          <span class="tab-badge">Statement</span>
+        </li>
+        <li class="tab-item" id="tab-nav-balance_sheet" onclick="switchTab('balance_sheet')">
+          <span>⚖️ Balance Sheet</span>
+          <span class="tab-badge">Financial Position</span>
         </li>
         <li class="tab-item" id="tab-nav-general_ledger" onclick="switchTab('general_ledger')">
-          <span>📜 General Ledger Explorer</span>
-          <span class="tab-badge" id="badge-gl-count">0 Entries</span>
+          <span>🔍 General Ledger</span>
+          <span class="tab-badge">Audit Trail</span>
         </li>
         <li class="tab-item" id="tab-nav-inventory_audit" onclick="switchTab('inventory_audit')">
-          <span>📦 Inventory Audit &amp; On Hand</span>
-          <span class="tab-badge" id="badge-inv-count">0 Items</span>
+          <span>📦 Inventory Audit</span>
+          <span class="tab-badge">Stock Valuation</span>
         </li>
       </ul>
-      <div style="font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); white-space: nowrap;">
-        Currency: <strong style="color: var(--text-primary);">PHP (₱)</strong>
-      </div>
     </nav>
 
-    <!-- ── Dynamic KPI Ribbon ── -->
+    <!-- ── 3. KPI Ribbon ── -->
     <section class="kpi-ribbon" id="kpi-ribbon-container">
-      <!-- Dynamically updated per active tab -->
+      <!-- Dynamic KPI Cards injected here -->
     </section>
 
-    <!-- ── Main Viewport Content ── -->
+    <!-- ── 4. Main Content Viewport ── -->
     <main class="content-viewport">
       
-      <!-- ── TAB 1: Consolidated P&L ── -->
-      <section id="tab-pnl" class="tab-content active">
+      <!-- ═══════════════════════════════════════════════════════════════════════
+           TAB 1: CASH FLOW STATEMENT (DAILY, MONTHLY, YEARLY & EXPLODED VIEW)
+           ═══════════════════════════════════════════════════════════════════════ -->
+      <section class="tab-content active" id="tab-cash_flow">
         <div class="matrix-card" style="position: relative;">
-          <div class="loading-overlay" id="loading-pnl"><div class="spinner"></div></div>
+          <div class="loading-overlay" id="loading-cf"><div class="spinner"></div></div>
           
           <div class="matrix-toolbar">
             <div class="matrix-title">
-              <span>📊 Consolidated Profit &amp; Loss Matrix</span>
-              <span class="badge badge-neutral" id="pnl-date-badge">2026-01-01 to 2026-12-31</span>
+              <span>💵 Cash Flow Statement</span>
+              <span class="badge badge-info" id="cf-date-badge">Monthly</span>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <!-- View Switcher -->
+              <div class="date-pill-group">
+                <button class="date-preset-btn active" id="cf-view-exploded" onclick="setCashFlowView('exploded')">💥 Exploded Time-Series</button>
+                <button class="date-preset-btn" id="cf-view-matrix" onclick="setCashFlowView('matrix')">🏢 Company Matrix</button>
+                <button class="date-preset-btn" id="cf-view-periods" onclick="setCashFlowView('periods')">📊 Periodic Trends</button>
+              </div>
+
+              <!-- Scope selector for Exploded View -->
+              <div id="cf-exploded-scope-wrap" style="display: inline-flex; align-items: center; gap: 6px;">
+                <select id="cf-exploded-company-select" class="btn-action" style="padding: 4px 8px; font-size: 11px;" onchange="renderCashFlowExplodedTable()">
+                  <option value="__CONSOLIDATED__">🏢 Consolidated Group (All Selected)</option>
+                  <!-- Populated dynamically -->
+                </select>
+
+                <!-- Explode Quick Controls -->
+                <div class="date-pill-group">
+                  <button class="date-preset-btn" id="cf-explode-level-year" onclick="setExplodeLevel('year')">🏛️ Years</button>
+                  <button class="date-preset-btn active" id="cf-explode-level-month" onclick="setExplodeLevel('month')">📆 Months</button>
+                  <button class="date-preset-btn" id="cf-explode-level-all" onclick="setExplodeLevel('all_days')">💥 Explode All Days</button>
+                </div>
+              </div>
+
+              <!-- Search filter -->
+              <div class="search-box-wrap">
+                <span style="color: var(--text-muted); font-size: 11px;">🔍</span>
+                <input type="text" class="search-input" placeholder="Search cash flow activities..." oninput="filterCashFlowRows(this.value)">
+              </div>
+            </div>
+          </div>
+
+          <!-- 1. Exploded Horizontal Time Series Table Container -->
+          <div class="table-container" id="cf-exploded-container" style="display: block;">
+            <table class="table-matrix" id="table-cf-exploded">
+              <thead id="thead-cf-exploded"></thead>
+              <tbody id="tbody-cf-exploded"></tbody>
+            </table>
+          </div>
+
+          <!-- 2. Company Matrix Container -->
+          <div class="table-container" id="cf-matrix-container" style="display: none;">
+            <table class="table-matrix" id="table-cf-matrix">
+              <thead id="thead-cf-matrix"></thead>
+              <tbody id="tbody-cf-matrix"></tbody>
+            </table>
+          </div>
+
+          <!-- 3. Periodic Trends Container -->
+          <div class="table-container" id="cf-periods-container" style="display: none;">
+            <table class="table-matrix" id="table-cf-periods">
+              <thead>
+                <tr>
+                  <th>Period</th>
+                  <th style="text-align: right;">Opening Cash (₱)</th>
+                  <th style="text-align: right;">Cash Inflows (₱)</th>
+                  <th style="text-align: right;">Cash Outflows (₱)</th>
+                  <th style="text-align: right;">Net Cash Flow (₱)</th>
+                  <th style="text-align: right;">Ending Cash (₱)</th>
+                  <th style="text-align: center;">Transactions</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-cf-periods"></tbody>
+            </table>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════════════════════
+           TAB 2: ACCOUNTS RECEIVABLE (AR) AGING ANALYSIS (30, 60, 90 DAYS)
+           ═══════════════════════════════════════════════════════════════════════ -->
+      <section class="tab-content" id="tab-ar_aging">
+        <div class="matrix-card" style="position: relative;">
+          <div class="loading-overlay" id="loading-ar"><div class="spinner"></div></div>
+
+          <div class="matrix-toolbar">
+            <div class="matrix-title">
+              <span>📥 Accounts Receivable (AR) Aging Analysis</span>
+              <span class="badge badge-info" id="ar-asof-badge">As of Today</span>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <div class="date-pill-group">
+                <button class="date-preset-btn active" id="ar-view-summary" onclick="setARView('summary')">👥 Customer Summary</button>
+                <button class="date-preset-btn" id="ar-view-companies" onclick="setARView('companies')">🏢 Branch Matrix</button>
+                <button class="date-preset-btn" id="ar-view-details" onclick="setARView('details')">📄 Invoices Breakdown</button>
+              </div>
+
+              <div class="search-box-wrap">
+                <span style="color: var(--text-muted); font-size: 11px;">🔍</span>
+                <input type="text" class="search-input" placeholder="Search customer or invoice..." oninput="filterARRows(this.value)">
+              </div>
+            </div>
+          </div>
+
+          <!-- AR Customer Summary Table -->
+          <div class="table-container" id="ar-summary-container">
+            <table class="table-matrix" id="table-ar-summary">
+              <thead>
+                <tr>
+                  <th class="sticky-col">Customer Name</th>
+                  <th>Primary Branch</th>
+                  <th style="text-align: right;">Current (₱)</th>
+                  <th style="text-align: right;">1 - 30 Days (₱)</th>
+                  <th style="text-align: right;">31 - 60 Days (₱)</th>
+                  <th style="text-align: right;">61 - 90 Days (₱)</th>
+                  <th style="text-align: right;">90+ Days Overdue (₱)</th>
+                  <th class="sticky-total">Total Outstanding (₱)</th>
+                  <th style="text-align: center;">Invoices</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-ar-summary"></tbody>
+            </table>
+          </div>
+
+          <!-- AR Company Summary Table -->
+          <div class="table-container" id="ar-companies-container" style="display: none;">
+            <table class="table-matrix" id="table-ar-companies">
+              <thead>
+                <tr>
+                  <th class="sticky-col">Operating Branch</th>
+                  <th>Code</th>
+                  <th style="text-align: right;">Current (₱)</th>
+                  <th style="text-align: right;">1 - 30 Days (₱)</th>
+                  <th style="text-align: right;">31 - 60 Days (₱)</th>
+                  <th style="text-align: right;">61 - 90 Days (₱)</th>
+                  <th style="text-align: right;">90+ Days Overdue (₱)</th>
+                  <th class="sticky-total">Total AR Balance (₱)</th>
+                  <th style="text-align: center;">Active Invoices</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-ar-companies"></tbody>
+            </table>
+          </div>
+
+          <!-- AR Details Table -->
+          <div class="table-container" id="ar-details-container" style="display: none;">
+            <table class="table-matrix" id="table-ar-details">
+              <thead>
+                <tr>
+                  <th>Invoice No</th>
+                  <th>Customer</th>
+                  <th>Branch</th>
+                  <th>Posting Date</th>
+                  <th>Due Date (Terms)</th>
+                  <th style="text-align: center;">Overdue</th>
+                  <th style="text-align: center;">Aging Bucket</th>
+                  <th style="text-align: right;">Grand Total (₱)</th>
+                  <th style="text-align: right;">Outstanding (₱)</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-ar-details"></tbody>
+            </table>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════════════════════
+           TAB 3: ACCOUNTS PAYABLE (AP) AGING ANALYSIS (30, 60, 90 DAYS)
+           ═══════════════════════════════════════════════════════════════════════ -->
+      <section class="tab-content" id="tab-ap_aging">
+        <div class="matrix-card" style="position: relative;">
+          <div class="loading-overlay" id="loading-ap"><div class="spinner"></div></div>
+
+          <div class="matrix-toolbar">
+            <div class="matrix-title">
+              <span>📤 Accounts Payable (AP) Aging Analysis</span>
+              <span class="badge badge-warning" id="ap-asof-badge">As of Today</span>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <div class="date-pill-group">
+                <button class="date-preset-btn active" id="ap-view-summary" onclick="setAPView('summary')">🏢 Supplier Summary</button>
+                <button class="date-preset-btn" id="ap-view-companies" onclick="setAPView('companies')">🏢 Branch Matrix</button>
+                <button class="date-preset-btn" id="ap-view-details" onclick="setAPView('details')">📄 Bills Breakdown</button>
+              </div>
+
+              <div class="search-box-wrap">
+                <span style="color: var(--text-muted); font-size: 11px;">🔍</span>
+                <input type="text" class="search-input" placeholder="Search supplier or bill..." oninput="filterAPRows(this.value)">
+              </div>
+            </div>
+          </div>
+
+          <!-- AP Supplier Summary Table -->
+          <div class="table-container" id="ap-summary-container">
+            <table class="table-matrix" id="table-ap-summary">
+              <thead>
+                <tr>
+                  <th class="sticky-col">Supplier Name</th>
+                  <th>Primary Branch</th>
+                  <th style="text-align: right;">Current (₱)</th>
+                  <th style="text-align: right;">1 - 30 Days (₱)</th>
+                  <th style="text-align: right;">31 - 60 Days (₱)</th>
+                  <th style="text-align: right;">61 - 90 Days (₱)</th>
+                  <th style="text-align: right;">90+ Days Overdue (₱)</th>
+                  <th class="sticky-total">Total Outstanding (₱)</th>
+                  <th style="text-align: center;">Bills</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-ap-summary"></tbody>
+            </table>
+          </div>
+
+          <!-- AP Company Summary Table -->
+          <div class="table-container" id="ap-companies-container" style="display: none;">
+            <table class="table-matrix" id="table-ap-companies">
+              <thead>
+                <tr>
+                  <th class="sticky-col">Operating Branch</th>
+                  <th>Code</th>
+                  <th style="text-align: right;">Current (₱)</th>
+                  <th style="text-align: right;">1 - 30 Days (₱)</th>
+                  <th style="text-align: right;">31 - 60 Days (₱)</th>
+                  <th style="text-align: right;">61 - 90 Days (₱)</th>
+                  <th style="text-align: right;">90+ Days Overdue (₱)</th>
+                  <th class="sticky-total">Total AP Balance (₱)</th>
+                  <th style="text-align: center;">Active Bills</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-ap-companies"></tbody>
+            </table>
+          </div>
+
+          <!-- AP Details Table -->
+          <div class="table-container" id="ap-details-container" style="display: none;">
+            <table class="table-matrix" id="table-ap-details">
+              <thead>
+                <tr>
+                  <th>Purchase Bill No</th>
+                  <th>Supplier</th>
+                  <th>Branch</th>
+                  <th>Bill Date</th>
+                  <th>Due Date (Terms)</th>
+                  <th style="text-align: center;">Overdue</th>
+                  <th style="text-align: center;">Aging Bucket</th>
+                  <th style="text-align: right;">Total Amount (₱)</th>
+                  <th style="text-align: right;">Outstanding (₱)</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-ap-details"></tbody>
+            </table>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════════════════════
+           TAB 4: PROFIT & LOSS STATEMENT
+           ═══════════════════════════════════════════════════════════════════════ -->
+      <section class="tab-content" id="tab-pnl">
+        <div class="matrix-card" style="position: relative;">
+          <div class="loading-overlay" id="loading-pnl"><div class="spinner"></div></div>
+
+          <div class="matrix-toolbar">
+            <div class="matrix-title">
+              <span>📈 Consolidated Profit &amp; Loss Statement</span>
+              <span class="badge badge-success" id="pnl-date-badge">2026-01-01 to 2026-12-31</span>
             </div>
             <div class="search-box-wrap">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-              <input type="text" id="search-pnl" class="search-input" placeholder="Filter P&amp;L accounts..." oninput="filterTableRows('table-pnl', this.value)">
+              <span style="color: var(--text-muted); font-size: 11px;">🔍</span>
+              <input type="text" class="search-input" placeholder="Search accounts..." oninput="filterTableRows('table-pnl', this.value)">
             </div>
           </div>
 
@@ -947,19 +1225,21 @@
         </div>
       </section>
 
-      <!-- ── TAB 2: Consolidated Balance Sheet ── -->
-      <section id="tab-balance_sheet" class="tab-content">
+      <!-- ═══════════════════════════════════════════════════════════════════════
+           TAB 5: BALANCE SHEET
+           ═══════════════════════════════════════════════════════════════════════ -->
+      <section class="tab-content" id="tab-balance_sheet">
         <div class="matrix-card" style="position: relative;">
           <div class="loading-overlay" id="loading-bs"><div class="spinner"></div></div>
-          
+
           <div class="matrix-toolbar">
             <div class="matrix-title">
-              <span>🏛️ Consolidated Balance Sheet Matrix</span>
-              <span class="badge badge-neutral" id="bs-date-badge">As of 2026-12-31</span>
+              <span>⚖️ Consolidated Statement of Financial Position</span>
+              <span class="badge badge-info" id="bs-date-badge">As of 2026-12-31</span>
             </div>
             <div class="search-box-wrap">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-              <input type="text" id="search-bs" class="search-input" placeholder="Filter balance sheet accounts..." oninput="filterTableRows('table-bs', this.value)">
+              <span style="color: var(--text-muted); font-size: 11px;">🔍</span>
+              <input type="text" class="search-input" placeholder="Search asset, liability, equity..." oninput="filterTableRows('table-bs', this.value)">
             </div>
           </div>
 
@@ -972,269 +1252,33 @@
         </div>
       </section>
 
-      <!-- ── TAB 3: Consolidated Cash Flow Statement (Daily / Monthly / Yearly) ── -->
-      <section id="tab-cash_flow" class="tab-content">
-        <div class="matrix-card" style="position: relative;">
-          <div class="loading-overlay" id="loading-cf"><div class="spinner"></div></div>
-          
-          <div class="matrix-toolbar">
-            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-              <div class="matrix-title">
-                <span>💵 Consolidated Cash Flow Statement</span>
-                <span class="badge badge-neutral" id="cf-date-badge">2026-01-01 to 2026-12-31</span>
-              </div>
-              
-              <!-- Period Granularity Toggle (Daily, Monthly, Yearly) -->
-              <div class="date-pill-group">
-                <button class="date-preset-btn" id="cf-period-daily" onclick="setCashFlowPeriod('daily')">📅 Daily</button>
-                <button class="date-preset-btn active" id="cf-period-monthly" onclick="setCashFlowPeriod('monthly')">📆 Monthly</button>
-                <button class="date-preset-btn" id="cf-period-yearly" onclick="setCashFlowPeriod('yearly')">🏛️ Yearly</button>
-              </div>
-
-              <!-- Sub-View Switcher -->
-              <div class="date-pill-group">
-                <button class="date-preset-btn active" id="cf-view-matrix" onclick="setCashFlowView('matrix')">🏢 Multi-Company Matrix</button>
-                <button class="date-preset-btn" id="cf-view-periods" onclick="setCashFlowView('periods')">📆 Periodic Trend</button>
-              </div>
-            </div>
-
-            <div class="search-box-wrap">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-              <input type="text" id="search-cf" class="search-input" placeholder="Filter cash flow items..." oninput="filterCashFlowRows(this.value)">
-            </div>
-          </div>
-
-          <!-- View 1: Multi-Company Matrix Table -->
-          <div class="table-container" id="cf-matrix-container">
-            <table class="table-matrix" id="table-cf-matrix">
-              <thead id="thead-cf-matrix"></thead>
-              <tbody id="tbody-cf-matrix"></tbody>
-            </table>
-          </div>
-
-          <!-- View 2: Periodic Trend Table -->
-          <div class="table-container" id="cf-periods-container" style="display: none;">
-            <table class="table-matrix" id="table-cf-periods">
-              <thead id="thead-cf-periods">
-                <tr>
-                  <th>Period</th>
-                  <th style="text-align: right;">Opening Balance (₱)</th>
-                  <th style="text-align: right;">Total Inflows (₱)</th>
-                  <th style="text-align: right;">Total Outflows (₱)</th>
-                  <th style="text-align: right;">Net Cash Flow (₱)</th>
-                  <th style="text-align: right;">Ending Balance (₱)</th>
-                  <th style="text-align: center;">Transactions</th>
-                </tr>
-              </thead>
-              <tbody id="tbody-cf-periods"></tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <!-- ── TAB 4: AR Aging Analysis (30, 60, 90 Days) ── -->
-      <section id="tab-ar_aging" class="tab-content">
-        <div class="matrix-card" style="position: relative;">
-          <div class="loading-overlay" id="loading-ar"><div class="spinner"></div></div>
-          
-          <div class="matrix-toolbar">
-            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-              <div class="matrix-title">
-                <span>📥 Accounts Receivable (AR) Aging Analysis</span>
-                <span class="badge badge-neutral" id="ar-asof-badge">As of Today</span>
-              </div>
-
-              <!-- View Switcher -->
-              <div class="date-pill-group">
-                <button class="date-preset-btn active" id="ar-view-summary" onclick="setARView('summary')">👥 Customer Summary</button>
-                <button class="date-preset-btn" id="ar-view-companies" onclick="setARView('companies')">🏢 Company Matrix</button>
-                <button class="date-preset-btn" id="ar-view-details" onclick="setARView('details')">📄 Invoices Detail</button>
-              </div>
-            </div>
-
-            <div class="search-box-wrap">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-              <input type="text" id="search-ar" class="search-input" placeholder="Search customer, invoice #, terms..." oninput="filterARRows(this.value)">
-            </div>
-          </div>
-
-          <!-- AR Customer Summary Table -->
-          <div class="table-container" id="ar-summary-container">
-            <table class="table-matrix" id="table-ar-summary">
-              <thead>
-                <tr>
-                  <th class="sticky-col">Customer Name</th>
-                  <th>Primary Branch</th>
-                  <th style="text-align: right;">Current / Not Due</th>
-                  <th style="text-align: right;">1 - 30 Days</th>
-                  <th style="text-align: right;">31 - 60 Days</th>
-                  <th style="text-align: right;">61 - 90 Days</th>
-                  <th style="text-align: right;">90+ Days</th>
-                  <th class="sticky-total">Total Outstanding</th>
-                  <th style="text-align: center;">Invoices</th>
-                </tr>
-              </thead>
-              <tbody id="tbody-ar-summary"></tbody>
-            </table>
-          </div>
-
-          <!-- AR Company Matrix Table -->
-          <div class="table-container" id="ar-companies-container" style="display: none;">
-            <table class="table-matrix" id="table-ar-companies">
-              <thead>
-                <tr>
-                  <th class="sticky-col">Operating Company</th>
-                  <th>Abbr</th>
-                  <th style="text-align: right;">Current / Not Due</th>
-                  <th style="text-align: right;">1 - 30 Days</th>
-                  <th style="text-align: right;">31 - 60 Days</th>
-                  <th style="text-align: right;">61 - 90 Days</th>
-                  <th style="text-align: right;">90+ Days</th>
-                  <th class="sticky-total">Total Receivables</th>
-                  <th style="text-align: center;">Invoices</th>
-                </tr>
-              </thead>
-              <tbody id="tbody-ar-companies"></tbody>
-            </table>
-          </div>
-
-          <!-- AR Detailed Invoices Table -->
-          <div class="table-container" id="ar-details-container" style="display: none;">
-            <table class="table-matrix" id="table-ar-details">
-              <thead>
-                <tr>
-                  <th>Invoice No</th>
-                  <th>Customer</th>
-                  <th>Company</th>
-                  <th>Posting Date</th>
-                  <th>Due Date (Terms)</th>
-                  <th style="text-align: center;">Days Overdue</th>
-                  <th style="text-align: center;">Aging Bucket</th>
-                  <th style="text-align: right;">Invoice Total</th>
-                  <th style="text-align: right;">Outstanding</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody id="tbody-ar-details"></tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <!-- ── TAB 5: AP Aging Analysis (30, 60, 90 Days) ── -->
-      <section id="tab-ap_aging" class="tab-content">
-        <div class="matrix-card" style="position: relative;">
-          <div class="loading-overlay" id="loading-ap"><div class="spinner"></div></div>
-          
-          <div class="matrix-toolbar">
-            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-              <div class="matrix-title">
-                <span>📤 Accounts Payable (AP) Aging Analysis</span>
-                <span class="badge badge-neutral" id="ap-asof-badge">As of Today</span>
-              </div>
-
-              <!-- View Switcher -->
-              <div class="date-pill-group">
-                <button class="date-preset-btn active" id="ap-view-summary" onclick="setAPView('summary')">🏢 Supplier Summary</button>
-                <button class="date-preset-btn" id="ap-view-companies" onclick="setAPView('companies')">🏢 Company Matrix</button>
-                <button class="date-preset-btn" id="ap-view-details" onclick="setAPView('details')">📄 Bills Detail</button>
-              </div>
-            </div>
-
-            <div class="search-box-wrap">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-              <input type="text" id="search-ap" class="search-input" placeholder="Search supplier, bill #, terms..." oninput="filterAPRows(this.value)">
-            </div>
-          </div>
-
-          <!-- AP Supplier Summary Table -->
-          <div class="table-container" id="ap-summary-container">
-            <table class="table-matrix" id="table-ap-summary">
-              <thead>
-                <tr>
-                  <th class="sticky-col">Supplier Name</th>
-                  <th>Primary Branch</th>
-                  <th style="text-align: right;">Current / Not Due</th>
-                  <th style="text-align: right;">1 - 30 Days</th>
-                  <th style="text-align: right;">31 - 60 Days</th>
-                  <th style="text-align: right;">61 - 90 Days</th>
-                  <th style="text-align: right;">90+ Days</th>
-                  <th class="sticky-total">Total Outstanding</th>
-                  <th style="text-align: center;">Bills</th>
-                </tr>
-              </thead>
-              <tbody id="tbody-ap-summary"></tbody>
-            </table>
-          </div>
-
-          <!-- AP Company Matrix Table -->
-          <div class="table-container" id="ap-companies-container" style="display: none;">
-            <table class="table-matrix" id="table-ap-companies">
-              <thead>
-                <tr>
-                  <th class="sticky-col">Operating Company</th>
-                  <th>Abbr</th>
-                  <th style="text-align: right;">Current / Not Due</th>
-                  <th style="text-align: right;">1 - 30 Days</th>
-                  <th style="text-align: right;">31 - 60 Days</th>
-                  <th style="text-align: right;">61 - 90 Days</th>
-                  <th style="text-align: right;">90+ Days</th>
-                  <th class="sticky-total">Total Payables</th>
-                  <th style="text-align: center;">Bills</th>
-                </tr>
-              </thead>
-              <tbody id="tbody-ap-companies"></tbody>
-            </table>
-          </div>
-
-          <!-- AP Detailed Bills Table -->
-          <div class="table-container" id="ap-details-container" style="display: none;">
-            <table class="table-matrix" id="table-ap-details">
-              <thead>
-                <tr>
-                  <th>Bill / Invoice No</th>
-                  <th>Supplier</th>
-                  <th>Company</th>
-                  <th>Bill Date</th>
-                  <th>Due Date (Terms)</th>
-                  <th style="text-align: center;">Days Overdue</th>
-                  <th style="text-align: center;">Aging Bucket</th>
-                  <th style="text-align: right;">Bill Total</th>
-                  <th style="text-align: right;">Outstanding</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody id="tbody-ap-details"></tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <!-- ── TAB 6: Multi-Company General Ledger ── -->
-      <section id="tab-general_ledger" class="tab-content">
+      <!-- ═══════════════════════════════════════════════════════════════════════
+           TAB 6: GENERAL LEDGER EXPLORER
+           ═══════════════════════════════════════════════════════════════════════ -->
+      <section class="tab-content" id="tab-general_ledger">
         <div class="matrix-card" style="position: relative;">
           <div class="loading-overlay" id="loading-gl"><div class="spinner"></div></div>
-          
+
           <div class="matrix-toolbar">
             <div class="matrix-title">
-              <span>📜 General Ledger Journal Explorer</span>
-              <span class="badge badge-neutral" id="gl-records-badge">0 Entries</span>
+              <span>🔍 Multi-Company General Ledger Audit Trail</span>
+              <span class="badge badge-neutral" id="gl-record-badge">0 Entries</span>
             </div>
-            
-            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-              <select id="gl-voucher-type-filter" class="btn-action" onchange="loadGLData()">
+
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <select id="select-gl-voucher-type" class="btn-action" style="padding: 4px 8px; font-size: 11px;" onchange="loadGLData()">
                 <option value="">All Voucher Types</option>
                 <option value="Sales Invoice">Sales Invoice</option>
+                <option value="POS Invoice">POS Invoice</option>
                 <option value="Purchase Invoice">Purchase Invoice</option>
                 <option value="Payment Entry">Payment Entry</option>
                 <option value="Journal Entry">Journal Entry</option>
                 <option value="Stock Entry">Stock Entry</option>
-                <option value="POS Invoice">POS Invoice</option>
               </select>
 
               <div class="search-box-wrap">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                <input type="text" id="search-gl" class="search-input" placeholder="Search voucher #, account, remarks..." onkeydown="if(event.key==='Enter') loadGLData()">
+                <span style="color: var(--text-muted); font-size: 11px;">🔍</span>
+                <input type="text" class="search-input" id="input-gl-search" placeholder="Search voucher # or account..." onkeydown="if(event.key==='Enter') loadGLData()">
               </div>
             </div>
           </div>
@@ -1244,11 +1288,11 @@
               <thead>
                 <tr>
                   <th>Posting Date</th>
-                  <th>Company</th>
-                  <th>Account</th>
+                  <th>Branch</th>
                   <th>Voucher Type</th>
                   <th>Voucher No</th>
-                  <th>Against</th>
+                  <th>Account</th>
+                  <th>Against Account</th>
                   <th style="text-align: right;">Debit (₱)</th>
                   <th style="text-align: right;">Credit (₱)</th>
                   <th>Remarks</th>
@@ -1260,39 +1304,24 @@
         </div>
       </section>
 
-      <!-- ── TAB 7: Multi-Company Inventory Audit ── -->
-      <section id="tab-inventory_audit" class="tab-content">
+      <!-- ═══════════════════════════════════════════════════════════════════════
+           TAB 7: INVENTORY AUDIT & STOCK VALUATION
+           ═══════════════════════════════════════════════════════════════════════ -->
+      <section class="tab-content" id="tab-inventory_audit">
         <div class="matrix-card" style="position: relative;">
           <div class="loading-overlay" id="loading-inv"><div class="spinner"></div></div>
-          
+
           <div class="matrix-toolbar">
             <div class="matrix-title">
-              <span>📦 Multi-Company Inventory Audit &bull; Running Balance &amp; On Hand</span>
-              <span class="badge badge-neutral" id="inv-sku-badge">0 SKUs</span>
+              <span>📦 Consolidated Stock Valuation &amp; Inventory Audit</span>
+              <span class="badge badge-neutral" id="inv-count-badge">0 Items</span>
             </div>
-            
             <div class="search-box-wrap">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-              <input type="text" id="search-inv" class="search-input" placeholder="Search all items code, name, group..." oninput="inventoryRefreshFilter()">
+              <span style="color: var(--text-muted); font-size: 11px;">🔍</span>
+              <input type="text" class="search-input" id="input-inv-search" placeholder="Search item code or name..." onkeydown="if(event.key==='Enter') loadInventoryData()">
             </div>
           </div>
 
-          <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;padding:12px 20px">
-            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
-              <input id="inv-stock-only" type="checkbox" onchange="inventoryRefreshFilter()" style="accent-color: var(--accent-solid);">
-              <span>Only items with stock on hand</span>
-            </label>
-            <details><summary id="inv-selection-label" style="cursor:pointer; font-weight: 600;">All Items Selection</summary>
-              <div style="padding:10px;display:grid;gap:8px">
-                <div>
-                  <button class="btn-action" onclick="inventorySelectAll(true)">Select All Items</button>
-                  <button class="btn-action" onclick="inventorySelectAll(false)">Clear Selection</button>
-                </div>
-                <label for="inv-item-select">Choose items (Ctrl / Cmd to select multiple)</label>
-                <select id="inv-item-select" multiple size="10" onchange="inventorySelectChanged()" style="max-width:80vw;width:440px;background:var(--bg-surface-elevated);color:var(--text-primary);border:1px solid var(--border-subtle);border-radius:6px;padding:6px;"></select>
-              </div>
-            </details>
-          </div>
           <div class="table-container">
             <table class="table-matrix" id="table-inv">
               <thead id="thead-inv"></thead>
@@ -1304,14 +1333,11 @@
 
     </main>
 
-    <!-- ── Drill-Down Modal ── -->
-    <div class="modal-overlay" id="drilldown-modal">
+    <!-- ── 5. Drilldown Modal ── -->
+    <div class="modal-overlay" id="modal-drilldown">
       <div class="modal-card">
         <div class="modal-header">
-          <div>
-            <h3 class="modal-title" id="drilldown-title">GL Breakdown</h3>
-            <span style="font-size: 11px; color: var(--text-muted);" id="drilldown-subtitle">Detailed transaction ledger</span>
-          </div>
+          <h3 class="modal-title" id="drilldown-title">Account GL Drilldown</h3>
           <button class="btn-action" onclick="closeDrilldown()">✕</button>
         </div>
         <div class="modal-body">
@@ -1319,8 +1345,10 @@
             <thead>
               <tr>
                 <th>Date</th>
+                <th>Branch</th>
                 <th>Voucher Type</th>
                 <th>Voucher No</th>
+                <th>Against</th>
                 <th style="text-align: right;">Debit (₱)</th>
                 <th style="text-align: right;">Credit (₱)</th>
                 <th>Remarks</th>
@@ -1335,18 +1363,14 @@
       </div>
     </div>
 
-    <!-- ── Stock Ledger Modal ── -->
-    <div class="modal-overlay" id="stock-modal">
-      <div class="modal-card" style="max-width: 1050px;">
+    <!-- ── 6. Stock Ledger Drilldown Modal ── -->
+    <div class="modal-overlay" id="modal-stock-drilldown">
+      <div class="modal-card">
         <div class="modal-header">
-          <div>
-            <h3 class="modal-title" id="stock-modal-title">Running Stock Ledger Audit</h3>
-            <span style="font-size: 11px; color: var(--text-muted);" id="stock-modal-subtitle">Chronological running transactions &amp; balance on hand</span>
-          </div>
+          <h3 class="modal-title" id="stock-modal-title">Item Stock Movements</h3>
           <button class="btn-action" onclick="closeStockDrilldown()">✕</button>
         </div>
         <div class="modal-body">
-          <div id="stock-modal-summary" style="display:flex;gap:20px;padding:8px 0 16px 0;font-size:12px;font-family:var(--font-mono);border-bottom:1px solid var(--border-hairline);margin-bottom:12px"></div>
           <table class="table-matrix" style="width: 100%;">
             <thead>
               <tr>
@@ -1373,11 +1397,13 @@
   </div>
 
   <script>
-    let activeTab = 'pnl';
+    let activeTab = 'cash_flow';
     let allAvailableCompanies = [];
     let selectedCompanies = [];
-    let cfPeriod = 'monthly';
-    let cfView = 'matrix';
+    let cfView = 'exploded';
+    let explodeLevel = 'month'; // 'year', 'month', 'all_days'
+    let explodedMonthMap = {}; // Tracks which specific months are exploded to days
+    let explodedYearMap = {};  // Tracks which specific years are exploded to months
     let arView = 'summary';
     let apView = 'summary';
 
@@ -1468,6 +1494,21 @@
       });
       container.innerHTML = html;
       updatePopoverSelectedCount();
+      populateExplodedCompanySelect();
+    }
+
+    function populateExplodedCompanySelect() {
+      const sel = document.getElementById('cf-exploded-company-select');
+      if (!sel) return;
+      const curr = sel.value;
+      let opts = `<option value="__CONSOLIDATED__">🏢 Consolidated Group (All Selected)</option>`;
+      allAvailableCompanies.forEach(c => {
+        opts += `<option value="${c}">${c}</option>`;
+      });
+      sel.innerHTML = opts;
+      if (curr && allAvailableCompanies.includes(curr)) {
+        sel.value = curr;
+      }
     }
 
     function updateSelectedCompaniesState() {
@@ -1556,48 +1597,16 @@
       const fromDate = document.getElementById('input-from-date').value;
       const toDate = document.getElementById('input-to-date').value;
 
-      if (tabId === 'pnl') {
-        document.getElementById('loading-pnl').classList.add('active');
-        document.getElementById('pnl-date-badge').innerText = `${fromDate} to ${toDate}`;
-        try {
-          const data = await fetchFinancialAPI({ report_type: 'pnl', from_date: fromDate, to_date: toDate });
-          currentData.pnl = data;
-          if (data.all_companies && allAvailableCompanies.length === 0) {
-            renderCompanyCheckboxes(data.all_companies);
-          }
-          renderPNLTable(data);
-          updateKPIs();
-        } catch (e) {
-          console.error(e);
-        } finally {
-          document.getElementById('loading-pnl').classList.remove('active');
-        }
-      } else if (tabId === 'balance_sheet') {
-        document.getElementById('loading-bs').classList.add('active');
-        document.getElementById('bs-date-badge').innerText = `As of ${toDate}`;
-        try {
-          const data = await fetchFinancialAPI({ report_type: 'balance_sheet', to_date: toDate });
-          currentData.balance_sheet = data;
-          if (data.all_companies && allAvailableCompanies.length === 0) {
-            renderCompanyCheckboxes(data.all_companies);
-          }
-          renderBalanceSheetTable(data);
-          updateKPIs();
-        } catch (e) {
-          console.error(e);
-        } finally {
-          document.getElementById('loading-bs').classList.remove('active');
-        }
-      } else if (tabId === 'cash_flow') {
+      if (tabId === 'cash_flow') {
         document.getElementById('loading-cf').classList.add('active');
-        document.getElementById('cf-date-badge').innerText = `${fromDate} to ${toDate} (${cfPeriod.toUpperCase()})`;
+        document.getElementById('cf-date-badge').innerText = `${fromDate} to ${toDate}`;
         try {
-          const data = await fetchFinancialAPI({ report_type: 'cash_flow', from_date: fromDate, to_date: toDate, period: cfPeriod });
+          const data = await fetchFinancialAPI({ report_type: 'cash_flow', from_date: fromDate, to_date: toDate, period: 'monthly' });
           currentData.cash_flow = data;
           if (data.all_companies && allAvailableCompanies.length === 0) {
             renderCompanyCheckboxes(data.all_companies);
           }
-          renderCashFlowTable(data);
+          renderCashFlowSuite(data);
           updateKPIs();
         } catch (e) {
           console.error(e);
@@ -1638,6 +1647,38 @@
         } finally {
           document.getElementById('loading-ap').classList.remove('active');
         }
+      } else if (tabId === 'pnl') {
+        document.getElementById('loading-pnl').classList.add('active');
+        document.getElementById('pnl-date-badge').innerText = `${fromDate} to ${toDate}`;
+        try {
+          const data = await fetchFinancialAPI({ report_type: 'pnl', from_date: fromDate, to_date: toDate });
+          currentData.pnl = data;
+          if (data.all_companies && allAvailableCompanies.length === 0) {
+            renderCompanyCheckboxes(data.all_companies);
+          }
+          renderPNLTable(data);
+          updateKPIs();
+        } catch (e) {
+          console.error(e);
+        } finally {
+          document.getElementById('loading-pnl').classList.remove('active');
+        }
+      } else if (tabId === 'balance_sheet') {
+        document.getElementById('loading-bs').classList.add('active');
+        document.getElementById('bs-date-badge').innerText = `As of ${toDate}`;
+        try {
+          const data = await fetchFinancialAPI({ report_type: 'balance_sheet', to_date: toDate });
+          currentData.balance_sheet = data;
+          if (data.all_companies && allAvailableCompanies.length === 0) {
+            renderCompanyCheckboxes(data.all_companies);
+          }
+          renderBalanceSheetTable(data);
+          updateKPIs();
+        } catch (e) {
+          console.error(e);
+        } finally {
+          document.getElementById('loading-bs').classList.remove('active');
+        }
       } else if (tabId === 'general_ledger') {
         loadGLData();
       } else if (tabId === 'inventory_audit') {
@@ -1650,74 +1691,34 @@
       const container = document.getElementById('kpi-ribbon-container');
       const coCount = selectedCompanies.length || 13;
 
-      if (activeTab === 'pnl' && currentData.pnl) {
-        const d = currentData.pnl;
-        const kpis = d.kpis || {};
-        container.innerHTML = `
-          <div class="kpi-card" onclick="switchTab('pnl')">
-            <div class="kpi-label"><span>Consolidated Revenue</span><span class="badge badge-success">Topline</span></div>
-            <div class="kpi-value">${fmtPlain(kpis.consolidated_revenue)}</div>
-            <div class="kpi-subtext">Across ${coCount} operating companies</div>
-          </div>
-          <div class="kpi-card" onclick="switchTab('pnl')">
-            <div class="kpi-label"><span>Gross Profit</span><span class="badge badge-neutral">${kpis.consolidated_gross_profit && kpis.consolidated_revenue ? ((kpis.consolidated_gross_profit/kpis.consolidated_revenue)*100).toFixed(1) : 0}% Margin</span></div>
-            <div class="kpi-value">${fmtPlain(kpis.consolidated_gross_profit)}</div>
-            <div class="kpi-subtext">COGS: ${fmtPlain(kpis.consolidated_cogs)}</div>
-          </div>
-          <div class="kpi-card" onclick="switchTab('pnl')">
-            <div class="kpi-label"><span>Net Operating Income</span><span class="badge ${kpis.consolidated_net_profit >= 0 ? 'badge-success' : 'badge-danger'}">${kpis.consolidated_net_margin || 0}% Net</span></div>
-            <div class="kpi-value" style="color: ${kpis.consolidated_net_profit >= 0 ? 'var(--positive-color)' : 'var(--negative-color)'};">${fmtPlain(kpis.consolidated_net_profit)}</div>
-            <div class="kpi-subtext">Expenses: ${fmtPlain(kpis.consolidated_expenses)}</div>
-          </div>
-        `;
-      } else if (activeTab === 'balance_sheet' && currentData.balance_sheet) {
-        const d = currentData.balance_sheet;
-        const kpis = d.kpis || {};
-        container.innerHTML = `
-          <div class="kpi-card" onclick="switchTab('balance_sheet')">
-            <div class="kpi-label"><span>Total Assets</span><span class="badge badge-info">Assets</span></div>
-            <div class="kpi-value">${fmtPlain(kpis.consolidated_assets)}</div>
-            <div class="kpi-subtext">Operating assets across group</div>
-          </div>
-          <div class="kpi-card" onclick="switchTab('balance_sheet')">
-            <div class="kpi-label"><span>Total Liabilities</span><span class="badge badge-warning">Payables & Debt</span></div>
-            <div class="kpi-value">${fmtPlain(kpis.consolidated_liabilities)}</div>
-            <div class="kpi-subtext">External obligations</div>
-          </div>
-          <div class="kpi-card" onclick="switchTab('balance_sheet')">
-            <div class="kpi-label"><span>Total Equity</span><span class="badge badge-success">Capital</span></div>
-            <div class="kpi-value">${fmtPlain(kpis.consolidated_equity)}</div>
-            <div class="kpi-subtext">Liab + Equity: ${fmtPlain((kpis.consolidated_liabilities || 0) + (kpis.consolidated_equity || 0))}</div>
-          </div>
-        `;
-      } else if (activeTab === 'cash_flow' && currentData.cash_flow) {
+      if (activeTab === 'cash_flow' && currentData.cash_flow) {
         const d = currentData.cash_flow;
         const s = d.summary || {};
         container.innerHTML = `
-          <div class="kpi-card">
+          <div class="kpi-card" onclick="switchTab('cash_flow')">
             <div class="kpi-label"><span>Beginning Cash Balance</span><span class="badge badge-neutral">Opening</span></div>
             <div class="kpi-value">${fmtPlain(s.opening_consolidated)}</div>
-            <div class="kpi-subtext">Prior to period start</div>
+            <div class="kpi-subtext">Cash & bank prior to start</div>
           </div>
-          <div class="kpi-card">
+          <div class="kpi-card" onclick="switchTab('cash_flow')">
             <div class="kpi-label"><span>Total Cash Inflows</span><span class="badge badge-success">Collections</span></div>
             <div class="kpi-value" style="color: var(--positive-color);">${fmtPlain(s.inflows_consolidated)}</div>
             <div class="kpi-subtext">Customer & POS receipts</div>
           </div>
-          <div class="kpi-card">
+          <div class="kpi-card" onclick="switchTab('cash_flow')">
             <div class="kpi-label"><span>Total Cash Outflows</span><span class="badge badge-warning">Disbursements</span></div>
             <div class="kpi-value" style="color: var(--warning-color);">${fmtPlain(s.outflows_consolidated)}</div>
             <div class="kpi-subtext">Supplier & operating expenses</div>
           </div>
-          <div class="kpi-card">
+          <div class="kpi-card" onclick="switchTab('cash_flow')">
             <div class="kpi-label"><span>Net Cash Flow</span><span class="badge ${s.net_consolidated >= 0 ? 'badge-success' : 'badge-danger'}">${s.net_consolidated >= 0 ? '+ Positive' : '- Deficit'}</span></div>
             <div class="kpi-value" style="color: ${s.net_consolidated >= 0 ? 'var(--positive-color)' : 'var(--negative-color)'};">${fmtPlain(s.net_consolidated)}</div>
             <div class="kpi-subtext">Period net movement</div>
           </div>
-          <div class="kpi-card">
+          <div class="kpi-card" onclick="switchTab('cash_flow')">
             <div class="kpi-label"><span>Ending Cash Balance</span><span class="badge badge-info">Closing</span></div>
             <div class="kpi-value" style="color: var(--accent-blue);">${fmtPlain(s.ending_consolidated)}</div>
-            <div class="kpi-subtext">Live running cash on hand</div>
+            <div class="kpi-subtext">Running cash on hand</div>
           </div>
         `;
       } else if (activeTab === 'ar_aging' && currentData.ar_aging) {
@@ -1780,7 +1781,626 @@
             <div class="kpi-subtext">61-90d: ${fmtPlain(t.range_61_90)} | 90+d: ${fmtPlain(t.range_90_plus)}</div>
           </div>
         `;
+      } else if (activeTab === 'pnl' && currentData.pnl) {
+        const d = currentData.pnl;
+        const kpis = d.kpis || {};
+        container.innerHTML = `
+          <div class="kpi-card" onclick="switchTab('pnl')">
+            <div class="kpi-label"><span>Consolidated Revenue</span><span class="badge badge-success">Topline</span></div>
+            <div class="kpi-value">${fmtPlain(kpis.consolidated_revenue)}</div>
+            <div class="kpi-subtext">Across ${coCount} operating companies</div>
+          </div>
+          <div class="kpi-card" onclick="switchTab('pnl')">
+            <div class="kpi-label"><span>Gross Profit</span><span class="badge badge-neutral">${kpis.consolidated_gross_profit && kpis.consolidated_revenue ? ((kpis.consolidated_gross_profit/kpis.consolidated_revenue)*100).toFixed(1) : 0}% Margin</span></div>
+            <div class="kpi-value">${fmtPlain(kpis.consolidated_gross_profit)}</div>
+            <div class="kpi-subtext">COGS: ${fmtPlain(kpis.consolidated_cogs)}</div>
+          </div>
+          <div class="kpi-card" onclick="switchTab('pnl')">
+            <div class="kpi-label"><span>Net Operating Income</span><span class="badge ${kpis.consolidated_net_profit >= 0 ? 'badge-success' : 'badge-danger'}">${kpis.consolidated_net_margin || 0}% Net</span></div>
+            <div class="kpi-value" style="color: ${kpis.consolidated_net_profit >= 0 ? 'var(--positive-color)' : 'var(--negative-color)'};">${fmtPlain(kpis.consolidated_net_profit)}</div>
+            <div class="kpi-subtext">Expenses: ${fmtPlain(kpis.consolidated_expenses)}</div>
+          </div>
+        `;
+      } else if (activeTab === 'balance_sheet' && currentData.balance_sheet) {
+        const d = currentData.balance_sheet;
+        const kpis = d.kpis || {};
+        container.innerHTML = `
+          <div class="kpi-card" onclick="switchTab('balance_sheet')">
+            <div class="kpi-label"><span>Total Assets</span><span class="badge badge-info">Assets</span></div>
+            <div class="kpi-value">${fmtPlain(kpis.consolidated_assets)}</div>
+            <div class="kpi-subtext">Operating assets across group</div>
+          </div>
+          <div class="kpi-card" onclick="switchTab('balance_sheet')">
+            <div class="kpi-label"><span>Total Liabilities</span><span class="badge badge-warning">Payables & Debt</span></div>
+            <div class="kpi-value">${fmtPlain(kpis.consolidated_liabilities)}</div>
+            <div class="kpi-subtext">External obligations</div>
+          </div>
+          <div class="kpi-card" onclick="switchTab('balance_sheet')">
+            <div class="kpi-label"><span>Total Equity</span><span class="badge badge-success">Capital</span></div>
+            <div class="kpi-value">${fmtPlain(kpis.consolidated_equity)}</div>
+            <div class="kpi-subtext">Liab + Equity: ${fmtPlain((kpis.consolidated_liabilities || 0) + (kpis.consolidated_equity || 0))}</div>
+          </div>
+        `;
       }
+    }
+
+    // ── Cash Flow Suite Master Dispatcher ──
+    function setCashFlowView(view) {
+      cfView = view;
+      document.querySelectorAll('#tab-cash_flow .date-pill-group button[id^="cf-view-"]').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById(`cf-view-${view}`);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      document.getElementById('cf-exploded-container').style.display = view === 'exploded' ? 'block' : 'none';
+      document.getElementById('cf-matrix-container').style.display = view === 'matrix' ? 'block' : 'none';
+      document.getElementById('cf-periods-container').style.display = view === 'periods' ? 'block' : 'none';
+      document.getElementById('cf-exploded-scope-wrap').style.display = view === 'exploded' ? 'inline-flex' : 'none';
+
+      if (currentData.cash_flow) {
+        if (view === 'exploded') renderCashFlowExplodedTable();
+        else if (view === 'matrix') renderCashFlowMatrixTable(currentData.cash_flow);
+        else if (view === 'periods') renderCashFlowPeriodsTable(currentData.cash_flow);
+      }
+    }
+
+    function setExplodeLevel(level) {
+      explodeLevel = level;
+      document.querySelectorAll('#cf-exploded-scope-wrap .date-pill-group button').forEach(b => b.classList.remove('active'));
+      const activeBtn = document.getElementById(`cf-explode-level-${level === 'all_days' ? 'all' : level}`);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      const data = currentData.cash_flow;
+      if (!data || !data.hierarchy) return;
+
+      const years = data.hierarchy.years || [];
+      if (level === 'year') {
+        explodedYearMap = {};
+        explodedMonthMap = {};
+      } else if (level === 'month') {
+        years.forEach(y => { explodedYearMap[y.period_key] = true; });
+        explodedMonthMap = {};
+      } else if (level === 'all_days') {
+        years.forEach(y => {
+          explodedYearMap[y.period_key] = true;
+          (y.months || []).forEach(m => {
+            explodedMonthMap[m.period_key] = true;
+          });
+        });
+      }
+      renderCashFlowExplodedTable();
+    }
+
+    function toggleExplodeYear(yKey) {
+      explodedYearMap[yKey] = !explodedYearMap[yKey];
+      renderCashFlowExplodedTable();
+    }
+
+    function toggleExplodeMonth(mKey) {
+      explodedMonthMap[mKey] = !explodedMonthMap[mKey];
+      renderCashFlowExplodedTable();
+    }
+
+    function renderCashFlowSuite(data) {
+      // Default: ensure years are expanded if month or all_days
+      if (explodeLevel === 'month' || explodeLevel === 'all_days') {
+        (data.hierarchy?.years || []).forEach(y => {
+          explodedYearMap[y.period_key] = true;
+          if (explodeLevel === 'all_days') {
+            (y.months || []).forEach(m => { explodedMonthMap[m.period_key] = true; });
+          }
+        });
+      }
+      renderCashFlowExplodedTable();
+      renderCashFlowMatrixTable(data);
+      renderCashFlowPeriodsTable(data);
+    }
+
+    // ── 1. EXPLODED HORIZONTAL TIME SERIES CASH FLOW RENDERER ──
+    function renderCashFlowExplodedTable() {
+      const data = currentData.cash_flow;
+      if (!data || !data.hierarchy) return;
+
+      const targetCo = document.getElementById('cf-exploded-company-select')?.value || '__CONSOLIDATED__';
+      const isConsolidated = targetCo === '__CONSOLIDATED__';
+
+      const hierarchy = data.hierarchy;
+      const years = hierarchy.years || [];
+
+      // Determine active horizontal columns
+      let columns = []; // [{ key, label, type: 'year'|'month'|'day', refObj, parentYearKey, parentMonthKey }]
+
+      years.forEach(y => {
+        const isYearExploded = explodedYearMap[y.period_key];
+        if (!isYearExploded) {
+          // Column is the Year
+          columns.push({
+            key: y.period_key,
+            label: y.period_label,
+            type: 'year',
+            refObj: y,
+            canExplode: true,
+            isExploded: false
+          });
+        } else {
+          // Year is exploded into its months
+          const months = y.months || [];
+          months.forEach(m => {
+            const isMonthExploded = explodedMonthMap[m.period_key];
+            if (!isMonthExploded) {
+              // Column is the Month
+              columns.push({
+                key: m.period_key,
+                label: m.month_abbr || m.period_label,
+                fullLabel: m.period_label,
+                type: 'month',
+                refObj: m,
+                parentYearKey: y.period_key,
+                canExplode: (m.days && m.days.length > 0),
+                isExploded: false
+              });
+            } else {
+              // Month is exploded into its individual Days!
+              const days = m.days || [];
+              days.forEach(d => {
+                columns.push({
+                  key: d.period_key,
+                  label: d.period_label,
+                  fullLabel: d.full_label || d.period_label,
+                  type: 'day',
+                  refObj: d,
+                  parentYearKey: y.period_key,
+                  parentMonthKey: m.period_key,
+                  canExplode: false,
+                  isExploded: true
+                });
+              });
+            }
+          });
+        }
+      });
+
+      // Build 2-Tier Header
+      // Tier 1: Breadcrumb groupings (Year / Month badges)
+      // Tier 2: Column Headers
+      let theadHtml = `<tr>
+        <th class="sticky-col" style="vertical-align: bottom;">
+          <div>Financial Line Item</div>
+          <div style="font-size: 10px; color: var(--text-muted); font-weight: 500;">
+            ${isConsolidated ? 'Consolidated Group' : targetCo}
+          </div>
+        </th>`;
+
+      columns.forEach(col => {
+        let badgeHtml = '';
+        if (col.type === 'year') {
+          badgeHtml = `<button class="cf-explode-badge" onclick="toggleExplodeYear('${col.key}')" title="Explode into Months">➕ Months</button>`;
+        } else if (col.type === 'month') {
+          badgeHtml = `<button class="cf-explode-badge" onclick="toggleExplodeMonth('${col.key}')" title="Explode into Days">💥 Days</button>`;
+        } else if (col.type === 'day') {
+          badgeHtml = `<span style="font-size: 9px; color: var(--accent-blue); font-weight: 700;">● Day</span>`;
+        }
+
+        theadHtml += `<th style="text-align: right; min-width: ${col.type === 'day' ? '120px' : '140px'};">
+          <div style="display: flex; align-items: center; justify-content: flex-end; gap: 4px;">
+            <span>${col.label}</span>
+            ${badgeHtml}
+          </div>
+        </th>`;
+      });
+
+      theadHtml += `<th class="sticky-total">Total Consolidated (PHP)</th></tr>`;
+      document.getElementById('thead-cf-exploded').innerHTML = theadHtml;
+
+      // Extract values helper
+      function getVal(obj, path, cat = null) {
+        if (!obj) return 0;
+        if (cat) {
+          if (path === 'inflows') {
+            const br = obj.inflow_breakdown && obj.inflow_breakdown[cat];
+            if (!br) return 0;
+            return isConsolidated ? Object.values(br).reduce((a,b)=>a+b,0) : (br[targetCo] || 0);
+          } else if (path === 'outflows') {
+            const br = obj.outflow_breakdown && obj.outflow_breakdown[cat];
+            if (!br) return 0;
+            return isConsolidated ? Object.values(br).reduce((a,b)=>a+b,0) : (br[targetCo] || 0);
+          }
+        }
+        if (path === 'opening') {
+          return isConsolidated ? (obj.opening_total || 0) : ((obj.opening_balance && obj.opening_balance[targetCo]) || 0);
+        }
+        if (path === 'inflows_total') {
+          return isConsolidated ? (obj.inflow_total || 0) : ((obj.inflows && obj.inflows[targetCo]) || 0);
+        }
+        if (path === 'outflows_total') {
+          return isConsolidated ? (obj.outflow_total || 0) : ((obj.outflows && obj.outflows[targetCo]) || 0);
+        }
+        if (path === 'net') {
+          return isConsolidated ? (obj.net_total || 0) : ((obj.net && obj.net[targetCo]) || 0);
+        }
+        if (path === 'ending') {
+          return isConsolidated ? (obj.ending_total || 0) : ((obj.ending_balance && obj.ending_balance[targetCo]) || 0);
+        }
+        return 0;
+      }
+
+      const summary = data.summary || {};
+      const totOpening = isConsolidated ? (summary.opening_consolidated || 0) : (summary.opening_balance?.[targetCo] || 0);
+      const totInflows = isConsolidated ? (summary.inflows_consolidated || 0) : (summary.inflows_total?.[targetCo] || 0);
+      const totOutflows = isConsolidated ? (summary.outflows_consolidated || 0) : (summary.outflows_total?.[targetCo] || 0);
+      const totNet = isConsolidated ? (summary.net_consolidated || 0) : (summary.net_cash_flow?.[targetCo] || 0);
+      const totEnding = isConsolidated ? (summary.ending_consolidated || 0) : (summary.ending_balance?.[targetCo] || 0);
+
+      const inCats = data.inflow_categories || {};
+      const outCats = data.outflow_categories || {};
+
+      let tbodyHtml = '';
+
+      // 1. Beginning Balance Row
+      tbodyHtml += `<tr class="row-section-total">
+        <td class="sticky-col"><strong>Beginning Cash &amp; Bank Balance</strong></td>`;
+      columns.forEach(col => {
+        tbodyHtml += `<td class="num-cell">${fmt(getVal(col.refObj, 'opening'))}</td>`;
+      });
+      tbodyHtml += `<td class="sticky-total">${fmt(totOpening)}</td></tr>`;
+
+      // 2. Inflows Section
+      tbodyHtml += `<tr class="row-section-header"><td colspan="${columns.length + 2}">Operating Cash Inflows &amp; Collections</td></tr>`;
+      Object.keys(inCats).forEach(k => {
+        const cat = inCats[k];
+        tbodyHtml += `<tr><td class="sticky-col" style="padding-left: 20px;">↳ ${cat.label}</td>`;
+        columns.forEach(col => {
+          tbodyHtml += `<td class="num-cell">${fmt(getVal(col.refObj, 'inflows', k))}</td>`;
+        });
+        const catTot = isConsolidated ? (cat.total || 0) : (cat.companies?.[targetCo] || 0);
+        tbodyHtml += `<td class="sticky-total">${fmt(catTot)}</td></tr>`;
+      });
+      // Total Inflows
+      tbodyHtml += `<tr class="row-section-total">
+        <td class="sticky-col"><strong>Total Cash Inflows</strong></td>`;
+      columns.forEach(col => {
+        tbodyHtml += `<td class="num-cell" style="color: var(--positive-color); font-weight: 700;">${fmt(getVal(col.refObj, 'inflows_total'))}</td>`;
+      });
+      tbodyHtml += `<td class="sticky-total" style="color: var(--positive-color); font-weight: 800;">${fmt(totInflows)}</td></tr>`;
+
+      // 3. Outflows Section
+      tbodyHtml += `<tr class="row-section-header"><td colspan="${columns.length + 2}">Operating Cash Outflows &amp; Disbursements</td></tr>`;
+      Object.keys(outCats).forEach(k => {
+        const cat = outCats[k];
+        tbodyHtml += `<tr><td class="sticky-col" style="padding-left: 20px;">↳ ${cat.label}</td>`;
+        columns.forEach(col => {
+          tbodyHtml += `<td class="num-cell">${fmt(getVal(col.refObj, 'outflows', k))}</td>`;
+        });
+        const catTot = isConsolidated ? (cat.total || 0) : (cat.companies?.[targetCo] || 0);
+        tbodyHtml += `<td class="sticky-total">${fmt(catTot)}</td></tr>`;
+      });
+      // Total Outflows
+      tbodyHtml += `<tr class="row-section-total">
+        <td class="sticky-col"><strong>Total Cash Outflows</strong></td>`;
+      columns.forEach(col => {
+        tbodyHtml += `<td class="num-cell" style="color: var(--warning-color); font-weight: 700;">${fmt(getVal(col.refObj, 'outflows_total'))}</td>`;
+      });
+      tbodyHtml += `<td class="sticky-total" style="color: var(--warning-color); font-weight: 800;">${fmt(totOutflows)}</td></tr>`;
+
+      // 4. Net Cash Flow Row
+      tbodyHtml += `<tr class="row-section-total" style="border-top: 2px solid var(--border-highlight);">
+        <td class="sticky-col"><strong>Net Cash Flow for Period</strong></td>`;
+      columns.forEach(col => {
+        const netVal = getVal(col.refObj, 'net');
+        tbodyHtml += `<td class="num-cell" style="font-weight: 700; color: ${netVal >= 0 ? 'var(--positive-color)' : 'var(--negative-color)'};">${fmt(netVal)}</td>`;
+      });
+      tbodyHtml += `<td class="sticky-total" style="font-weight: 800; color: ${totNet >= 0 ? 'var(--positive-color)' : 'var(--negative-color)'};">${fmt(totNet)}</td></tr>`;
+
+      // 5. Ending Cash Balance Row
+      tbodyHtml += `<tr class="row-grand-total">
+        <td class="sticky-col"><strong>Ending Cash &amp; Bank Balance</strong></td>`;
+      columns.forEach(col => {
+        tbodyHtml += `<td class="num-cell" style="color: var(--accent-blue); font-weight: 800;">${fmt(getVal(col.refObj, 'ending'))}</td>`;
+      });
+      tbodyHtml += `<td class="sticky-total" style="color: var(--accent-blue); font-weight: 900;">${fmt(totEnding)}</td></tr>`;
+
+      document.getElementById('tbody-cf-exploded').innerHTML = tbodyHtml;
+    }
+
+    // ── 2. COMPANY MATRIX CASH FLOW RENDERER ──
+    function renderCashFlowMatrixTable(data) {
+      const companies = data.companies || [];
+      const meta = data.company_meta || {};
+      const summary = data.summary || {};
+      const inflows = data.inflow_categories || {};
+      const outflows = data.outflow_categories || {};
+
+      let thead = '<tr><th class="sticky-col">Cash Flow Activities</th>';
+      companies.forEach(c => {
+        const abbr = meta[c]?.abbr || c.substring(0, 4);
+        thead += `<th style="text-align: right;" title="${c}">${abbr}</th>`;
+      });
+      thead += '<th class="sticky-total">Consolidated (PHP)</th></tr>';
+      document.getElementById('thead-cf-matrix').innerHTML = thead;
+
+      let tbody = '';
+      tbody += `<tr class="row-section-total">
+        <td class="sticky-col"><strong>Beginning Cash &amp; Bank Balance</strong></td>`;
+      companies.forEach(c => {
+        tbody += `<td class="num-cell">${fmt((summary.opening_balance && summary.opening_balance[c]) || 0)}</td>`;
+      });
+      tbody += `<td class="sticky-total">${fmt(summary.opening_consolidated || 0)}</td></tr>`;
+
+      tbody += `<tr class="row-section-header"><td colspan="${companies.length + 2}">Operating Cash Inflows &amp; Receipts</td></tr>`;
+      Object.keys(inflows).forEach(k => {
+        const cat = inflows[k];
+        tbody += `<tr><td class="sticky-col">↳ ${cat.label}</td>`;
+        companies.forEach(c => {
+          tbody += `<td class="num-cell">${fmt((cat.companies && cat.companies[c]) || 0)}</td>`;
+        });
+        tbody += `<td class="sticky-total">${fmt(cat.total || 0)}</td></tr>`;
+      });
+      tbody += `<tr class="row-section-total"><td class="sticky-col"><strong>Total Cash Inflows</strong></td>`;
+      companies.forEach(c => {
+        tbody += `<td class="num-cell" style="color: var(--positive-color);">${fmt((summary.inflows_total && summary.inflows_total[c]) || 0)}</td>`;
+      });
+      tbody += `<td class="sticky-total" style="color: var(--positive-color);">${fmt(summary.inflows_consolidated || 0)}</td></tr>`;
+
+      tbody += `<tr class="row-section-header"><td colspan="${companies.length + 2}">Operating Cash Outflows &amp; Disbursements</td></tr>`;
+      Object.keys(outflows).forEach(k => {
+        const cat = outflows[k];
+        tbody += `<tr><td class="sticky-col">↳ ${cat.label}</td>`;
+        companies.forEach(c => {
+          tbody += `<td class="num-cell">${fmt((cat.companies && cat.companies[c]) || 0)}</td>`;
+        });
+        tbody += `<td class="sticky-total">${fmt(cat.total || 0)}</td></tr>`;
+      });
+      tbody += `<tr class="row-section-total"><td class="sticky-col"><strong>Total Cash Outflows</strong></td>`;
+      companies.forEach(c => {
+        tbody += `<td class="num-cell" style="color: var(--warning-color);">${fmt((summary.outflows_total && summary.outflows_total[c]) || 0)}</td>`;
+      });
+      tbody += `<td class="sticky-total" style="color: var(--warning-color);">${fmt(summary.outflows_consolidated || 0)}</td></tr>`;
+
+      tbody += `<tr class="row-section-total" style="border-top: 2px solid var(--border-highlight);">
+        <td class="sticky-col"><strong>Net Cash Flow for Period</strong></td>`;
+      companies.forEach(c => {
+        tbody += `<td class="num-cell" style="font-weight: 700;">${fmt((summary.net_cash_flow && summary.net_cash_flow[c]) || 0)}</td>`;
+      });
+      tbody += `<td class="sticky-total" style="font-weight: 800;">${fmt(summary.net_consolidated || 0)}</td></tr>`;
+
+      tbody += `<tr class="row-grand-total">
+        <td class="sticky-col"><strong>Ending Cash &amp; Bank Balance</strong></td>`;
+      companies.forEach(c => {
+        tbody += `<td class="num-cell" style="color: var(--accent-blue);">${fmt((summary.ending_balance && summary.ending_balance[c]) || 0)}</td>`;
+      });
+      tbody += `<td class="sticky-total" style="color: var(--accent-blue);">${fmt(summary.ending_consolidated || 0)}</td></tr>`;
+
+      document.getElementById('tbody-cf-matrix').innerHTML = tbody;
+    }
+
+    // ── 3. PERIODIC TRENDS CASH FLOW RENDERER ──
+    function renderCashFlowPeriodsTable(data) {
+      const periods = data.periods || [];
+      let pbody = '';
+      if (periods.length === 0) {
+        pbody = `<tr><td colspan="7" style="text-align: center; padding: 24px; color: var(--text-muted);">No cash transactions recorded in this date range.</td></tr>`;
+      } else {
+        periods.forEach(p => {
+          pbody += `<tr>
+            <td style="font-weight: 700; color: var(--text-primary);">${p.period_label}</td>
+            <td class="num-cell">${fmt(p.opening_total || 0)}</td>
+            <td class="num-cell" style="color: var(--positive-color);">${fmt(p.inflow_total || 0)}</td>
+            <td class="num-cell" style="color: var(--warning-color);">${fmt(p.outflow_total || 0)}</td>
+            <td class="num-cell" style="font-weight: 700; color: ${p.net_total >= 0 ? 'var(--positive-color)' : 'var(--negative-color)'};">${fmt(p.net_total || 0)}</td>
+            <td class="num-cell" style="font-weight: 800; color: var(--accent-blue);">${fmt(p.ending_total || 0)}</td>
+            <td style="text-align: center;"><span class="badge badge-neutral">${p.entries_count} tx</span></td>
+          </tr>`;
+        });
+      }
+      document.getElementById('tbody-cf-periods').innerHTML = pbody;
+    }
+
+    function filterCashFlowRows(query) {
+      filterTableRows('table-cf-exploded', query);
+      filterTableRows('table-cf-matrix', query);
+    }
+
+    // ── AR Aging Renderer & Controls ──
+    function setARView(view) {
+      arView = view;
+      document.querySelectorAll('#tab-ar_aging .date-pill-group button[id^="ar-view-"]').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById(`ar-view-${view}`);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      document.getElementById('ar-summary-container').style.display = view === 'summary' ? 'block' : 'none';
+      document.getElementById('ar-companies-container').style.display = view === 'companies' ? 'block' : 'none';
+      document.getElementById('ar-details-container').style.display = view === 'details' ? 'block' : 'none';
+    }
+
+    function renderARTable(data) {
+      const customers = data.customer_summary || [];
+      const companies = data.company_summary || [];
+      const invoices = data.invoices || [];
+      const totals = data.totals || {};
+
+      let sbody = '';
+      customers.forEach(c => {
+        sbody += `<tr>
+          <td class="sticky-col">${c.customer_name}</td>
+          <td><span class="badge badge-neutral">${c.company}</span></td>
+          <td class="num-cell">${fmt(c.current)}</td>
+          <td class="num-cell" style="color: var(--warning-color);">${fmt(c.range_1_30)}</td>
+          <td class="num-cell" style="color: #f97316;">${fmt(c.range_31_60)}</td>
+          <td class="num-cell" style="color: var(--negative-color);">${fmt(c.range_61_90)}</td>
+          <td class="num-cell" style="color: var(--negative-color); font-weight: 700;">${fmt(c.range_90_plus)}</td>
+          <td class="sticky-total">${fmt(c.total_outstanding)}</td>
+          <td style="text-align: center;"><span class="badge badge-neutral">${c.invoice_count}</span></td>
+        </tr>`;
+      });
+      sbody += `<tr class="row-grand-total">
+        <td class="sticky-col">Grand Total AR (${customers.length} Customers)</td>
+        <td>Consolidated</td>
+        <td class="num-cell">${fmt(totals.current)}</td>
+        <td class="num-cell">${fmt(totals.range_1_30)}</td>
+        <td class="num-cell">${fmt(totals.range_31_60)}</td>
+        <td class="num-cell">${fmt(totals.range_61_90)}</td>
+        <td class="num-cell">${fmt(totals.range_90_plus)}</td>
+        <td class="sticky-total">${fmt(totals.total_outstanding)}</td>
+        <td style="text-align: center;"><span class="badge badge-neutral">${totals.invoice_count || 0}</span></td>
+      </tr>`;
+      document.getElementById('tbody-ar-summary').innerHTML = sbody;
+
+      let cbody = '';
+      companies.forEach(co => {
+        cbody += `<tr>
+          <td class="sticky-col">${co.company}</td>
+          <td><span class="badge badge-neutral">${co.abbr}</span></td>
+          <td class="num-cell">${fmt(co.current)}</td>
+          <td class="num-cell">${fmt(co.range_1_30)}</td>
+          <td class="num-cell">${fmt(co.range_31_60)}</td>
+          <td class="num-cell">${fmt(co.range_61_90)}</td>
+          <td class="num-cell">${fmt(co.range_90_plus)}</td>
+          <td class="sticky-total">${fmt(co.total_outstanding)}</td>
+          <td style="text-align: center;"><span class="badge badge-neutral">${co.invoice_count}</span></td>
+        </tr>`;
+      });
+      cbody += `<tr class="row-grand-total">
+        <td class="sticky-col">Grand Total AR (All Branches)</td>
+        <td>ALL</td>
+        <td class="num-cell">${fmt(totals.current)}</td>
+        <td class="num-cell">${fmt(totals.range_1_30)}</td>
+        <td class="num-cell">${fmt(totals.range_31_60)}</td>
+        <td class="num-cell">${fmt(totals.range_61_90)}</td>
+        <td class="num-cell">${fmt(totals.range_90_plus)}</td>
+        <td class="sticky-total">${fmt(totals.total_outstanding)}</td>
+        <td style="text-align: center;"><span class="badge badge-neutral">${totals.invoice_count || 0}</span></td>
+      </tr>`;
+      document.getElementById('tbody-ar-companies').innerHTML = cbody;
+
+      let dbody = '';
+      invoices.forEach(inv => {
+        let bBadge = '<span class="badge badge-success">Current</span>';
+        if (inv.bucket === 'range_1_30') bBadge = '<span class="badge badge-warning">1-30d</span>';
+        else if (inv.bucket === 'range_31_60') bBadge = '<span class="badge badge-warning" style="background:rgba(249,115,22,0.15);color:#f97316;">31-60d</span>';
+        else if (inv.bucket === 'range_61_90') bBadge = '<span class="badge badge-danger">61-90d</span>';
+        else if (inv.bucket === 'range_90_plus') bBadge = '<span class="badge badge-danger" style="font-weight:800;">90+d</span>';
+
+        dbody += `<tr>
+          <td style="font-family:var(--font-mono);font-weight:600;">${inv.name}</td>
+          <td>${inv.customer_name}</td>
+          <td><span class="badge badge-neutral">${inv.company_abbr}</span></td>
+          <td style="font-family:var(--font-mono);">${inv.posting_date}</td>
+          <td style="font-family:var(--font-mono);">${inv.due_date} <small style="color:var(--text-muted)">(${inv.terms})</small></td>
+          <td style="text-align: center; font-family:var(--font-mono); font-weight:700; color:${inv.days_overdue > 0 ? 'var(--negative-color)' : 'var(--positive-color)'};">${inv.days_overdue} d</td>
+          <td style="text-align: center;">${bBadge}</td>
+          <td class="num-cell">${fmt(inv.grand_total)}</td>
+          <td class="num-cell" style="font-weight:700;">${fmt(inv.amount_aged)}</td>
+          <td><span class="badge ${inv.status === 'Paid' ? 'badge-success' : 'badge-neutral'}">${inv.status}</span></td>
+        </tr>`;
+      });
+      document.getElementById('tbody-ar-details').innerHTML = dbody;
+    }
+
+    function filterARRows(query) {
+      filterTableRows('table-ar-summary', query);
+      filterTableRows('table-ar-companies', query);
+      filterTableRows('table-ar-details', query);
+    }
+
+    // ── AP Aging Renderer & Controls ──
+    function setAPView(view) {
+      apView = view;
+      document.querySelectorAll('#tab-ap_aging .date-pill-group button[id^="ap-view-"]').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById(`ap-view-${view}`);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      document.getElementById('ap-summary-container').style.display = view === 'summary' ? 'block' : 'none';
+      document.getElementById('ap-companies-container').style.display = view === 'companies' ? 'block' : 'none';
+      document.getElementById('ap-details-container').style.display = view === 'details' ? 'block' : 'none';
+    }
+
+    function renderAPTable(data) {
+      const suppliers = data.supplier_summary || [];
+      const companies = data.company_summary || [];
+      const bills = data.bills || [];
+      const totals = data.totals || {};
+
+      let sbody = '';
+      suppliers.forEach(s => {
+        sbody += `<tr>
+          <td class="sticky-col">${s.supplier_name}</td>
+          <td><span class="badge badge-neutral">${s.company}</span></td>
+          <td class="num-cell">${fmt(s.current)}</td>
+          <td class="num-cell" style="color: var(--warning-color);">${fmt(s.range_1_30)}</td>
+          <td class="num-cell" style="color: #f97316;">${fmt(s.range_31_60)}</td>
+          <td class="num-cell" style="color: var(--negative-color);">${fmt(s.range_61_90)}</td>
+          <td class="num-cell" style="color: var(--negative-color); font-weight: 700;">${fmt(s.range_90_plus)}</td>
+          <td class="sticky-total">${fmt(s.total_outstanding)}</td>
+          <td style="text-align: center;"><span class="badge badge-neutral">${s.bill_count}</span></td>
+        </tr>`;
+      });
+      sbody += `<tr class="row-grand-total">
+        <td class="sticky-col">Grand Total AP (${suppliers.length} Suppliers)</td>
+        <td>Consolidated</td>
+        <td class="num-cell">${fmt(totals.current)}</td>
+        <td class="num-cell">${fmt(totals.range_1_30)}</td>
+        <td class="num-cell">${fmt(totals.range_31_60)}</td>
+        <td class="num-cell">${fmt(totals.range_61_90)}</td>
+        <td class="num-cell">${fmt(totals.range_90_plus)}</td>
+        <td class="sticky-total">${fmt(totals.total_outstanding)}</td>
+        <td style="text-align: center;"><span class="badge badge-neutral">${totals.bill_count || 0}</span></td>
+      </tr>`;
+      document.getElementById('tbody-ap-summary').innerHTML = sbody;
+
+      let cbody = '';
+      companies.forEach(co => {
+        cbody += `<tr>
+          <td class="sticky-col">${co.company}</td>
+          <td><span class="badge badge-neutral">${co.abbr}</span></td>
+          <td class="num-cell">${fmt(co.current)}</td>
+          <td class="num-cell">${fmt(co.range_1_30)}</td>
+          <td class="num-cell">${fmt(co.range_31_60)}</td>
+          <td class="num-cell">${fmt(co.range_61_90)}</td>
+          <td class="num-cell">${fmt(co.range_90_plus)}</td>
+          <td class="sticky-total">${fmt(co.total_outstanding)}</td>
+          <td style="text-align: center;"><span class="badge badge-neutral">${co.bill_count}</span></td>
+        </tr>`;
+      });
+      cbody += `<tr class="row-grand-total">
+        <td class="sticky-col">Grand Total AP (All Branches)</td>
+        <td>ALL</td>
+        <td class="num-cell">${fmt(totals.current)}</td>
+        <td class="num-cell">${fmt(totals.range_1_30)}</td>
+        <td class="num-cell">${fmt(totals.range_31_60)}</td>
+        <td class="num-cell">${fmt(totals.range_61_90)}</td>
+        <td class="num-cell">${fmt(totals.range_90_plus)}</td>
+        <td class="sticky-total">${fmt(totals.total_outstanding)}</td>
+        <td style="text-align: center;"><span class="badge badge-neutral">${totals.bill_count || 0}</span></td>
+      </tr>`;
+      document.getElementById('tbody-ap-companies').innerHTML = cbody;
+
+      let dbody = '';
+      bills.forEach(b => {
+        let bBadge = '<span class="badge badge-success">Current</span>';
+        if (b.bucket === 'range_1_30') bBadge = '<span class="badge badge-warning">1-30d</span>';
+        else if (b.bucket === 'range_31_60') bBadge = '<span class="badge badge-warning" style="background:rgba(249,115,22,0.15);color:#f97316;">31-60d</span>';
+        else if (b.bucket === 'range_61_90') bBadge = '<span class="badge badge-danger">61-90d</span>';
+        else if (b.bucket === 'range_90_plus') bBadge = '<span class="badge badge-danger" style="font-weight:800;">90+d</span>';
+
+        dbody += `<tr>
+          <td style="font-family:var(--font-mono);font-weight:600;">${b.name}</td>
+          <td>${b.supplier_name}</td>
+          <td><span class="badge badge-neutral">${b.company_abbr}</span></td>
+          <td style="font-family:var(--font-mono);">${b.posting_date}</td>
+          <td style="font-family:var(--font-mono);">${b.due_date} <small style="color:var(--text-muted)">(${b.terms})</small></td>
+          <td style="text-align: center; font-family:var(--font-mono); font-weight:700; color:${b.days_overdue > 0 ? 'var(--negative-color)' : 'var(--positive-color)'};">${b.days_overdue} d</td>
+          <td style="text-align: center;">${bBadge}</td>
+          <td class="num-cell">${fmt(b.grand_total)}</td>
+          <td class="num-cell" style="font-weight:700;">${fmt(b.amount_aged)}</td>
+          <td><span class="badge ${b.status === 'Paid' ? 'badge-success' : 'badge-neutral'}">${b.status}</span></td>
+        </tr>`;
+      });
+      document.getElementById('tbody-ap-details').innerHTML = dbody;
+    }
+
+    function filterAPRows(query) {
+      filterTableRows('table-ap-summary', query);
+      filterTableRows('table-ap-companies', query);
+      filterTableRows('table-ap-details', query);
     }
 
     // ── P&L Table Renderer ──
@@ -1880,385 +2500,41 @@
       document.getElementById('tbody-bs').innerHTML = tbody;
     }
 
-    // ── Cash Flow Statement Controls & Renderer ──
-    function setCashFlowPeriod(period) {
-      cfPeriod = period;
-      document.querySelectorAll('#tab-cash_flow .date-pill-group button[id^="cf-period-"]').forEach(btn => btn.classList.remove('active'));
-      const activeBtn = document.getElementById(`cf-period-${period}`);
-      if (activeBtn) activeBtn.classList.add('active');
-      loadDataForTab('cash_flow', true);
-    }
-
-    function setCashFlowView(view) {
-      cfView = view;
-      document.querySelectorAll('#tab-cash_flow .date-pill-group button[id^="cf-view-"]').forEach(btn => btn.classList.remove('active'));
-      const activeBtn = document.getElementById(`cf-view-${view}`);
-      if (activeBtn) activeBtn.classList.add('active');
-
-      if (view === 'matrix') {
-        document.getElementById('cf-matrix-container').style.display = 'block';
-        document.getElementById('cf-periods-container').style.display = 'none';
-      } else {
-        document.getElementById('cf-matrix-container').style.display = 'none';
-        document.getElementById('cf-periods-container').style.display = 'block';
-      }
-    }
-
-    function renderCashFlowTable(data) {
-      const companies = data.companies || [];
-      const meta = data.company_meta || {};
-      const summary = data.summary || {};
-      const inflows = data.inflow_categories || {};
-      const outflows = data.outflow_categories || {};
-      const periods = data.periods || [];
-
-      // 1. Matrix Header
-      let thead = '<tr><th class="sticky-col">Cash Flow Activities</th>';
-      companies.forEach(c => {
-        const abbr = meta[c]?.abbr || c.substring(0, 4);
-        thead += `<th style="text-align: right;" title="${c}">${abbr}</th>`;
-      });
-      thead += '<th class="sticky-total">Consolidated (PHP)</th></tr>';
-      document.getElementById('thead-cf-matrix').innerHTML = thead;
-
-      // 2. Matrix Body
-      let tbody = '';
-      
-      // Beginning Cash Balance Row
-      tbody += `<tr class="row-section-total">
-        <td class="sticky-col"><strong>Beginning Cash &amp; Bank Balance</strong></td>`;
-      companies.forEach(c => {
-        const val = (summary.opening_balance && summary.opening_balance[c]) || 0;
-        tbody += `<td class="num-cell">${fmt(val)}</td>`;
-      });
-      tbody += `<td class="sticky-total">${fmt(summary.opening_consolidated || 0)}</td></tr>`;
-
-      // Cash Inflows Section
-      tbody += `<tr class="row-section-header"><td colspan="${companies.length + 2}">Operating Cash Inflows &amp; Receipts</td></tr>`;
-      Object.keys(inflows).forEach(k => {
-        const cat = inflows[k];
-        tbody += `<tr><td class="sticky-col">&bull; ${cat.label}</td>`;
-        companies.forEach(c => {
-          const val = (cat.companies && cat.companies[c]) || 0;
-          tbody += `<td class="num-cell">${fmt(val)}</td>`;
-        });
-        tbody += `<td class="sticky-total">${fmt(cat.total || 0)}</td></tr>`;
-      });
-      tbody += `<tr class="row-section-total"><td class="sticky-col"><strong>Total Cash Inflows</strong></td>`;
-      companies.forEach(c => {
-        const val = (summary.inflows_total && summary.inflows_total[c]) || 0;
-        tbody += `<td class="num-cell" style="color: var(--positive-color);">${fmt(val)}</td>`;
-      });
-      tbody += `<td class="sticky-total" style="color: var(--positive-color);">${fmt(summary.inflows_consolidated || 0)}</td></tr>`;
-
-      // Cash Outflows Section
-      tbody += `<tr class="row-section-header"><td colspan="${companies.length + 2}">Operating Cash Outflows &amp; Disbursements</td></tr>`;
-      Object.keys(outflows).forEach(k => {
-        const cat = outflows[k];
-        tbody += `<tr><td class="sticky-col">&bull; ${cat.label}</td>`;
-        companies.forEach(c => {
-          const val = (cat.companies && cat.companies[c]) || 0;
-          tbody += `<td class="num-cell">${fmt(val)}</td>`;
-        });
-        tbody += `<td class="sticky-total">${fmt(cat.total || 0)}</td></tr>`;
-      });
-      tbody += `<tr class="row-section-total"><td class="sticky-col"><strong>Total Cash Outflows</strong></td>`;
-      companies.forEach(c => {
-        const val = (summary.outflows_total && summary.outflows_total[c]) || 0;
-        tbody += `<td class="num-cell" style="color: var(--warning-color);">${fmt(val)}</td>`;
-      });
-      tbody += `<td class="sticky-total" style="color: var(--warning-color);">${fmt(summary.outflows_consolidated || 0)}</td></tr>`;
-
-      // Net Cash Flow Row
-      tbody += `<tr class="row-section-total" style="border-top: 2px solid var(--border-highlight);">
-        <td class="sticky-col"><strong>Net Cash Flow for Period</strong></td>`;
-      companies.forEach(c => {
-        const val = (summary.net_cash_flow && summary.net_cash_flow[c]) || 0;
-        tbody += `<td class="num-cell" style="font-weight: 700;">${fmt(val)}</td>`;
-      });
-      tbody += `<td class="sticky-total" style="font-weight: 800;">${fmt(summary.net_consolidated || 0)}</td></tr>`;
-
-      // Ending Cash Balance Row
-      tbody += `<tr class="row-grand-total">
-        <td class="sticky-col"><strong>Ending Cash &amp; Bank Balance</strong></td>`;
-      companies.forEach(c => {
-        const val = (summary.ending_balance && summary.ending_balance[c]) || 0;
-        tbody += `<td class="num-cell" style="color: var(--accent-blue);">${fmt(val)}</td>`;
-      });
-      tbody += `<td class="sticky-total" style="color: var(--accent-blue);">${fmt(summary.ending_consolidated || 0)}</td></tr>`;
-
-      document.getElementById('tbody-cf-matrix').innerHTML = tbody;
-
-      // 3. Periodic Trend Table
-      let pbody = '';
-      if (periods.length === 0) {
-        pbody = `<tr><td colspan="7" style="text-align: center; padding: 24px; color: var(--text-muted);">No cash transactions recorded in this date range.</td></tr>`;
-      } else {
-        periods.forEach(p => {
-          pbody += `<tr>
-            <td style="font-weight: 700; color: var(--text-primary);">${p.period_label}</td>
-            <td class="num-cell">${fmt(p.opening_total || 0)}</td>
-            <td class="num-cell" style="color: var(--positive-color);">${fmt(p.inflow_total || 0)}</td>
-            <td class="num-cell" style="color: var(--warning-color);">${fmt(p.outflow_total || 0)}</td>
-            <td class="num-cell" style="font-weight: 700; color: ${p.net_total >= 0 ? 'var(--positive-color)' : 'var(--negative-color)'};">${fmt(p.net_total || 0)}</td>
-            <td class="num-cell" style="font-weight: 800; color: var(--accent-blue);">${fmt(p.ending_total || 0)}</td>
-            <td style="text-align: center;"><span class="badge badge-neutral">${p.entries_count} tx</span></td>
-          </tr>`;
-        });
-      }
-      document.getElementById('tbody-cf-periods').innerHTML = pbody;
-    }
-
-    function filterCashFlowRows(query) {
-      filterTableRows('table-cf-matrix', query);
-    }
-
-    // ── AR Aging Renderer & Controls ──
-    function setARView(view) {
-      arView = view;
-      document.querySelectorAll('#tab-ar_aging .date-pill-group button[id^="ar-view-"]').forEach(btn => btn.classList.remove('active'));
-      const activeBtn = document.getElementById(`ar-view-${view}`);
-      if (activeBtn) activeBtn.classList.add('active');
-
-      document.getElementById('ar-summary-container').style.display = view === 'summary' ? 'block' : 'none';
-      document.getElementById('ar-companies-container').style.display = view === 'companies' ? 'block' : 'none';
-      document.getElementById('ar-details-container').style.display = view === 'details' ? 'block' : 'none';
-    }
-
-    function renderARTable(data) {
-      const customers = data.customer_summary || [];
-      const companies = data.company_summary || [];
-      const invoices = data.invoices || [];
-      const totals = data.totals || {};
-
-      // 1. Customer Summary
-      let sbody = '';
-      customers.forEach(c => {
-        sbody += `<tr>
-          <td class="sticky-col">${c.customer_name}</td>
-          <td><span class="badge badge-neutral">${c.company}</span></td>
-          <td class="num-cell">${fmt(c.current)}</td>
-          <td class="num-cell" style="color: var(--warning-color);">${fmt(c.range_1_30)}</td>
-          <td class="num-cell" style="color: #f97316;">${fmt(c.range_31_60)}</td>
-          <td class="num-cell" style="color: var(--negative-color);">${fmt(c.range_61_90)}</td>
-          <td class="num-cell" style="color: var(--negative-color); font-weight: 700;">${fmt(c.range_90_plus)}</td>
-          <td class="sticky-total">${fmt(c.total_outstanding)}</td>
-          <td style="text-align: center;"><span class="badge badge-neutral">${c.invoice_count}</span></td>
-        </tr>`;
-      });
-      sbody += `<tr class="row-grand-total">
-        <td class="sticky-col">Grand Total AR (${customers.length} Customers)</td>
-        <td>Consolidated</td>
-        <td class="num-cell">${fmt(totals.current)}</td>
-        <td class="num-cell">${fmt(totals.range_1_30)}</td>
-        <td class="num-cell">${fmt(totals.range_31_60)}</td>
-        <td class="num-cell">${fmt(totals.range_61_90)}</td>
-        <td class="num-cell">${fmt(totals.range_90_plus)}</td>
-        <td class="sticky-total">${fmt(totals.total_outstanding)}</td>
-        <td style="text-align: center;"><span class="badge badge-neutral">${totals.invoice_count || 0}</span></td>
-      </tr>`;
-      document.getElementById('tbody-ar-summary').innerHTML = sbody;
-
-      // 2. Company Matrix
-      let cbody = '';
-      companies.forEach(co => {
-        cbody += `<tr>
-          <td class="sticky-col">${co.company}</td>
-          <td><span class="badge badge-neutral">${co.abbr}</span></td>
-          <td class="num-cell">${fmt(co.current)}</td>
-          <td class="num-cell">${fmt(co.range_1_30)}</td>
-          <td class="num-cell">${fmt(co.range_31_60)}</td>
-          <td class="num-cell">${fmt(co.range_61_90)}</td>
-          <td class="num-cell">${fmt(co.range_90_plus)}</td>
-          <td class="sticky-total">${fmt(co.total_outstanding)}</td>
-          <td style="text-align: center;"><span class="badge badge-neutral">${co.invoice_count}</span></td>
-        </tr>`;
-      });
-      cbody += `<tr class="row-grand-total">
-        <td class="sticky-col">Grand Total AR (All Branches)</td>
-        <td>ALL</td>
-        <td class="num-cell">${fmt(totals.current)}</td>
-        <td class="num-cell">${fmt(totals.range_1_30)}</td>
-        <td class="num-cell">${fmt(totals.range_31_60)}</td>
-        <td class="num-cell">${fmt(totals.range_61_90)}</td>
-        <td class="num-cell">${fmt(totals.range_90_plus)}</td>
-        <td class="sticky-total">${fmt(totals.total_outstanding)}</td>
-        <td style="text-align: center;"><span class="badge badge-neutral">${totals.invoice_count || 0}</span></td>
-      </tr>`;
-      document.getElementById('tbody-ar-companies').innerHTML = cbody;
-
-      // 3. Detailed Invoices Table
-      let dbody = '';
-      invoices.forEach(inv => {
-        let bBadge = '<span class="badge badge-success">Current</span>';
-        if (inv.bucket === 'range_1_30') bBadge = '<span class="badge badge-warning">1-30d</span>';
-        else if (inv.bucket === 'range_31_60') bBadge = '<span class="badge badge-warning" style="background:rgba(249,115,22,0.15);color:#f97316;">31-60d</span>';
-        else if (inv.bucket === 'range_61_90') bBadge = '<span class="badge badge-danger">61-90d</span>';
-        else if (inv.bucket === 'range_90_plus') bBadge = '<span class="badge badge-danger" style="font-weight:800;">90+d</span>';
-
-        dbody += `<tr>
-          <td style="font-family:var(--font-mono);font-weight:600;">${inv.name}</td>
-          <td>${inv.customer_name}</td>
-          <td><span class="badge badge-neutral">${inv.company_abbr}</span></td>
-          <td style="font-family:var(--font-mono);">${inv.posting_date}</td>
-          <td style="font-family:var(--font-mono);">${inv.due_date} <small style="color:var(--text-muted)">(${inv.terms})</small></td>
-          <td style="text-align: center; font-family:var(--font-mono); font-weight:700; color:${inv.days_overdue > 0 ? 'var(--negative-color)' : 'var(--positive-color)'};">${inv.days_overdue} d</td>
-          <td style="text-align: center;">${bBadge}</td>
-          <td class="num-cell">${fmt(inv.grand_total)}</td>
-          <td class="num-cell" style="font-weight:700;">${fmt(inv.amount_aged)}</td>
-          <td><span class="badge ${inv.status === 'Paid' ? 'badge-success' : 'badge-neutral'}">${inv.status}</span></td>
-        </tr>`;
-      });
-      document.getElementById('tbody-ar-details').innerHTML = dbody;
-    }
-
-    function filterARRows(query) {
-      filterTableRows('table-ar-summary', query);
-      filterTableRows('table-ar-companies', query);
-      filterTableRows('table-ar-details', query);
-    }
-
-    // ── AP Aging Renderer & Controls ──
-    function setAPView(view) {
-      apView = view;
-      document.querySelectorAll('#tab-ap_aging .date-pill-group button[id^="ap-view-"]').forEach(btn => btn.classList.remove('active'));
-      const activeBtn = document.getElementById(`ap-view-${view}`);
-      if (activeBtn) activeBtn.classList.add('active');
-
-      document.getElementById('ap-summary-container').style.display = view === 'summary' ? 'block' : 'none';
-      document.getElementById('ap-companies-container').style.display = view === 'companies' ? 'block' : 'none';
-      document.getElementById('ap-details-container').style.display = view === 'details' ? 'block' : 'none';
-    }
-
-    function renderAPTable(data) {
-      const suppliers = data.supplier_summary || [];
-      const companies = data.company_summary || [];
-      const bills = data.bills || [];
-      const totals = data.totals || {};
-
-      // 1. Supplier Summary
-      let sbody = '';
-      suppliers.forEach(s => {
-        sbody += `<tr>
-          <td class="sticky-col">${s.supplier_name}</td>
-          <td><span class="badge badge-neutral">${s.company}</span></td>
-          <td class="num-cell">${fmt(s.current)}</td>
-          <td class="num-cell" style="color: var(--warning-color);">${fmt(s.range_1_30)}</td>
-          <td class="num-cell" style="color: #f97316;">${fmt(s.range_31_60)}</td>
-          <td class="num-cell" style="color: var(--negative-color);">${fmt(s.range_61_90)}</td>
-          <td class="num-cell" style="color: var(--negative-color); font-weight: 700;">${fmt(s.range_90_plus)}</td>
-          <td class="sticky-total">${fmt(s.total_outstanding)}</td>
-          <td style="text-align: center;"><span class="badge badge-neutral">${s.bill_count}</span></td>
-        </tr>`;
-      });
-      sbody += `<tr class="row-grand-total">
-        <td class="sticky-col">Grand Total AP (${suppliers.length} Suppliers)</td>
-        <td>Consolidated</td>
-        <td class="num-cell">${fmt(totals.current)}</td>
-        <td class="num-cell">${fmt(totals.range_1_30)}</td>
-        <td class="num-cell">${fmt(totals.range_31_60)}</td>
-        <td class="num-cell">${fmt(totals.range_61_90)}</td>
-        <td class="num-cell">${fmt(totals.range_90_plus)}</td>
-        <td class="sticky-total">${fmt(totals.total_outstanding)}</td>
-        <td style="text-align: center;"><span class="badge badge-neutral">${totals.bill_count || 0}</span></td>
-      </tr>`;
-      document.getElementById('tbody-ap-summary').innerHTML = sbody;
-
-      // 2. Company Matrix
-      let cbody = '';
-      companies.forEach(co => {
-        cbody += `<tr>
-          <td class="sticky-col">${co.company}</td>
-          <td><span class="badge badge-neutral">${co.abbr}</span></td>
-          <td class="num-cell">${fmt(co.current)}</td>
-          <td class="num-cell">${fmt(co.range_1_30)}</td>
-          <td class="num-cell">${fmt(co.range_31_60)}</td>
-          <td class="num-cell">${fmt(co.range_61_90)}</td>
-          <td class="num-cell">${fmt(co.range_90_plus)}</td>
-          <td class="sticky-total">${fmt(co.total_outstanding)}</td>
-          <td style="text-align: center;"><span class="badge badge-neutral">${co.bill_count}</span></td>
-        </tr>`;
-      });
-      cbody += `<tr class="row-grand-total">
-        <td class="sticky-col">Grand Total AP (All Branches)</td>
-        <td>ALL</td>
-        <td class="num-cell">${fmt(totals.current)}</td>
-        <td class="num-cell">${fmt(totals.range_1_30)}</td>
-        <td class="num-cell">${fmt(totals.range_31_60)}</td>
-        <td class="num-cell">${fmt(totals.range_61_90)}</td>
-        <td class="num-cell">${fmt(totals.range_90_plus)}</td>
-        <td class="sticky-total">${fmt(totals.total_outstanding)}</td>
-        <td style="text-align: center;"><span class="badge badge-neutral">${totals.bill_count || 0}</span></td>
-      </tr>`;
-      document.getElementById('tbody-ap-companies').innerHTML = cbody;
-
-      // 3. Detailed Bills Table
-      let dbody = '';
-      bills.forEach(bill => {
-        let bBadge = '<span class="badge badge-success">Current</span>';
-        if (bill.bucket === 'range_1_30') bBadge = '<span class="badge badge-warning">1-30d</span>';
-        else if (bill.bucket === 'range_31_60') bBadge = '<span class="badge badge-warning" style="background:rgba(249,115,22,0.15);color:#f97316;">31-60d</span>';
-        else if (bill.bucket === 'range_61_90') bBadge = '<span class="badge badge-danger">61-90d</span>';
-        else if (bill.bucket === 'range_90_plus') bBadge = '<span class="badge badge-danger" style="font-weight:800;">90+d</span>';
-
-        dbody += `<tr>
-          <td style="font-family:var(--font-mono);font-weight:600;">${bill.bill_no || bill.name}</td>
-          <td>${bill.supplier_name}</td>
-          <td><span class="badge badge-neutral">${bill.company_abbr}</span></td>
-          <td style="font-family:var(--font-mono);">${bill.bill_date}</td>
-          <td style="font-family:var(--font-mono);">${bill.due_date} <small style="color:var(--text-muted)">(${bill.terms})</small></td>
-          <td style="text-align: center; font-family:var(--font-mono); font-weight:700; color:${bill.days_overdue > 0 ? 'var(--negative-color)' : 'var(--positive-color)'};">${bill.days_overdue} d</td>
-          <td style="text-align: center;">${bBadge}</td>
-          <td class="num-cell">${fmt(bill.grand_total)}</td>
-          <td class="num-cell" style="font-weight:700;">${fmt(bill.amount_aged)}</td>
-          <td><span class="badge ${bill.status === 'Paid' ? 'badge-success' : 'badge-neutral'}">${bill.status}</span></td>
-        </tr>`;
-      });
-      document.getElementById('tbody-ap-details').innerHTML = dbody;
-    }
-
-    function filterAPRows(query) {
-      filterTableRows('table-ap-summary', query);
-      filterTableRows('table-ap-companies', query);
-      filterTableRows('table-ap-details', query);
-    }
-
-    // ── General Ledger & Inventory Loaders ──
+    // ── General Ledger Loader ──
     async function loadGLData() {
       document.getElementById('loading-gl').classList.add('active');
       const fromDate = document.getElementById('input-from-date').value;
       const toDate = document.getElementById('input-to-date').value;
-      const voucherType = document.getElementById('gl-voucher-type-filter').value;
-      const search = document.getElementById('search-gl').value;
+      const vType = document.getElementById('select-gl-voucher-type')?.value;
+      const search = document.getElementById('input-gl-search')?.value;
 
       try {
         const data = await fetchFinancialAPI({
           report_type: 'general_ledger',
           from_date: fromDate,
           to_date: toDate,
-          voucher_type: voucherType,
-          search_text: search,
-          page: 1,
+          voucher_type: vType || '',
+          search_text: search || '',
           page_length: 150
         });
         currentData.general_ledger = data;
-        document.getElementById('gl-records-badge').innerText = `${data.total_records || 0} Entries`;
+        document.getElementById('gl-record-badge').innerText = `${data.total_records || 0} Entries`;
 
         let tbody = '';
-        (data.entries || []).forEach(e => {
+        (data.rows || []).forEach(r => {
           tbody += `<tr>
-            <td style="font-family:var(--font-mono);">${e.posting_date}</td>
-            <td><span class="badge badge-neutral">${e.company}</span></td>
-            <td>${e.account}</td>
-            <td><span class="badge badge-neutral">${e.voucher_type}</span></td>
-            <td style="font-family:var(--font-mono);font-weight:600;">${e.voucher_no}</td>
-            <td style="color:var(--text-muted);">${e.against || '-'}</td>
-            <td class="num-cell">${fmt(e.debit)}</td>
-            <td class="num-cell">${fmt(e.credit)}</td>
-            <td style="max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-muted);">${e.remarks || ''}</td>
+            <td style="font-family: var(--font-mono);">${r.posting_date}</td>
+            <td><span class="badge badge-neutral">${r.company}</span></td>
+            <td><span class="badge badge-info">${r.voucher_type}</span></td>
+            <td style="font-family: var(--font-mono); font-weight: 600;">${r.voucher_no}</td>
+            <td>${r.account}</td>
+            <td style="color: var(--text-muted);">${r.against || '-'}</td>
+            <td class="num-cell">${fmt(r.debit)}</td>
+            <td class="num-cell">${fmt(r.credit)}</td>
+            <td style="color: var(--text-muted); max-width: 250px; overflow: hidden; text-overflow: ellipsis;">${r.remarks || '-'}</td>
           </tr>`;
         });
-        document.getElementById('tbody-gl').innerHTML = tbody || '<tr><td colspan="9" style="text-align:center;padding:24px;">No GL entries found.</td></tr>';
+        document.getElementById('tbody-gl').innerHTML = tbody;
       } catch (e) {
         console.error(e);
       } finally {
@@ -2266,22 +2542,69 @@
       }
     }
 
-    let allInvItems = [];
+    // ── Inventory Audit Loader ──
     async function loadInventoryData() {
       document.getElementById('loading-inv').classList.add('active');
-      const fromDate = document.getElementById('input-from-date').value;
       const toDate = document.getElementById('input-to-date').value;
+      const search = document.getElementById('input-inv-search')?.value;
 
       try {
-        const data = await fetchFinancialAPI({ report_type: 'inventory_audit', from_date: fromDate, to_date: toDate });
+        const data = await fetchFinancialAPI({
+          report_type: 'inventory_audit',
+          to_date: toDate,
+          search_text: search || ''
+        });
         currentData.inventory_audit = data;
-        allInvItems = data.rows || [];
-        document.getElementById('inv-sku-badge').innerText = `${data.total_sku_count || 0} SKUs`;
+        const companies = data.companies || [];
+        const meta = data.company_meta || {};
+        const rows = data.rows || [];
+        const totals = data.totals || {};
 
-        const sel = document.getElementById('inv-item-select');
-        sel.innerHTML = allInvItems.map(it => `<option value="${it.item_code}" selected>${it.item_code} - ${it.item_name}</option>`).join('');
+        document.getElementById('inv-count-badge').innerText = `${rows.length} Items`;
 
-        renderInventoryTable(data);
+        let thead = `<tr>
+          <th class="sticky-col">Item Details</th>
+          <th>UOM</th>
+          <th style="text-align: right;">Valuation (₱)</th>`;
+        companies.forEach(c => {
+          const abbr = meta[c]?.abbr || c.substring(0, 4);
+          thead += `<th style="text-align: right;" title="${c}">${abbr} (Qty)</th>`;
+        });
+        thead += `<th style="text-align: right;">Total Balance Qty</th>
+          <th class="sticky-total">Total Valuation (PHP)</th>
+        </tr>`;
+        document.getElementById('thead-inv').innerHTML = thead;
+
+        let tbody = '';
+        rows.forEach(r => {
+          tbody += `<tr>
+            <td class="sticky-col">
+              <div style="font-weight: 600;">${r.item_code}</div>
+              <div style="font-size: 11px; color: var(--text-muted);">${r.item_name}</div>
+            </td>
+            <td><span class="badge badge-neutral">${r.stock_uom}</span></td>
+            <td class="num-cell">${fmt(r.avg_valuation_rate)}</td>`;
+          companies.forEach(c => {
+            const q = r.companies_qty[c] || 0;
+            tbody += `<td class="num-cell" onclick="openStockDrilldown('${r.item_code}', '${c}')">${fmtQty(q)}</td>`;
+          });
+          tbody += `<td class="num-cell" style="font-weight: 700;">${fmtQty(r.total_qty, r.stock_uom)}</td>
+            <td class="sticky-total">${fmt(r.total_val)}</td>
+          </tr>`;
+        });
+
+        tbody += `<tr class="row-grand-total">
+          <td class="sticky-col">Grand Total Inventory (${rows.length} Items)</td>
+          <td>-</td>
+          <td class="num-cell">-</td>`;
+        companies.forEach(c => {
+          const cq = totals.company_qty?.[c] || 0;
+          tbody += `<td class="num-cell">${fmtQty(cq)}</td>`;
+        });
+        tbody += `<td class="num-cell" style="font-weight: 800;">${fmtQty(totals.total_qty || 0)}</td>
+          <td class="sticky-total" style="color: var(--positive-color); font-weight: 900;">${fmt(totals.total_val || 0)}</td>
+        </tr>`;
+        document.getElementById('tbody-inv').innerHTML = tbody;
       } catch (e) {
         console.error(e);
       } finally {
@@ -2289,231 +2612,148 @@
       }
     }
 
-    function renderInventoryTable(data) {
-      const companies = data.companies || [];
-      const meta = data.company_meta || {};
-      const rows = data.rows || [];
-
-      let thead = '<tr><th class="sticky-col">Item Description</th><th>UOM</th>';
-      companies.forEach(c => {
-        const abbr = meta[c]?.abbr || c.substring(0, 4);
-        thead += `<th style="text-align: right;" title="${c} Inflow">${abbr} IN</th>
-                  <th style="text-align: right;" title="${c} Outflow">${abbr} OUT</th>
-                  <th style="text-align: right; border-right:1px solid var(--border-subtle);" title="${c} On Hand">${abbr} BAL</th>`;
-      });
-      thead += '<th class="sticky-total">Total On Hand</th><th style="text-align: right;">Valuation (₱)</th></tr>';
-      document.getElementById('thead-inv').innerHTML = thead;
-
-      let tbody = '';
-      rows.forEach(it => {
-        tbody += `<tr>
-          <td class="sticky-col" onclick="openStockDrilldown('${it.item_code}')" style="cursor:pointer;">
-            <span style="font-weight:700; color:var(--text-primary);">${it.item_code}</span><br>
-            <small style="color:var(--text-muted);">${it.item_name}</small>
-          </td>
-          <td><span class="badge badge-neutral">${it.stock_uom}</span></td>`;
-        companies.forEach(c => {
-          const inQ = it.companies_in[c] || 0;
-          const outQ = it.companies_out[c] || 0;
-          const endQ = it.companies_qty[c] || 0;
-          tbody += `<td class="num-cell" style="color:var(--positive-color);">${fmtQty(inQ)}</td>
-                    <td class="num-cell" style="color:var(--warning-color);">${fmtQty(outQ)}</td>
-                    <td class="num-cell" style="font-weight:700;border-right:1px solid var(--border-subtle);">${fmtQty(endQ)}</td>`;
-        });
-        tbody += `<td class="sticky-total">${fmtQty(it.total_qty)}</td>
-                  <td class="num-cell" style="font-weight:700;">${fmt(it.total_val)}</td></tr>`;
-      });
-      document.getElementById('tbody-inv').innerHTML = tbody;
-    }
-
-    function inventoryRefreshFilter() {
-      const q = document.getElementById('search-inv').value.toLowerCase();
-      const stockOnly = document.getElementById('inv-stock-only').checked;
-      const rows = document.querySelectorAll('#tbody-inv tr');
-      rows.forEach(tr => {
-        const text = tr.innerText.toLowerCase();
-        const match = (!q || text.includes(q));
-        tr.style.display = match ? '' : 'none';
-      });
-    }
-
-    function inventorySelectAll(sel) {
-      const opts = document.querySelectorAll('#inv-item-select option');
-      opts.forEach(o => o.selected = sel);
-    }
-    function inventorySelectChanged() {}
-
     // ── Table Row Filter Utility ──
     function filterTableRows(tableId, query) {
       const q = (query || '').toLowerCase().trim();
-      const tbody = document.querySelector(`#${tableId} tbody`);
-      if (!tbody) return;
-      const rows = tbody.querySelectorAll('tr');
-      rows.forEach(tr => {
-        if (tr.classList.contains('row-grand-total') || tr.classList.contains('row-section-total')) {
-          tr.style.display = '';
+      const rows = document.querySelectorAll(`#${tableId} tbody tr`);
+      rows.forEach(r => {
+        if (r.classList.contains('row-section-header') || r.classList.contains('row-section-total') || r.classList.contains('row-grand-total')) {
+          r.style.display = '';
           return;
         }
-        const text = tr.innerText.toLowerCase();
-        tr.style.display = (!q || text.includes(q)) ? '' : 'none';
+        const text = r.innerText.toLowerCase();
+        r.style.display = text.includes(q) ? '' : 'none';
       });
-    }
-
-    // ── Professional Excel Export (.xlsx) Engine ──
-    function exportCurrentTableExcel() {
-      const fromDate = document.getElementById('input-from-date').value;
-      const toDate = document.getElementById('input-to-date').value;
-      let filename = `Financial_Report_${activeTab}_${toDate}.xlsx`;
-      let sheetName = activeTab.toUpperCase();
-
-      if (activeTab === 'pnl') {
-        filename = `Consolidated_Profit_and_Loss_${fromDate}_to_${toDate}.xlsx`;
-        sheetName = "Profit & Loss";
-        exportTableToExcel('table-pnl', filename, sheetName);
-      } else if (activeTab === 'balance_sheet') {
-        filename = `Consolidated_Balance_Sheet_${toDate}.xlsx`;
-        sheetName = "Balance Sheet";
-        exportTableToExcel('table-bs', filename, sheetName);
-      } else if (activeTab === 'cash_flow') {
-        filename = `Consolidated_Cash_Flow_${cfPeriod.toUpperCase()}_${fromDate}_to_${toDate}.xlsx`;
-        sheetName = `Cash Flow (${cfPeriod.toUpperCase()})`;
-        const tableId = cfView === 'matrix' ? 'table-cf-matrix' : 'table-cf-periods';
-        exportTableToExcel(tableId, filename, sheetName);
-      } else if (activeTab === 'ar_aging') {
-        filename = `AR_Aging_Analysis_30_60_90_${toDate}.xlsx`;
-        sheetName = "AR Aging";
-        const tableId = arView === 'summary' ? 'table-ar-summary' : (arView === 'companies' ? 'table-ar-companies' : 'table-ar-details');
-        exportTableToExcel(tableId, filename, sheetName);
-      } else if (activeTab === 'ap_aging') {
-        filename = `AP_Aging_Analysis_30_60_90_${toDate}.xlsx`;
-        sheetName = "AP Aging";
-        const tableId = apView === 'summary' ? 'table-ap-summary' : (apView === 'companies' ? 'table-ap-companies' : 'table-ap-details');
-        exportTableToExcel(tableId, filename, sheetName);
-      } else if (activeTab === 'general_ledger') {
-        filename = `General_Ledger_${fromDate}_to_${toDate}.xlsx`;
-        sheetName = "General Ledger";
-        exportTableToExcel('table-gl', filename, sheetName);
-      } else if (activeTab === 'inventory_audit') {
-        filename = `Inventory_Audit_Running_Balances_${toDate}.xlsx`;
-        sheetName = "Inventory Audit";
-        exportTableToExcel('table-inv', filename, sheetName);
-      }
-    }
-
-    function exportTableToExcel(tableId, filename, sheetName) {
-      const table = document.getElementById(tableId);
-      if (!table) {
-        alert("No active table data found to export.");
-        return;
-      }
-
-      if (typeof XLSX !== 'undefined') {
-        const wb = XLSX.utils.book_new();
-        const ws = XLSX.utils.table_to_sheet(table, { raw: false });
-        XLSX.utils.book_append_sheet(wb, ws, sheetName.substring(0, 31));
-        XLSX.writeFile(wb, filename);
-      } else {
-        // Fallback HTML-Excel download
-        const html = table.outerHTML;
-        const blob = new Blob([html], { type: 'application/vnd.ms-excel' });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = filename.replace('.xlsx', '.xls');
-        a.click();
-      }
-    }
-
-    // ── Print Functionality ──
-    function printReport() {
-      const fromDate = document.getElementById('input-from-date').value;
-      const toDate = document.getElementById('input-to-date').value;
-      const activeTabLabel = document.querySelector('.tab-item.active')?.innerText || 'Financial Statement';
-      document.getElementById('print-meta-text').innerText = `${activeTabLabel} &bull; Period: ${fromDate} to ${toDate} &bull; Generated: ${new Date().toLocaleDateString()}`;
-      window.print();
     }
 
     // ── Drilldown Modals ──
     async function openDrilldown(company, account) {
-      document.getElementById('drilldown-modal').classList.add('open');
-      document.getElementById('drilldown-title').innerText = `${account} &bull; ${company || 'Consolidated Group'}`;
       const fromDate = document.getElementById('input-from-date').value;
       const toDate = document.getElementById('input-to-date').value;
+      document.getElementById('drilldown-title').innerText = `${account} ${company ? `(${company})` : '(Consolidated)'}`;
+      document.getElementById('modal-drilldown').classList.add('open');
+      const tbody = document.getElementById('drilldown-tbody');
+      tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:24px;"><div class="spinner" style="margin:0 auto;"></div></td></tr>`;
 
       try {
-        const data = await fetchFinancialAPI({ report_type: 'drilldown', company: company, account: account, from_date: fromDate, to_date: toDate });
-        let tbody = '';
-        (data.entries || []).forEach(e => {
-          tbody += `<tr>
+        const res = await fetchFinancialAPI({
+          report_type: 'drilldown',
+          company: company || '',
+          account: account || '',
+          from_date: fromDate,
+          to_date: toDate
+        });
+        let h = '';
+        (res.entries || []).forEach(e => {
+          h += `<tr>
             <td style="font-family:var(--font-mono);">${e.posting_date}</td>
-            <td><span class="badge badge-neutral">${e.voucher_type}</span></td>
-            <td style="font-family:var(--font-mono);">${e.voucher_no}</td>
+            <td><span class="badge badge-neutral">${e.company}</span></td>
+            <td><span class="badge badge-info">${e.voucher_type}</span></td>
+            <td style="font-family:var(--font-mono);font-weight:600;">${e.voucher_no}</td>
+            <td style="color:var(--text-muted);">${e.against || '-'}</td>
             <td class="num-cell">${fmt(e.debit)}</td>
             <td class="num-cell">${fmt(e.credit)}</td>
-            <td style="color:var(--text-muted);">${e.remarks || ''}</td>
+            <td style="color:var(--text-muted);max-width:200px;overflow:hidden;text-overflow:ellipsis;">${e.remarks || '-'}</td>
           </tr>`;
         });
-        document.getElementById('drilldown-tbody').innerHTML = tbody || '<tr><td colspan="6" style="text-align:center;padding:20px;">No transaction entries found.</td></tr>';
-      } catch (e) {
-        console.error(e);
+        tbody.innerHTML = h || `<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--text-muted);">No GL records found.</td></tr>`;
+      } catch(err) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--negative-color);">Failed to load drilldown.</td></tr>`;
       }
     }
 
     function closeDrilldown() {
-      document.getElementById('drilldown-modal').classList.remove('open');
+      document.getElementById('modal-drilldown').classList.remove('open');
     }
 
-    async function openStockDrilldown(itemCode) {
-      document.getElementById('stock-modal').classList.add('open');
-      document.getElementById('stock-modal-title').innerText = `Stock Ledger: ${itemCode}`;
+    async function openStockDrilldown(itemCode, company) {
+      const fromDate = document.getElementById('input-from-date').value;
       const toDate = document.getElementById('input-to-date').value;
+      document.getElementById('stock-modal-title').innerText = `${itemCode} - ${company}`;
+      document.getElementById('modal-stock-drilldown').classList.add('open');
+      const tbody = document.getElementById('stock-modal-tbody');
+      tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:24px;"><div class="spinner" style="margin:0 auto;"></div></td></tr>`;
 
       try {
-        const data = await fetchFinancialAPI({ report_type: 'stock_ledger_drilldown', item_code: itemCode, to_date: toDate });
-        document.getElementById('stock-modal-summary').innerHTML = `
-          <span>Total Received IN: <strong style="color:var(--positive-color);">${data.total_in || 0}</strong></span>
-          <span>Total Issued OUT: <strong style="color:var(--warning-color);">${data.total_out || 0}</strong></span>
-          <span>Running Balance ON HAND: <strong style="color:var(--accent-blue);">${data.ending_qty || 0}</strong></span>
-          <span>Stock Valuation: <strong style="color:var(--text-primary);">${fmt(data.ending_value)}</strong></span>
-        `;
-        let tbody = '';
-        (data.entries || []).forEach(e => {
-          tbody += `<tr>
+        const res = await fetchFinancialAPI({
+          report_type: 'stock_ledger_drilldown',
+          item_code: itemCode,
+          company: company,
+          from_date: fromDate,
+          to_date: toDate
+        });
+        let h = '';
+        (res.entries || []).forEach(e => {
+          h += `<tr>
             <td style="font-family:var(--font-mono);">${e.posting_date} ${e.posting_time || ''}</td>
             <td><span class="badge badge-neutral">${e.company}</span></td>
-            <td>${e.warehouse || '-'}</td>
-            <td>${e.voucher_type}</td>
+            <td>${e.warehouse}</td>
+            <td><span class="badge badge-info">${e.voucher_type}</span></td>
             <td style="font-family:var(--font-mono);font-weight:600;">${e.voucher_no}</td>
-            <td class="num-cell" style="color:${e.actual_qty > 0 ? 'var(--positive-color)' : 'var(--warning-color)'};">${fmtQty(e.actual_qty)}</td>
+            <td class="num-cell" style="color:${e.actual_qty >= 0 ? 'var(--positive-color)' : 'var(--negative-color)'};">${fmtQty(e.actual_qty)}</td>
             <td class="num-cell" style="font-weight:700;">${fmtQty(e.qty_after_transaction)}</td>
             <td class="num-cell">${fmt(e.valuation_rate)}</td>
-            <td class="num-cell">${fmt(e.stock_value)}</td>
+            <td class="num-cell" style="font-weight:700;">${fmt(e.stock_value_difference)}</td>
           </tr>`;
         });
-        document.getElementById('stock-modal-tbody').innerHTML = tbody || '<tr><td colspan="9" style="text-align:center;padding:20px;">No stock ledger entries found.</td></tr>';
-      } catch (e) {
-        console.error(e);
+        tbody.innerHTML = h || `<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--text-muted);">No stock movements recorded.</td></tr>`;
+      } catch(err) {
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:var(--negative-color);">Failed to load movements.</td></tr>`;
       }
     }
 
     function closeStockDrilldown() {
-      document.getElementById('stock-modal').classList.remove('open');
+      document.getElementById('modal-stock-drilldown').classList.remove('open');
     }
 
-    // ── Theme Toggle ──
-    function toggleTheme() {
-      const html = document.documentElement;
-      const curr = html.getAttribute('data-theme');
-      const next = curr === 'dark' ? 'light' : 'dark';
-      html.setAttribute('data-theme', next);
+    // ── Excel (.xlsx) Exporter ──
+    function exportActiveTabToExcel() {
+      const fromDate = document.getElementById('input-from-date').value;
+      const toDate = document.getElementById('input-to-date').value;
+      let targetTableId = '';
+      let filename = `Financial_Report_${fromDate}_to_${toDate}`;
+
+      if (activeTab === 'cash_flow') {
+        targetTableId = cfView === 'exploded' ? 'table-cf-exploded' : (cfView === 'matrix' ? 'table-cf-matrix' : 'table-cf-periods');
+        filename = `Cash_Flow_${cfView}_${fromDate}_to_${toDate}`;
+      } else if (activeTab === 'ar_aging') {
+        targetTableId = arView === 'summary' ? 'table-ar-summary' : (arView === 'companies' ? 'table-ar-companies' : 'table-ar-details');
+        filename = `AR_Aging_${arView}_${toDate}`;
+      } else if (activeTab === 'ap_aging') {
+        targetTableId = apView === 'summary' ? 'table-ap-summary' : (apView === 'companies' ? 'table-ap-companies' : 'table-ap-details');
+        filename = `AP_Aging_${apView}_${toDate}`;
+      } else if (activeTab === 'pnl') {
+        targetTableId = 'table-pnl';
+        filename = `Profit_and_Loss_${fromDate}_to_${toDate}`;
+      } else if (activeTab === 'balance_sheet') {
+        targetTableId = 'table-bs';
+        filename = `Balance_Sheet_As_Of_${toDate}`;
+      } else if (activeTab === 'general_ledger') {
+        targetTableId = 'table-gl';
+        filename = `General_Ledger_${fromDate}_to_${toDate}`;
+      } else if (activeTab === 'inventory_audit') {
+        targetTableId = 'table-inv';
+        filename = `Inventory_Stock_Audit_${toDate}`;
+      }
+
+      const tbl = document.getElementById(targetTableId);
+      if (!tbl) {
+        alert('Active report table not found for export.');
+        return;
+      }
+
+      const wb = XLSX.utils.table_to_book(tbl, { sheet: "Financial Report" });
+      XLSX.writeFile(wb, `${filename}.xlsx`);
     }
 
-    // ── Initial Setup ──
-    document.addEventListener('DOMContentLoaded', () => {
+    // ── Initial Bootstrap ──
+    window.addEventListener('DOMContentLoaded', () => {
       const hash = window.location.hash.replace('#', '');
-      if (['pnl', 'balance_sheet', 'cash_flow', 'ar_aging', 'ap_aging', 'general_ledger', 'inventory_audit'].includes(hash)) {
+      const validTabs = ['cash_flow', 'ar_aging', 'ap_aging', 'pnl', 'balance_sheet', 'general_ledger', 'inventory_audit'];
+      if (hash && validTabs.includes(hash)) {
         switchTab(hash);
       } else {
-        switchTab('pnl');
+        switchTab('cash_flow');
       }
     });
   </script>

@@ -37,6 +37,7 @@ services:
       DB_PASSWORD: postgres
     volumes:
       - bench_sites:/workspace/frappe-bench/sites
+      - ./bench_logs:/workspace/frappe-bench/logs
     entrypoint: ["/workspace/frappe-bench/entrypoint.sh"]
 
   caddy:

@@ -1,0 +1,66 @@
+/* Portal-specific overrides keep Frappe's website theme from recoloring controls. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg-canvas: #0b0b0b;
+  --bg-surface-1: #141414;
+  --bg-surface-2: #202020;
+  --bg-surface-3: #2b2b2b;
+  --bg-surface-hover: #303030;
+  --bg-surface-active: #383838;
+  --text-primary: #f5f5f5;
+  --text-secondary: #c4c4c4;
+  --text-muted: #adadad;
+  --text-faint: #999999;
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg-canvas: #f5f5f5;
+  --bg-surface-1: #ffffff;
+  --bg-surface-2: #f0f0f0;
+  --bg-surface-3: #e6e6e6;
+  --bg-surface-hover: #e8e8e8;
+  --bg-surface-active: #dedede;
+  --text-primary: #141414;
+  --text-secondary: #454545;
+  --text-muted: #595959;
+  --text-faint: #666666;
+  --status-green: #166534;
+  --status-yellow: #854d0e;
+  --status-red: #b91c1c;
+}
+.app { color: var(--text-primary); font-family: 'Inter', 'Segoe UI', sans-serif; }
+.app header.top-bar { display: flex !important; }
+.app h1, .app h2, .app h3, .app h4, .app h5, .app h6,
+.app .auth-title, .app .section-title { color: var(--text-primary) !important; }
+.app .form-label { color: var(--text-secondary) !important; }
+.app .form-input, .app .form-select, .app .form-textarea,
+.app input[type="date"], .app select option {
+  background-color: var(--bg-surface-2) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-medium) !important;
+  -webkit-text-fill-color: var(--text-primary);
+  font-family: inherit;
+}
+.app input::placeholder, .app textarea::placeholder {
+  color: var(--text-muted) !important;
+  -webkit-text-fill-color: var(--text-muted);
+  opacity: 1;
+}
+.app .btn { font-family: inherit; text-shadow: none; }
+.app .btn-primary, .app .btn-primary:hover, .app .btn-primary:focus,
+.app .auth-switch-btn.active {
+  background: var(--accent-solid) !important;
+  color: var(--accent-inv) !important;
+  border-color: var(--accent-solid) !important;
+}
+.app .btn-primary *, .app .auth-switch-btn.active * { color: inherit !important; }
+.app .btn-secondary, .app .btn-icon, .app .auth-switch-btn:not(.active) {
+  background: var(--bg-surface-2);
+  color: var(--text-primary) !important;
+  border-color: var(--border-medium);
+}
+.app .dense-table th { color: var(--text-secondary); background: var(--bg-surface-2); }
+.app .dense-table td { color: var(--text-primary); }
+.app .dense-table tr:hover td { background-color: var(--bg-surface-hover); }
+.app :focus-visible { outline: 2px solid var(--text-primary); outline-offset: 3px; }
+.app .btn:disabled { opacity: .65; }

@@ -15,35 +15,51 @@ class CustomerVehicle(Document):
 
 	def ensure_make_and_model(self):
 		"""Ensure make and model records exist to prevent link validation errors"""
-		if self.make and not frappe.db.exists("Vehicle Make", self.make):
-			try:
-				doc_mk = frappe.get_doc({
-					"doctype": "Vehicle Make",
-					"make_name": self.make,
-					"name": self.make
-				})
-				doc_mk.insert(ignore_permissions=True)
-			except Exception:
-				pass
+		if self.make:
+			self.make = self.make.strip().upper()
+			existing_make = frappe.db.get_value("Vehicle Make", {"name": ["ilike", self.make]}, "name")
+			if existing_make:
+				self.make = existing_make
+			elif not frappe.db.exists("Vehicle Make", self.make):
+				try:
+					doc_mk = frappe.get_doc({
+						"doctype": "Vehicle Make",
+						"make_name": self.make,
+						"name": self.make
+					})
+					doc_mk.insert(ignore_permissions=True)
+				except Exception:
+					pass
 
-		if self.model and not frappe.db.exists("Vehicle Model", self.model):
-			try:
-				model_name = self.model
-				if "-" in self.model:
-					parts = self.model.split("-", 1)
-					if not self.make:
-						self.make = parts[0].strip()
-					model_name = parts[1].strip()
+		if self.model:
+			self.model = self.model.strip().upper()
+			model_name = self.model
+			if "-" in self.model:
+				parts = self.model.split("-", 1)
+				if not self.make:
+					self.make = parts[0].strip().upper()
+				model_name = parts[1].strip().upper()
 
-				doc_m = frappe.get_doc({
-					"doctype": "Vehicle Model",
-					"make": self.make or "Other",
-					"model_name": model_name
-				})
-				doc_m.insert(ignore_permissions=True)
-				self.model = doc_m.name
-			except Exception:
-				pass
+			clean_make = (self.make or "OTHER").strip().upper()
+			existing_model = frappe.db.get_value(
+				"Vehicle Model",
+				{"make": ["ilike", clean_make], "model_name": ["ilike", model_name]},
+				"name"
+			) or frappe.db.get_value("Vehicle Model", {"name": ["ilike", f"{clean_make}-{model_name}"]}, "name")
+
+			if existing_model:
+				self.model = existing_model
+			elif not frappe.db.exists("Vehicle Model", self.model):
+				try:
+					doc_m = frappe.get_doc({
+						"doctype": "Vehicle Model",
+						"make": clean_make,
+						"model_name": model_name
+					})
+					doc_m.insert(ignore_permissions=True)
+					self.model = doc_m.name
+				except Exception:
+					pass
 
 	def update_summary_metrics(self):
 		"""Update lifetime statistics for this vehicle"""

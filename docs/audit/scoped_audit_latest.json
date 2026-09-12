@@ -1,0 +1,391 @@
+{
+  "timestamp": "2026-09-12T10:22:27.976040+00:00",
+  "target": "http://38.247.138.224:10017",
+  "scope": "Read-only audit, transaction diagnostics and BIR. Email, attachments, payroll excluded.",
+  "checks": [
+    {
+      "issue": "ISS-057",
+      "check": "Server Script inventory",
+      "status": "PASS",
+      "evidence": "100 records; 100 enabled; fully paginated"
+    },
+    {
+      "issue": "ISS-057",
+      "check": "VM POS Meta",
+      "status": "PASS",
+      "evidence": "Present and enabled: True"
+    },
+    {
+      "issue": "ISS-057",
+      "check": "VM POS Get Shift",
+      "status": "PASS",
+      "evidence": "Present and enabled: True"
+    },
+    {
+      "issue": "ISS-057",
+      "check": "VM POS History",
+      "status": "PASS",
+      "evidence": "Present and enabled: True"
+    },
+    {
+      "issue": "ISS-057",
+      "check": "VM Get Analytics Dashboard",
+      "status": "PASS",
+      "evidence": "Present and enabled: True"
+    },
+    {
+      "issue": "ISS-056",
+      "check": "Published page routes",
+      "status": "PASS",
+      "evidence": "22 pages; published pages without route: []"
+    },
+    {
+      "issue": "ISS-056",
+      "check": "/desk",
+      "status": "PASS",
+      "evidence": "HTTP 200; 461336 bytes; URL http://38.247.138.224:10017/desk; reachability only"
+    },
+    {
+      "issue": "ISS-061",
+      "check": "/assets/frappe/dist/css/desk.bundle.AMXGKOVZ.css",
+      "status": "PASS",
+      "evidence": "HTTP 200; text/css; charset=utf-8; 661254 bytes"
+    },
+    {
+      "issue": "ISS-061",
+      "check": "/assets/frappe/dist/css/report.bundle.ES52XMUC.css",
+      "status": "PASS",
+      "evidence": "HTTP 200; text/css; charset=utf-8; 5923 bytes"
+    },
+    {
+      "issue": "ISS-061",
+      "check": "/assets/erpnext/dist/css/erpnext.bundle.PG3S3JMJ.css",
+      "status": "PASS",
+      "evidence": "HTTP 200; text/css; charset=utf-8; 52050 bytes"
+    },
+    {
+      "issue": "ISS-061",
+      "check": "/assets/frappe/dist/js/libs.bundle.XPC3EYGI.js",
+      "status": "PASS",
+      "evidence": "HTTP 200; text/javascript; charset=utf-8; 556924 bytes"
+    },
+    {
+      "issue": "ISS-061",
+      "check": "/assets/frappe/dist/js/billing.bundle.WUY3N4ZW.js",
+      "status": "PASS",
+      "evidence": "HTTP 200; text/javascript; charset=utf-8; 2513 bytes"
+    },
+    {
+      "issue": "ISS-061",
+      "check": "/assets/frappe/dist/js/desk.bundle.IW2W4O4B.js",
+      "status": "PASS",
+      "evidence": "HTTP 200; text/javascript; charset=utf-8; 1332736 bytes"
+    },
+    {
+      "issue": "ISS-061",
+      "check": "/assets/frappe/dist/js/list.bundle.NHPSAN33.js",
+      "status": "PASS",
+      "evidence": "HTTP 200; text/javascript; charset=utf-8; 236257 bytes"
+    },
+    {
+      "issue": "ISS-061",
+      "check": "/assets/frappe/dist/js/form.bundle.VTKNAFCD.js",
+      "status": "PASS",
+      "evidence": "HTTP 200; text/javascript; charset=utf-8; 182722 bytes"
+    },
+    {
+      "issue": "ISS-061",
+      "check": "/assets/frappe/dist/js/controls.bundle.2WG7Y7XR.js",
+      "status": "PASS",
+      "evidence": "HTTP 200; text/javascript; charset=utf-8; 912435 bytes"
+    },
+    {
+      "issue": "ISS-061",
+      "check": "/assets/frappe/dist/js/report.bundle.ZMCLCBF7.js",
+      "status": "PASS",
+      "evidence": "HTTP 200; text/javascript; charset=utf-8; 217480 bytes"
+    },
+    {
+      "issue": "ISS-061",
+      "check": "/assets/frappe/dist/js/telemetry.bundle.RXBBNH3H.js",
+      "status": "PASS",
+      "evidence": "HTTP 200; text/javascript; charset=utf-8; 1741 bytes"
+    },
+    {
+      "issue": "ISS-061",
+      "check": "/assets/erpnext/dist/js/erpnext.bundle.BUSQ7ECY.js",
+      "status": "PASS",
+      "evidence": "HTTP 200; text/javascript; charset=utf-8; 263960 bytes"
+    },
+    {
+      "issue": "ISS-056",
+      "check": "/pos-terminal",
+      "status": "PASS",
+      "evidence": "HTTP 200; 484624 bytes; URL http://38.247.138.224:10017/pos-terminal; reachability only"
+    },
+    {
+      "issue": "ISS-062",
+      "check": "vm_pos_meta",
+      "status": "PASS",
+      "evidence": "Deployed read API returned message; not a transaction-submission test"
+    },
+    {
+      "issue": "ISS-062",
+      "check": "vm_pos_get_shift",
+      "status": "PASS",
+      "evidence": "Deployed read API returned message; not a transaction-submission test"
+    },
+    {
+      "issue": "ISS-062",
+      "check": "vm_pos_history",
+      "status": "PASS",
+      "evidence": "Deployed read API returned message; not a transaction-submission test"
+    },
+    {
+      "issue": "ISS-059",
+      "check": "BIR Cash Receipt Journal client script",
+      "status": "PASS",
+      "evidence": "Checked Client Script records by dt, not fictitious BIR Client Script DocType"
+    },
+    {
+      "issue": "ISS-059",
+      "check": "BIR Cash Disbursement Journal client script",
+      "status": "PASS",
+      "evidence": "Checked Client Script records by dt, not fictitious BIR Client Script DocType"
+    },
+    {
+      "issue": "ISS-059",
+      "check": "BIR Form 2307 client script",
+      "status": "PASS",
+      "evidence": "Checked Client Script records by dt, not fictitious BIR Client Script DocType"
+    },
+    {
+      "issue": "ISS-059",
+      "check": "BIR General Journal client script",
+      "status": "PASS",
+      "evidence": "Checked Client Script records by dt, not fictitious BIR Client Script DocType"
+    },
+    {
+      "issue": "ISS-059",
+      "check": "BIR General Ledger client script",
+      "status": "PASS",
+      "evidence": "Checked Client Script records by dt, not fictitious BIR Client Script DocType"
+    },
+    {
+      "issue": "ISS-059",
+      "check": "BIR Purchases Book client script",
+      "status": "PASS",
+      "evidence": "Checked Client Script records by dt, not fictitious BIR Client Script DocType"
+    },
+    {
+      "issue": "ISS-059",
+      "check": "BIR Sales Journal client script",
+      "status": "PASS",
+      "evidence": "Checked Client Script records by dt, not fictitious BIR Client Script DocType"
+    },
+    {
+      "issue": "ISS-059",
+      "check": "BIR VAT Summary client script",
+      "status": "PASS",
+      "evidence": "Checked Client Script records by dt, not fictitious BIR Client Script DocType"
+    },
+    {
+      "issue": "ISS-059",
+      "check": "BIR Withholding Summary client script",
+      "status": "PASS",
+      "evidence": "Checked Client Script records by dt, not fictitious BIR Client Script DocType"
+    },
+    {
+      "issue": "ISS-059",
+      "check": "BIR Cash Receipt Journal schema",
+      "status": "PASS",
+      "evidence": "DocType exists; 4 reports"
+    },
+    {
+      "issue": "BIR-HTML",
+      "check": "BIR Cash Receipt Journal",
+      "status": "PASS",
+      "evidence": "6898 HTML characters; saved document rendering only"
+    },
+    {
+      "issue": "BIR-PDF",
+      "check": "BIR Cash Receipt Journal",
+      "status": "PASS",
+      "evidence": "HTTP 200; PDF signature valid: True"
+    },
+    {
+      "issue": "ISS-059",
+      "check": "BIR Cash Disbursement Journal schema",
+      "status": "PASS",
+      "evidence": "DocType exists; 3 reports"
+    },
+    {
+      "issue": "BIR-HTML",
+      "check": "BIR Cash Disbursement Journal",
+      "status": "PASS",
+      "evidence": "18770 HTML characters; saved document rendering only"
+    },
+    {
+      "issue": "BIR-PDF",
+      "check": "BIR Cash Disbursement Journal",
+      "status": "PASS",
+      "evidence": "HTTP 200; PDF signature valid: True"
+    },
+    {
+      "issue": "ISS-059",
+      "check": "BIR Form 2307 schema",
+      "status": "PASS",
+      "evidence": "DocType exists; 1 reports"
+    },
+    {
+      "issue": "BIR-HTML",
+      "check": "BIR Form 2307",
+      "status": "PASS",
+      "evidence": "9836 HTML characters; saved document rendering only"
+    },
+    {
+      "issue": "BIR-PDF",
+      "check": "BIR Form 2307",
+      "status": "PASS",
+      "evidence": "HTTP 200; PDF signature valid: True"
+    },
+    {
+      "issue": "ISS-059",
+      "check": "BIR General Journal schema",
+      "status": "PASS",
+      "evidence": "DocType exists; 1 reports"
+    },
+    {
+      "issue": "BIR-HTML",
+      "check": "BIR General Journal",
+      "status": "PASS",
+      "evidence": "49397 HTML characters; saved document rendering only"
+    },
+    {
+      "issue": "BIR-PDF",
+      "check": "BIR General Journal",
+      "status": "PASS",
+      "evidence": "HTTP 200; PDF signature valid: True"
+    },
+    {
+      "issue": "ISS-059",
+      "check": "BIR General Ledger schema",
+      "status": "PASS",
+      "evidence": "DocType exists; 2 reports"
+    },
+    {
+      "issue": "BIR-HTML",
+      "check": "BIR General Ledger",
+      "status": "PASS",
+      "evidence": "3961 HTML characters; saved document rendering only"
+    },
+    {
+      "issue": "BIR-PDF",
+      "check": "BIR General Ledger",
+      "status": "PASS",
+      "evidence": "HTTP 200; PDF signature valid: True"
+    },
+    {
+      "issue": "ISS-059",
+      "check": "BIR Purchases Book schema",
+      "status": "PASS",
+      "evidence": "DocType exists; 2 reports"
+    },
+    {
+      "issue": "BIR-HTML",
+      "check": "BIR Purchases Book",
+      "status": "PASS",
+      "evidence": "4665 HTML characters; saved document rendering only"
+    },
+    {
+      "issue": "BIR-PDF",
+      "check": "BIR Purchases Book",
+      "status": "PASS",
+      "evidence": "HTTP 200; PDF signature valid: True"
+    },
+    {
+      "issue": "ISS-059",
+      "check": "BIR Sales Journal schema",
+      "status": "PASS",
+      "evidence": "DocType exists; 4 reports"
+    },
+    {
+      "issue": "BIR-HTML",
+      "check": "BIR Sales Journal",
+      "status": "PASS",
+      "evidence": "8200 HTML characters; saved document rendering only"
+    },
+    {
+      "issue": "BIR-PDF",
+      "check": "BIR Sales Journal",
+      "status": "PASS",
+      "evidence": "HTTP 200; PDF signature valid: True"
+    },
+    {
+      "issue": "ISS-059",
+      "check": "BIR VAT Summary schema",
+      "status": "PASS",
+      "evidence": "DocType exists; 1 reports"
+    },
+    {
+      "issue": "BIR-HTML",
+      "check": "BIR VAT Summary",
+      "status": "PASS",
+      "evidence": "6058 HTML characters; saved document rendering only"
+    },
+    {
+      "issue": "BIR-PDF",
+      "check": "BIR VAT Summary",
+      "status": "PASS",
+      "evidence": "HTTP 200; PDF signature valid: True"
+    },
+    {
+      "issue": "ISS-059",
+      "check": "BIR Withholding Summary schema",
+      "status": "PASS",
+      "evidence": "DocType exists; 1 reports"
+    },
+    {
+      "issue": "BIR-HTML",
+      "check": "BIR Withholding Summary",
+      "status": "PASS",
+      "evidence": "5984 HTML characters; saved document rendering only"
+    },
+    {
+      "issue": "BIR-PDF",
+      "check": "BIR Withholding Summary",
+      "status": "PASS",
+      "evidence": "HTTP 200; PDF signature valid: True"
+    },
+    {
+      "issue": "ISS-050",
+      "check": "Purchase Invoice stock posting",
+      "status": "PASS",
+      "evidence": "Successfully created and submitted ACC-PINV-2026-00186 with update_stock=1"
+    },
+    {
+      "issue": "ISS-063",
+      "check": "Stock Entry create/submit",
+      "status": "PASS",
+      "evidence": "Successfully created and submitted MAT-STE-2026-00082 (Material Receipt)"
+    },
+    {
+      "issue": "ISS-004",
+      "check": "Sales Order submit",
+      "status": "NEEDS RETEST",
+      "evidence": "PostgreSQL datatype mismatch in get_reserved_qty requires backend patch"
+    },
+    {
+      "issue": "ISS-064",
+      "check": "List API fields",
+      "status": "INFO",
+      "evidence": "Explicit fields required; default name-only responses are not data loss"
+    }
+  ],
+  "total": 63,
+  "counts": {
+    "PASS": 61,
+    "NEEDS RETEST": 1,
+    "INFO": 1
+  }
+}

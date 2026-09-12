@@ -38,4 +38,35 @@ patch_file(gl, [
         '\t)\n',
     ),
 ])
+# ---- erpnext/accounts/doctype/bank_reconciliation_tool/bank_reconciliation_tool.py ----
+recon = "/workspace/frappe-bench/apps/erpnext/erpnext/accounts/doctype/bank_reconciliation_tool/bank_reconciliation_tool.py"
+patch_file(recon, [
+    (
+        "\t\t.groupby(je.name)\n",
+        "\t\t.groupby(je.name, je.cheque_no, je.cheque_date, je.pay_to_recd_from, jea.party_type, je.posting_date, jea.account_currency)\n",
+    ),
+])
+
+# ---- erpnext/accounts/doctype/bank_clearance/bank_clearance.py ----
+clearance = "/workspace/frappe-bench/apps/erpnext/erpnext/accounts/doctype/bank_clearance/bank_clearance.py"
+patch_file(clearance, [
+    (
+        "\tjournal_entries = (\n\t\tjournal_entry_query.groupby(journal_entry_account.account, journal_entry.name)\n",
+        "\tjournal_entries = (\n\t\tjournal_entry_query.groupby(journal_entry_account.account, journal_entry.name, journal_entry.cheque_no, journal_entry.cheque_date, journal_entry.posting_date, journal_entry_account.against_account, journal_entry.clearance_date, journal_entry_account.account_currency)\n",
+    ),
+])
+
+# ---- erpnext/stock/stock_balance.py ----
+stock_bal = "/workspace/frappe-bench/apps/erpnext/erpnext/stock/stock_balance.py"
+patch_file(stock_bal, [
+    (
+        "case when dont_reserve_qty_for_stock_items then",
+        "case when dont_reserve_qty_for_stock_items = 1 then",
+    ),
+    (
+        "case when dont_reserve_qty_on_return then",
+        "case when dont_reserve_qty_on_return = 1 then",
+    ),
+])
+
 print("ALL PATCHES APPLIED")

@@ -103,4 +103,30 @@
     });
   });
 
+  // ── Global Auto-Uppercase Event Listener for Desk Inputs ──
+  document.addEventListener("input", function(e) {
+    var target = e.target;
+    if (!target || !target.tagName) return;
+    var tag = target.tagName.toUpperCase();
+    if (tag !== "INPUT" && tag !== "TEXTAREA") return;
+    
+    var type = (target.type || "").toLowerCase();
+    if (type === "password" || type === "email" || type === "file" || type === "checkbox" || type === "radio" || type === "color" || type === "date" || type === "datetime-local" || type === "time") return;
+    
+    var fieldtype = target.getAttribute("data-fieldtype") || "";
+    if (fieldtype === "Code" || fieldtype === "JSON" || fieldtype === "Password") return;
+    if (target.classList.contains("no-auto-caps")) return;
+
+    // Check if input value contains lowercase letters
+    if (target.value && /[a-z]/.test(target.value)) {
+      var start = target.selectionStart;
+      var end = target.selectionEnd;
+      target.value = target.value.toUpperCase();
+      if (start !== null && end !== null) {
+        target.setSelectionRange(start, end);
+      }
+    }
+  }, true);
+
 })();
+

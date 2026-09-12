@@ -704,7 +704,17 @@
     background-color: #f8fafc !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
-    padding: 6px 10px !important;
-  }
 }
+
+/* ══════════════════════════════════════════════════════════════════════════ */
+/* GLOBAL ALL CAPS (UPPERCASE) TRANSFORMATION                                */
+/* ══════════════════════════════════════════════════════════════════════════ */
+input[type="text"]:not([type="email"]):not([type="password"]):not([data-fieldtype="Code"]):not([data-fieldtype="JSON"]):not([data-fieldtype="Password"]):not(.no-auto-caps),
+.frappe-control[data-fieldtype="Data"] input,
+.frappe-control[data-fieldtype="Small Text"] textarea,
+.frappe-control[data-fieldtype="Text"] textarea,
+.frappe-control[data-fieldtype="Long Text"] textarea {
+  text-transform: uppercase;
+}
+
 

@@ -40,6 +40,10 @@ services:
     entrypoint: ["/workspace/frappe-bench/entrypoint.sh"]
 
   caddy:
+    networks:
+      default:
+        aliases:
+          - site1.local
     image: caddy:alpine
     restart: unless-stopped
     depends_on:

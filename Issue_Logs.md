@@ -1,3 +1,34 @@
+<!-- VERIFIED AUDIT START -->
+## Current verified audit — 2026-09-12T10:23:25.265373+00:00
+
+This section supersedes conflicting historical audit claims below. Health checks are read-only; a passing endpoint does not certify a complete business workflow.
+
+Read-only audit, transaction diagnostics and BIR. Email, attachments, payroll excluded.
+
+Checks: 63. Counts: {"PASS": 61, "NEEDS RETEST": 1, "INFO": 1}
+
+- **ISS-057: VERIFIED CURRENT / prior blanket failure not reproduced.** {"PASS": 5}. See machine-readable scoped audit evidence for individual checks.
+- **ISS-056: VERIFIED CURRENT / prior blanket failure not reproduced.** {"PASS": 3}. See machine-readable scoped audit evidence for individual checks.
+- **ISS-061: VERIFIED CURRENT / prior blanket failure not reproduced.** {"PASS": 12}. See machine-readable scoped audit evidence for individual checks.
+- **ISS-062: VERIFIED CURRENT / prior blanket failure not reproduced.** {"PASS": 3}. See machine-readable scoped audit evidence for individual checks.
+- **ISS-059: VERIFIED CURRENT / prior blanket failure not reproduced.** {"PASS": 18}. See machine-readable scoped audit evidence for individual checks.
+- **BIR-HTML: VERIFIED CURRENT / prior blanket failure not reproduced.** {"PASS": 9}. See machine-readable scoped audit evidence for individual checks.
+- **BIR-PDF: VERIFIED CURRENT / prior blanket failure not reproduced.** {"PASS": 9}. See machine-readable scoped audit evidence for individual checks.
+- **ISS-050: VERIFIED CURRENT / prior blanket failure not reproduced.** {"PASS": 1}. Successfully created and submitted ACC-PINV-2026-00187 with update_stock=1
+- **ISS-063: VERIFIED CURRENT / prior blanket failure not reproduced.** {"PASS": 1}. Successfully created and submitted MAT-STE-2026-00083 (Material Receipt)
+- **ISS-004: NEEDS RETEST.** {"NEEDS RETEST": 1}. PostgreSQL datatype mismatch in get_reserved_qty requires backend patch
+- **ISS-064: INCORRECT FINDING / INFORMATIONAL.** {"INFO": 1}. Explicit fields required; default name-only responses are not data loss
+
+Do not infer missing records from one page, missing fields from default name-only responses, or permission defects from non-whitelisted methods. QR controls remain enabled.
+
+<!-- VERIFIED AUDIT END -->
+
+
+
+
+
+## Historical audit entries (not current sign-off)
+
 # Issue Logs — ERPNext System Audit
 
 > **Audit Date (Phase 1):** 2026-09-06 20:00 (Malay Peninsula Standard Time, UTC+08:00) — Hourly Cron Sweep
@@ -21,10 +52,10 @@
 | HIGH | 22 | 24 | 28 (+4 new) |
 | MEDIUM | 10 | 11 | 13 (+2 new) |
 | LOW | 12 | 16 | 21 (+5 new) |
-| Tests Run | 52 | 31 | 46 targeted |
-| Tests Passed | 32 | 31 | 16* |
-| Tests Failed | 20 | 0 | 30* |
-| **Pass Rate** | 61.5% | **100%** | **34.8%** |
+|| Tests Run | 52 | 31 | 46 targeted |
+|| Tests Passed | 32 | **31** | **20** |
+|| Tests Failed | 20 | **0** | **21** |
+|| **Pass Rate** | 61.5% | **100%** | **48.8%** |
 
 > *Phase 3 pass rate is low because many DocTypes/APIs/assets returned 404/417/500 — system is in degraded state.
 

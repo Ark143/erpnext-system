@@ -163,6 +163,9 @@ has_permission = {
 # Hook on document methods and events
 
 doc_events = {
+	"*": {
+		"before_validate": "vehicle_management.utils.uppercase_engine.auto_uppercase_doc"
+	},
 	"Sales Invoice": {
 		"on_update_after_submit": "vehicle_management.vehicle_management.doctype.vehicle_job_order.vehicle_job_order.sync_invoice_payment_to_job_order",
 		"on_cancel": "vehicle_management.vehicle_management.doctype.vehicle_job_order.vehicle_job_order.sync_invoice_payment_to_job_order",
@@ -208,7 +211,8 @@ doc_events = {
 # ------------------------------
 #
 override_whitelisted_methods = {
-	"frappe.desk.notifications.get_open_count": "vehicle_management.notifications_patch.get_open_count"
+	"frappe.desk.notifications.get_open_count": "vehicle_management.notifications_patch.get_open_count",
+	"frappe.core.doctype.data_import.data_import.download_template": "vehicle_management.data_import_patch.download_template",
 }
 
 #

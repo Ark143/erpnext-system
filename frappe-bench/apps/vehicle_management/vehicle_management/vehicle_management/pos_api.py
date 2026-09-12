@@ -40,9 +40,19 @@ def get_items(txt=None, category=None, company=None, only_stock=0, start=0, limi
 		params.append(category)
 
 	if txt:
-		like = "%{}%".format(txt)
-		where_clauses.append("(i.name LIKE %s OR i.item_name LIKE %s OR i.barcode LIKE %s)")
-		params.extend([like, like, like])
+		tokens = [t.strip().lower() for t in txt.split() if t.strip()]
+		for token in tokens:
+			like_tok = "%" + token + "%"
+			where_clauses.append("""(
+				LOWER(i.name) LIKE %s OR 
+				LOWER(i.item_name) LIKE %s OR 
+				LOWER(COALESCE(i.description, '')) LIKE %s OR 
+				EXISTS (
+					SELECT 1 FROM "tabItem Barcode" ib 
+					WHERE ib.parent = i.name AND LOWER(ib.barcode) LIKE %s
+				)
+			)""")
+			params.extend([like_tok, like_tok, like_tok, like_tok])
 
 	wh_join = ""
 	if company:

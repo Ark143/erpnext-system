@@ -1,0 +1,210 @@
+<div class="bir-2307-container">
+    <style>
+        /* Force reset of parent wrappers, margins, paddings, headers and footers */
+        html, body, .print-format, .print-format-builder, .print-preview, .print-format-builder-body, [data-doctype="BIR Form 2307"] {
+            margin: 0 !important;
+            padding: 0 !important;
+            border: none !important;
+            background-color: transparent !important;
+            box-shadow: none !important;
+        }
+        .print-heading, .print-format-builder-header, .print-format-builder-footer, .page-break-header, .page-break-footer, .page-break {
+            display: none !important;
+        }
+        
+        /* US Letter Sizing absolute container starting exactly at top-left */
+        .bir-2307-container {
+            width: 8.5in;
+            height: 11in;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-image: url("/files/bir_2307_restored_20260909.png");
+            background-size: 100% 100% !important;
+            background-repeat: no-repeat;
+            font-family: Arial, sans-serif;
+            color: #000;
+            box-sizing: border-box;
+        }
+        
+        /* General field values style */
+        .field-val {
+            position: absolute;
+            font-size: 11px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+        
+        /* Date elements */
+        .date-digit {
+            position: absolute;
+            width: 1.8%;
+            text-align: center;
+            font-size: 11.5px;
+            font-weight: bold;
+            top: 11.8%; /* Shifted down from 9.38% */
+        }
+
+        /* TIN digits */
+        .tin-digit {
+            position: absolute;
+            width: 1.6%;
+            text-align: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* Part III Table overlay */
+        .table-overlay {
+            position: absolute;
+            left: 2.90%;
+            top: 39.6%; /* Shifted down from 39.08% */
+            width: 94.67%;
+            height: 14.38%;
+        }
+        .overlay-row {
+            position: absolute;
+            width: 100%;
+            display: flex;
+            height: 6.74%;
+            align-items: center;
+        }
+        
+        /* Shift columns to the left using adjusted widths and paddings */
+        .col-nature { width: 28.0%; padding-left: 3px; font-size: 8.5px; overflow: hidden; white-space: wrap; text-overflow: ellipsis; text-align: left; }
+        .col-atc { width: 7.5%; text-align: center; font-size: 9.5px; font-weight: bold; padding-right: 15px; } /* Pushed left */
+        .col-m1 { width: 12.5%; text-align: right; padding-right: 22px; font-size: 9.5px; } /* Pushed left */
+        .col-m2 { width: 14.5%; text-align: right; padding-right: 22px; font-size: 9.5px; }
+        .col-m3 { width: 14.5%; text-align: right; padding-right: 22px; font-size: 9.5px; }
+        .col-total { width: 10.0%; text-align: right; padding-right: 22px; font-size: 9.5px; font-weight: bold; } /* Pushed left */
+        .col-withheld { width: 10.0%; text-align: right; padding-right: 15px; font-size: 9.5px; font-weight: bold; }
+        
+        /* Total Row */
+        .totals-overlay {
+            position: absolute;
+            left: 2.90%;
+            top: 53.75%; /* Shifted down from 53.74% */
+            width: 94.67%;
+            display: flex;
+            height: 1.33%;
+            align-items: center;
+            font-weight: bold;
+        }
+        
+        @media print {
+            @page {
+                size: letter portrait;
+                margin: 0;
+            }
+            body {
+                margin: 0;
+                padding: 0;
+            }
+            .bir-2307-container {
+                width: 8.5in;
+                height: 11in;
+                page-break-before: avoid;
+                page-break-after: avoid;
+            }
+        }
+    </style>
+
+    <!-- Dates Parsing -->
+    {% set from_date_obj = frappe.utils.getdate(doc.from_date) if doc.from_date else None %}
+    {% set to_date_obj = frappe.utils.getdate(doc.to_date) if doc.to_date else None %}
+    
+    {% set f_month = from_date_obj.strftime("%m") if from_date_obj else "" %}
+    {% set f_day = from_date_obj.strftime("%d") if from_date_obj else "" %}
+    {% set f_year = from_date_obj.strftime("%Y") if from_date_obj else "" %}
+    
+    {% set t_month = to_date_obj.strftime("%m") if to_date_obj else "" %}
+    {% set t_day = to_date_obj.strftime("%d") if to_date_obj else "" %}
+    {% set t_year = to_date_obj.strftime("%Y") if to_date_obj else "" %}
+
+    <!-- From Date MM/DD/YYYY -->
+    <div class="date-digit" style="left: 25.35%;">{{ f_month[0] if f_month else '' }}</div>
+    <div class="date-digit" style="left: 27.31%;">{{ f_month[1] if f_month else '' }}</div>
+    <div class="date-digit" style="left: 29.24%;">{{ f_day[0] if f_day else '' }}</div>
+    <div class="date-digit" style="left: 31.20%;">{{ f_day[1] if f_day else '' }}</div>
+    <div class="date-digit" style="left: 33.73%;">{{ f_year[0] if f_year else '' }}</div>
+    <div class="date-digit" style="left: 35.69%;">{{ f_year[1] if f_year else '' }}</div>
+    <div class="date-digit" style="left: 37.65%;">{{ f_year[2] if f_year else '' }}</div>
+    <div class="date-digit" style="left: 39.61%;">{{ f_year[3] if f_year else '' }}</div>
+
+    <!-- To Date MM/DD/YYYY -->
+    <div class="date-digit" style="left: 66.16%;">{{ t_month[0] if t_month else '' }}</div>
+    <div class="date-digit" style="left: 68.12%;">{{ t_month[1] if t_month else '' }}</div>
+    <div class="date-digit" style="left: 70.04%;">{{ t_day[0] if t_day else '' }}</div>
+    <div class="date-digit" style="left: 72.00%;">{{ t_day[1] if t_day else '' }}</div>
+    <div class="date-digit" style="left: 74.53%;">{{ t_year[0] if t_year else '' }}</div>
+    <div class="date-digit" style="left: 76.49%;">{{ t_year[1] if t_year else '' }}</div>
+    <div class="date-digit" style="left: 78.45%;">{{ t_year[2] if t_year else '' }}</div>
+    <div class="date-digit" style="left: 80.41%;">{{ t_year[3] if t_year else '' }}</div>
+
+    <!-- Payee Info -->
+    {% set payee_tin_clean = doc.payee_tin | replace("-", "") | replace(" ", "") %}
+    {% set tin_lefts = [34.4, 36.4, 38.4, 42.75, 44.75, 46.75, 50.75, 52.75, 54.75, 59.75, 61.75, 63.75] %}
+    {% for i in range(12) %}
+        <div class="tin-digit" style="left: {{ tin_lefts[i] }}%; top: 14.8%;"> <!-- Shifted down from 14.25% -->
+            {{ payee_tin_clean[i] if i < payee_tin_clean|length else '' }}
+        </div>
+    {% endfor %}
+    <div class="field-val" style="left: 15.5%; top: 18%; width: 90.5%; height: 1.44%;">{{ doc.payee_name or '' }}</div> <!-- Shifted down and right -->
+    <div class="field-val" style="left: 15.5%; top: 20.6%; width: 81.1%; height: 1.44%; font-size: 9.5px; font-weight: normal;">{{ doc.payee_address or '' }}</div> <!-- Shifted down and right -->
+    <div class="field-val" style="left: 87.84%; top: 20.6%; width: 8.63%; height: 1.44%; justify-content: center;">{{ doc.payee_zip or '' }}</div> <!-- Shifted down -->
+
+    <!-- Payor Info -->
+    {% set payor_tin_clean = doc.payor_tin | replace("-", "") | replace(" ", "") %}
+    {% for i in range(12) %}
+        <div class="tin-digit" style="left: {{ tin_lefts[i] }}%; top: 27%;"> <!-- Shifted down from 26.66% -->
+            {{ payor_tin_clean[i] if i < payor_tin_clean|length else '' }}
+        </div>
+    {% endfor %}
+    <div class="field-val" style="left: 15.5%; top: 29.8%; width: 92.5%; height: 1.44%;">{{ doc.payor_name or '' }}</div> <!-- Shifted down and right -->
+    <div class="field-val" style="left: 5.5%; top: 32.8%; width: 83.1%; height: 1.44%; font-size: 9.5px; font-weight: normal;">{{ doc.payor_address or '' }}</div> <!-- Shifted down and right -->
+    <div class="field-val" style="left: 87.84%; top: 32.8%; width: 8.63%; height: 1.44%; justify-content: center;">{{ doc.payor_zip or '' }}</div> <!-- Shifted down -->
+
+    <!-- Part III Table Rows Overlay -->
+    <div class="table-overlay">
+        {% set totals = {
+            'm1': 0.0,
+            'm2': 0.0,
+            'm3': 0.0,
+            'total': 0.0,
+            'withheld': 0.0
+        } %}
+        {% set row_tops = [0.0, 9.67, 19.33, 28.67, 38.33, 47.67, 57.33, 66.67, 76.33, 85.67] %}
+        {% for row in doc.withholding_details %}
+            {% if loop.index0 < 10 %}
+                <div class="overlay-row" style="top: {{ row_tops[loop.index0] }}%;">
+                    <div class="col-nature">{{ row.nature_of_payment or '' }}</div>
+                    <div class="col-atc">{{ row.atc or '' }}</div>
+                    <div class="col-m1">{{ "{:,.2f}".format(row.month_1 or 0) if row.month_1 else '' }}</div>
+                    <div class="col-m2">{{ "{:,.2f}".format(row.month_2 or 0) if row.month_2 else '' }}</div>
+                    <div class="col-m3">{{ "{:,.2f}".format(row.month_3 or 0) if row.month_3 else '' }}</div>
+                    <div class="col-total">{{ "{:,.2f}".format(row.total_income or 0) if row.total_income else '' }}</div>
+                    <div class="col-withheld">{{ "{:,.2f}".format(row.tax_withheld or 0) if row.tax_withheld else '' }}</div>
+                </div>
+            {% endif %}
+            {% if totals.update({
+                'm1': totals.m1 + (row.month_1 or 0),
+                'm2': totals.m2 + (row.month_2 or 0),
+                'm3': totals.m3 + (row.month_3 or 0),
+                'total': totals.total + (row.total_income or 0),
+                'withheld': totals.withheld + (row.tax_withheld or 0)
+            }) %}{% endif %}
+        {% endfor %}
+    </div>
+
+    <!-- Totals Line -->
+    <div class="totals-overlay">
+        <div class="col-nature" style="font-weight: bold; font-size: 8px; padding-left: 5px;"></div>
+        <div class="col-atc">&nbsp;</div>
+        <div class="col-m1">{{ "{:,.2f}".format(totals.m1) if totals.m1 else '' }}</div>
+        <div class="col-m2">{{ "{:,.2f}".format(totals.m2) if totals.m2 else '' }}</div>
+        <div class="col-m3">{{ "{:,.2f}".format(totals.m3) if totals.m3 else '' }}</div>
+        <div class="col-total">{{ "{:,.2f}".format(totals.total) if totals.total else '' }}</div>
+        <div class="col-withheld">{{ "{:,.2f}".format(totals.withheld) if totals.withheld else '' }}</div>
+    </div>
+</div>

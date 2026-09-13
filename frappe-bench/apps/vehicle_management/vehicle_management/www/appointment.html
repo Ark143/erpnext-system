@@ -61,23 +61,23 @@
       --status-red: #EF4444;
       --status-red-dim: rgba(239, 68, 68, 0.12);
 
-      --card-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.06), 0 2px 4px 0 rgba(0, 0, 0, 0.5);
+      --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.06);
     }
 
     :root[data-theme="light"] {
-      --bg-canvas: #F8F9FA;
+      --bg-canvas: #FAFAFA;
       --bg-surface-1: #FFFFFF;
-      --bg-surface-2: #F1F3F5;
-      --bg-surface-3: #E9ECEF;
-      --bg-surface-hover: #E4E7EB;
-      --bg-surface-active: #DEE2E6;
+      --bg-surface-2: #F4F4F5;
+      --bg-surface-3: #E4E4E7;
+      --bg-surface-hover: #EBEBEF;
+      --bg-surface-active: #D4D4D8;
 
       --border-subtle: rgba(0, 0, 0, 0.08);
       --border-medium: rgba(0, 0, 0, 0.16);
       --border-strong: rgba(0, 0, 0, 0.35);
       --border-focus: #000000;
 
-      --text-primary: #090A0C;
+      --text-primary: #09090B;
       --text-secondary: #52525B;
       --text-muted: #71717A;
       --text-faint: #A1A1AA;
@@ -87,9 +87,9 @@
       --accent-dim: rgba(0, 0, 0, 0.06);
       --accent-glow: rgba(0, 0, 0, 0.12);
 
-      --badge-bg: rgba(0, 0, 0, 0.05);
-      --badge-border: rgba(0, 0, 0, 0.1);
-      --badge-text: #18181B;
+      --badge-bg: rgba(0, 0, 0, 0.04);
+      --badge-border: rgba(0, 0, 0, 0.10);
+      --badge-text: #27272A;
 
       --status-green: #16A34A;
       --status-green-dim: rgba(22, 163, 74, 0.12);
@@ -98,39 +98,39 @@
       --status-red: #DC2626;
       --status-red-dim: rgba(220, 38, 38, 0.12);
 
-      --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.06), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+      --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.06);
     }
 
-    /* ── Typography & Global Styles ── */
-    html, body {
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: var(--bg-canvas);
       color: var(--text-primary);
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      font-size: 13px;
-      line-height: 1.5;
-      -webkit-font-smoothing: antialiased;
       min-height: 100vh;
-      overflow-x: hidden;
-      transition: background-color 150ms ease, color 150ms ease;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      line-height: 1.4;
+      letter-spacing: -0.01em;
     }
 
     .tabular-nums {
       font-family: 'JetBrains Mono', monospace;
       font-variant-numeric: tabular-nums;
-    }
-
-    /* ── Layout Shell ── */
-    .app {
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
+      letter-spacing: -0.02em;
     }
 
     /* ══════════════════════════════════════════════════════════
-       TOP HEADER (48px)
+       APP SHELL & NAVIGATION
     ══════════════════════════════════════════════════════════ */
-    .top-bar {
-      position: sticky; top: 0; z-index: 300;
+    .app-shell {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      width: 100%;
+    }
+
+    .top-nav {
       height: 48px;
       background: var(--bg-surface-1);
       border-bottom: 1px solid var(--border-subtle);
@@ -138,350 +138,88 @@
       align-items: center;
       justify-content: space-between;
       padding: 0 20px;
-      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
 
-    .brand-logo {
+    .brand-section {
       display: flex;
       align-items: center;
-      gap: 10px;
-      text-decoration: none;
+      gap: 12px;
+    }
+    .brand-logo {
+      height: 24px;
+      width: auto;
+      object-fit: contain;
+    }
+    .brand-text {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
       color: var(--text-primary);
     }
-    .brand-mark {
-      width: 26px; height: 26px;
-      background: var(--accent-solid);
-      color: var(--accent-inv);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 13px;
-      font-weight: 700;
-      display: flex; align-items: center; justify-content: center;
-      border-radius: 4px;
-    }
-    .brand-name {
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: -0.01em;
-    }
-    .brand-tag {
+    .brand-sub {
       font-size: 11px;
       font-weight: 500;
       color: var(--text-muted);
       border-left: 1px solid var(--border-medium);
-      padding-left: 8px;
+      padding-left: 10px;
       margin-left: 2px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
     }
 
-    .top-actions {
+    .nav-actions {
       display: flex;
       align-items: center;
       gap: 8px;
-    }
-
-    .cmd-trigger {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 5px 10px;
-      height: 28px;
-      background: var(--bg-surface-2);
-      border: 1px solid var(--border-subtle);
-      border-radius: 4px;
-      color: var(--text-secondary);
-      font-size: 12px;
-      cursor: pointer;
-      transition: all 80ms ease;
-    }
-    .cmd-trigger:hover {
-      background: var(--bg-surface-hover);
-      border-color: var(--border-medium);
-      color: var(--text-primary);
-    }
-    .cmd-kbd {
-      padding: 1px 5px;
-      background: var(--bg-surface-3);
-      border: 1px solid var(--border-subtle);
-      border-radius: 3px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
-      color: var(--text-muted);
     }
 
     .btn-icon {
-      width: 28px; height: 28px;
-      display: flex; align-items: center; justify-content: center;
-      background: var(--bg-surface-2);
-      border: 1px solid var(--border-subtle);
+      height: 32px;
+      width: 32px;
       border-radius: 4px;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-surface-2);
       color: var(--text-secondary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
-      font-size: 12px;
+      font-size: 13px;
       transition: all 80ms ease;
     }
     .btn-icon:hover {
       background: var(--bg-surface-hover);
+      color: var(--text-primary);
       border-color: var(--border-medium);
-      color: var(--text-primary);
-    }
-
-    .user-pill {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 3px 8px 3px 4px;
-      background: var(--bg-surface-2);
-      border: 1px solid var(--border-subtle);
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--text-primary);
-    }
-    .user-avatar {
-      width: 20px; height: 20px;
-      border-radius: 50%;
-      background: var(--accent-solid);
-      color: var(--accent-inv);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 10px;
-      font-weight: 700;
-    }
-
-    /* ══════════════════════════════════════════════════════════
-       APP NAVIGATION BAR (40px)
-    ══════════════════════════════════════════════════════════ */
-    .nav-bar {
-      position: sticky; top: 48px; z-index: 290;
-      height: 40px;
-      background: var(--bg-surface-1);
-      border-bottom: 1px solid var(--border-subtle);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 20px;
-    }
-
-    .nav-tabs {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      height: 100%;
-      overflow-x: auto;
-    }
-    .nav-tab {
-      height: 100%;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 0 12px;
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--text-secondary);
-      cursor: pointer;
-      border-bottom: 2px solid transparent;
-      transition: all 80ms ease;
-      white-space: nowrap;
-      user-select: none;
-    }
-    .nav-tab:hover {
-      color: var(--text-primary);
-      background: var(--bg-surface-hover);
-    }
-    .nav-tab.active {
-      color: var(--text-primary);
-      border-bottom-color: var(--accent-solid);
-      font-weight: 600;
-    }
-    .nav-tab-badge {
-      padding: 1px 5px;
-      border-radius: 10px;
-      font-size: 10px;
-      font-family: 'JetBrains Mono', monospace;
-      background: var(--badge-bg);
-      border: 1px solid var(--badge-border);
-      color: var(--badge-text);
-    }
-
-    /* ══════════════════════════════════════════════════════════
-       MAIN CONTAINER & VIEWS
-    ══════════════════════════════════════════════════════════ */
-    .main-body {
-      flex: 1;
-      max-width: 1280px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 24px 20px 60px;
-    }
-
-    .view-pane {
-      display: none;
-      animation: fadeIn 120ms ease;
-    }
-    .view-pane.active {
-      display: block;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(3px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* ══════════════════════════════════════════════════════════
-       AUTH CARD (LOGIN & CREATE PROFILE)
-    ══════════════════════════════════════════════════════════ */
-    .auth-wrapper {
-      max-width: 580px;
-      margin: 40px auto;
-      background: var(--bg-surface-1);
-      border: 1px solid var(--border-medium);
-      border-radius: 6px;
-      box-shadow: var(--card-shadow);
-      padding: 32px;
-    }
-    .auth-header {
-      margin-bottom: 24px;
-      text-align: center;
-    }
-    .auth-title {
-      font-size: 20px;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      margin-bottom: 6px;
-    }
-    .auth-desc {
-      font-size: 13px;
-      color: var(--text-secondary);
-    }
-
-    .auth-switch {
-      display: flex;
-      background: var(--bg-surface-2);
-      border: 1px solid var(--border-subtle);
-      border-radius: 4px;
-      padding: 2px;
-      margin-bottom: 24px;
-    }
-    .auth-switch-btn {
-      flex: 1;
-      height: 30px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--text-secondary);
-      background: transparent;
-      border: none;
-      border-radius: 3px;
-      cursor: pointer;
-      transition: all 80ms ease;
-    }
-    .auth-switch-btn.active {
-      background: var(--accent-solid);
-      color: var(--accent-inv);
-      font-weight: 600;
-    }
-
-    .demo-users {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 14px;
-      padding-top: 14px;
-      border-top: 1px solid var(--border-subtle);
-    }
-    .demo-user-chip {
-      padding: 3px 8px;
-      background: var(--bg-surface-2);
-      border: 1px solid var(--border-subtle);
-      border-radius: 4px;
-      font-size: 11px;
-      color: var(--text-secondary);
-      cursor: pointer;
-      transition: all 80ms ease;
-    }
-    .demo-user-chip:hover {
-      border-color: var(--border-medium);
-      color: var(--text-primary);
-      background: var(--bg-surface-hover);
-    }
-
-    /* ══════════════════════════════════════════════════════════
-       UI FORM CONTROLS (LINEAR STYLE)
-    ══════════════════════════════════════════════════════════ */
-    .form-group {
-      margin-bottom: 14px;
-    }
-    .form-label {
-      display: block;
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--text-muted);
-      margin-bottom: 5px;
-    }
-    .form-input, .form-select, .form-textarea {
-      width: 100%;
-      height: 34px;
-      background: var(--bg-surface-2);
-      border: 1px solid var(--border-subtle);
-      border-radius: 4px;
-      padding: 0 10px;
-      font-family: inherit;
-      font-size: 13px;
-      color: var(--text-primary);
-      outline: none;
-      transition: border-color 80ms ease, background-color 80ms ease;
-    }
-    .form-textarea {
-      height: 72px;
-      padding: 8px 10px;
-      resize: vertical;
-    }
-    .form-input:focus, .form-select:focus, .form-textarea:focus {
-      border-color: var(--border-focus);
-      background: var(--bg-surface-hover);
-    }
-    .form-input::placeholder, .form-textarea::placeholder {
-      color: var(--text-faint);
-    }
-
-    .form-grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-    .form-grid-3 {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 12px;
     }
 
     .btn {
-      height: 34px;
-      padding: 0 14px;
+      height: 32px;
+      padding: 0 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 6px;
-      font-family: inherit;
-      font-size: 12px;
-      font-weight: 600;
-      border-radius: 4px;
       cursor: pointer;
-      border: 1px solid transparent;
       transition: all 80ms ease;
       text-decoration: none;
+      border: 1px solid transparent;
+      user-select: none;
     }
     .btn-primary {
       background: var(--accent-solid);
       color: var(--accent-inv);
       border-color: var(--accent-solid);
+      font-weight: 600;
     }
     .btn-primary:hover {
-      opacity: 0.9;
-    }
-    .btn-primary:active {
-      transform: scale(0.99);
+      opacity: 0.92;
+      box-shadow: 0 0 12px var(--accent-glow);
     }
     .btn-secondary {
       background: var(--bg-surface-2);
@@ -492,6 +230,14 @@
       background: var(--bg-surface-hover);
       border-color: var(--border-strong);
     }
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-secondary);
+    }
+    .btn-ghost:hover {
+      background: var(--bg-surface-hover);
+      color: var(--text-primary);
+    }
     .btn-sm {
       height: 26px;
       padding: 0 8px;
@@ -501,8 +247,197 @@
       width: 100%;
     }
 
+    .cmd-kbd {
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 2px 5px;
+      background: var(--bg-surface-3);
+      border: 1px solid var(--border-medium);
+      border-radius: 3px;
+      color: var(--text-muted);
+    }
+
     /* ══════════════════════════════════════════════════════════
-       DASHBOARD OVERVIEW METRICS & CARDS
+       TAB NAVIGATION BAR
+    ══════════════════════════════════════════════════════════ */
+    .tab-nav-bar {
+      height: 40px;
+      background: var(--bg-surface-1);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 4px;
+      overflow-x: auto;
+    }
+    .nav-tab {
+      height: 32px;
+      padding: 0 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 80ms ease;
+      user-select: none;
+      white-space: nowrap;
+    }
+    .nav-tab:hover {
+      color: var(--text-primary);
+      background: var(--bg-surface-hover);
+    }
+    .nav-tab.active {
+      color: var(--text-primary);
+      background: var(--bg-surface-active);
+      font-weight: 600;
+    }
+    .nav-tab-badge {
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 1px 5px;
+      border-radius: 10px;
+      background: var(--badge-bg);
+      border: 1px solid var(--badge-border);
+      color: var(--badge-text);
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       MAIN CONTENT CONTAINER & VIEWS
+    ══════════════════════════════════════════════════════════ */
+    .main-content {
+      flex: 1;
+      padding: 24px;
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .view-pane {
+      display: none;
+      animation: fadeIn 120ms ease;
+    }
+    .view-pane.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(2px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       AUTH HERO & ONBOARDING (LOGIN / CREATE PROFILE)
+    ══════════════════════════════════════════════════════════ */
+    .auth-container {
+      max-width: 480px;
+      margin: 40px auto;
+      background: var(--bg-surface-1);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 32px;
+      box-shadow: var(--card-shadow);
+    }
+    .auth-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .auth-logo {
+      height: 36px;
+      width: auto;
+      margin-bottom: 12px;
+    }
+    .auth-title {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+    .auth-subtitle {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .auth-mode-switch {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+      background: var(--bg-surface-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: 4px;
+      padding: 3px;
+      margin-bottom: 20px;
+    }
+    .auth-mode-btn {
+      height: 28px;
+      border-radius: 3px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 80ms ease;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .auth-mode-btn.active {
+      background: var(--accent-solid);
+      color: var(--accent-inv);
+      font-weight: 700;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+    .form-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      height: 34px;
+      background: var(--bg-surface-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: 4px;
+      padding: 0 10px;
+      font-size: 12px;
+      font-family: inherit;
+      color: var(--text-primary);
+      outline: none;
+      transition: border-color 80ms ease, box-shadow 80ms ease;
+    }
+    .form-textarea {
+      height: 72px;
+      padding: 8px 10px;
+      resize: vertical;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 1px var(--border-focus);
+      background: var(--bg-surface-1);
+    }
+    .form-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .form-grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       METRICS STRIP (DASHBOARD STATS)
     ══════════════════════════════════════════════════════════ */
     .metrics-grid {
       display: grid;
@@ -623,7 +558,7 @@
       color: var(--status-green);
       border: 1px solid rgba(34, 197, 94, 0.25);
     }
-    .status-badge.unpaid, .status-badge.pending {
+    .status-badge.unpaid, .status-badge.pending, .status-badge.draft {
       background: var(--status-yellow-dim);
       color: var(--status-yellow);
       border: 1px solid rgba(234, 179, 8, 0.25);
@@ -739,8 +674,82 @@
     }
 
     /* ══════════════════════════════════════════════════════════
-       TIME SLOT BUTTONS
+       INTERACTIVE CALENDAR & TIME SLOT CAPACITY GRID
     ══════════════════════════════════════════════════════════ */
+    .calendar-strip {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+      scrollbar-width: thin;
+    }
+    .calendar-day-card {
+      min-width: 68px;
+      padding: 8px 6px;
+      background: var(--bg-surface-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: 4px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 80ms ease;
+      user-select: none;
+      flex-shrink: 0;
+    }
+    .calendar-day-card:hover {
+      background: var(--bg-surface-hover);
+      border-color: var(--border-medium);
+    }
+    .calendar-day-card.active {
+      background: var(--bg-surface-active);
+      border-color: var(--accent-solid);
+    }
+    .cal-day-name {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+    }
+    .cal-day-date {
+      font-size: 13px;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-primary);
+      margin: 2px 0;
+    }
+    .cal-day-status {
+      font-size: 9px;
+      font-weight: 600;
+      padding: 1px 4px;
+      border-radius: 2px;
+      display: inline-block;
+    }
+    .cal-day-status.available {
+      background: var(--status-green-dim);
+      color: var(--status-green);
+    }
+    .cal-day-status.limited {
+      background: var(--status-yellow-dim);
+      color: var(--status-yellow);
+    }
+    .cal-day-status.full {
+      background: var(--status-red-dim);
+      color: var(--status-red);
+    }
+
+    .capacity-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-surface-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: 4px;
+      padding: 8px 12px;
+      margin-bottom: 12px;
+      font-size: 11px;
+    }
+
     .time-slot-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -748,19 +757,23 @@
       margin-bottom: 16px;
     }
     .time-slot-btn {
-      height: 34px;
-      display: flex; align-items: center; justify-content: center;
+      min-height: 52px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
       background: var(--bg-surface-2);
       border: 1px solid var(--border-subtle);
       border-radius: 4px;
       font-family: 'JetBrains Mono', monospace;
       font-size: 11px;
-      font-weight: 500;
       color: var(--text-secondary);
       cursor: pointer;
       transition: all 80ms ease;
+      position: relative;
     }
-    .time-slot-btn:hover {
+    .time-slot-btn:hover:not(.disabled) {
       background: var(--bg-surface-hover);
       border-color: var(--border-medium);
       color: var(--text-primary);
@@ -771,6 +784,24 @@
       border-color: var(--accent-solid);
       font-weight: 600;
     }
+    .time-slot-btn.active .slot-cap-text {
+      color: var(--accent-inv);
+      opacity: 0.9;
+    }
+    .time-slot-btn.disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      background: var(--bg-surface-1);
+      border-color: var(--border-subtle);
+    }
+    .slot-cap-text {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
 
     /* ══════════════════════════════════════════════════════════
        MODAL OVERLAYS (COMMAND PALETTE, ADD VEHICLE, INVOICE VIEW)
@@ -778,9 +809,9 @@
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.7);
+      background: rgba(0, 0, 0, 0.75);
       backdrop-filter: blur(4px);
-      z-index: 500;
+      z-index: 1000;
       display: none;
       align-items: center;
       justify-content: center;
@@ -790,17 +821,17 @@
       display: flex;
     }
     .modal-box {
-      width: 100%;
-      max-width: 560px;
       background: var(--bg-surface-1);
       border: 1px solid var(--border-medium);
       border-radius: 6px;
-      box-shadow: var(--card-shadow);
+      width: 100%;
+      max-width: 600px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
       overflow: hidden;
-      animation: modalPop 120ms ease;
+      animation: modalPop 100ms cubic-bezier(0.16, 1, 0.3, 1);
     }
     @keyframes modalPop {
-      from { transform: scale(0.96); opacity: 0; }
+      from { transform: scale(0.97); opacity: 0; }
       to { transform: scale(1); opacity: 1; }
     }
     .modal-header {
@@ -813,36 +844,49 @@
     }
     .modal-title {
       font-size: 13px;
-      font-weight: 600;
+      font-weight: 700;
       color: var(--text-primary);
     }
     .modal-body {
-      padding: 20px 16px;
+      padding: 16px;
       max-height: 75vh;
       overflow-y: auto;
     }
     .modal-footer {
-      height: 48px;
-      padding: 0 16px;
+      padding: 12px 16px;
+      border-top: 1px solid var(--border-subtle);
+      background: var(--bg-surface-2);
       display: flex;
-      align-items: center;
       justify-content: flex-end;
       gap: 8px;
-      border-top: 1px solid var(--border-subtle);
-      background: var(--bg-surface-1);
+    }
+
+    /* Command Palette Results */
+    .cmd-item {
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--text-primary);
+      cursor: pointer;
+    }
+    .cmd-item:hover, .cmd-item.selected {
+      background: var(--bg-surface-active);
     }
 
     /* ══════════════════════════════════════════════════════════
-       NOTIFICATION TOAST
+       TOAST NOTIFICATIONS
     ══════════════════════════════════════════════════════════ */
     .toast-container {
       position: fixed;
       bottom: 20px;
       right: 20px;
-      z-index: 600;
+      z-index: 2000;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
     }
     .toast {
       background: var(--bg-surface-1);
@@ -851,181 +895,165 @@
       padding: 10px 14px;
       font-size: 12px;
       color: var(--text-primary);
-      box-shadow: var(--card-shadow);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
       display: flex;
       align-items: center;
       gap: 8px;
+      min-width: 260px;
       animation: slideIn 120ms ease;
-      min-width: 280px;
     }
+    .toast.success { border-left: 3px solid var(--status-green); }
+    .toast.error { border-left: 3px solid var(--status-red); }
+    .toast.info { border-left: 3px solid var(--accent-solid); }
     @keyframes slideIn {
-      from { transform: translateX(20px); opacity: 0; }
+      from { transform: translateX(100%); opacity: 0; }
       to { transform: translateX(0); opacity: 1; }
     }
 
-    /* ══════════════════════════════════════════════════════════
-       RESPONSIVE ADJUSTMENTS
-    ══════════════════════════════════════════════════════════ */
-    @media (max-width: 768px) {
-      .metrics-grid { grid-template-columns: 1fr 1fr; }
+    @media (max-width: 900px) {
+      .metrics-grid { grid-template-columns: repeat(2, 1fr); }
       .branch-multiselect-grid { grid-template-columns: 1fr; }
-      .time-slot-grid { grid-template-columns: 1fr 1fr; }
+      .time-slot-grid { grid-template-columns: repeat(2, 1fr); }
       .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; }
-      .top-bar { padding: 0 12px; }
-      .main-body { padding: 16px 12px 60px; }
-      .brand-tag { display: none; }
     }
   </style>
 </head>
 <body>
 
-<div class="app">
+<div class="app-shell" id="appShell">
+  <!-- Top Navigation Bar -->
+  <header class="top-nav">
+    <div class="brand-section">
+      <img src="/files/automan_logo.png" alt="ULTRA MRF" class="brand-logo" onerror="this.style.display='none'">
+      <div class="brand-text">ULTRA MRF & AUTOMAN</div>
+      <div class="brand-sub">Customer Service Portal</div>
+    </div>
 
-  <!-- ── Top Application Bar ── -->
-  <header class="top-bar">
-    <a href="javascript:void(0)" class="brand-logo" onclick="switchTab('dashboard')">
-      <div class="brand-mark">U</div>
-      <div>
-        <span class="brand-name">ULTRA MRF</span>
-        <span class="brand-tag">Customer VMS Portal</span>
-      </div>
-    </a>
-
-    <div class="top-actions">
-      <button class="cmd-trigger" onclick="openCommandPalette()">
+    <div class="nav-actions">
+      <!-- Search / Command Palette shortcut -->
+      <button class="btn btn-secondary btn-sm" onclick="openCommandPalette()">
         <i class="fa-solid fa-magnifying-glass"></i>
-        <span>Search actions...</span>
+        <span>Command</span>
         <span class="cmd-kbd">⌘K</span>
       </button>
 
-      <button class="btn-icon" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+      <!-- Theme Switcher (B&W Dark / Light) -->
+      <button class="btn-icon" onclick="toggleTheme()" title="Toggle Dark / Light Theme (Ctrl+D)" id="themeToggleBtn">
         <i class="fa-solid fa-moon" id="themeIcon"></i>
       </button>
 
-      <!-- Logged-in Customer Badge -->
-      <div id="userHeaderBadge" style="display: none;">
-        <div class="user-pill">
-          <div class="user-avatar" id="userAvatarText">U</div>
-          <span id="userNameText">Customer</span>
-          <button class="btn-icon" style="width: 20px; height: 20px; border: none; background: transparent;" onclick="logoutCustomer()" title="Log Out">
-            <i class="fa-solid fa-arrow-right-from-bracket" style="font-size: 10px;"></i>
-          </button>
-        </div>
+      <!-- Customer Profile / Logout pill -->
+      <div id="userHeaderProfile" style="display: none; align-items: center; gap: 8px;">
+        <span class="plate-badge" id="userHeaderName">DANILO OBRA</span>
+        <button class="btn btn-ghost btn-sm" onclick="handleCustomerLogout()" title="Logout of customer session">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        </button>
       </div>
     </div>
   </header>
 
-  <!-- ── Navigation Bar ── -->
-  <nav class="nav-bar" id="mainNavBar" style="display: none;">
-    <div class="nav-tabs">
-      <div class="nav-tab active" data-tab="dashboard" onclick="switchTab('dashboard')">
-        <i class="fa-solid fa-chart-pie"></i>
-        <span>Dashboard</span>
-      </div>
-      <div class="nav-tab" data-tab="vehicles" onclick="switchTab('vehicles')">
-        <i class="fa-solid fa-car"></i>
-        <span>My Vehicles</span>
-        <span class="nav-tab-badge" id="badgeVehiclesCount">0</span>
-      </div>
-      <div class="nav-tab" data-tab="appointments" onclick="switchTab('appointments')">
-        <i class="fa-solid fa-calendar-check"></i>
-        <span>Schedule Appointment</span>
-      </div>
-      <div class="nav-tab" data-tab="invoices" onclick="switchTab('invoices')">
-        <i class="fa-solid fa-receipt"></i>
-        <span>My Invoices & Ledger</span>
-        <span class="nav-tab-badge" id="badgeInvoicesCount">0</span>
-      </div>
-      <div class="nav-tab" data-tab="history" onclick="switchTab('history')">
-        <i class="fa-solid fa-clock-rotate-left"></i>
-        <span>Service History</span>
-      </div>
-      <div class="nav-tab" data-tab="branches" onclick="switchTab('branches')">
-        <i class="fa-solid fa-location-dot"></i>
-        <span>Branch Network</span>
-      </div>
+  <!-- Secondary Tab Navigation (when logged in) -->
+  <nav class="tab-nav-bar" id="tabNavBar" style="display: none;">
+    <div class="nav-tab active" data-tab="dashboard" onclick="switchTab('dashboard')">
+      <i class="fa-solid fa-gauge-high"></i>
+      <span>Overview</span>
+    </div>
+    <div class="nav-tab" data-tab="vehicles" onclick="switchTab('vehicles')">
+      <i class="fa-solid fa-car"></i>
+      <span>My Garage</span>
+      <span class="nav-tab-badge" id="badgeVehiclesCount">0</span>
+    </div>
+    <div class="nav-tab" data-tab="appointments" onclick="switchTab('appointments')">
+      <i class="fa-solid fa-calendar-plus"></i>
+      <span>Schedule Appointment</span>
+    </div>
+    <div class="nav-tab" data-tab="invoices" onclick="switchTab('invoices')">
+      <i class="fa-solid fa-file-invoice-dollar"></i>
+      <span>My Invoices</span>
+      <span class="nav-tab-badge" id="badgeInvoicesCount">0</span>
+    </div>
+    <div class="nav-tab" data-tab="history" onclick="switchTab('history')">
+      <i class="fa-solid fa-clock-rotate-left"></i>
+      <span>Service History</span>
+    </div>
+    <div class="nav-tab" data-tab="branches" onclick="switchTab('branches')">
+      <i class="fa-solid fa-location-dot"></i>
+      <span>Branches Directory</span>
     </div>
   </nav>
 
-  <!-- ── Main Content Area ── -->
-  <main class="main-body">
+  <!-- Main View Router -->
+  <main class="main-content">
 
     <!-- ══════════════════════════════════════════════════════════
-         VIEW 0: AUTHENTICATION (LOGIN OR REGISTER PROFILE)
+         VIEW 0: CUSTOMER AUTHENTICATION (LOGIN & REGISTRATION)
     ══════════════════════════════════════════════════════════ -->
     <div id="authView" class="view-pane active">
-      <div class="auth-wrapper">
+      <div class="auth-container">
         <div class="auth-header">
-          <div class="brand-mark" style="margin: 0 auto 12px; width: 36px; height: 36px; font-size: 16px;">U</div>
-          <h1 class="auth-title">ULTRA MRF Customer Portal</h1>
-          <p class="auth-desc">Log in or create your customer profile to manage vehicles, book appointments, and view invoices.</p>
+          <img src="/files/automan_logo.png" alt="ULTRA MRF" class="auth-logo" onerror="this.style.display='none'">
+          <h1 class="auth-title">Customer Service Portal</h1>
+          <p class="auth-subtitle">Ultra MRF, Dau Main, San Fernando, Automan, Wheel Core & Branches</p>
         </div>
 
-        <div class="auth-switch">
-          <button class="auth-switch-btn active" id="btnAuthTabLogin" onclick="setAuthMode('login')">
-            <i class="fa-solid fa-right-to-bracket" style="margin-right: 4px;"></i> Log In
-          </button>
-          <button class="auth-switch-btn" id="btnAuthTabRegister" onclick="setAuthMode('register')">
-            <i class="fa-solid fa-user-plus" style="margin-right: 4px;"></i> Create Customer Profile
-          </button>
+        <div class="auth-mode-switch">
+          <button class="auth-mode-btn active" id="btnAuthTabLogin" onclick="setAuthMode('login')">Log In</button>
+          <button class="auth-mode-btn" id="btnAuthTabRegister" onclick="setAuthMode('register')">Create Profile</button>
         </div>
 
-        <!-- Mode A: Customer Login -->
+        <!-- Mode A: Customer Login Form -->
         <div id="formLoginContainer">
           <form onsubmit="handleLoginSubmit(event)">
             <div class="form-group">
-              <label class="form-label">Customer Name, Mobile Phone, Email, or Plate #</label>
-              <input type="text" id="loginIdentifier" class="form-input" placeholder="e.g. DANILO OBRA, 0917-555-8899, or CAK-8899" required autofocus>
+              <label class="form-label">Customer Name, Mobile No, or Plate #</label>
+              <input type="text" id="loginIdentifier" class="form-input" placeholder="e.g. DANILO OBRA, 0917-123-4567, or NBG-1234" required>
             </div>
-            <button type="submit" class="btn btn-primary btn-block" id="btnLoginSubmit">
+            <button type="submit" class="btn btn-primary btn-block" id="btnLoginSubmit" style="height: 36px;">
               <span>Enter Customer Portal</span>
               <i class="fa-solid fa-arrow-right"></i>
             </button>
           </form>
 
-          <div class="demo-users">
-            <span style="font-size: 11px; color: var(--text-muted); width: 100%; margin-bottom: 2px;">Quick Demo Customers:</span>
-            <span class="demo-user-chip" onclick="quickLogin('DANILO OBRA')">DANILO OBRA (11 Invoices)</span>
-            <span class="demo-user-chip" onclick="quickLogin('GIAN BONDOC')">GIAN BONDOC</span>
-            <span class="demo-user-chip" onclick="quickLogin('LARIE GUARIN')">LARIE GUARIN</span>
-            <span class="demo-user-chip" onclick="quickLogin('FERNANDO SANTOS PO')">FERNANDO SANTOS (Fortuner)</span>
-            <span class="demo-user-chip" onclick="quickLogin('EDUARDO REYES CRISOSTOMO')">EDUARDO REYES (D-Max)</span>
+          <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-subtle); text-align: center; font-size: 11px; color: var(--text-muted);">
+            New customer? <a href="javascript:void(0)" onclick="setAuthMode('register')" style="color: var(--text-primary); font-weight: 600; text-decoration: underline;">Create Customer Profile</a> to register and link your vehicle.
           </div>
         </div>
 
-        <!-- Mode B: Create Customer Profile + Link Vehicle -->
+        <!-- Mode B: Create Customer Profile Form -->
         <div id="formRegisterContainer" style="display: none;">
           <form onsubmit="handleRegisterSubmit(event)">
-            <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 10px;">1. Customer Profile Information</div>
-            <div class="form-grid-2">
-              <div class="form-group">
-                <label class="form-label">Customer Full Name *</label>
-                <input type="text" id="regCustomerName" class="form-input" placeholder="e.g. ROBERTO DELA CRUZ" required>
-              </div>
-              <div class="form-group">
-                <label class="form-label">Mobile Phone Number *</label>
-                <input type="tel" id="regPhone" class="form-input" placeholder="e.g. 0917-123-4567" required>
-              </div>
+            <div class="form-group">
+              <label class="form-label">Customer Full Name *</label>
+              <input type="text" id="regCustomerName" class="form-input" placeholder="e.g. JUAN DELA CRUZ" required>
             </div>
+
             <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label">Contact Mobile Phone *</label>
+                <input type="tel" id="regPhone" class="form-input tabular-nums" placeholder="0917-123-4567" required>
+              </div>
               <div class="form-group">
                 <label class="form-label">Email Address</label>
-                <input type="email" id="regEmail" class="form-input" placeholder="e.g. roberto@example.com">
-              </div>
-              <div class="form-group">
-                <label class="form-label">City / Address</label>
-                <input type="text" id="regAddress" class="form-input" placeholder="e.g. Angeles City, Pampanga">
+                <input type="email" id="regEmail" class="form-input" placeholder="juan@example.com">
               </div>
             </div>
 
-            <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin: 16px 0 10px; padding-top: 12px; border-top: 1px solid var(--border-subtle);">2. Primary Customer Vehicle (Linked to VMS)</div>
+            <div class="form-group">
+              <label class="form-label">Billing / Home Address</label>
+              <input type="text" id="regAddress" class="form-input" placeholder="Street, Barangay, City, Province">
+            </div>
+
+            <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); margin: 16px 0 8px; border-top: 1px solid var(--border-subtle); padding-top: 12px;">
+              <i class="fa-solid fa-car" style="margin-right: 4px;"></i> Link Vehicle to Profile
+            </div>
+
             <div class="form-grid-2">
               <div class="form-group">
                 <label class="form-label">Plate Number *</label>
-                <input type="text" id="regPlateNo" class="form-input tabular-nums" placeholder="e.g. NBG-8899" required>
+                <input type="text" id="regPlateNo" class="form-input tabular-nums" placeholder="e.g. NBG-5544" required>
               </div>
               <div class="form-group">
-                <label class="form-label">Vehicle Make *</label>
+                <label class="form-label">Make *</label>
                 <select id="regMake" class="form-select" onchange="populateModels('regMake', 'regModel')" required>
                   <option value="">Select Make...</option>
                 </select>
@@ -1034,16 +1062,16 @@
 
             <div class="form-grid-3">
               <div class="form-group">
-                <label class="form-label">Vehicle Model *</label>
-                <input type="text" id="regModel" class="form-input" placeholder="e.g. FORTUNER 2.4 G" required list="modelSuggestions">
+                <label class="form-label">Model *</label>
+                <input type="text" id="regModel" class="form-input" placeholder="e.g. CIVIC RS TURBO" required list="modelSuggestions">
               </div>
               <div class="form-group">
-                <label class="form-label">Year Model</label>
-                <input type="number" id="regYear" class="form-input tabular-nums" placeholder="e.g. 2024">
+                <label class="form-label">Year</label>
+                <input type="number" id="regYear" class="form-input tabular-nums" placeholder="e.g. 2023">
               </div>
               <div class="form-group">
-                <label class="form-label">Body Color</label>
-                <input type="text" id="regColor" class="form-input" placeholder="e.g. Pearl White">
+                <label class="form-label">Color</label>
+                <input type="text" id="regColor" class="form-input" placeholder="e.g. Sonic Gray">
               </div>
             </div>
 
@@ -1051,47 +1079,51 @@
               <div class="form-group">
                 <label class="form-label">Fuel Type</label>
                 <select id="regFuelType" class="form-select">
-                  <option value="Diesel">Diesel</option>
                   <option value="Gasoline">Gasoline</option>
+                  <option value="Diesel">Diesel</option>
                   <option value="Hybrid">Hybrid</option>
                   <option value="Electric">Electric</option>
                 </select>
               </div>
               <div class="form-group">
                 <label class="form-label">Current Odometer (km)</label>
-                <input type="number" id="regMileage" class="form-input tabular-nums" placeholder="e.g. 15000">
+                <input type="number" id="regMileage" class="form-input tabular-nums" placeholder="e.g. 15400">
               </div>
             </div>
 
-            <button type="submit" class="btn btn-primary btn-block" id="btnRegisterSubmit" style="margin-top: 10px;">
+            <button type="submit" class="btn btn-primary btn-block" id="btnRegisterSubmit" style="height: 36px; margin-top: 8px;">
+              <span>Register & Access Portal</span>
               <i class="fa-solid fa-check"></i>
-              <span>Save Profile & Enter Portal</span>
             </button>
           </form>
+
+          <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-subtle); text-align: center; font-size: 11px; color: var(--text-muted);">
+            Already have an account? <a href="javascript:void(0)" onclick="setAuthMode('login')" style="color: var(--text-primary); font-weight: 600; text-decoration: underline;">Log In here</a>.
+          </div>
         </div>
       </div>
     </div>
 
     <!-- ══════════════════════════════════════════════════════════
-         VIEW 1: CUSTOMER DASHBOARD OVERVIEW
+         VIEW 1: OVERVIEW DASHBOARD
     ══════════════════════════════════════════════════════════ -->
     <div id="dashboardView" class="view-pane">
       <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
         <div>
-          <h2 style="font-size: 18px; font-weight: 700; letter-spacing: -0.02em;" id="dashWelcomeText">Welcome to your Portal</h2>
-          <p style="font-size: 12px; color: var(--text-secondary);" id="dashSubText">Manage vehicles, scheduled appointments, and billing receipts.</p>
+          <h1 style="font-size: 20px; font-weight: 700; letter-spacing: -0.02em;" id="dashWelcomeText">Customer Overview</h1>
+          <p style="font-size: 12px; color: var(--text-secondary);">Manage vehicles, schedule PMS, and monitor invoices across ULTRA MRF service centers.</p>
         </div>
-        <button class="btn btn-primary btn-sm" onclick="switchTab('appointments')">
+        <button class="btn btn-primary" onclick="switchTab('appointments')">
           <i class="fa-solid fa-calendar-plus"></i>
-          <span>Schedule Appointment</span>
+          <span>Schedule Service</span>
         </button>
       </div>
 
-      <!-- Metrics Row -->
+      <!-- Metrics Strip -->
       <div class="metrics-grid">
         <div class="metric-card">
           <div class="metric-title">
-            <span>My Garage</span>
+            <span>My Vehicles</span>
             <i class="fa-solid fa-car" style="color: var(--text-muted);"></i>
           </div>
           <div class="metric-value" id="metricVehiclesCount">0</div>
@@ -1212,21 +1244,21 @@
     </div>
 
     <!-- ══════════════════════════════════════════════════════════
-         VIEW 3: SCHEDULE APPOINTMENT (MULTI-BRANCH SELECTOR)
+         VIEW 3: SCHEDULE APPOINTMENT (MULTI-BRANCH & LIVE CAPACITY CALENDAR)
     ══════════════════════════════════════════════════════════ -->
     <div id="appointmentsView" class="view-pane">
-      <div style="max-width: 820px; margin: 0 auto; background: var(--bg-surface-1); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 24px; box-shadow: var(--card-shadow);">
+      <div style="max-width: 860px; margin: 0 auto; background: var(--bg-surface-1); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 24px; box-shadow: var(--card-shadow);">
         <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 4px;">Schedule Service Appointment</h2>
-        <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 20px;">Select one or more designated branch locations, choose your vehicle and service, and pick your preferred time slot.</p>
+        <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 20px;">Select your branch, choose vehicle & service, and pick an available bay slot from the live branch capacity calendar.</p>
 
         <form onsubmit="handleBookAppointmentSubmit(event)">
           <!-- 1. Multi-Branch Selection -->
           <div class="form-group">
-            <label class="form-label">1. Select Designated Branch Locations (Pick 1 or More) *</label>
+            <label class="form-label">1. Select Designated Branch Location (Primary + Options) *</label>
             <div class="branch-multiselect-grid" id="branchTilesContainer">
               <!-- Rendered via JS -->
             </div>
-            <div style="font-size: 11px; color: var(--text-muted);"><i class="fa-solid fa-circle-info"></i> You can select multiple preferred branches; the primary service bay will be allocated accordingly.</div>
+            <div style="font-size: 11px; color: var(--text-muted);"><i class="fa-solid fa-circle-info"></i> The first selected branch is your primary booking destination; live bay capacity updates automatically.</div>
           </div>
 
           <!-- 2. Vehicle Selection -->
@@ -1256,21 +1288,43 @@
             <input type="hidden" id="aptServiceType" value="PMS / Change Oil">
           </div>
 
-          <!-- 4. Date & Time Selection -->
+          <!-- 4. Date & Live Branch Capacity Calendar -->
           <div class="form-group" style="margin-top: 20px;">
-            <label class="form-label">4. Appointment Date & Standard Time Slot *</label>
-            <div class="form-grid-2" style="margin-bottom: 12px;">
-              <input type="date" id="aptDate" class="form-input" required>
-              <div style="display: flex; align-items: center; font-size: 11px; color: var(--text-secondary);">
-                <span>Standard operating hours: Mon-Sat 8:00 AM – 5:30 PM</span>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+              <label class="form-label" style="margin-bottom: 0;">4. Appointment Date & Real-Time Bay Availability Calendar *</label>
+              <span style="font-size: 11px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;" id="selectedDateDisplay"></span>
+            </div>
+
+            <div class="calendar-strip" id="calendarStripContainer">
+              <!-- Rendered via JS: 14-day interactive card carousel -->
+            </div>
+
+            <div class="capacity-banner" id="capacityBanner">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-warehouse" style="color: var(--text-muted);"></i>
+                <span id="capacityBannerBranchName"><strong>Ultra MRF Dau Main</strong></span>
+                <span style="color: var(--text-muted);">|</span>
+                <span id="capacityBannerBays" class="tabular-nums">12 Service Bays Total</span>
+              </div>
+              <div id="capacityBannerStatus">
+                <span class="status-badge paid"><i class="fa-solid fa-circle-check"></i> Live Capacity Synced</span>
               </div>
             </div>
 
+            <div class="form-grid-2" style="margin-bottom: 12px;">
+              <div>
+                <label class="form-label" style="font-size: 10px;">Or Choose Specific Date:</label>
+                <input type="date" id="aptDate" class="form-input" onchange="handleDateInputChange()" required>
+              </div>
+              <div style="display: flex; flex-direction: column; justify-content: flex-end; font-size: 11px; color: var(--text-secondary); padding-bottom: 6px;">
+                <span>Standard Operating Hours: <strong>8:00 AM – 5:30 PM</strong></span>
+                <span style="color: var(--text-muted);">Bay capacity is dynamically locked to prevent overbooking.</span>
+              </div>
+            </div>
+
+            <label class="form-label" style="font-size: 11px; margin-bottom: 6px;">Available Time Slots (Live Remaining Bays):</label>
             <div class="time-slot-grid" id="timeSlotGridContainer">
-              <div class="time-slot-btn active" data-slot="08:00 AM - 10:00 AM" onclick="selectTimeSlot(this)">08:00 AM - 10:00 AM</div>
-              <div class="time-slot-btn" data-slot="10:00 AM - 12:00 PM" onclick="selectTimeSlot(this)">10:00 AM - 12:00 PM</div>
-              <div class="time-slot-btn" data-slot="01:00 PM - 03:00 PM" onclick="selectTimeSlot(this)">01:00 PM - 03:00 PM</div>
-              <div class="time-slot-btn" data-slot="03:00 PM - 05:00 PM" onclick="selectTimeSlot(this)">03:00 PM - 05:00 PM</div>
+              <!-- Rendered via JS with live slot capacity -->
             </div>
             <input type="hidden" id="aptTimeSlot" value="08:00 AM - 10:00 AM">
           </div>
@@ -1450,69 +1504,58 @@
             </select>
           </div>
           <div class="form-group">
-            <label class="form-label">Odometer (km)</label>
-            <input type="number" id="addVehMileage" class="form-input tabular-nums" placeholder="e.g. 25000">
+            <label class="form-label">Current Odometer (km)</label>
+            <input type="number" id="addVehMileage" class="form-input tabular-nums" placeholder="e.g. 12000">
           </div>
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary btn-sm" onclick="closeModal('addVehicleModal')">Cancel</button>
-        <button type="submit" class="btn btn-primary btn-sm" id="btnAddVehSubmit">Save Vehicle</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal('addVehicleModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="btnAddVehSubmit">Save Vehicle</button>
       </div>
     </form>
   </div>
 </div>
 
 <!-- ══════════════════════════════════════════════════════════
-     MODAL: INVOICE BREAKDOWN VIEWER
+     MODAL: INVOICE BREAKDOWN
 ══════════════════════════════════════════════════════════ -->
 <div class="modal-overlay" id="invoiceDetailModal" onclick="closeModalOnBackdrop(event, 'invoiceDetailModal')">
-  <div class="modal-box" style="max-width: 600px;">
+  <div class="modal-box" style="max-width: 680px;">
     <div class="modal-header">
-      <span class="modal-title" id="invModalTitle">Invoice Breakdown</span>
+      <span class="modal-title" id="invModalTitle">Invoice Details</span>
       <button class="btn-icon" onclick="closeModal('invoiceDetailModal')"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="modal-body" id="invModalBody">
-      <!-- Rendered via JS -->
+      <!-- Populated via JS -->
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn btn-secondary btn-sm" onclick="window.print()"><i class="fa-solid fa-print"></i> Print</button>
-      <button type="button" class="btn btn-primary btn-sm" onclick="closeModal('invoiceDetailModal')">Close</button>
+      <button type="button" class="btn btn-secondary" onclick="window.print()"><i class="fa-solid fa-print"></i> Print Invoice</button>
+      <button type="button" class="btn btn-primary" onclick="closeModal('invoiceDetailModal')">Close</button>
     </div>
   </div>
 </div>
 
-<!-- Datalist for Vehicle Models -->
+<!-- Datalist for Vehicle Model Suggestions -->
 <datalist id="modelSuggestions"></datalist>
 
-<!-- Notification Toast Container -->
+<!-- Toast Container -->
 <div class="toast-container" id="toastContainer"></div>
 
-<!-- ══════════════════════════════════════════════════════════
-     PORTAL JAVASCRIPT LOGIC
-══════════════════════════════════════════════════════════ -->
 <script>
-  // State
+  // ── STATE MANAGEMENT ──
   let currentCustomer = null;
   let currentVehicles = [];
   let currentInvoices = [];
   let currentAppointments = [];
-  let referenceMakes = [];
-  let referenceModels = [];
   let referenceBranches = [];
   let referenceServices = [];
+  let referenceMakes = [];
+  let referenceModels = [];
   let selectedBranches = ['Ultra MRF Dau Main'];
+  let currentAvailabilityData = null;
 
-  // Initialize
-  document.addEventListener('DOMContentLoaded', () => {
-    initTheme();
-    loadReferenceData();
-    checkSavedSession();
-    setupKeyboardShortcuts();
-    setupDateDefaults();
-  });
-
-  // ── CSRF & RESILIENT API CALL HELPER ──
+  // ── CSRF & API CALL HELPER ──
   function getCsrfToken() {
     if (window.frappe && window.frappe.csrf_token && window.frappe.csrf_token !== 'fetch') {
       return window.frappe.csrf_token;
@@ -1547,7 +1590,7 @@
       });
 
       if (!res.ok) {
-        // If 400 Bad Request (CSRF or method rejection), fallback to GET
+        // Fallback to GET on method rejection
         const qs = new URLSearchParams(params).toString();
         const resGet = await fetch(`${endpoint}?${qs}`, {
           method: 'GET',
@@ -1616,9 +1659,11 @@
     d.setDate(d.getDate() + 1);
     const tomorrow = d.toISOString().split('T')[0];
     const dateInput = document.getElementById('aptDate');
+    const display = document.getElementById('selectedDateDisplay');
     if (dateInput) {
       dateInput.min = tomorrow;
       dateInput.value = tomorrow;
+      if (display) display.textContent = tomorrow;
     }
   }
 
@@ -1637,6 +1682,7 @@
       populateMakeDropdowns();
       populateModelDatalist();
       renderBranchNetworkTable();
+      loadBranchSlotAvailability();
     } catch (err) {
       console.error('Error loading reference data:', err);
     }
@@ -1746,10 +1792,10 @@
         showToast(msg.error || 'Error saving customer profile.', 'error');
       }
     } catch (err) {
-      showToast('Registration failed. Please check your connection.', 'error');
+      showToast('Registration network error. Please try again.', 'error');
     } finally {
       btn.disabled = false;
-      btn.innerHTML = '<i class="fa-solid fa-check"></i> <span>Save Profile & Enter Portal</span>';
+      btn.innerHTML = '<span>Register & Access Portal</span> <i class="fa-solid fa-check"></i>';
     }
   }
 
@@ -1759,35 +1805,35 @@
     currentInvoices = data.invoices || [];
     currentAppointments = data.appointments || [];
 
-    localStorage.setItem('ultra_portal_customer_ident', currentCustomer.name || currentCustomer.phone);
+    if (data.branches && data.branches.length > 0) referenceBranches = data.branches;
+    if (data.services && data.services.length > 0) referenceServices = data.services;
 
-    // Update Header
-    document.getElementById('userHeaderBadge').style.display = 'block';
-    document.getElementById('userNameText').textContent = currentCustomer.name;
-    document.getElementById('userAvatarText').textContent = (currentCustomer.name || 'U')[0].toUpperCase();
-    document.getElementById('mainNavBar').style.display = 'flex';
+    localStorage.setItem('ultra_portal_customer_ident', currentCustomer.name);
 
-    // Update Views
+    document.getElementById('authView').classList.remove('active');
+    document.getElementById('tabNavBar').style.display = 'flex';
+    document.getElementById('userHeaderProfile').style.display = 'flex';
+    document.getElementById('userHeaderName').textContent = currentCustomer.name;
+
     updateDashboardUI();
     updateVehiclesUI();
     updateInvoicesUI();
     updateHistoryUI();
     populateAptVehicleDropdown();
+    loadBranchSlotAvailability();
 
-    // Hide Auth, Show Dashboard
-    document.getElementById('authView').classList.remove('active');
     switchTab('dashboard');
   }
 
-  function logoutCustomer() {
+  function handleCustomerLogout() {
     localStorage.removeItem('ultra_portal_customer_ident');
     currentCustomer = null;
     currentVehicles = [];
     currentInvoices = [];
     currentAppointments = [];
 
-    document.getElementById('userHeaderBadge').style.display = 'none';
-    document.getElementById('mainNavBar').style.display = 'none';
+    document.getElementById('tabNavBar').style.display = 'none';
+    document.getElementById('userHeaderProfile').style.display = 'none';
     document.querySelectorAll('.view-pane').forEach(v => v.classList.remove('active'));
     document.getElementById('authView').classList.add('active');
     setAuthMode('login');
@@ -2018,6 +2064,7 @@
       selectedBranches.push(branchKey);
     }
     renderBranchTiles();
+    loadBranchSlotAvailability();
   }
 
   function renderBranchNetworkTable() {
@@ -2026,7 +2073,7 @@
     tbody.innerHTML = referenceBranches.map(b => `
       <tr>
         <td><strong>${b.title || b.key}</strong></td>
-        <td><span class="badge-tag">${b.badge || 'Full Service Hub'}</span></td>
+        <td><span class="status-badge active">${b.badge || 'Full Service Hub'}</span></td>
         <td style="color: var(--text-secondary);">${b.address || 'Pampanga'}</td>
         <td class="tabular-nums" style="font-size: 11px;">${b.hours || 'Mon-Sat 8:00 AM - 5:30 PM'}</td>
         <td class="num tabular-nums">${b.bays || 8} Bays</td>
@@ -2043,10 +2090,11 @@
   function selectBranchAndSchedule(branchKey) {
     selectedBranches = [branchKey];
     renderBranchTiles();
+    loadBranchSlotAvailability();
     switchTab('appointments');
   }
 
-  // ── SERVICE PILLS & TIME SLOTS ──
+  // ── SERVICE PILLS ──
   function renderServicePills() {
     const container = document.getElementById('aptServicePillsContainer');
     if (!container) return;
@@ -2065,7 +2113,118 @@
     document.getElementById('aptServiceType').value = serviceName;
   }
 
+  // ── REAL-TIME BRANCH CAPACITY & CALENDAR SYSTEM ──
+  async function loadBranchSlotAvailability() {
+    const branch = selectedBranches.length > 0 ? selectedBranches[0] : 'Ultra MRF Dau Main';
+    const dateInput = document.getElementById('aptDate');
+    const dateStr = dateInput ? dateInput.value : '';
+
+    const bannerBranch = document.getElementById('capacityBannerBranchName');
+    const bannerBays = document.getElementById('capacityBannerBays');
+    if (bannerBranch) bannerBranch.innerHTML = `<strong>${branch}</strong>`;
+
+    try {
+      const res = await callPortalApi('vehicle_management.api.portal.get_branch_availability', {
+        branch: branch,
+        date: dateStr
+      }, 'GET');
+
+      const msg = res.message || {};
+      currentAvailabilityData = msg;
+
+      if (bannerBays) bannerBays.textContent = `${msg.total_bays || 8} Total Service Bays`;
+
+      renderCalendarStrip(msg.calendar_days || []);
+      renderTimeSlotButtons(msg.slots || []);
+    } catch (err) {
+      console.error('Error loading branch availability:', err);
+    }
+  }
+
+  function renderCalendarStrip(days) {
+    const container = document.getElementById('calendarStripContainer');
+    const dateInput = document.getElementById('aptDate');
+    const currentDate = dateInput ? dateInput.value : '';
+    if (!container) return;
+
+    if (!days || days.length === 0) {
+      container.innerHTML = '';
+      return;
+    }
+
+    const dayNames = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    container.innerHTML = days.map(d => {
+      const dt = new Date(d.date + 'T00:00:00');
+      const dayName = dayNames[dt.getDay()];
+      const dayNum = dt.getDate();
+      const monthName = monthNames[dt.getMonth()];
+      const isActive = d.date === currentDate;
+      const statusClass = (d.status || 'available').toLowerCase();
+
+      return `
+        <div class="calendar-day-card ${isActive ? 'active' : ''}" onclick="selectCalendarDate('${d.date}')">
+          <div class="cal-day-name">${dayName}</div>
+          <div class="cal-day-date">${monthName} ${dayNum}</div>
+          <span class="cal-day-status ${statusClass}">${d.status}</span>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function selectCalendarDate(dateStr) {
+    const dateInput = document.getElementById('aptDate');
+    if (dateInput) {
+      dateInput.value = dateStr;
+      handleDateInputChange();
+    }
+  }
+
+  function handleDateInputChange() {
+    const dateInput = document.getElementById('aptDate');
+    const display = document.getElementById('selectedDateDisplay');
+    if (dateInput && display) {
+      display.textContent = dateInput.value;
+    }
+    loadBranchSlotAvailability();
+  }
+
+  function renderTimeSlotButtons(slots) {
+    const container = document.getElementById('timeSlotGridContainer');
+    const hiddenSlotInput = document.getElementById('aptTimeSlot');
+    if (!container) return;
+
+    let activeSlot = hiddenSlotInput ? hiddenSlotInput.value : '08:00 AM - 10:00 AM';
+
+    const currentActiveSlotObj = slots.find(s => s.slot === activeSlot);
+    if (!currentActiveSlotObj || currentActiveSlotObj.is_full) {
+      const firstAvail = slots.find(s => !s.is_full);
+      if (firstAvail) {
+        activeSlot = firstAvail.slot;
+        if (hiddenSlotInput) hiddenSlotInput.value = activeSlot;
+      }
+    }
+
+    container.innerHTML = slots.map(s => {
+      const isSelected = s.slot === activeSlot && !s.is_full;
+      const dotColor = s.is_full ? 'var(--status-red)' : (s.badge_class === 'warning' ? 'var(--status-yellow)' : 'var(--status-green)');
+      return `
+        <div class="time-slot-btn ${isSelected ? 'active' : ''} ${s.is_full ? 'disabled' : ''}" 
+             data-slot="${s.slot}" 
+             ${!s.is_full ? `onclick="selectTimeSlot(this)"` : `title="Fully booked at this branch"`}>
+          <div><strong>${s.slot.split(' - ')[0]}</strong> – ${s.slot.split(' - ')[1]}</div>
+          <div class="slot-cap-text">
+            <i class="fa-solid fa-circle" style="font-size: 6px; color: ${dotColor};"></i>
+            <span>${s.is_full ? 'Fully Booked' : `${s.available}/${s.total_bays} Bays Open`}</span>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
   function selectTimeSlot(elem) {
+    if (elem.classList.contains('disabled')) return;
     document.querySelectorAll('.time-slot-btn').forEach(b => b.classList.remove('active'));
     elem.classList.add('active');
     document.getElementById('aptTimeSlot').value = elem.getAttribute('data-slot');
@@ -2201,109 +2360,48 @@
         showToast(msg.error || 'Failed to add vehicle.', 'error');
       }
     } catch (err) {
-      showToast('Error adding vehicle.', 'error');
+      showToast('Error saving vehicle. Please try again.', 'error');
     } finally {
       btn.disabled = false;
       btn.innerHTML = 'Save Vehicle';
     }
   }
 
-  // ── POPULATE DROPDOWNS ──
+  // ── HELPER: MAKE & MODEL DROPDOWNS ──
   function populateMakeDropdowns() {
-    const opts = referenceMakes.map(m => `<option value="${m.name}">${m.make_name || m.name}</option>`).join('');
-    const regSel = document.getElementById('regMake');
-    const addSel = document.getElementById('addVehMake');
-    if (regSel) regSel.innerHTML = '<option value="">Select Make...</option>' + opts;
-    if (addSel) addSel.innerHTML = '<option value="">Select Make...</option>' + opts;
+    const makes = referenceMakes.map(m => m.name || m.make_name);
+    const regSelect = document.getElementById('regMake');
+    const addSelect = document.getElementById('addVehMake');
+
+    const opts = ['<option value="">Select Make...</option>'].concat(
+      makes.map(m => `<option value="${m}">${m}</option>`)
+    ).join('');
+
+    if (regSelect) regSelect.innerHTML = opts;
+    if (addSelect) addSelect.innerHTML = opts;
   }
 
   function populateModelDatalist() {
     const dl = document.getElementById('modelSuggestions');
-    if (dl) {
-      dl.innerHTML = referenceModels.map(m => `<option value="${m.model_name || m.name}">${m.make || ''}</option>`).join('');
-    }
+    if (!dl) return;
+    dl.innerHTML = referenceModels.map(m => `<option value="${m.model_name || m.name}">`).join('');
   }
 
   function populateModels(makeSelectId, modelInputId) {
     const make = document.getElementById(makeSelectId).value;
-    const filtered = referenceModels.filter(m => !make || m.make === make);
+    const modelInput = document.getElementById(modelInputId);
+    if (!make) return;
+
+    const filtered = referenceModels.filter(m => m.make === make || (m.name && m.name.startsWith(make)));
     const dl = document.getElementById('modelSuggestions');
-    if (dl) {
-      dl.innerHTML = filtered.map(m => `<option value="${m.model_name || m.name}">${m.make}</option>`).join('');
+    if (dl && filtered.length > 0) {
+      dl.innerHTML = filtered.map(m => `<option value="${m.model_name || m.name}">`).join('');
     }
   }
 
-  // ── COMMAND PALETTE (⌘K) ──
-  function openCommandPalette() {
-    const modal = document.getElementById('commandPaletteModal');
-    modal.classList.add('open');
-    const input = document.getElementById('cmdInput');
-    input.value = '';
-    input.focus();
-    renderCommandResults('');
-  }
-
-  function handleCommandSearch(query) {
-    renderCommandResults(query);
-  }
-
-  function renderCommandResults(q) {
-    const container = document.getElementById('cmdResultsContainer');
-    const query = (q || '').toLowerCase().trim();
-
-    const actions = [
-      { title: 'Schedule Service Appointment', icon: 'fa-calendar-plus', action: () => switchTab('appointments') },
-      { title: 'View My Vehicles Garage', icon: 'fa-car', action: () => switchTab('vehicles') },
-      { title: 'Add New Vehicle to Profile', icon: 'fa-plus', action: () => openAddVehicleModal() },
-      { title: 'View Isolated Invoices & Ledger', icon: 'fa-file-invoice-dollar', action: () => switchTab('invoices') },
-      { title: 'Branch Directory & Operating Hours', icon: 'fa-location-dot', action: () => switchTab('branches') },
-      { title: 'Toggle Monochrome Dark / Light Mode', icon: 'fa-circle-half-stroke', action: () => toggleTheme() },
-      { title: 'Log Out Customer Profile', icon: 'fa-arrow-right-from-bracket', action: () => logoutCustomer() }
-    ];
-
-    let filtered = actions.filter(a => a.title.toLowerCase().includes(query));
-
-    referenceBranches.forEach(b => {
-      if (b.title.toLowerCase().includes(query) || b.address.toLowerCase().includes(query)) {
-        filtered.push({
-          title: `Branch: ${b.title} (${b.bays} Bays)`,
-          icon: 'fa-warehouse',
-          action: () => selectBranchAndSchedule(b.key)
-        });
-      }
-    });
-
-    if (filtered.length === 0) {
-      container.innerHTML = '<div style="padding: 16px; text-align: center; color: var(--text-muted); font-size: 12px;">No matching actions found.</div>';
-    } else {
-      container.innerHTML = filtered.map((item, idx) => `
-        <div style="padding: 8px 12px; border-radius: 4px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 80ms ease; font-size: 12px; margin-bottom: 2px;"
-             class="cmd-item"
-             onclick="executeCommand(${idx})"
-             onmouseenter="this.style.background='var(--bg-surface-hover)'"
-             onmouseleave="this.style.background='transparent'">
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <i class="fa-solid ${item.icon}" style="color: var(--text-muted); width: 14px;"></i>
-            <span style="color: var(--text-primary);">${item.title}</span>
-          </div>
-          <span style="font-size: 10px; color: var(--text-muted);">↵</span>
-        </div>
-      `).join('');
-      window._currentCmdFiltered = filtered;
-    }
-  }
-
-  function executeCommand(index) {
-    if (window._currentCmdFiltered && window._currentCmdFiltered[index]) {
-      closeModal('commandPaletteModal');
-      window._currentCmdFiltered[index].action();
-    }
-  }
-
-  // ── MODAL HELPERS ──
+  // ── MODAL UTILITIES ──
   function closeModal(modalId) {
-    const m = document.getElementById(modalId);
-    if (m) m.classList.remove('open');
+    document.getElementById(modalId).classList.remove('open');
   }
 
   function closeModalOnBackdrop(e, modalId) {
@@ -2312,27 +2410,96 @@
     }
   }
 
-  // ── TOAST NOTIFICATIONS ──
+  // ── COMMAND PALETTE (Ctrl+K) ──
+  function openCommandPalette() {
+    const modal = document.getElementById('commandPaletteModal');
+    modal.classList.add('open');
+    const input = document.getElementById('cmdInput');
+    input.value = '';
+    input.focus();
+    handleCommandSearch('');
+  }
+
+  function handleCommandSearch(query) {
+    const q = query.toLowerCase().trim();
+    const container = document.getElementById('cmdResultsContainer');
+
+    const defaultActions = [
+      { title: 'Schedule Service Appointment', icon: 'fa-calendar-plus', action: () => { closeModal('commandPaletteModal'); switchTab('appointments'); } },
+      { title: 'Add New Vehicle to Garage', icon: 'fa-plus', action: () => { closeModal('commandPaletteModal'); openAddVehicleModal(); } },
+      { title: 'View My Invoices & Ledger', icon: 'fa-file-invoice-dollar', action: () => { closeModal('commandPaletteModal'); switchTab('invoices'); } },
+      { title: 'Toggle Dark / Light Theme (Ctrl+D)', icon: 'fa-circle-half-stroke', action: () => { toggleTheme(); closeModal('commandPaletteModal'); } },
+      { title: 'Branch Directory & Service Centers', icon: 'fa-location-dot', action: () => { closeModal('commandPaletteModal'); switchTab('branches'); } }
+    ];
+
+    // Search branches
+    referenceBranches.forEach(b => {
+      defaultActions.push({
+        title: `Branch: ${b.title || b.key} (${b.bays || 8} bays)`,
+        icon: 'fa-warehouse',
+        action: () => { closeModal('commandPaletteModal'); selectBranchAndSchedule(b.key); }
+      });
+    });
+
+    // Search vehicles
+    currentVehicles.forEach(v => {
+      defaultActions.push({
+        title: `Vehicle: ${v.plate_no} — ${v.make} ${v.model}`,
+        icon: 'fa-car-side',
+        action: () => { closeModal('commandPaletteModal'); scheduleForVehicle(v.plate_no); }
+      });
+    });
+
+    const filtered = defaultActions.filter(a => !q || a.title.toLowerCase().includes(q));
+
+    if (filtered.length === 0) {
+      container.innerHTML = '<div style="padding: 12px; text-align: center; color: var(--text-muted); font-size: 11px;">No commands or records found.</div>';
+      return;
+    }
+
+    container.innerHTML = filtered.slice(0, 8).map((item, idx) => `
+      <div class="cmd-item" onclick="executeCmdItem(${idx})">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <i class="fa-solid ${item.icon}" style="color: var(--text-muted); width: 14px;"></i>
+          <span>${item.title}</span>
+        </div>
+        <i class="fa-solid fa-arrow-turn-down" style="font-size: 10px; color: var(--text-muted); transform: rotate(90deg);"></i>
+      </div>
+    `).join('');
+
+    window._cmdActions = filtered;
+  }
+
+  function executeCmdItem(index) {
+    if (window._cmdActions && window._cmdActions[index]) {
+      window._cmdActions[index].action();
+    }
+  }
+
+  // ── TOAST MESSAGES ──
   function showToast(message, type = 'info') {
     const container = document.getElementById('toastContainer');
     const toast = document.createElement('div');
-    toast.className = 'toast';
-    const icon = type === 'success' ? 'fa-circle-check' : (type === 'error' ? 'fa-circle-exclamation' : 'fa-circle-info');
-    const color = type === 'success' ? 'var(--status-green)' : (type === 'error' ? 'var(--status-red)' : 'var(--text-primary)');
-
-    toast.innerHTML = `
-      <i class="fa-solid ${icon}" style="color: ${color};"></i>
-      <span style="flex: 1;">${message}</span>
-      <button onclick="this.parentElement.remove()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
-    `;
+    toast.className = `toast ${type}`;
+    const icon = type === 'success' ? 'fa-circle-check' : (type === 'error' ? 'fa-triangle-exclamation' : 'fa-circle-info');
+    toast.innerHTML = `<i class="fa-solid ${icon}"></i><span>${message}</span>`;
     container.appendChild(toast);
     setTimeout(() => {
       toast.style.opacity = '0';
-      toast.style.transform = 'translateY(10px)';
-      toast.style.transition = 'all 150ms ease';
-      setTimeout(() => toast.remove(), 150);
+      toast.style.transform = 'translateY(4px)';
+      toast.style.transition = 'all 200ms ease';
+      setTimeout(() => toast.remove(), 200);
     }, 4000);
   }
+
+  // ── INITIALIZATION ──
+  document.addEventListener('DOMContentLoaded', () => {
+    initTheme();
+    setupKeyboardShortcuts();
+    setupDateDefaults();
+    loadReferenceData();
+    checkSavedSession();
+  });
 </script>
 
 </body>

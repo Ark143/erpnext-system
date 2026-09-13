@@ -220,7 +220,89 @@ def handle_get_reference_data():
         "branches": branches_list
     }
 
-# ── 2. CUSTOMER AUTHENTICATION & LOGIN ──
+# ── 2. BRANCH CAPACITY & CALENDAR AVAILABILITY ──
+def handle_get_branch_availability(branch, date_str):
+    b_name = str(branch or "Ultra MRF Dau Main").strip()
+    b_meta = BRANCH_METADATA.get(b_name, {})
+    total_bays = b_meta.get("bays", 8)
+
+    req_date = str(date_str or "").strip()
+    if not req_date:
+        req_date = frappe.utils.nowdate()
+
+    # Query active appointments for this branch and date
+    booked_records = frappe.db.get_all(
+        "Vehicle Appointment",
+        filters={
+            "branch": ["in", [b_name, b_meta.get("title", b_name)]],
+            "appointment_date": req_date,
+            "status": ["!=", "Cancelled"]
+        },
+        fields=["name", "appointment_time"]
+    )
+
+    counts = {ts: 0 for ts in TIME_SLOTS}
+    for rec in booked_records:
+        slot = normalize_time_slot(rec.get("appointment_time"))
+        if slot in counts:
+            counts[slot] = counts[slot] + 1
+
+    slots_data = []
+    for ts in TIME_SLOTS:
+        b_count = counts.get(ts, 0)
+        avail = max(0, total_bays - b_count)
+        is_full = avail <= 0
+        if avail >= max(3, total_bays // 2):
+            status = "Available"
+            badge_class = "success"
+        elif avail > 0:
+            status = "Filling Fast"
+            badge_class = "warning"
+        else:
+            status = "Fully Booked"
+            badge_class = "danger"
+
+        slots_data.append({
+            "slot": ts,
+            "total_bays": total_bays,
+            "booked": b_count,
+            "available": avail,
+            "is_full": is_full,
+            "status": status,
+            "badge_class": badge_class
+        })
+
+    # Calendar next 14 days preview
+    calendar_days = []
+    for i in range(14):
+        cur_d = str(frappe.utils.add_days(frappe.utils.nowdate(), i))
+        day_booked = frappe.db.count("Vehicle Appointment", filters={
+            "branch": ["in", [b_name, b_meta.get("title", b_name)]],
+            "appointment_date": cur_d,
+            "status": ["!=", "Cancelled"]
+        })
+        daily_capacity = total_bays * len(TIME_SLOTS)
+        day_avail = max(0, daily_capacity - day_booked)
+        day_status = "Available" if day_avail > (daily_capacity // 3) else ("Limited" if day_avail > 0 else "Full")
+        calendar_days.append({
+            "date": cur_d,
+            "booked": day_booked,
+            "total_capacity": daily_capacity,
+            "available": day_avail,
+            "status": day_status
+        })
+
+    return {
+        "success": True,
+        "branch": b_name,
+        "branch_title": b_meta.get("title", b_name),
+        "total_bays": total_bays,
+        "date": req_date,
+        "slots": slots_data,
+        "calendar_days": calendar_days
+    }
+
+# ── 3. CUSTOMER AUTHENTICATION & LOGIN ──
 def handle_customer_login(identifier):
     ident = str(identifier or "").strip()
     if not ident:
@@ -276,7 +358,7 @@ def handle_customer_login(identifier):
         address=cust_vals.get("custom_address_text") or ""
     )
 
-# ── 3. CREATE / REGISTER CUSTOMER PROFILE & LINK CUSTOMER VEHICLE ──
+# ── 4. CREATE / REGISTER CUSTOMER PROFILE & LINK CUSTOMER VEHICLE ──
 def handle_register_customer_profile(data):
     form = frappe.form_dict or {}
     cust_name = str(data.get("customer_name") or form.get("customer_name") or "").strip().upper()
@@ -393,7 +475,7 @@ def handle_register_customer_profile(data):
         just_registered=True
     )
 
-# ── 4. ADD NEW VEHICLE TO LOGGED-IN CUSTOMER ──
+# ── 5. ADD NEW VEHICLE TO LOGGED-IN CUSTOMER ──
 def handle_add_customer_vehicle(data):
     form = frappe.form_dict or {}
     cust_name = str(data.get("customer_name") or form.get("customer_name") or "").strip().upper()
@@ -476,7 +558,7 @@ def handle_add_customer_vehicle(data):
         email=email
     )
 
-# ── 5. BOOK APPOINTMENT WITH MULTI-BRANCH SELECTION ──
+# ── 6. BOOK APPOINTMENT WITH CAPACITY ENFORCEMENT ──
 def handle_book_appointment(data):
     form = frappe.form_dict or {}
     raw_branches = data.get("branches") or form.get("branches")
@@ -501,7 +583,6 @@ def handle_book_appointment(data):
     if not branches:
         branches = ["Ultra MRF Dau Main"]
 
-    # Ensure primary branch is valid Company string
     primary_branch = branches[0]
     if not frappe.db.exists("Company", primary_branch):
         found_comp = frappe.db.get_value("Company", {"company_name": primary_branch}, "name")
@@ -530,6 +611,15 @@ def handle_book_appointment(data):
 
     if not cust_name or not phone or not plate_no or not apt_date:
         return {"success": False, "error": "Customer Name, Mobile Phone, Vehicle Plate No, and Date are required."}
+
+    # Capacity check
+    avail_check = handle_get_branch_availability(primary_branch, apt_date)
+    for s_item in avail_check.get("slots", []):
+        if s_item.get("slot") == apt_time and s_item.get("is_full"):
+            return {
+                "success": False,
+                "error": f"Time slot '{apt_time}' at {primary_branch} is fully booked ({s_item.get('total_bays')}/{s_item.get('total_bays')} bays occupied). Please select another time slot or branch."
+            }
 
     # Customer Master
     customer_docname = None
@@ -641,7 +731,136 @@ def handle_book_appointment(data):
         "message": f"Appointment {apt_doc.name} successfully scheduled at {primary_branch} for {cust_name} on {apt_date} ({apt_time})."
     }
 
-# ── 6. BUILD ISOLATED CUSTOMER PAYLOAD (Invoices, Vehicles, Appointments) ──
+# ── 7. CONVERT APPOINTMENT TO ESTIMATE, INSPECTION, OR JOB ORDER ──
+def handle_convert_appointment(appointment_id, target_doctype):
+    apt_name = str(appointment_id or "").strip()
+    target = str(target_doctype or "").strip()
+
+    if not apt_name or not frappe.db.exists("Vehicle Appointment", apt_name):
+        return {"success": False, "error": f"Appointment '{apt_name}' does not exist."}
+
+    apt = frappe.get_doc("Vehicle Appointment", apt_name)
+    company_name = apt.branch or "ULTRA MRF"
+    if not frappe.db.exists("Company", company_name):
+        found_c = frappe.db.get_value("Company", {"company_name": company_name}, "name")
+        if found_c:
+            company_name = found_c
+        else:
+            company_name = "ULTRA MRF"
+
+    # Target 1: Vehicle Estimate
+    if target in ["Vehicle Estimate", "Estimate"]:
+        if apt.get("estimate") and frappe.db.exists("Vehicle Estimate", apt.estimate):
+            return {
+                "success": True,
+                "already_exists": True,
+                "target_doctype": "Vehicle Estimate",
+                "doc_name": apt.estimate,
+                "url": f"/desk/vehicle-estimate/{apt.estimate}",
+                "message": f"Estimate '{apt.estimate}' already exists for this appointment."
+            }
+
+        est = frappe.get_doc({
+            "doctype": "Vehicle Estimate",
+            "company": company_name,
+            "estimate_date": frappe.utils.nowdate(),
+            "valid_till": frappe.utils.add_days(frappe.utils.nowdate(), 14),
+            "customer": apt.customer,
+            "customer_name": apt.customer_name,
+            "contact_no": apt.customer_phone,
+            "email": apt.customer_email,
+            "vehicle": apt.vehicle,
+            "plate_no": apt.plate_no,
+            "make": apt.make,
+            "model": apt.model,
+            "year_model": int(apt.year) if apt.year and str(apt.year).isdigit() else 0,
+            "color": apt.color,
+            "customer_complaint": f"Scheduled Service: {apt.service_type} | Notes: {apt.notes or 'N/A'}",
+            "notes": f"Generated from Appointment {apt.name} for {apt.appointment_date} ({apt.appointment_time}) at {apt.branch}",
+            "status": "Draft"
+        })
+        est.insert(ignore_permissions=True)
+        frappe.db.set_value("Vehicle Appointment", apt.name, "estimate", est.name)
+        frappe.db.commit()
+
+        return {
+            "success": True,
+            "target_doctype": "Vehicle Estimate",
+            "doc_name": est.name,
+            "url": f"/desk/vehicle-estimate/{est.name}",
+            "message": f"Successfully created Vehicle Estimate {est.name} from Appointment {apt.name}."
+        }
+
+    # Target 2: Vehicle Inspection
+    elif target in ["Vehicle Inspection", "Inspection"]:
+        insp = frappe.get_doc({
+            "doctype": "Vehicle Inspection",
+            "company": company_name,
+            "inspection_date": frappe.utils.nowdate(),
+            "customer": apt.customer,
+            "customer_name": apt.customer_name,
+            "vehicle": apt.vehicle,
+            "plate_no": apt.plate_no,
+            "general_remarks": f"Inspection initiated upon arrival for Appointment {apt.name} | Service: {apt.service_type}",
+            "overall_status": "Pending"
+        })
+        insp.insert(ignore_permissions=True)
+        notes_cur = apt.notes or ""
+        frappe.db.set_value("Vehicle Appointment", apt.name, "notes", notes_cur + f" | Inspection: {insp.name}")
+        frappe.db.commit()
+
+        return {
+            "success": True,
+            "target_doctype": "Vehicle Inspection",
+            "doc_name": insp.name,
+            "url": f"/desk/vehicle-inspection/{insp.name}",
+            "message": f"Successfully created Vehicle Inspection {insp.name} from Appointment {apt.name}."
+        }
+
+    # Target 3: Vehicle Job Order
+    elif target in ["Vehicle Job Order", "Job Order"]:
+        if apt.get("job_order") and frappe.db.exists("Vehicle Job Order", apt.job_order):
+            return {
+                "success": True,
+                "already_exists": True,
+                "target_doctype": "Vehicle Job Order",
+                "doc_name": apt.job_order,
+                "url": f"/desk/vehicle-job-order/{apt.job_order}",
+                "message": f"Job Order '{apt.job_order}' already exists for this appointment."
+            }
+
+        jo = frappe.get_doc({
+            "doctype": "Vehicle Job Order",
+            "company": company_name,
+            "customer": apt.customer,
+            "customer_name": apt.customer_name,
+            "contact_no": apt.customer_phone,
+            "vehicle": apt.vehicle,
+            "plate_no": apt.plate_no,
+            "job_order_date": frappe.utils.nowdate(),
+            "promised_date": apt.appointment_date or frappe.utils.nowdate(),
+            "customer_complaint": f"Appointment Service: {apt.service_type} | Customer Notes: {apt.notes or 'N/A'}",
+            "status": "Draft",
+            "remarks": f"Confirmed customer arrival for Appointment {apt.name} ({apt.appointment_date} {apt.appointment_time}) at {apt.branch}"
+        })
+        jo.insert(ignore_permissions=True)
+        frappe.db.set_value("Vehicle Appointment", apt.name, {
+            "job_order": jo.name,
+            "status": "In Progress"
+        })
+        frappe.db.commit()
+
+        return {
+            "success": True,
+            "target_doctype": "Vehicle Job Order",
+            "doc_name": jo.name,
+            "url": f"/desk/vehicle-job-order/{jo.name}",
+            "message": f"Successfully created Vehicle Job Order {jo.name} from Appointment {apt.name}."
+        }
+
+    return {"success": False, "error": f"Invalid target DocType '{target}'. Allowed: 'Vehicle Estimate', 'Vehicle Inspection', 'Vehicle Job Order'."}
+
+# ── 8. BUILD ISOLATED CUSTOMER PAYLOAD (Invoices, Vehicles, Appointments) ──
 def build_customer_portal_payload(customer_name, customer_docname=None, phone="", email="", address="", just_registered=False):
     cust_name = str(customer_name or "").strip().upper()
     customer_docname = customer_docname or cust_name
@@ -750,7 +969,7 @@ def build_customer_portal_payload(customer_name, customer_docname=None, phone=""
         apt_records = frappe.db.get_all(
             "Vehicle Appointment",
             filters={"plate_no": ["in", plates_list]},
-            fields=["name", "branch", "appointment_date", "appointment_time", "status", "service_type", "plate_no", "make", "model", "notes", "creation"],
+            fields=["name", "branch", "appointment_date", "appointment_time", "status", "service_type", "plate_no", "make", "model", "notes", "creation", "job_order", "estimate"],
             order_by="appointment_date desc",
             limit_page_length=50
         )
@@ -758,7 +977,7 @@ def build_customer_portal_payload(customer_name, customer_docname=None, phone=""
         apt_records = frappe.db.get_all(
             "Vehicle Appointment",
             filters={"customer": ["in", [customer_docname, cust_name]]},
-            fields=["name", "branch", "appointment_date", "appointment_time", "status", "service_type", "plate_no", "make", "model", "notes", "creation"],
+            fields=["name", "branch", "appointment_date", "appointment_time", "status", "service_type", "plate_no", "make", "model", "notes", "creation", "job_order", "estimate"],
             order_by="appointment_date desc",
             limit_page_length=50
         )
@@ -773,7 +992,9 @@ def build_customer_portal_payload(customer_name, customer_docname=None, phone=""
             "status": a.get("status") or "Confirmed",
             "plate_no": a.get("plate_no") or "",
             "vehicle": f"{a.get('make','')} {a.get('model','')}".strip(),
-            "notes": a.get("notes") or ""
+            "notes": a.get("notes") or "",
+            "job_order": a.get("job_order") or "",
+            "estimate": a.get("estimate") or ""
         })
 
     loyalty_points = int(total_spent_calc // 100)
@@ -821,6 +1042,14 @@ if "get_portal_branches" in req_path or cmd == "vehicle_management.api.portal.ge
     frappe.response["message"] = handle_get_branches()
 elif "get_vehicle_reference_data" in req_path or cmd == "vehicle_management.api.portal.get_vehicle_reference_data":
     frappe.response["message"] = handle_get_reference_data()
+elif "get_branch_availability" in req_path or cmd == "vehicle_management.api.portal.get_branch_availability":
+    branch = form.get("branch") or (form.get("data", {}).get("branch") if isinstance(form.get("data"), dict) else None)
+    d = form.get("date") or (form.get("data", {}).get("date") if isinstance(form.get("data"), dict) else None)
+    frappe.response["message"] = handle_get_branch_availability(branch, d)
+elif "convert_appointment" in req_path or cmd == "vehicle_management.api.portal.convert_appointment" or cmd == "vehicle_management.api.portal.convert_appointment_to_doc":
+    apt_id = form.get("appointment_id") or form.get("appointment") or (form.get("data", {}).get("appointment_id") if isinstance(form.get("data"), dict) else None)
+    target = form.get("target_doctype") or form.get("target") or (form.get("data", {}).get("target_doctype") if isinstance(form.get("data"), dict) else None)
+    frappe.response["message"] = handle_convert_appointment(apt_id, target)
 elif "customer_login" in req_path or cmd == "vehicle_management.api.portal.customer_login":
     ident = form.get("identifier")
     if not ident and isinstance(form.get("data"), dict):
@@ -847,6 +1076,9 @@ else:
 apis_to_register = [
     ("VM Portal Get Branches", "vehicle_management.api.portal.get_portal_branches", server_script_code),
     ("VM Portal Get Vehicle Reference Data", "vehicle_management.api.portal.get_vehicle_reference_data", server_script_code),
+    ("VM Portal Get Branch Availability", "vehicle_management.api.portal.get_branch_availability", server_script_code),
+    ("VM Portal Convert Appointment", "vehicle_management.api.portal.convert_appointment", server_script_code),
+    ("VM Portal Convert Appointment To Doc", "vehicle_management.api.portal.convert_appointment_to_doc", server_script_code),
     ("VM Portal Customer Login", "vehicle_management.api.portal.customer_login", server_script_code),
     ("VM Portal Register Customer Profile", "vehicle_management.api.portal.register_customer_profile", server_script_code),
     ("VM Portal Add Customer Vehicle", "vehicle_management.api.portal.add_customer_vehicle", server_script_code),
@@ -873,4 +1105,4 @@ for name, api_method, sc in apis_to_register:
         s.post(f'{URL}/api/resource/Server%20Script', json=payload)
         print(f"[OK] Created API: {name}")
 
-print("\nServer scripts fully deployed.")
+print("\nServer scripts with Capacity & Conversion APIs fully deployed.")

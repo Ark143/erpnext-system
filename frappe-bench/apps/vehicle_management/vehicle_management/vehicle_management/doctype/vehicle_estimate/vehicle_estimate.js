@@ -73,6 +73,26 @@ frappe.ui.form.on("Vehicle Estimate", {
 		}
 	},
 
+	taxes_and_charges(frm) {
+		if (frm.doc.taxes_and_charges) {
+			frappe.db.get_doc("Sales Taxes and Charges Template", frm.doc.taxes_and_charges).then(template => {
+				frm.clear_table("taxes");
+				(template.taxes || []).forEach(tax => {
+					const row = frm.add_child("taxes");
+					row.charge_type = tax.charge_type;
+					row.account_head = tax.account_head;
+					row.description = tax.description;
+					row.rate = tax.rate;
+					row.tax_amount = tax.tax_amount;
+					row.included_in_print_rate = tax.included_in_print_rate;
+					row.cost_center = tax.cost_center;
+				});
+				frm.refresh_field("taxes");
+				calculate_estimate_totals(frm);
+			});
+		}
+	},
+
 	discount_amount(frm) {
 		calculate_estimate_totals(frm);
 	}
@@ -135,6 +155,21 @@ frappe.ui.form.on("Job Order Part Item", {
 	}
 });
 
+frappe.ui.form.on("Sales Taxes and Charges", {
+	rate(frm, cdt, cdn) {
+		calculate_estimate_totals(frm);
+	},
+	tax_amount(frm, cdt, cdn) {
+		calculate_estimate_totals(frm);
+	},
+	charge_type(frm, cdt, cdn) {
+		calculate_estimate_totals(frm);
+	},
+	taxes_remove(frm) {
+		calculate_estimate_totals(frm);
+	}
+});
+
 function calculate_service_row(frm, cdt, cdn) {
 	const row = locals[cdt][cdn];
 	const hours = flt(row.hours) || 1.0;
@@ -167,10 +202,38 @@ function calculate_estimate_totals(frm) {
 	});
 
 	const net_total = total_labor + total_parts;
-	const grand_total = Math.max(0, net_total - flt(frm.doc.discount_amount));
+	const base_amount = Math.max(0, net_total - flt(frm.doc.discount_amount));
+
+	let total_taxes = 0.0;
+	let running_total = base_amount;
+
+	(frm.doc.taxes || []).forEach((t, idx) => {
+		let current_tax = 0.0;
+		const rate = flt(t.rate);
+		const charge_type = t.charge_type || "On Net Total";
+
+		if (charge_type === "On Net Total") {
+			current_tax = (base_amount * rate) / 100.0;
+		} else if (charge_type === "Actual") {
+			current_tax = flt(t.tax_amount);
+		} else if (charge_type === "On Previous Row Total") {
+			current_tax = (running_total * rate) / 100.0;
+		} else {
+			current_tax = (base_amount * rate) / 100.0;
+		}
+
+		running_total += current_tax;
+		total_taxes += current_tax;
+
+		frappe.model.set_value(t.doctype, t.name, "tax_amount", current_tax);
+		frappe.model.set_value(t.doctype, t.name, "total", running_total);
+	});
+
+	const grand_total = Math.max(0, base_amount + total_taxes);
 
 	frm.set_value("total_labor", total_labor);
 	frm.set_value("total_parts", total_parts);
 	frm.set_value("net_total", net_total);
+	frm.set_value("total_taxes_and_charges", total_taxes);
 	frm.set_value("grand_total", grand_total);
 }

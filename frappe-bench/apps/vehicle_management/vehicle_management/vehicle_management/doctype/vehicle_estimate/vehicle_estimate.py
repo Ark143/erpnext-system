@@ -44,7 +44,32 @@ class VehicleEstimate(Document):
 		self.total_labor = total_labor
 		self.total_parts = total_parts
 		self.net_total = total_labor + total_parts
-		self.grand_total = max(0.0, self.net_total - flt(self.discount_amount))
+		base_amount = max(0.0, self.net_total - flt(self.discount_amount))
+
+		# Compute Sales Taxes and Charges
+		total_taxes = 0.0
+		running_total = base_amount
+		for tax in self.get("taxes", []):
+			rate = flt(tax.rate)
+			charge_type = tax.charge_type or "On Net Total"
+
+			if charge_type == "On Net Total":
+				current_tax = (base_amount * rate) / 100.0
+			elif charge_type == "Actual":
+				current_tax = flt(tax.tax_amount)
+			elif charge_type == "On Previous Row Total":
+				current_tax = (running_total * rate) / 100.0
+			else:
+				current_tax = (base_amount * rate) / 100.0
+
+			running_total += current_tax
+			total_taxes += current_tax
+
+			tax.tax_amount = current_tax
+			tax.total = running_total
+
+		self.total_taxes_and_charges = total_taxes
+		self.grand_total = max(0.0, base_amount + total_taxes)
 
 	def fetch_vehicle_and_customer_details(self):
 		if self.vehicle and not self.plate_no:
